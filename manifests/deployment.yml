@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: theresistanceonlineweb 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: theresistanceonlineweb
+  template:
+    metadata:
+      labels:
+        app: theresistanceonlineweb 
+    spec:
+      containers:
+        - name: theresistanceonlineweb 
+          image: theresistancecontainer.azurecr.io/theresistanceonlineweb
+          ports:
+          - containerPort: 80
