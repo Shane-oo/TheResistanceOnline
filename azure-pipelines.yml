@@ -15,7 +15,7 @@ variables:
   imageRepository: 'theresistanceonlineweb'
   containerRegistry: 'theresistancecontainer.azurecr.io'
   dockerfilePath: '**/Dockerfile'
-  tag: '$(Build.BuildId)'
+  tag: 'latest'
   imagePullSecret: 'theresistancecontainer95ee-auth'
 
   # Agent VM image name
@@ -76,5 +76,5 @@ stages:
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
-                $(containerRegistry)/$(imageRepository):latest
+                $(containerRegistry)/$(imageRepository):$(tag)
 
