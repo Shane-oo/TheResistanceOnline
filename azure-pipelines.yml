@@ -17,6 +17,7 @@ variables:
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'theresistancecontainer95ee-auth'
+  buildContext: '$(Build.Repository.LocalPath)'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
