@@ -45,3 +45,23 @@ stages:
     - upload: manifests
       artifact: manifests
 
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    environment: 'TheResistanceOnline.ingress-basic'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              namespace: 'ingress-basic'
+              command: 'rollout'
+              arguments: 'restart deployment theresistance-webapp'
