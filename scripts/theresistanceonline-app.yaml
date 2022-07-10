@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: theresistance-webapp
+  name: theresistance-webapp
+spec:
+  selector:
+    matchLabels:
+      app: theresistance-webapp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: theresistance-webapp
+    spec:
+      containers:
+      - image: theresistancecontainer.azurecr.io/theresistanceonline.web:latest
+        name: theresistance-webapp
+        imagePullPolicy: Always
+        resources: {}
+        ports:
+          - containerPort: 80 
+status: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: theresistance--webapp
+  labels:
+    run: theresistance--webapp
+spec:
+  ports:
+  - port: 80
+  selector:
+    app: theresistance-webapp
+  type: ClusterIP
