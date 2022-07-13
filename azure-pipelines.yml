@@ -15,6 +15,8 @@ variables:
   imageRepository: 'theresistanceonlineweb'
   containerRegistry: 'theresistancecontainer.azurecr.io'
   dockerfilePath: '**/TheResistanceOnline.Web/Dockerfile'
+  imageRepositorySocketServer: 'theresistanceonlinesocketserver'
+  socketServerDockerFilePath: '**/TheResistanceOnline.Server/DockerFile'
   tag: 'latest'
   imagePullSecret: 'theresistancecontainer95ee-auth'
 
@@ -24,7 +26,7 @@ variables:
 
 stages:
 - stage: Build
-  displayName: Build stage
+  displayName: Build Web App stage
   jobs:
   - job: Build
     displayName: Build
@@ -45,8 +47,28 @@ stages:
     - upload: manifests
       artifact: manifests
 
+- stage: Build
+  displayName: Build Socket Server stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepositorySocketServer)
+        dockerfile: $(socketServerDockerFilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+    - upload: manifests
+      artifact: manifests
+
 - stage: Deploy
-  displayName: Deploy stage
+  displayName: Deploy Web App stage
   dependsOn: Build
 
   jobs:
@@ -65,3 +87,34 @@ stages:
               namespace: 'ingress-basic'
               command: 'rollout'
               arguments: 'restart deployment theresistance-webapp'
+
+- stage: Deploy
+  displayName: Deploy Socket Server stage
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    environment: 'TheResistanceOnline.ingress-basic'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepositorySocketServer):$(tag)
