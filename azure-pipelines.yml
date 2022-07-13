@@ -69,7 +69,7 @@ stages:
 
 - stage: Deploy1
   displayName: Deploy Web App stage
-  dependsOn: Build
+  dependsOn: Build1
 
   jobs:
   - deployment: Deploy
@@ -90,7 +90,7 @@ stages:
 
 - stage: Deploy2
   displayName: Deploy Socket Server stage
-  dependsOn: Build
+  dependsOn: Build2
   jobs:
   - deployment: Deploy
     displayName: Deploy
