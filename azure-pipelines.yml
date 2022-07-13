@@ -40,7 +40,7 @@ stages:
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
-        buildContext: '$(Build1.Repository.LocalPath)'
+        buildContext: '$(Build.Repository.LocalPath)'
         tags: |
           $(tag)
 
@@ -62,9 +62,10 @@ stages:
         repository: $(imageRepositorySocketServer)
         dockerfile: $(socketServerDockerFilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
-        buildContext: '$(Build2.Repository.LocalPath)'
+        buildContext: '$(Build.Repository.LocalPath)'
         tags: |
           $(tag)
+
     - upload: manifests
       artifact: manifests
 
