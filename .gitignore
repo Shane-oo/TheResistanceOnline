@@ -1,2 +1,8 @@
 
 TheResistanceOnline.Web/ClientApp/.angular/cache/
+Tests/obj/Debug/net6.0/Tests.assets.cache
+Tests/obj/
+TheResistanceOnline.BusinessLogic/obj/
+TheResistanceOnline.Data/obj/
+TheResistanceOnline.Infrastructure.Data.Migrations/obj/
+TheResistanceOnline.Infrastructure.Data/obj/
