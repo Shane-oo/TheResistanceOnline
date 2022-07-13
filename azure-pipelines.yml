@@ -38,7 +38,7 @@ stages:
       inputs:
         command: buildAndPush
         repository: $(imageRepositorySocketServer)
-        dockerfile: $(socketServerDockerFilePath)
+        dockerfile: '**/TheResistanceOnline.SocketServer/DockerFile'
         containerRegistry: $(dockerRegistryServiceConnection)
         buildContext: '$(Build.Repository.LocalPath)'
         tags: |
