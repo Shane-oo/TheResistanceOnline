@@ -14,7 +14,7 @@ variables:
   dockerRegistryServiceConnection: 'e9234e1a-42aa-4107-bd03-505f479531aa'
   imageRepository: 'theresistanceonlineweb'
   containerRegistry: 'theresistancecontainer.azurecr.io'
-  dockerfilePath: '/TheResistanceOnline.Web/Dockerfile'
+  dockerfilePath: '**/TheResistanceOnline.Web/Dockerfile'
   tag: 'latest'
   imagePullSecret: 'theresistancecontainer95ee-auth'
 
