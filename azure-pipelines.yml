@@ -16,7 +16,7 @@ variables:
   containerRegistry: 'theresistancecontainer.azurecr.io'
   dockerfilePath: '**/TheResistanceOnline.Web/Dockerfile'
   imageRepositorySocketServer: 'theresistanceonlinesocketserver'
-  socketServerDockerFilePath: '**/TheResistanceOnline.SocketServer/DockerFile'
+  socketServerDockerFilePath: '**/DockerFile'
   tag: 'latest'
   imagePullSecret: 'theresistancecontainer95ee-auth'
 
@@ -38,7 +38,7 @@ stages:
       inputs:
         command: buildAndPush
         repository: $(imageRepositorySocketServer)
-        dockerfile: 'TheResistanceOnline.SocketServer/DockerFile'
+        dockerfile: $(socketServerDockerFilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
         buildContext: '$(Build.Repository.LocalPath)'
         tags: |
