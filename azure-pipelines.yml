@@ -62,6 +62,7 @@ stages:
         repository: $(imageRepositorySocketServer)
         dockerfile: $(socketServerDockerFilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
+        buildContext: '$(Build.Repository.LocalPath)'
         tags: |
           $(tag)
     - upload: manifests
