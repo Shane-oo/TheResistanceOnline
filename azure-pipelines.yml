@@ -25,7 +25,7 @@ variables:
 
 
 stages:
-- stage: Build
+- stage: Build1
   displayName: Build Web App stage
   jobs:
   - job: Build
@@ -47,7 +47,7 @@ stages:
     - upload: manifests
       artifact: manifests
 
-- stage: Build
+- stage: Build2
   displayName: Build Socket Server stage
   jobs:
   - job: Build
@@ -67,7 +67,7 @@ stages:
     - upload: manifests
       artifact: manifests
 
-- stage: Deploy
+- stage: Deploy1
   displayName: Deploy Web App stage
   dependsOn: Build
 
@@ -88,7 +88,7 @@ stages:
               command: 'rollout'
               arguments: 'restart deployment theresistance-webapp'
 
-- stage: Deploy
+- stage: Deploy2
   displayName: Deploy Socket Server stage
   dependsOn: Build
   jobs:
