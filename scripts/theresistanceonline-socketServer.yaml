@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: socket-server
+  name: socket-server
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: socket-server
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: socket-server
+    spec:
+      containers:
+      - image: registryfrontend.azurecr.io/theresistanceonlinesocketserver:latest
+        name: socket-server
+        imagePullPolicy: Always
+        resources: {}
+        ports:
+          - containerPort: 80 
+status: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: socket-server
+  labels:
+    run: socket-server
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: socket-server
+  type: LoadBalancer
