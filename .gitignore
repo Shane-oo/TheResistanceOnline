@@ -6,3 +6,10 @@ TheResistanceOnline.BusinessLogic/obj/
 TheResistanceOnline.Data/obj/
 TheResistanceOnline.Infrastructure.Data.Migrations/obj/
 TheResistanceOnline.Infrastructure.Data/obj/
+TheResistanceOnline.SocketServer/obj/Debug/net6.0/TheResistanceOnline.SocketServer.AssemblyInfoInputs.cache
+*.suo
+*.user
+_ReSharper.*
+bin
+obj
+packages
