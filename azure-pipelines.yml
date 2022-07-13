@@ -25,6 +25,28 @@ variables:
 
 
 stages:
+- stage: Build2
+  displayName: Build Socket Server stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepositorySocketServer)
+        dockerfile: $(socketServerDockerFilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        buildContext: '$(Build.Repository.LocalPath)'
+        tags: |
+          $(tag)
+
+    - upload: manifests
+      artifact: manifests
+
 - stage: Build1
   displayName: Build Web App stage
   jobs:
@@ -47,26 +69,6 @@ stages:
     - upload: manifests
       artifact: manifests
 
-- stage: Build2
-  displayName: Build Socket Server stage
-  jobs:
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: Docker@2
-      displayName: Build and push an image to container registry
-      inputs:
-        command: buildAndPush
-        repository: $(imageRepositorySocketServer)
-        dockerfile: $(socketServerDockerFilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
-
-    - upload: manifests
-      artifact: manifests
 
 - stage: Deploy1
   displayName: Deploy Web App stage
