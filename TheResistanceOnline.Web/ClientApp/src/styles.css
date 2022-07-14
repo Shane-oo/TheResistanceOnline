@@ -15,7 +15,42 @@ code {
   border-color: #1861ac;
 }
 
-.AppRoot{
+.AppRoot {
   background: #0a091c;
-  color:#d2bfd8;
+  color: #d2bfd8;
+}
+
+/* Style the video: 100% width and height to cover the entire window */
+#myVideo {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+#myVideo2 {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+/* Add some content at the bottom of the video/page */
+.content {
+  position: fixed;
+  background: rgba(0, 0, 0, 0);
+  width: 100%;
+  padding: 20px;
+  color: #d2bfd8;
+}
+
+
+/*
+ font
+*/
+@font-face {
+  font-family: "ethnocentric";
+  src: url("./assets/fonts/ethnocentric_bd-webfont.ttf") format("truetype");
 }
