@@ -45,7 +45,7 @@ export class HomeComponent implements OnInit {
     await this.delay(18760);
     this.showBackGround2 = true;
 
-    await this.delay(5000);
+    //await this.delay(5000);
     this.showBackGround1 = false;
   }
 
