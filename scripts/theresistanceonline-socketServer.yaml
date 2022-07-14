@@ -6,7 +6,6 @@ metadata:
     app: socket-server
   name: socket-server
 spec:
-  replicas: 5
   selector:
     matchLabels:
       app: socket-server
@@ -18,7 +17,7 @@ spec:
         app: socket-server
     spec:
       containers:
-      - image: registryfrontend.azurecr.io/theresistanceonlinesocketserver:latest
+      - image: theresistancecontainer.azurecr.io/theresistanceonlinesocketserver:latest
         name: socket-server
         imagePullPolicy: Always
         resources: {}
