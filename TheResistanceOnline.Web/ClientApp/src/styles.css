@@ -41,9 +41,8 @@ code {
 .content {
   position: fixed;
   background: rgba(0, 0, 0, 0);
-  width: 100%;
-  padding: 20px;
   color: #d2bfd8;
+  padding-left: 250px;
 }
 
 
