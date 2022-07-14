@@ -1,12 +1,11 @@
-
-<div *ngIf="showBackGround1">
-<video  autoplay muted loop id="myVideo">
-  <source src="./assets/videos/dystopian-background-full-slow.mp4" type="video/mp4">
-  Your browser does not support HTML5 video.
-</video>
+<div *ngIf="showBackGround1" >
+  <video  autoplay muted loop id="myVideo" #Video>
+    <source src="./assets/videos/dystopian-background-full-slow.mp4" type="video/mp4">
+    Your browser does not support HTML5 video.
+  </video>
 </div>
-<div *ngIf="showBackGround2">
-  <video autoplay muted loop id="myVideo2">
+<div *ngIf="showBackGround2" >
+  <video autoplay muted loop id="myVideo2" #Video2>
     <source src="./assets/videos/dystopian-background-slow-trimmed2-long.mp4" type="video/mp4">
     Your browser does not support HTML5 video.
   </video>
@@ -14,3 +13,4 @@
 <div class="content">
   <h1 style="font-family: ethnocentric,serif; color: #0a091c"> The Resistance Online</h1>
 </div>
+
