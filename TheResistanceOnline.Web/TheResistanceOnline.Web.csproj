@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ClientApp\src\assets\environment-maps" />
     <Folder Include="ClientApp\src\assets\fonts" />
     <Folder Include="ClientApp\src\assets\videos" />
   </ItemGroup>
