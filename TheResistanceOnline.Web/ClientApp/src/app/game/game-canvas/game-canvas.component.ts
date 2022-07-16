@@ -72,7 +72,7 @@ export class GameCanvasComponent implements OnInit, AfterViewInit {
   }
 
   private initAssets() {
-    this.gltfLoader.load('../../../assets/models/FlightHelmet/glTF/FlightHelmet.gltf', (gltf) => {
+    this.gltfLoader.load('../../../assets/models/test-models/burger.glb', (gltf) => {
       gltf.scene.scale.set(15, 15, 15);
       gltf.scene.position.set(0, -1, 0);
       gltf.scene.rotation.y = Math.PI * 0.5;
