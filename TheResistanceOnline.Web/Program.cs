@@ -1,8 +1,23 @@
+using Microsoft.AspNetCore.StaticFiles;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.Configure<StaticFileOptions>(options =>
+                                              {
+                                                  options.ContentTypeProvider = new FileExtensionContentTypeProvider
+                                                                                {
+                                                                                    Mappings =
+                                                                                    {
+                                                                                        [".gltf"] = "model/gltf+json",
+                                                                                        [".glb"] = "model/gltf-binary",
+                                                                                        [".bin"] = "application/octet-stream"
+                                                                                    }
+                                                                                };
+                                              });
 
 var app = builder.Build();
 
@@ -19,9 +34,10 @@ app.UseRouting();
 
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller}/{action=Index}/{id?}");
+                       name: "default",
+                       pattern: "{controller}/{action=Index}/{id?}");
 
-app.MapFallbackToFile("index.html"); ;
+app.MapFallbackToFile("index.html");
+;
 
 app.Run();
