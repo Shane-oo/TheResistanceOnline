@@ -82,12 +82,12 @@ export class GameCanvasComponent implements OnInit, AfterViewInit {
     });
 
     this.environmentMap = this.cubeTextureLoader.load([
-                                                        '../../../assets/environment-maps/0/px.jpg',
-                                                        '../../../assets/environment-maps/0/nx.jpg',
-                                                        '../../../assets/environment-maps/0/py.jpg',
-                                                        '../../../assets/environment-maps/0/ny.jpg',
-                                                        '../../../assets/environment-maps/0/pz.jpg',
-                                                        '../../../assets/environment-maps/0/nz.jpg'
+                                                        'assets/environment-maps/0/px.jpg',
+                                                        'assets/environment-maps/0/nx.jpg',
+                                                        'assets/environment-maps/0/py.jpg',
+                                                        'assets/environment-maps/0/ny.jpg',
+                                                        'assets/environment-maps/0/pz.jpg',
+                                                        'assets/environment-maps/0/nz.jpg'
                                                       ]);
     this.environmentMap.encoding = THREE.sRGBEncoding;
     this.modifyScene(this.environmentMap);
