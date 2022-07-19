@@ -6,8 +6,10 @@ import * as THREE from 'three';
 import Renderer from './Renderer';
 import World from './World/World';
 import sources from './sources';
+import Debug from './Utils/Debug';
 
 export default class ResistanceGame {
+  public debug!: Debug;
   public canvas!: HTMLCanvasElement;
   public sizes!: Sizes;
   public time!: Time;
@@ -16,6 +18,7 @@ export default class ResistanceGame {
   public renderer!: Renderer;
   public world!: World;
   public resources!: Resources;
+
   private static instance: ResistanceGame;
 
   constructor(canvas?: HTMLCanvasElement) {
@@ -28,6 +31,7 @@ export default class ResistanceGame {
     if(canvas) {this.canvas = canvas;}
 
     // Setup
+    this.debug = new Debug();
     this.sizes = new Sizes();
     this.time = new Time();
     this.scene = new THREE.Scene();
@@ -58,5 +62,36 @@ export default class ResistanceGame {
     this.world.update();
     this.renderer.update();
 
+  }
+
+  /*
+    If have more complex project with a lot to destroy, you
+    may want to create a destroy() method for each class
+  */
+  public destroy() {
+    this.sizes.off('resize');
+    this.time.off('tick');
+
+    // Traverse the whole scene
+    this.scene.traverse((child) => {
+      if(child instanceof THREE.Mesh) {
+        child.geometry.dispose();
+
+        for(const key in child.material) {
+          const value = child.material[key];
+
+          // not the most efficient way of disposing
+          if(value && typeof value.dispose === 'function') {
+            value.dispose();
+          }
+        }
+      }
+    });
+
+    this.camera.controls.dispose();
+    this.renderer.instance.dispose();
+    if(this.debug.active) {
+      this.debug.gui.destroy();
+    }
   }
 }

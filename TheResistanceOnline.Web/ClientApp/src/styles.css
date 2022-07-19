@@ -53,3 +53,6 @@ code {
   font-family: "ethnocentric";
   src: url("./assets/fonts/ethnocentric_bd-webfont.ttf") format("truetype");
 }
+
+
+#gui { position: absolute; top: 25px; left: 2px }
