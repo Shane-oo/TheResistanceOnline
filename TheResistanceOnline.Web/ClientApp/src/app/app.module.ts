@@ -11,6 +11,7 @@ import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { GameComponent } from './game/game.component';
 import { GameCanvasComponent } from './game/game-canvas/game-canvas.component';
+import { GameChatComponent } from './game/game-chat/game-chat.component';
 
 @NgModule({
             declarations: [
@@ -20,7 +21,8 @@ import { GameCanvasComponent } from './game/game-canvas/game-canvas.component';
               CounterComponent,
               FetchDataComponent,
               GameComponent,
-              GameCanvasComponent
+              GameCanvasComponent,
+              GameChatComponent
             ],
             imports: [
               BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

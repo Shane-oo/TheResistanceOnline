@@ -1,0 +1,35 @@
+import { Component, OnInit } from '@angular/core';
+import { GameService } from '../game.service';
+import { HttpClient } from '@angular/common/http';
+import {environment} from '../../../environments/environment';
+
+@Component({
+  selector: 'app-game-chat',
+  templateUrl: './game-chat.component.html',
+  styleUrls: ['./game-chat.component.css']
+})
+export class GameChatComponent implements OnInit {
+
+  constructor(public _gameService: GameService,private http:HttpClient) { }
+
+  ngOnInit(): void {
+    this._gameService.startConnection();
+    this._gameService.addTransferMessageListener();
+    this._gameService.addBroadCastListener();
+    this.startHttpRequest();
+  }
+
+  private startHttpRequest = () =>{
+    console.log("start http request sending to:");
+    console.log(environment.API_URL);
+    this.http.get(environment.API_URL +'/api/messages')
+      .subscribe(res => {
+        console.log(res);
+      })
+  }
+
+  public onClickSubmit(data:any){
+    console.log("trying to broadcast: ",data);
+    this._gameService.broadCastMessage(data.message.value);
+  }
+}

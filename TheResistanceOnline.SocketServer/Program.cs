@@ -1,29 +1,42 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using TheResistanceOnline.BusinessLogic.Timers;
+using TheResistanceOnline.SocketServer.DI;
+using TheResistanceOnline.SocketServer.HubConfigurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddCors(options =>
+                         {
+                             options.AddPolicy("CorsPolicy", corsPolicy => corsPolicy
+                                                                           .AllowAnyMethod()
+                                                                           .AllowAnyHeader()
+                                                                           .AllowCredentials()
+                                                                           .WithOrigins("http://localhost:44452", "https://theresistanceboardgameonline.com",
+                                                                                        "https://localhost:44452")
+                                              );
+                         });
+
+builder.Services.AddSignalR();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// DISetup
+//builder.Services.AddServices();
+builder.Services.AddTransient<ITimerService, TimerService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+                 {
+                     endpoints.MapControllers();
+                     endpoints.MapHub<TheResistanceHub>("/message");
+                 });
 
 app.Run();
