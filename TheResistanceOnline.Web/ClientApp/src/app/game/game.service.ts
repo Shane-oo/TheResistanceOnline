@@ -16,8 +16,9 @@ export class GameService {
 
   public startConnection = () => {
     console.log('starting connection');
+    console.log(environment.Socket_URL);
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(environment.API_URL + '/message', {
+      .withUrl(environment.Socket_URL + '/message', {
         skipNegotiation: true,
         transport: signalR.HttpTransportType.WebSockets
       })

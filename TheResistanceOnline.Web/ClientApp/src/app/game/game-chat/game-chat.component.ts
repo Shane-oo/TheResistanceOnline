@@ -21,8 +21,8 @@ export class GameChatComponent implements OnInit {
 
   private startHttpRequest = () =>{
     console.log("start http request sending to:");
-    console.log(environment.API_URL);
-    this.http.get(environment.API_URL +'/api/messages')
+    console.log(environment.Socket_URL);
+    this.http.get(environment.Socket_URL +'/api/messages')
       .subscribe(res => {
         console.log(res);
       })
