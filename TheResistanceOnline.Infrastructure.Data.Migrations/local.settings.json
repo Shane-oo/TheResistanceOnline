@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "resistanceDb": "Data Source=localhost;Initial Catalog=resistanceDb;User Id=sa; Password=someThingComplicated1234;"
+  },
+  "ConnectionStrings": {
+    "resistanceDb": "Data Source=localhost;Initial Catalog=resistanceDb;User Id=sa; Password=someThingComplicated1234;"
+  }
+}

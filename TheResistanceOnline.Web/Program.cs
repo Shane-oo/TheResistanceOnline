@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.EntityFrameworkCore;
+using TheResistanceOnline.Data.Users;
+using TheResistanceOnline.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +23,12 @@ builder.Services.Configure<StaticFileOptions>(options =>
                                                                                 };
                                               });
 
+const string CONNECTION_STRING = "Data Source=localhost;Initial Catalog=resistanceDb;User Id=sa; Password=someThingComplicated1234;";
+
+builder.Services.AddDbContext<Context>(options => options.UseSqlServer(CONNECTION_STRING));
+builder.Services.AddIdentity<User, IdentityRole>()
+       .AddEntityFrameworkStores<Context>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -34,8 +44,8 @@ app.UseRouting();
 
 
 app.MapControllerRoute(
-                       name: "default",
-                       pattern: "{controller}/{action=Index}/{id?}");
+                       "default",
+                       "{controller}/{action=Index}/{id?}");
 
 app.MapFallbackToFile("index.html");
 ;
