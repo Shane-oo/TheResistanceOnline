@@ -30,13 +30,12 @@ status: {}
 apiVersion: v1
 kind: Service
 metadata:
-  name: socket-server
+  name: socket-server-service
   labels:
-    run: socket-server
+    run: socket-server-service
 spec:
   ports:
   - port: 80
-    protocol: TCP
   selector:
     app: socket-server
-  type: LoadBalancer
+  type: ClusterIP

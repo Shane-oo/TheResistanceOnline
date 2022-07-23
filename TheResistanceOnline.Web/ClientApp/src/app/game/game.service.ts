@@ -20,7 +20,8 @@ export class GameService {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(environment.Socket_URL + '/message', {
         skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets
+        transport: signalR.HttpTransportType.WebSockets,
+
       })
       .build();
 
