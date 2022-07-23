@@ -23,7 +23,7 @@ spec:
             name: theresistance--webapp
             port:
               number: 80
-      - path: /server(/|$)(.*)
+      - path: /server/(.*)
         pathType: Prefix
         backend:
           service:
