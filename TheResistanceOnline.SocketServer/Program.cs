@@ -21,8 +21,8 @@ builder.Services.AddSignalR();
 builder.Services.AddControllers();
 
 // DISetup
-//builder.Services.AddServices();
-builder.Services.AddTransient<ITimerService, TimerService>();
+builder.Services.AddServices();
+//builder.Services.AddTransient<ITimerService, TimerService>();
 
 var app = builder.Build();
 

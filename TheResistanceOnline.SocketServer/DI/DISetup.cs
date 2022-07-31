@@ -9,7 +9,6 @@ namespace TheResistanceOnline.SocketServer.DI
         public static void AddServices(this IServiceCollection services)
         {
             services.AddTransient<ITimerService, TimerService>();
-            
         }
 
         #endregion

@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TheResistanceOnline.BusinessLogic\TheResistanceOnline.BusinessLogic.csproj" />
     <ProjectReference Include="..\TheResistanceOnline.Data\TheResistanceOnline.Data.csproj" />
     <ProjectReference Include="..\TheResistanceOnline.Infrastructure.Data\TheResistanceOnline.Infrastructure.Data.csproj" />
   </ItemGroup>

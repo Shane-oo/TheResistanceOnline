@@ -32,7 +32,11 @@ import { GameChatComponent } from './game/game-chat/game-chat.component';
                                      {path: '', component: HomeComponent, pathMatch: 'full'},
                                      {path: 'counter', component: CounterComponent},
                                      {path: 'fetch-data', component: FetchDataComponent},
-                                     {path: 'game', component: GameComponent}
+                                     {path: 'game', component: GameComponent},
+                                     {
+                                       path: 'user',
+                                       loadChildren: () => import('./user/authentication.module').then(m => m.AuthenticationModule)
+                                     }
                                    ])
             ],
             providers: [],
