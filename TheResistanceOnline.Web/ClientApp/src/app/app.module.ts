@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
@@ -12,6 +12,11 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { GameComponent } from './game/game.component';
 import { GameCanvasComponent } from './game/game-canvas/game-canvas.component';
 import { GameChatComponent } from './game/game-chat/game-chat.component';
+import { ErrorHandlerService } from './shared/services/error-handler.service';
+
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { SwalContainerComponent } from '../ui/swal/swal-container.component';
+import { MySwalContainerService } from '../ui/swal/my-swal-container.service';
 
 @NgModule({
             declarations: [
@@ -22,7 +27,8 @@ import { GameChatComponent } from './game/game-chat/game-chat.component';
               FetchDataComponent,
               GameComponent,
               GameCanvasComponent,
-              GameChatComponent
+              GameChatComponent,
+              SwalContainerComponent
             ],
             imports: [
               BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -37,9 +43,19 @@ import { GameChatComponent } from './game/game-chat/game-chat.component';
                                        path: 'user',
                                        loadChildren: () => import('./user/authentication.module').then(m => m.AuthenticationModule)
                                      }
-                                   ])
+                                   ]),
+              SweetAlert2Module.forRoot(),
+
             ],
-            providers: [],
+            providers: [
+              {
+                provide: HTTP_INTERCEPTORS,
+                useClass: ErrorHandlerService,
+                multi: true
+              },MySwalContainerService],
+            exports: [
+              SwalContainerComponent
+            ],
             bootstrap: [AppComponent]
           })
 export class AppModule {}

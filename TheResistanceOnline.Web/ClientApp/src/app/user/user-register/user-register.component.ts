@@ -3,6 +3,7 @@ import { UserRegisterModel } from '../user.models';
 import { AuthenticationService } from '../authentication.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import {PasswordValidatorService} from '../../shared/custom-validators/user/password-validator.service';
 
 @Component({
              selector: 'app-user-register',
@@ -12,7 +13,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class UserRegisterComponent implements OnInit {
   public registerForm: FormGroup = new FormGroup({});
 
-  constructor(private authService: AuthenticationService) {
+  constructor(private authService: AuthenticationService, private passwordValidator: PasswordValidatorService) {
   }
 
   ngOnInit(): void {
@@ -20,8 +21,12 @@ export class UserRegisterComponent implements OnInit {
                                         userName: new FormControl('', [Validators.required]),
                                         email: new FormControl('', [Validators.required, Validators.email]),
                                         password: new FormControl('', [Validators.required]),
-                                        confirmPassword: new FormControl('', [Validators.required])
+                                        confirmPassword: new FormControl('')
                                       });
+    // Custom Validators
+    this.registerForm.get('confirmPassword')?.setValidators([Validators.required,
+                                                      this.passwordValidator.validateConfirmPassword(this.registerForm.get('password'))]);
+
   }
 
   public validateControl = (controlName: string) => {
@@ -32,15 +37,15 @@ export class UserRegisterComponent implements OnInit {
     return this.registerForm.get(controlName)?.hasError(errorName);
 
   };
-  //TODO what is type
-  public registerUser = (registerFormValue: any) => {
+
+  public registerUser = (registerFormValue: UserRegisterModel) => {
+    console.log(typeof (registerFormValue));
     const formValues = {...registerFormValue};
     const user: UserRegisterModel = {
-      username: formValues.userName,
+      userName: formValues.userName,
       email: formValues.email,
       password: formValues.password,
       confirmPassword: formValues.confirmPassword
-
     };
     this.authService.registerUser(user).subscribe({
                                                     next: (_) => console.log('Successful registration'),
