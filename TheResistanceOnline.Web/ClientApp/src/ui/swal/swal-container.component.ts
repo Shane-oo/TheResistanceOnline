@@ -3,33 +3,32 @@ import { Component } from '@angular/core';
 @Component({
              selector: 'swal-container',
              template: `
-               <swal *ngIf="isSwalVisible"
+               <!--Error Component-->
+               <swal *ngIf="isSwalVisible && isError"
+                     icon="error"
                      text=" {{ message }}"
                      [swalFireOnInit]="true"
-                     (didClose)="isSwalVisible = false"
-                     titleText="poop"
-                     width="600"
-                     padding="3em"
-                     backdrop="rgba(255,0,0,0.4)">
+                     (didClose)="isSwalVisible = false;isError = false"
+                     titleText="Error">
                </swal>
-               <!--<swal *ngIf="!isSwalVisible"
-                     text="modalFireCondition = {{ isSwalVisible }}"
+               <!--Success Component-->
+               <swal *ngIf="isSwalVisible && isSuccess"
+                     icon="success"
+                     text=" {{ message }}"
                      [swalFireOnInit]="true"
-                     (didClose)="isSwalVisible = false"
-                     titleText="Big Massive poop"
-                     width="600"
-                     padding="3em"
-                     backdrop="rgba(255,0,0,0.4)">
-               </swal>-->
+                     (didClose)="isSwalVisible = false;isSuccess = false"
+                     titleText="Success">
+               </swal>
              `,
              providers: []
 
            })
 export class SwalContainerComponent {
 
-  public isSwalVisible: boolean = true;
+  public isSwalVisible: boolean = false;
   public message: string = '';
-
+  public isError: boolean = false;
+  public isSuccess:boolean = false;
   constructor() {
   }
 

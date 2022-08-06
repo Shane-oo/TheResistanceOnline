@@ -1,8 +1,8 @@
-import { Injectable, ViewChild } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { SwalContainerService } from '../../../ui/swal/swal-container.service';
+import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-container.service';
 
 @Injectable({
               providedIn: 'root'
@@ -10,7 +10,7 @@ import { SwalContainerService } from '../../../ui/swal/swal-container.service';
 
 export class ErrorHandlerService implements HttpInterceptor {
 
-  constructor(private router: Router,private swalService:SwalContainerService) {
+  constructor(private router: Router, private swalService: SwalContainerService) {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -23,31 +23,31 @@ export class ErrorHandlerService implements HttpInterceptor {
                );
   }
 
-  private handleError = (error:HttpErrorResponse):string=>{
-    if(error.status === 404){
+  private handleError = (error: HttpErrorResponse): string => {
+    if(error.status === 404) {
       return this.handleNotFound(error);
+    } else if(error.status === 400) {
+      this.handleBadRequest(error);
     }
-    else if(error.status === 400){
-      return this.handleBadRequest(error);
-    }
-    return "";
-  }
+    return '';
+  };
 
-   private handleNotFound= (error:HttpErrorResponse):string=>{
+  private handleNotFound = (error: HttpErrorResponse): string => {
+    // Id rather send them to home page and display a swal error
     this.router.navigate(['/404']);
     return error.message;
-   }
+  };
 
-  private handleBadRequest = (error: HttpErrorResponse): string => {
-    if(this.router.url === '/user/register'){
-      console.log("error occured in register")
-      this.swalService.showSwal(error.error ? error.error : error.message);
+  private handleBadRequest = (error: HttpErrorResponse) => {
+    if(this.router.url === '/user/register') {
 
-      return error.error ? error.error : error.message;
+      if(error.error.errors) {
+        if(error.error.errors.ConfirmPassword) {
+          this.swalService.showSwal(error.error.errors.ConfirmPassword, SwalTypesModel.Error);
+        }
+      } else {
+        this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
+      }
     }
-    else{
-      return error.error ? error.error : error.message;
-    }
-  }
-
+  };
 }

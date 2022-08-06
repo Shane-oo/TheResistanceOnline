@@ -3,7 +3,8 @@ import { UserRegisterModel } from '../user.models';
 import { AuthenticationService } from '../authentication.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import {PasswordValidatorService} from '../../shared/custom-validators/user/password-validator.service';
+import { PasswordValidatorService } from '../../shared/custom-validators/user/password-validator.service';
+import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-container.service';
 
 @Component({
              selector: 'app-user-register',
@@ -13,7 +14,8 @@ import {PasswordValidatorService} from '../../shared/custom-validators/user/pass
 export class UserRegisterComponent implements OnInit {
   public registerForm: FormGroup = new FormGroup({});
 
-  constructor(private authService: AuthenticationService, private passwordValidator: PasswordValidatorService) {
+  constructor(private authService: AuthenticationService, private passwordValidator: PasswordValidatorService,
+              private swalService: SwalContainerService) {
   }
 
   ngOnInit(): void {
@@ -25,7 +27,8 @@ export class UserRegisterComponent implements OnInit {
                                       });
     // Custom Validators
     this.registerForm.get('confirmPassword')?.setValidators([Validators.required,
-                                                      this.passwordValidator.validateConfirmPassword(this.registerForm.get('password'))]);
+                                                              this.passwordValidator.validateConfirmPassword(this.registerForm.get(
+                                                                'password'))]);
 
   }
 
@@ -48,8 +51,15 @@ export class UserRegisterComponent implements OnInit {
       confirmPassword: formValues.confirmPassword
     };
     this.authService.registerUser(user).subscribe({
-                                                    next: (_) => console.log('Successful registration'),
-                                                    error: (err: HttpErrorResponse) => console.log(err)
+                                                    next: (_) => {
+                                                      this.swalService.showSwal(
+                                                        'Successfully registered! An email has been sent to '
+                                                        + user.email
+                                                        + ' please follow the link provided to confirm email address.',
+                                                        SwalTypesModel.Success);
+                                                    },
+                                                    error: (err: HttpErrorResponse) => {
+                                                    }
                                                   });
   };
 

@@ -37,7 +37,13 @@ builder.Services.AddServices();
 const string CONNECTION_STRING = "Data Source=localhost;Initial Catalog=resistanceDb;User Id=sa; Password=someThingComplicated1234;";
 
 builder.Services.AddDbContext<Context>(options => options.UseSqlServer(CONNECTION_STRING));
-builder.Services.AddIdentity<User, IdentityRole>(options => { options.User.RequireUniqueEmail = true; })
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+                                                 {
+                                                     options.User.RequireUniqueEmail = true;
+                                                     //options.SignIn.RequireConfirmedEmail = true;
+                                                     options.Password.RequireNonAlphanumeric = false;
+                                                     options.Password.RequireDigit = true;
+                                                 })
        .AddEntityFrameworkStores<Context>();
 
 var app = builder.Build();
@@ -53,7 +59,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("CorsPolicy");
-
 
 
 app.MapControllerRoute(
