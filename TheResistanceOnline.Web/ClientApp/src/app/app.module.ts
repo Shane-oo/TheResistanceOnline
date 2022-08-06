@@ -16,7 +16,9 @@ import { ErrorHandlerService } from './shared/services/error-handler.service';
 
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { SwalContainerComponent } from '../ui/swal/swal-container.component';
-import { MySwalContainerService } from '../ui/swal/my-swal-container.service';
+import { SwalContainerService } from '../ui/swal/swal-container.service';
+import { OverlayComponent } from '../ui/overlay/overlay.component';
+import { OverlayService } from '../ui/overlay/overlay.service';
 
 @NgModule({
             declarations: [
@@ -28,7 +30,7 @@ import { MySwalContainerService } from '../ui/swal/my-swal-container.service';
               GameComponent,
               GameCanvasComponent,
               GameChatComponent,
-              SwalContainerComponent
+              SwalContainerComponent   ,OverlayComponent
             ],
             imports: [
               BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -52,9 +54,10 @@ import { MySwalContainerService } from '../ui/swal/my-swal-container.service';
                 provide: HTTP_INTERCEPTORS,
                 useClass: ErrorHandlerService,
                 multi: true
-              },MySwalContainerService],
+              },SwalContainerService,
+              OverlayService],
             exports: [
-              SwalContainerComponent
+
             ],
             bootstrap: [AppComponent]
           })

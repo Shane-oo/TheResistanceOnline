@@ -2,7 +2,7 @@ import { Injectable, ViewChild } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { MySwalContainerService } from '../../../ui/swal/my-swal-container.service';
+import { SwalContainerService } from '../../../ui/swal/swal-container.service';
 
 @Injectable({
               providedIn: 'root'
@@ -10,7 +10,7 @@ import { MySwalContainerService } from '../../../ui/swal/my-swal-container.servi
 
 export class ErrorHandlerService implements HttpInterceptor {
 
-  constructor(private router: Router,private myswal:MySwalContainerService) {
+  constructor(private router: Router,private swalService:SwalContainerService) {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -41,7 +41,8 @@ export class ErrorHandlerService implements HttpInterceptor {
   private handleBadRequest = (error: HttpErrorResponse): string => {
     if(this.router.url === '/user/register'){
       console.log("error occured in register")
-      this.myswal.showError();
+      this.swalService.showSwal(error.error ? error.error : error.message);
+
       return error.error ? error.error : error.message;
     }
     else{
