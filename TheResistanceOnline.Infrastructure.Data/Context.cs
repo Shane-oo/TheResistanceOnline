@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TheResistanceOnline.Data.Users;
+using TheResistanceOnline.Infrastructure.Data.Configurations;
 
 namespace TheResistanceOnline.Infrastructure.Data;
 
@@ -20,7 +21,7 @@ public class Context: IdentityDbContext<User>
     {
         base.OnModelCreating(modelBuilder);
 
-        //modelBuilder.ApplyConfiguration(new object);
+        modelBuilder.ApplyConfiguration(new UserRoleEntityConfiguration());
     }
 
     #endregion

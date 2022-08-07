@@ -50,6 +50,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
                        };
 
             await _identityManager.CreateIdentityAsync(user, command.Password);
+            await _identityManager.CreateUserRoleAsync(user, "User");
         }
 
 

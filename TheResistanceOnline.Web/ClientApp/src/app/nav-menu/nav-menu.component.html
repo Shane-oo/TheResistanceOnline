@@ -29,9 +29,7 @@
             <a [routerLink]="['/']" class="nav-link text-light">Home</a>
           </li>
           <li [routerLinkActive]="['link-active']" class="nav-item">
-            <a [routerLink]="['/counter']" class="nav-link text-light"
-            >Counter</a
-            >
+            <a [routerLink]="['/counter']" class="nav-link text-light">Counter</a>
           </li>
           <li [routerLinkActive]="['link-active']" class="nav-item">
             <a [routerLink]="['/fetch-data']" class="nav-link text-light"
@@ -43,6 +41,7 @@
             >Game</a
             >
           </li>
+
           <ul *ngIf="!isUserAuthenticated" class="navbar-nav flex-grow">
 
             <li [routerLinkActive]="['link-active']" class="nav-item">
@@ -54,6 +53,15 @@
               <a [routerLink]="['/user/register']" class="nav-link text-light"
               >Register</a
               >
+            </li>
+          </ul>
+          <ul *ngIf="isUserAuthenticated && isUserAdmin " class="navbar-nav flex-grow">
+
+            <li [routerLinkActive]="['link-active']" class="nav-item">
+              <a [routerLink]="['/admin']" class="nav-link text-light"
+              >Admin</a
+              >
+
             </li>
           </ul>
           <ul *ngIf="isUserAuthenticated" class="navbar-nav flex-grow">

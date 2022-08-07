@@ -31,7 +31,6 @@ export class AuthenticationService {
     this.sendAuthStateChange(false);
   };
   public sendAuthStateChange = (isAuthenticated: boolean) => {
-
     this.authChangeSub.next(isAuthenticated);
   };
   public isUserAuthenticated = (): boolean => {
@@ -44,5 +43,16 @@ export class AuthenticationService {
 
     }
     return isUserAuthenticated;
+  };
+
+  public isUserAdmin = (): boolean => {
+    const token = localStorage.getItem('TheResistanceToken');
+    let role = '';
+    if(token) {
+      const decodedToken = this.jwtHelper.decodeToken(token);
+      role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+
+    }
+    return role === 'Administrator';
   };
 }

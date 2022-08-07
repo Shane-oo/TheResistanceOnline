@@ -11,13 +11,18 @@ import { SwalContainerService, SwalTypesModel } from '../../ui/swal/swal-contain
 export class NavMenuComponent implements OnInit {
   isExpanded = false;
   isUserAuthenticated = false;
-
+  isUserAdmin = false;
   constructor(private authService: AuthenticationService,private router:Router,private swalService:SwalContainerService) {
+    this.authService.authChanged.subscribe(res => {
+      this.isUserAuthenticated = res;
+      this.isUserAdmin = this.authService.isUserAdmin();
+    });
   }
 
   ngOnInit(): void {
     this.authService.authChanged.subscribe(res => {
       this.isUserAuthenticated = res;
+      this.isUserAdmin = this.authService.isUserAdmin();
     });
   }
 

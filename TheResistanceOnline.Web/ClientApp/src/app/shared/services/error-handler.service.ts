@@ -17,22 +17,26 @@ export class ErrorHandlerService implements HttpInterceptor {
     return next.handle(req)
                .pipe(
                  catchError((error: HttpErrorResponse) => {
-                   let errorMessage = this.handleError(error);
-                   return throwError(() => new Error(errorMessage));
+                    this.handleError(error);
+                    // ToDo this should be different but idk
+                    return throwError(() => new Error());
                  })
                );
   }
 
-  private handleError = (error: HttpErrorResponse): string => {
+  private handleError = (error: HttpErrorResponse): void => {
     if(error.status === 404) {
-      return this.handleNotFound(error);
+       this.handleNotFound(error);
     } else if(error.status === 400) {
       this.handleBadRequest(error);
     }
     else if(error.status === 401){
       this.handleUnauthorized(error);
     }
-    return '';
+    else if(error.status === 403){
+      this.handleForbidden(error);
+    }
+
   };
 
   private handleNotFound = (error: HttpErrorResponse): string => {
@@ -61,5 +65,8 @@ export class ErrorHandlerService implements HttpInterceptor {
     }
 
   };
+  private handleForbidden = (error:HttpErrorResponse)=>{
+    this.swalService.showSwal("Forbidden", SwalTypesModel.Error);
+  }
 
 }

@@ -21,6 +21,8 @@ import { OverlayComponent } from '../ui/overlay/overlay.component';
 import { OverlayService } from '../ui/overlay/overlay.service';
 import { JwtModule } from '@auth0/angular-jwt';
 import { AuthGuard } from './shared/guards/auth.guard';
+import { AdminComponent } from './admin/admin/admin.component';
+import { AdminGuard } from './shared/guards/admin.guard';
 
 export function tokenGetter() {
   return localStorage.getItem('TheResistanceToken');
@@ -36,7 +38,7 @@ export function tokenGetter() {
               GameComponent,
               GameCanvasComponent,
               GameChatComponent,
-              SwalContainerComponent, OverlayComponent
+              SwalContainerComponent, OverlayComponent, AdminComponent
             ],
             imports: [
               BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -50,7 +52,8 @@ export function tokenGetter() {
                                      {
                                        path: 'user',
                                        loadChildren: () => import('./user/authentication.module').then(m => m.AuthenticationModule)
-                                     }
+                                     },
+                                     {path: 'admin', component: AdminComponent, canActivate: [AuthGuard, AdminGuard]}
                                    ]),
               SweetAlert2Module.forRoot(),
               JwtModule.forRoot({

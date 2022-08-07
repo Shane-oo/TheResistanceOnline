@@ -12,6 +12,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
     {
         Task CreateIdentityAsync(User user, string password);
 
+        Task CreateUserRoleAsync(User user, string role);
+        
         JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials);
 
         SigningCredentials GetSigningCredentials();
@@ -54,6 +56,11 @@ namespace TheResistanceOnline.BusinessLogic.Users
                     throw new DomainException(typeof(User), user.UserName, description);
                 }
             }
+        }
+
+        public async Task CreateUserRoleAsync(User user, string role)
+        {
+            await _userManager.AddToRoleAsync(user, role);
         }
 
         public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials)
