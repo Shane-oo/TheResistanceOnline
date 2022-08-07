@@ -75,7 +75,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
         public async Task<string> LoginUserByEmailAsync(User user, string password)
         {
             var foundUser = await _userManager.FindByEmailAsync(user.Email);
-            
+
             if (foundUser == null)
             {
                 throw new DomainException(typeof(User), user.Email, "Incorrect Email");

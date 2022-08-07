@@ -1,25 +1,42 @@
 using JetBrains.Annotations;
+
 namespace TheResistanceOnline.BusinessLogic.Timers
 {
     public interface ITimerService
     {
+        bool CheckTimerHasStarted();
+
         void Execute(object? stateInfo);
 
         void PrepareTimer(Action action);
-
-        bool CheckTimerHasStarted();
     }
-     [UsedImplicitly]
+
+    [UsedImplicitly]
     public class TimerService: ITimerService
     {
-        private Timer _timer;
-        private AutoResetEvent _autoResetEvent;
+        #region Fields
+
         private Action _action;
-        public DateTime TimerStarted { get; set; }
+        private AutoResetEvent _autoResetEvent;
+        private Timer _timer;
+
+        #endregion
+
+        #region Properties
+
         public bool IsTimerStarted { get; set; }
 
+        public DateTime TimerStarted { get; set; }
+
+        #endregion
+
         #region Public Methods
-        
+
+        public bool CheckTimerHasStarted()
+        {
+            return IsTimerStarted;
+        }
+
         public void Execute(object? stateInfo)
         {
             _action();
@@ -39,10 +56,6 @@ namespace TheResistanceOnline.BusinessLogic.Timers
             IsTimerStarted = true;
         }
 
-        public bool CheckTimerHasStarted()
-        {
-            return IsTimerStarted;
-        }
         #endregion
     }
 }

@@ -5,6 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { PasswordValidatorService } from '../../shared/custom-validators/user/password-validator.service';
 import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-container.service';
+import { Router } from '@angular/router';
 
 @Component({
              selector: 'app-user-register',
@@ -15,7 +16,7 @@ export class UserRegisterComponent implements OnInit {
   public registerForm: FormGroup = new FormGroup({});
 
   constructor(private authService: AuthenticationService, private passwordValidator: PasswordValidatorService,
-              private swalService: SwalContainerService) {
+              private swalService: SwalContainerService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -50,13 +51,17 @@ export class UserRegisterComponent implements OnInit {
       password: formValues.password,
       confirmPassword: formValues.confirmPassword
     };
+
     this.authService.registerUser(user).subscribe({
                                                     next: (_) => {
-                                                      this.swalService.showSwal(
-                                                        'Successfully registered! An email has been sent to '
-                                                        + user.email
-                                                        + ' please follow the link provided to confirm email address.',
-                                                        SwalTypesModel.Success);
+                                                      this.router.navigate([`/user/login`]).then(r => {
+                                                        this.swalService.showSwal(
+                                                          'Successfully registered! An email has been sent to '
+                                                          + user.email
+                                                          + ' please follow the link provided to confirm email address.',
+                                                          SwalTypesModel.Success);
+                                                      });
+
                                                     },
                                                     error: (err: HttpErrorResponse) => {
                                                     }

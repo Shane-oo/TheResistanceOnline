@@ -30,7 +30,7 @@ import { OverlayService } from '../ui/overlay/overlay.service';
               GameComponent,
               GameCanvasComponent,
               GameChatComponent,
-              SwalContainerComponent   ,OverlayComponent
+              SwalContainerComponent, OverlayComponent
             ],
             imports: [
               BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -46,7 +46,7 @@ import { OverlayService } from '../ui/overlay/overlay.service';
                                        loadChildren: () => import('./user/authentication.module').then(m => m.AuthenticationModule)
                                      }
                                    ]),
-              SweetAlert2Module.forRoot(),
+              SweetAlert2Module.forRoot()
 
             ],
             providers: [
@@ -54,11 +54,9 @@ import { OverlayService } from '../ui/overlay/overlay.service';
                 provide: HTTP_INTERCEPTORS,
                 useClass: ErrorHandlerService,
                 multi: true
-              },SwalContainerService,
+              }, SwalContainerService,
               OverlayService],
-            exports: [
-
-            ],
+            exports: [],
             bootstrap: [AppComponent]
           })
 export class AppModule {}

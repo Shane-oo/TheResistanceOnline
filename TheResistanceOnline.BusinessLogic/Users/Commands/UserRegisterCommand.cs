@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using JetBrains.Annotations;
 using TheResistanceOnline.BusinessLogic.Core.Commands;
 
 namespace TheResistanceOnline.BusinessLogic.Users.Commands
@@ -8,7 +7,6 @@ namespace TheResistanceOnline.BusinessLogic.Users.Commands
     {
         #region Properties
 
-      
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match")]
         public string ConfirmPassword { get; set; }
 

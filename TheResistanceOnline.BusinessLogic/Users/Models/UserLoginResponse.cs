@@ -1,10 +1,10 @@
 namespace TheResistanceOnline.BusinessLogic.Users.Models
 {
-    public class RegistrationResponse
+    public class UserLoginResponse
     {
         #region Properties
 
-        public IEnumerable<string>? Errors { get; set; }
+        public string Token { get; set; }
 
         #endregion
     }

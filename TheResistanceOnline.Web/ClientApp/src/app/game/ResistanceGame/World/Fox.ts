@@ -46,6 +46,20 @@ export default class Fox {
     this.setAnimation();
   }
 
+  public update() {
+    this.animation.update(this.time.delta * 0.001);
+  }
+
+  public playAnimation = (animation: THREE.AnimationAction) => {
+    const newAction = animation;
+    const oldAction = this.animationActionCurrent;
+
+    newAction.reset();
+    newAction.play();
+    newAction.crossFadeFrom(oldAction, 1, true);
+    this.animationActionCurrent = newAction;
+  };
+
   private setModel() {
     this.model = this.resource.scene;
     this.model.scale.set(0.02, 0.02, 0.02);
@@ -87,18 +101,4 @@ export default class Fox {
       this.debugFolder.add(debugObject, 'playRunning');
     }
   }
-
-  public update() {
-    this.animation.update(this.time.delta * 0.001);
-  }
-
-  public playAnimation = (animation: THREE.AnimationAction) => {
-    const newAction = animation;
-    const oldAction = this.animationActionCurrent;
-
-    newAction.reset();
-    newAction.play();
-    newAction.crossFadeFrom(oldAction, 1, true);
-    this.animationActionCurrent = newAction;
-  };
 }

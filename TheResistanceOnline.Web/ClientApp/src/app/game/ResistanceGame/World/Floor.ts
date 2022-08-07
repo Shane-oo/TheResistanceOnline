@@ -12,7 +12,8 @@ export default class Floor {
   public grassColorTexture!: THREE.Texture;
   public grassNormalTexture!: THREE.Texture;
   public material!: THREE.MeshStandardMaterial;
-  public mesh!:THREE.Mesh;
+  public mesh!: THREE.Mesh;
+
   constructor() {
     this.resistanceGame = new ResistanceGame();
     this.scene = this.resistanceGame.scene;
@@ -56,13 +57,13 @@ export default class Floor {
 
   private setMaterial() {
     this.material = new THREE.MeshStandardMaterial({
-                                                      map: this.grassColorTexture,
-                                                      normalMap: this.grassNormalTexture
-                                                    });
+                                                     map: this.grassColorTexture,
+                                                     normalMap: this.grassNormalTexture
+                                                   });
   }
 
   private setMesh() {
-    this.mesh = new THREE.Mesh(this.geometry,this.material);
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.mesh.rotation.x = -Math.PI * 0.5;
     this.mesh.receiveShadow = true;
     this.scene.add(this.mesh);

@@ -29,12 +29,16 @@ export class ErrorHandlerService implements HttpInterceptor {
     } else if(error.status === 400) {
       this.handleBadRequest(error);
     }
+    else if(error.status === 401){
+      this.handleUnauthorized(error);
+    }
     return '';
   };
 
   private handleNotFound = (error: HttpErrorResponse): string => {
     // Id rather send them to home page and display a swal error
-    this.router.navigate(['/404']);
+    console.log('handle not found');
+    //this.router.navigate(['/404']);
     return error.message;
   };
 
@@ -50,4 +54,12 @@ export class ErrorHandlerService implements HttpInterceptor {
       }
     }
   };
+
+  private handleUnauthorized = (error: HttpErrorResponse) => {
+    if(this.router.url === '/user/login') {
+      this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
+    }
+
+  };
+
 }

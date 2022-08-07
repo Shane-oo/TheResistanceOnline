@@ -31,6 +31,27 @@ namespace TheResistanceOnline.Web.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login(UserLoginCommand command)
+        {
+            var token = "";
+            try
+            {
+                token = await _userService.LoginUserAsync(command);
+            }
+            catch(DomainException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+
+            return Ok(new UserLoginResponse
+                      {
+                          Token = token
+                      });
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> RegisterUser([NotNull] UserRegisterCommand command)
         {
@@ -52,23 +73,6 @@ namespace TheResistanceOnline.Web.Controllers
             return Ok();
         }
 
-        [AllowAnonymous]
-        [HttpPost()]
-        [Route("Login")]
-        public async Task<IActionResult> Login(UserLoginCommand command)
-        {
-            var token = "";
-            try
-            {
-                token = await _userService.LoginUserAsync(command);
-            }
-            catch(DomainException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            
-            return Ok(token);
-        }
         #endregion
     }
 }

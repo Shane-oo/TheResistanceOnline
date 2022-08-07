@@ -9,6 +9,7 @@ import sources from './sources';
 import Debug from './Utils/Debug';
 
 export default class ResistanceGame {
+  private static instance: ResistanceGame;
   public debug!: Debug;
   public canvas!: HTMLCanvasElement;
   public sizes!: Sizes;
@@ -18,8 +19,6 @@ export default class ResistanceGame {
   public renderer!: Renderer;
   public world!: World;
   public resources!: Resources;
-
-  private static instance: ResistanceGame;
 
   constructor(canvas?: HTMLCanvasElement) {
     if(ResistanceGame.instance) {
@@ -51,19 +50,6 @@ export default class ResistanceGame {
     console.log(this);
   }
 
-
-  private resize() {
-    this.camera.resize();
-    this.renderer.resize();
-  }
-
-  private update() {
-    this.camera.update();
-    this.world.update();
-    this.renderer.update();
-
-  }
-
   /*
     If have more complex project with a lot to destroy, you
     may want to create a destroy() method for each class
@@ -93,5 +79,17 @@ export default class ResistanceGame {
     if(this.debug.active) {
       this.debug.gui.destroy();
     }
+  }
+
+  private resize() {
+    this.camera.resize();
+    this.renderer.resize();
+  }
+
+  private update() {
+    this.camera.update();
+    this.world.update();
+    this.renderer.update();
+
   }
 }

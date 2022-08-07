@@ -6,11 +6,11 @@ describe('GameChatComponent', () => {
   let component: GameChatComponent;
   let fixture: ComponentFixture<GameChatComponent>;
 
-  beforeEach(async () => {
+  beforeEach(async() => {
     await TestBed.configureTestingModule({
-      declarations: [ GameChatComponent ]
-    })
-    .compileComponents();
+                                           declarations: [GameChatComponent]
+                                         })
+                 .compileComponents();
   });
 
   beforeEach(() => {

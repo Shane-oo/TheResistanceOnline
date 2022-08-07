@@ -9,12 +9,7 @@ export class HomeComponent implements OnInit {
 
   public videoPlayer1!: HTMLVideoElement;
 
-  @HostListener('document:mousemove', ['$event'])
-  onMouseMove(event: MouseEvent) {
-
-    this.videoPlayer1.muted = true;
-    this.videoPlayer1.play();
-
+  constructor() {
 
   }
 
@@ -23,8 +18,12 @@ export class HomeComponent implements OnInit {
     this.videoPlayer1 = el.nativeElement;
   }
 
+  @HostListener('document:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent) {
 
-  constructor() {
+    this.videoPlayer1.muted = true;
+    this.videoPlayer1.play();
+
 
   }
 

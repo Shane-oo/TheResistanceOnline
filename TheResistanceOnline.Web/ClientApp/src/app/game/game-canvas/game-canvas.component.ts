@@ -1,9 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import * as lilGui from 'lil-gui';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { Object3D } from 'three';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import ResistanceGame from '../ResistanceGame/ResistanceGame';
 
 @Component({
@@ -11,18 +6,22 @@ import ResistanceGame from '../ResistanceGame/ResistanceGame';
              templateUrl: './game-canvas.component.html',
              styleUrls: ['./game-canvas.component.css']
            })
-export class GameCanvasComponent implements OnInit,AfterViewInit {
+export class GameCanvasComponent implements OnInit, AfterViewInit {
   @ViewChild('canvas')
   private canvasRef!: ElementRef;
+  private resistanceGame!: ResistanceGame;//= new ResistanceGame(this.canvas);
+
+  constructor() {
+  }
 
   private get canvas(): HTMLCanvasElement {
     return this.canvasRef.nativeElement;
   }
-  private resistanceGame!: ResistanceGame ;//= new ResistanceGame(this.canvas);
 
   ngOnInit(): void {
 
   }
+
   ngAfterViewInit() {
     this.resistanceGame = new ResistanceGame(this.canvas);
     // // some stupid thing needed for angular to work
@@ -34,8 +33,7 @@ export class GameCanvasComponent implements OnInit,AfterViewInit {
     //   resistanceGame.renderer.instance.render(resistanceGame.scene, resistanceGame.camera.instance);
     // }());
   }
-  constructor() {
-  }
+
   //, AfterViewInit {
   // private loadingManager: THREE.LoadingManager = new THREE.LoadingManager();
   // private textureLoader: THREE.TextureLoader = new THREE.TextureLoader(this.loadingManager);

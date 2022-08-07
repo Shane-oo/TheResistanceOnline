@@ -4,50 +4,66 @@
     style="background-color: #1C1C1C;"
   >
     <div class="container">
-      <a class="navbar-brand" [routerLink]="['/']">The Resistance Board Game Online</a>
+      <a [routerLink]="['/']" class="navbar-brand">The Resistance Board Game Online</a>
       <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target=".navbar-collapse"
-        aria-label="Toggle navigation"
-        [attr.aria-expanded]="isExpanded"
         (click)="toggle()"
+        [attr.aria-expanded]="isExpanded"
+        aria-label="Toggle navigation"
+        class="navbar-toggler"
+        data-target=".navbar-collapse"
+        data-toggle="collapse"
+        type="button"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
       <div
-        class="navbar-collapse collapse d-sm-inline-flex justify-content-end"
         [ngClass]="{ show: isExpanded }"
+        class="navbar-collapse collapse d-sm-inline-flex justify-content-end"
       >
         <ul class="navbar-nav flex-grow">
           <li
-            class="nav-item"
-            [routerLinkActive]="['link-active']"
             [routerLinkActiveOptions]="{ exact: true }"
+            [routerLinkActive]="['link-active']"
+            class="nav-item"
           >
-            <a class="nav-link text-light" [routerLink]="['/']">Home</a>
+            <a [routerLink]="['/']" class="nav-link text-light">Home</a>
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/counter']"
+          <li [routerLinkActive]="['link-active']" class="nav-item">
+            <a [routerLink]="['/counter']" class="nav-link text-light"
             >Counter</a
             >
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/fetch-data']"
+          <li [routerLinkActive]="['link-active']" class="nav-item">
+            <a [routerLink]="['/fetch-data']" class="nav-link text-light"
             >Fetch data</a
             >
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/game']"
+          <li [routerLinkActive]="['link-active']" class="nav-item">
+            <a [routerLink]="['/game']" class="nav-link text-light"
             >Game</a
             >
           </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-light" [routerLink]="['/user/register']"
-            >Register</a
-            >
-          </li>
+          <ul *ngIf="!isUserAuthenticated" class="navbar-nav flex-grow">
+
+            <li [routerLinkActive]="['link-active']" class="nav-item">
+              <a [routerLink]="['/user/login']" class="nav-link text-light"
+              >Login</a
+              >
+            </li>
+            <li [routerLinkActive]="['link-active']" class="nav-item">
+              <a [routerLink]="['/user/register']" class="nav-link text-light"
+              >Register</a
+              >
+            </li>
+          </ul>
+          <ul *ngIf="isUserAuthenticated" class="navbar-nav flex-grow">
+
+            <li class="nav-item">
+              <a (click)="logout()" class="nav-link text-light"
+              >Logout</a
+              >
+
+          </ul>
         </ul>
       </div>
     </div>

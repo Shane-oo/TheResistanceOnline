@@ -1,4 +1,4 @@
-const { env } = require('process');
+const {env} = require('process');
 
 const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
   env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http://localhost:35163';
@@ -6,8 +6,8 @@ const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_H
 const PROXY_CONFIG = [
   {
     context: [
-      "/weatherforecast","api/message","api/Accounts/Register","api/Accounts"
-   ],
+      "/weatherforecast", "api/message", "api/Accounts/Register", "api/Accounts"
+    ],
     target: target,
     secure: false,
     headers: {

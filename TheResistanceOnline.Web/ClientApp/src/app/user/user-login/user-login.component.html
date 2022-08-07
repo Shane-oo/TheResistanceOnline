@@ -1,0 +1,34 @@
+<div class="content">
+  <header>Login</header>
+  <form (ngSubmit)="loginUser(loginForm.value)" [formGroup]="loginForm" autocomplete="off" novalidate>
+
+    <div class="mb-3 row">
+      <label class="col-form-label col-sm-2" for="email">Email:</label>
+
+      <input class="form-control" formControlName="email" id="email" type="email"/>
+
+      <em *ngIf="validateControl('email') && hasError('email', 'email')">Please provide a valid email</em>
+      <em *ngIf="validateControl('email') && hasError('email', 'required')">Email is required</em>
+
+    </div>
+    <div class="mb-3 row">
+      <label class="col-form-label col-sm-2" for="password">Password:</label>
+
+      <input class="form-control" formControlName="password" id="password" type="password"/>
+
+      <em *ngIf="validateControl('password') && hasError('password', 'required')">Password is required</em>
+
+    </div>
+    <div class="pass">
+      <a href="#">Forgot Password?</a>
+    </div>
+    <br>
+    <div class="field">
+
+      <input [disabled]="!loginForm.valid" [style.background]="!loginForm.valid? '#c9b4fe':'#682efc'" type="submit"
+             value="Login"
+      />
+    </div>
+  </form>
+</div>
+

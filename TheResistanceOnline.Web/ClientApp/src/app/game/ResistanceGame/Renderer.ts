@@ -25,6 +25,16 @@ export default class Renderer {
 
   }
 
+  public resize() {
+    this.instance.setSize(this.sizes.width, this.sizes.height);
+    this.instance.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  }
+
+  public update() {
+
+    this.instance.render(this.scene, this.camera.instance);
+  }
+
   private setInstance() {
 
     this.instance = new THREE.WebGLRenderer({
@@ -42,15 +52,5 @@ export default class Renderer {
     this.instance.setClearColor('#211d20');
     this.instance.setSize(this.sizes.width, this.sizes.height);
     this.instance.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  }
-
-  public resize(){
-    this.instance.setSize(this.sizes.width, this.sizes.height);
-    this.instance.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  }
-
-  public update(){
-    
-    this.instance.render(this.scene,this.camera.instance);
   }
 }

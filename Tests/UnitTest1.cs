@@ -4,6 +4,8 @@ namespace Tests;
 
 public class Tests
 {
+    #region Public Methods
+
     [SetUp]
     public void Setup()
     {
@@ -14,4 +16,6 @@ public class Tests
     {
         Assert.Pass();
     }
+
+    #endregion
 }

@@ -1,5 +1,4 @@
 import * as lilGui from 'lil-gui';
-import ResistanceGame from '../ResistanceGame';
 
 export default class Debug {
   public active: boolean;

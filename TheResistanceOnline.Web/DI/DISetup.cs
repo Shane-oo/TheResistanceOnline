@@ -9,13 +9,6 @@ public static class DISetup
 {
     #region Public Methods
 
-    public static void AddServices(this IServiceCollection services)
-    {
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IUserIdentityManager, UserIdentityManager>();
-                                                                      
-    }
-
     public static void AddAuthenticationServices(this IServiceCollection services, IConfigurationSection? jwtSettings)
     {
         if (jwtSettings == null)
@@ -41,6 +34,12 @@ public static class DISetup
                                                                                                    .GetBytes(jwtSettings.GetSection("securityKey").Value))
                                                                                            };
                                                    });
+    }
+
+    public static void AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUserIdentityManager, UserIdentityManager>();
     }
 
     #endregion

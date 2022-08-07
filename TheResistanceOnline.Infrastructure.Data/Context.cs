@@ -6,16 +6,24 @@ namespace TheResistanceOnline.Infrastructure.Data;
 
 public class Context: IdentityDbContext<User>
 {
-    public Context(DbContextOptions options) :base(options)
+    #region Construction
+
+    public Context(DbContextOptions options): base(options)
     {
     }
+
+    #endregion
+
+    #region Private Methods
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
         //modelBuilder.ApplyConfiguration(new object);
     }
-    
+
+    #endregion
+
     //public DbSet<object> objects {get;set;}
 }

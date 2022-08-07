@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace TheResistanceOnline.SocketServer.Controllers;
 
@@ -10,17 +6,27 @@ namespace TheResistanceOnline.SocketServer.Controllers;
 [Route("[controller]")]
 public class WeatherForecastController: ControllerBase
 {
-    private static readonly string[] Summaries = new[]
-                                                 {
-                                                     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-                                                 };
+    #region Fields
 
     private readonly ILogger<WeatherForecastController> _logger;
+
+    private static readonly string[] Summaries =
+    {
+        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
+
+    #endregion
+
+    #region Construction
 
     public WeatherForecastController(ILogger<WeatherForecastController> logger)
     {
         _logger = logger;
     }
+
+    #endregion
+
+    #region Public Methods
 
     [HttpGet(Name = "GetWeatherForecast")]
     public IEnumerable<WeatherForecast> Get()
@@ -33,4 +39,6 @@ public class WeatherForecastController: ControllerBase
                                                       })
                          .ToArray();
     }
+
+    #endregion
 }

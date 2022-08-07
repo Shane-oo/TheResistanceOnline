@@ -1,8 +1,8 @@
 import ResistanceGame from '../ResistanceGame';
 import * as THREE from 'three';
+import { CubeTexture } from 'three';
 import Resources from '../Utils/Resources';
 import Debug from '../Utils/Debug';
-import { CubeTexture } from 'three';
 
 export default class Environment {
   public resistanceGame: ResistanceGame;

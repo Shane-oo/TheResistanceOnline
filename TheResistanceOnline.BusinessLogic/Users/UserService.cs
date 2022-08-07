@@ -1,8 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using JetBrains.Annotations;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using TheResistanceOnline.BusinessLogic.Users.Commands;
 using TheResistanceOnline.Data.Users;
 
@@ -12,7 +8,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
     {
         Task CreateUserAsync([NotNull] UserRegisterCommand command);
 
- 
 
         Task<string> LoginUserAsync([NotNull] UserLoginCommand command);
     }
@@ -57,7 +52,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
             await _identityManager.CreateIdentityAsync(user, command.Password);
         }
 
-        
 
         public async Task<string> LoginUserAsync(UserLoginCommand command)
         {
@@ -71,7 +65,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
                            Email = command.Email,
                        };
 
-           return await _identityManager.LoginUserByEmailAsync(user,command.Password);
+            return await _identityManager.LoginUserByEmailAsync(user, command.Password);
         }
 
         #endregion

@@ -44,8 +44,8 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
                                                  {
                                                      options.User.RequireUniqueEmail = true;
                                                      //options.SignIn.RequireConfirmedEmail = true;
-                                                    // options.Password.RequireNonAlphanumeric = false;
-                                                    // options.Password.RequireDigit = true;
+                                                     // options.Password.RequireNonAlphanumeric = false;
+                                                     // options.Password.RequireDigit = true;
                                                  })
        .AddEntityFrameworkStores<Context>();
 

@@ -22,8 +22,11 @@ namespace TheResistanceOnline.SocketServer.Controllers
         {
             _hub = hub;
             _timerService = timerService;
-
         }
+
+        #endregion
+
+        #region Public Methods
 
         [HttpGet]
         public IActionResult Get()
@@ -31,10 +34,11 @@ namespace TheResistanceOnline.SocketServer.Controllers
             if (!_timerService.CheckTimerHasStarted())
             {
                 _timerService.PrepareTimer(() => _hub.Clients.All.SendAsync("TransferMessageData", "Hello Clients - from Server"));
-                
             }
+
             return Ok(new { Message = "Request Completed" });
         }
+
         #endregion
     }
 }

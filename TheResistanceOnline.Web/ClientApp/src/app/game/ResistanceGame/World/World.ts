@@ -29,7 +29,7 @@ export default class World {
 
   }
 
-  public update(){
+  public update() {
     if(this.fox) {
       this.fox.update();
     }

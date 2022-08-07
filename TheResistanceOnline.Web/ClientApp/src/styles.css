@@ -15,11 +15,6 @@ code {
   border-color: #1861ac;
 }
 
-.AppRoot {
-  background: #0a091c;
-  color: #d2bfd8;
-}
-
 /* Style the video: 100% width and height to cover the entire window */
 #myVideo {
   position: fixed;
@@ -52,4 +47,8 @@ code {
 }
 
 
-#gui { position: absolute; top: 25px; left: 2px }
+#gui {
+  position: absolute;
+  top: 25px;
+  left: 2px
+}

@@ -28,7 +28,8 @@ export class SwalContainerComponent {
   public isSwalVisible: boolean = false;
   public message: string = '';
   public isError: boolean = false;
-  public isSuccess:boolean = false;
+  public isSuccess: boolean = false;
+
   constructor() {
   }
 
