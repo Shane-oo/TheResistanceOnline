@@ -13,6 +13,7 @@ export class HomeComponent implements OnInit {
 
   }
 
+/*
   @ViewChild('Video')
   set mainVideoEl1(el: ElementRef) {
     this.videoPlayer1 = el.nativeElement;
@@ -26,6 +27,7 @@ export class HomeComponent implements OnInit {
 
 
   }
+*/
 
   ngOnInit(): void {
 

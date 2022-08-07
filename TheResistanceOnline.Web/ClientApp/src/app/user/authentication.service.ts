@@ -3,6 +3,7 @@ import { UserLoginModel, UserLoginResponseModel, UserRegisterModel } from './use
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Subject } from 'rxjs';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 
 @Injectable({
@@ -14,7 +15,7 @@ export class AuthenticationService {
   public authChanged = this.authChangeSub.asObservable();
 
   // environment.API_URL
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private jwtHelper: JwtHelperService) {
   }
 
   public registerUser = (body: UserRegisterModel) => {
@@ -25,12 +26,23 @@ export class AuthenticationService {
     return this.http.post<UserLoginResponseModel>(`${environment.API_URL}${this.accountsEndpoint}/Login`, body);
   };
 
-  public logout =()=>{
-    localStorage.removeItem("TheResistanceToken");
+  public logout = () => {
+    localStorage.removeItem('TheResistanceToken');
     this.sendAuthStateChange(false);
-  }
+  };
   public sendAuthStateChange = (isAuthenticated: boolean) => {
 
     this.authChangeSub.next(isAuthenticated);
+  };
+  public isUserAuthenticated = (): boolean => {
+    const token = localStorage.getItem('TheResistanceToken');
+    let isUserAuthenticated = false;
+    if(token) {
+      if(!this.jwtHelper.isTokenExpired(token)) {
+        isUserAuthenticated = true;
+      }
+
+    }
+    return isUserAuthenticated;
   };
 }

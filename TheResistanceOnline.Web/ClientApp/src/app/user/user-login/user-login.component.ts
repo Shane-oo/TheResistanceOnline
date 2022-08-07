@@ -25,7 +25,7 @@ export class UserLoginComponent implements OnInit {
                                      password: new FormControl('', [Validators.required])
 
                                    });
-    // this.returnUrl = this.router.snapshot.queryParams['returnUrl'] || '/';
+     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
   validateControl = (controlName: string) => {
@@ -49,8 +49,9 @@ export class UserLoginComponent implements OnInit {
                                                    console.log("In here");
                                                    localStorage.setItem('TheResistanceToken', response.token);
                                                    this.authService.sendAuthStateChange(true);
-                                                   // Route to homepage
-                                                   this.router.navigate([`/`]).then(r => {
+                                                   // Route to redirect url or homepage
+                                                   console.log(this.returnUrl)
+                                                   this.router.navigate([this.returnUrl]).then(r => {
                                                      this.swalService.showSwal(
                                                        'Successfully Login',
                                                        SwalTypesModel.Success);

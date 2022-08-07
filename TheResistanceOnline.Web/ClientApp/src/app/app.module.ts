@@ -19,6 +19,12 @@ import { SwalContainerComponent } from '../ui/swal/swal-container.component';
 import { SwalContainerService } from '../ui/swal/swal-container.service';
 import { OverlayComponent } from '../ui/overlay/overlay.component';
 import { OverlayService } from '../ui/overlay/overlay.service';
+import { JwtModule } from '@auth0/angular-jwt';
+import { AuthGuard } from './shared/guards/auth.guard';
+
+export function tokenGetter() {
+  return localStorage.getItem('TheResistanceToken');
+}
 
 @NgModule({
             declarations: [
@@ -39,22 +45,29 @@ import { OverlayService } from '../ui/overlay/overlay.service';
               RouterModule.forRoot([
                                      {path: '', component: HomeComponent, pathMatch: 'full'},
                                      {path: 'counter', component: CounterComponent},
-                                     {path: 'fetch-data', component: FetchDataComponent},
-                                     {path: 'game', component: GameComponent},
+                                     {path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthGuard]},
+                                     {path: 'game', component: GameComponent, canActivate: [AuthGuard]},
                                      {
                                        path: 'user',
                                        loadChildren: () => import('./user/authentication.module').then(m => m.AuthenticationModule)
                                      }
                                    ]),
-              SweetAlert2Module.forRoot()
-
+              SweetAlert2Module.forRoot(),
+              JwtModule.forRoot({
+                                  config: {
+                                    tokenGetter: tokenGetter,
+                                    allowedDomains: ['localhost:44452', 'theresistanceboardgameonline.com'],
+                                    disallowedRoutes: []
+                                  }
+                                })
             ],
             providers: [
               {
                 provide: HTTP_INTERCEPTORS,
                 useClass: ErrorHandlerService,
                 multi: true
-              }, SwalContainerService,
+              },
+              SwalContainerService,
               OverlayService],
             exports: [],
             bootstrap: [AppComponent]
