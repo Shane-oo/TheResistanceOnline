@@ -39,6 +39,7 @@ builder.Services.AddAuthenticationServices(jwtSettings);
 // TODO: kubernetes secret get ready
 const string CONNECTION_STRING = "Data Source=localhost;Initial Catalog=resistanceDb;User Id=sa; Password=someThingComplicated1234;";
 
+// ToDo move these to Di setup
 builder.Services.AddDbContext<Context>(options => options.UseSqlServer(CONNECTION_STRING));
 builder.Services.AddIdentity<User, IdentityRole>(options =>
                                                  {
@@ -47,7 +48,8 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
                                                      // options.Password.RequireNonAlphanumeric = false;
                                                      // options.Password.RequireDigit = true;
                                                  })
-       .AddEntityFrameworkStores<Context>();
+       .AddEntityFrameworkStores<Context>()
+       .AddDefaultTokenProviders();
 
 var app = builder.Build();
 

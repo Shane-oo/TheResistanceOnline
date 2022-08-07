@@ -38,7 +38,9 @@ export function tokenGetter() {
               GameComponent,
               GameCanvasComponent,
               GameChatComponent,
-              SwalContainerComponent, OverlayComponent, AdminComponent
+              SwalContainerComponent,
+              OverlayComponent,
+              AdminComponent
             ],
             imports: [
               BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

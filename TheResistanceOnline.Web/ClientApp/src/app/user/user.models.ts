@@ -10,6 +10,11 @@ export interface UserLoginModel {
   password: string;
 }
 
-export interface UserLoginResponseModel{
-  token:string;
+export interface UserLoginResponseModel {
+  token: string;
+}
+
+export interface UserForgotPasswordModel {
+  email: string;
+  clientUri: string;
 }

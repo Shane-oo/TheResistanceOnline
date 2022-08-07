@@ -4,7 +4,7 @@ namespace TheResistanceOnline.BusinessLogic.Users.Models
     {
         #region Properties
 
-        public string Token { get; set; }
+        public string? Token { get; set; }
 
         #endregion
     }

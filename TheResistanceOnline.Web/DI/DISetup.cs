@@ -1,6 +1,8 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Users;
 
 namespace TheResistanceOnline.Web.DI;
@@ -40,6 +42,11 @@ public static class DISetup
     {
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserIdentityManager, UserIdentityManager>();
+        services.AddScoped<IEmailService, EmailService>();
+        
+        // Reset passwords tokens last for two hours
+        services.Configure<DataProtectionTokenProviderOptions>(opt =>
+                                                                   opt.TokenLifespan = TimeSpan.FromHours(2));
     }
 
     #endregion

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UserLoginModel, UserLoginResponseModel, UserRegisterModel } from './user.models';
+import { UserForgotPasswordModel, UserLoginModel, UserLoginResponseModel, UserRegisterModel } from './user.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Subject } from 'rxjs';
@@ -54,5 +54,9 @@ export class AuthenticationService {
 
     }
     return role === 'Administrator';
+  };
+
+  public sendUserForgotPassword = (body: UserForgotPasswordModel) => {
+    return this.http.post(`${environment.API_URL}${this.accountsEndpoint}/ForgotPassword`, body);
   };
 }

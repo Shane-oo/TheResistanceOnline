@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TheResistanceOnline.BusinessLogic.Users;
@@ -31,6 +30,24 @@ namespace TheResistanceOnline.Web.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        [Route("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(UserForgotPasswordCommand command)
+        {
+            try
+            {
+                await _userService.SendResetPasswordAsync(command);
+            }
+            catch(DomainException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            // if SendResetPasswordAsync() doesn't throw => successfully sent reset email
+
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login(UserLoginCommand command)
         {
@@ -53,13 +70,8 @@ namespace TheResistanceOnline.Web.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> RegisterUser([NotNull] UserRegisterCommand command)
+        public async Task<IActionResult> RegisterUser(UserRegisterCommand command)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
             try
             {
                 await _userService.CreateUserAsync(command);

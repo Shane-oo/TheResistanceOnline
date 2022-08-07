@@ -19,6 +19,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
         SigningCredentials GetSigningCredentials();
 
         Task<string> LoginUserByEmailAsync(User user, string password);
+
+        Task<string> GetPasswordResetTokenAsync(User user);
     }
 
     public class UserIdentityManager: IUserIdentityManager
@@ -98,6 +100,18 @@ namespace TheResistanceOnline.BusinessLogic.Users
             var tokenOptions = GenerateTokenOptions(signingCredentials);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return token;
+        }
+
+        public async Task<string> GetPasswordResetTokenAsync(User user)
+        {
+            var foundUser = await _userManager.FindByEmailAsync(user.Email);
+
+            if (foundUser == null)
+            {
+                throw new DomainException(typeof(User), user.Email, "Incorrect Email");
+            }
+
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
         }
 
         #endregion

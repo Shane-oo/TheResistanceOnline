@@ -14,12 +14,17 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
         <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.10.0" />
+        <PackageReference Include="SendGrid" Version="9.28.0" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0" />
         <PackageReference Include="System.Threading.Timer" Version="4.3.0" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\TheResistanceOnline.Data\TheResistanceOnline.Data.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Emails\Models" />
     </ItemGroup>
 
 </Project>
