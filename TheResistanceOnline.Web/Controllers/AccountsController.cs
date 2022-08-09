@@ -85,6 +85,24 @@ namespace TheResistanceOnline.Web.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [Route("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(UserResetPasswordCommand command)
+        {
+            try
+            {
+                await _userService.ResetUserPasswordAsync(command);
+            }
+            catch(DomainException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            // if ResetUserPasswordAsync() doesn't throw => successfully reset password
+
+            return Ok();
+        }
+
         #endregion
     }
 }

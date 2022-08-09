@@ -10,17 +10,19 @@ namespace TheResistanceOnline.BusinessLogic.Users
 {
     public interface IUserIdentityManager
     {
-        Task CreateIdentityAsync(User user, string password);
+        Task CreateIdentityAsync(User user, string? password);
 
         Task CreateUserRoleAsync(User user, string role);
-        
+
         JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials);
+
+        Task<string> GetPasswordResetTokenAsync(User user);
 
         SigningCredentials GetSigningCredentials();
 
-        Task<string> LoginUserByEmailAsync(User user, string password);
+        Task<string> LoginUserByEmailAsync(User user, string? password);
 
-        Task<string> GetPasswordResetTokenAsync(User user);
+        Task ResetPasswordAsync(User user, string? token, string? newPassword);
     }
 
     public class UserIdentityManager: IUserIdentityManager
@@ -45,9 +47,25 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         #endregion
 
+        #region Private Methods
+
+        private async Task<User> FindUserByEmailAsync(User user)
+        {
+            var foundUser = await _userManager.FindByEmailAsync(user.Email);
+
+            if (foundUser == null)
+            {
+                throw new DomainException(typeof(User), user.Email, "Incorrect Email");
+            }
+
+            return foundUser;
+        }
+
+        #endregion
+
         #region Public Methods
 
-        public async Task CreateIdentityAsync(User user, string password)
+        public async Task CreateIdentityAsync(User user, string? password)
         {
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
@@ -73,6 +91,12 @@ namespace TheResistanceOnline.BusinessLogic.Users
                                         signingCredentials: signingCredentials);
         }
 
+        public async Task<string> GetPasswordResetTokenAsync(User user)
+        {
+            var foundUser = await FindUserByEmailAsync(user);
+            return await _userManager.GeneratePasswordResetTokenAsync(foundUser);
+        }
+
         public SigningCredentials GetSigningCredentials()
         {
             var key = Encoding.UTF8.GetBytes(_jwtSettings.GetSection("securityKey").Value);
@@ -81,15 +105,9 @@ namespace TheResistanceOnline.BusinessLogic.Users
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
-        public async Task<string> LoginUserByEmailAsync(User user, string password)
+        public async Task<string> LoginUserByEmailAsync(User user, string? password)
         {
-            var foundUser = await _userManager.FindByEmailAsync(user.Email);
-
-            if (foundUser == null)
-            {
-                throw new DomainException(typeof(User), user.Email, "Incorrect Email");
-            }
-
+            var foundUser = await FindUserByEmailAsync(user);
             var passwordCheck = await _userManager.CheckPasswordAsync(foundUser, password);
             if (!passwordCheck)
             {
@@ -102,16 +120,10 @@ namespace TheResistanceOnline.BusinessLogic.Users
             return token;
         }
 
-        public async Task<string> GetPasswordResetTokenAsync(User user)
+        public async Task ResetPasswordAsync(User user, string? token, string? newPassword)
         {
-            var foundUser = await _userManager.FindByEmailAsync(user.Email);
-
-            if (foundUser == null)
-            {
-                throw new DomainException(typeof(User), user.Email, "Incorrect Email");
-            }
-
-            return await _userManager.GeneratePasswordResetTokenAsync(user);
+            var foundUser = await FindUserByEmailAsync(user);
+            await _userManager.ResetPasswordAsync(foundUser, token, newPassword);
         }
 
         #endregion

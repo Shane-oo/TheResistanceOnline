@@ -3,9 +3,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from '../authentication.service';
 import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-container.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserLoginModel, UserLoginResponseModel } from '../user.models';
+import { LoginResponseModel, UserLoginModel } from '../user.models';
 import { HttpErrorResponse } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 
 @Component({
              selector: 'app-user-login',
@@ -25,7 +24,7 @@ export class UserLoginComponent implements OnInit {
                                      password: new FormControl('', [Validators.required])
 
                                    });
-     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
   validateControl = (controlName: string) => {
@@ -45,12 +44,12 @@ export class UserLoginComponent implements OnInit {
     };
 
     this.authService.loginUser(user).subscribe({
-                                                 next: (response:UserLoginResponseModel) => {
-                                                   console.log("In here");
+                                                 next: (response: LoginResponseModel) => {
+                                                   console.log('In here');
                                                    localStorage.setItem('TheResistanceToken', response.token);
                                                    this.authService.sendAuthStateChange(true);
                                                    // Route to redirect url or homepage
-                                                   console.log(this.returnUrl)
+                                                   console.log(this.returnUrl);
                                                    this.router.navigate([this.returnUrl]).then(r => {
                                                      this.swalService.showSwal(
                                                        'Successfully Login',

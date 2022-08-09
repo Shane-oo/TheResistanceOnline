@@ -10,11 +10,19 @@ export interface UserLoginModel {
   password: string;
 }
 
-export interface UserLoginResponseModel {
+export interface LoginResponseModel {
   token: string;
 }
 
 export interface UserForgotPasswordModel {
   email: string;
   clientUri: string;
+}
+
+
+export interface UserResetPasswordModel {
+  password: string;
+  confirmPassword: string;
+  email: string;
+  token: string;
 }

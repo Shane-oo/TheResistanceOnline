@@ -4,24 +4,25 @@ namespace TheResistanceOnline.Data.Exceptions
     {
         #region Properties
 
-        private string EntityExternalRef { get; }
+        private string? EntityExternalRef { get; }
 
-        private object EntityId { get; }
 
-        private string EntityName { get; }
+        private object? EntityId { get; }
 
-        private Type EntityType { get; }
+        private string? EntityName { get; }
+
+        private Type? EntityType { get; }
 
         #endregion
 
         #region Construction
 
-        public DomainException(Type entityType, string message): base(message)
+        public DomainException(Type? entityType, string? message): base(message)
         {
             EntityType = entityType;
         }
 
-        public DomainException(Type entityType, string entityName, string? message): base(message)
+        public DomainException(Type entityType, string? entityName, string? message): base(message)
         {
             EntityName = entityName;
             EntityType = entityType;

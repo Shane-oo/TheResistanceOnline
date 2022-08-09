@@ -14,6 +14,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         Task<string> LoginUserAsync([NotNull] UserLoginCommand command);
 
+        Task ResetUserPasswordAsync([NotNull] UserResetPasswordCommand command);
+
         Task SendResetPasswordAsync([NotNull] UserForgotPasswordCommand command);
     }
 
@@ -25,13 +27,15 @@ namespace TheResistanceOnline.BusinessLogic.Users
     {
         #region Fields
 
-        private readonly IUserIdentityManager _identityManager;
         private readonly IEmailService _emailService;
+
+        private readonly IUserIdentityManager _identityManager;
+
         #endregion
 
         #region Construction
 
-        public UserService(IUserIdentityManager identityManager,IEmailService emailService)
+        public UserService(IUserIdentityManager identityManager, IEmailService emailService)
         {
             _identityManager = identityManager;
             _emailService = emailService;
@@ -75,12 +79,28 @@ namespace TheResistanceOnline.BusinessLogic.Users
             return await _identityManager.LoginUserByEmailAsync(user, command.Password);
         }
 
+        public async Task ResetUserPasswordAsync(UserResetPasswordCommand command)
+        {
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            var user = new User
+                       {
+                           Email = command.Email,
+                       };
+
+            await _identityManager.ResetPasswordAsync(user, command.Token, command.Password);
+        }
+
         public async Task SendResetPasswordAsync(UserForgotPasswordCommand command)
         {
             if (command == null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
+
             var user = new User
                        {
                            Email = command.Email,
@@ -89,8 +109,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
             var token = await _identityManager.GetPasswordResetTokenAsync(user);
             var param = new Dictionary<string, string?>
                         {
-                            {"token", token },
-                            {"email", command.Email }
+                            { "token", token },
+                            { "email", command.Email }
                         };
             var callback = QueryHelpers.AddQueryString(command.ClientUri, param);
             var sendEmailCommand = new SendEmailCommand
@@ -98,11 +118,10 @@ namespace TheResistanceOnline.BusinessLogic.Users
                                        EmailTo = user.Email!,
                                        EmailSubject = "The Resistance Board Game Online - Reset Password",
                                        CancellationToken = command.CancellationToken,
-                                       EmailBody =  "<h1> Click To Reset Password: "+ callback
+                                       EmailBody = "<h1> Click To Reset Password: " + callback
                                    };
-            
+
             await _emailService.SendEmailAsync(sendEmailCommand);
-            
         }
 
         #endregion

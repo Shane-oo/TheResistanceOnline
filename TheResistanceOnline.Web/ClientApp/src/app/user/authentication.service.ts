@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UserForgotPasswordModel, UserLoginModel, UserLoginResponseModel, UserRegisterModel } from './user.models';
+import { LoginResponseModel, UserForgotPasswordModel, UserLoginModel, UserRegisterModel, UserResetPasswordModel } from './user.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Subject } from 'rxjs';
@@ -23,7 +23,7 @@ export class AuthenticationService {
   };
 
   public loginUser = (body: UserLoginModel) => {
-    return this.http.post<UserLoginResponseModel>(`${environment.API_URL}${this.accountsEndpoint}/Login`, body);
+    return this.http.post<LoginResponseModel>(`${environment.API_URL}${this.accountsEndpoint}/Login`, body);
   };
 
   public logout = () => {
@@ -58,5 +58,9 @@ export class AuthenticationService {
 
   public sendUserForgotPassword = (body: UserForgotPasswordModel) => {
     return this.http.post(`${environment.API_URL}${this.accountsEndpoint}/ForgotPassword`, body);
+  };
+
+  public resetPassword = (body: UserResetPasswordModel) => {
+    return this.http.post(`${environment.API_URL}${this.accountsEndpoint}/ResetPassword`, body);
   };
 }

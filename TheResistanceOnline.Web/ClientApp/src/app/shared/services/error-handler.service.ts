@@ -17,23 +17,21 @@ export class ErrorHandlerService implements HttpInterceptor {
     return next.handle(req)
                .pipe(
                  catchError((error: HttpErrorResponse) => {
-                    this.handleError(error);
-                    // ToDo this should be different but idk
-                    return throwError(() => new Error());
+                   this.handleError(error);
+                   // ToDo this should be different but idk
+                   return throwError(() => new Error());
                  })
                );
   }
 
   private handleError = (error: HttpErrorResponse): void => {
     if(error.status === 404) {
-       this.handleNotFound(error);
+      this.handleNotFound(error);
     } else if(error.status === 400) {
       this.handleBadRequest(error);
-    }
-    else if(error.status === 401){
+    } else if(error.status === 401) {
       this.handleUnauthorized(error);
-    }
-    else if(error.status === 403){
+    } else if(error.status === 403) {
       this.handleForbidden(error);
     }
 
@@ -47,7 +45,7 @@ export class ErrorHandlerService implements HttpInterceptor {
   };
 
   private handleBadRequest = (error: HttpErrorResponse) => {
-    if(this.router.url === '/user/register') {
+    if(this.router.url === '/user/register' || this.router.url == '/user/forgot-password') {
 
       if(error.error.errors) {
         if(error.error.errors.ConfirmPassword) {
@@ -57,6 +55,7 @@ export class ErrorHandlerService implements HttpInterceptor {
         this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
       }
     }
+
   };
 
   private handleUnauthorized = (error: HttpErrorResponse) => {
@@ -65,8 +64,8 @@ export class ErrorHandlerService implements HttpInterceptor {
     }
 
   };
-  private handleForbidden = (error:HttpErrorResponse)=>{
-    this.swalService.showSwal("Forbidden", SwalTypesModel.Error);
-  }
+  private handleForbidden = (error: HttpErrorResponse) => {
+    this.swalService.showSwal('Forbidden', SwalTypesModel.Error);
+  };
 
 }
