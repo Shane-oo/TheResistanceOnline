@@ -3,7 +3,6 @@ using SendGrid;
 using SendGrid.Helpers.Mail;
 using TheResistanceOnline.BusinessLogic.Emails.Commands;
 using TheResistanceOnline.Data.Exceptions;
-using TheResistanceOnline.Data.Users;
 
 namespace TheResistanceOnline.BusinessLogic.Emails
 {
