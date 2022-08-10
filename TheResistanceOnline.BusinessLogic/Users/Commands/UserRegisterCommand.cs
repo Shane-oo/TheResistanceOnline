@@ -18,6 +18,9 @@ namespace TheResistanceOnline.BusinessLogic.Users.Commands
 
         [Required(ErrorMessage = "UserName is Required")]
         public string? UserName { get; set; }
+        
+        public string? ClientUri { get; set; }
+
 
         #endregion
     }

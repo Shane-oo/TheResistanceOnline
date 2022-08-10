@@ -38,9 +38,9 @@ export class NavMenuComponent implements OnInit {
   logout(){
     this.authService.logout();
     this.router.navigate(['/user/login']).then(r => {
-      this.swalService.showSwal(
-        'Successfully logged out',
-        SwalTypesModel.Success);
+      // this.swalService.showSwal(
+      //   'Successfully logged out',
+      //   SwalTypesModel.Success);
     });
   }
 

@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { LoginResponseModel, UserForgotPasswordModel, UserLoginModel, UserRegisterModel, UserResetPasswordModel } from './user.models';
+import {
+  LoginResponseModel,
+  UserConfirmEmailModel,
+  UserForgotPasswordModel,
+  UserLoginModel,
+  UserRegisterModel,
+  UserResetPasswordModel
+} from './user.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Subject } from 'rxjs';
@@ -51,7 +58,6 @@ export class AuthenticationService {
     if(token) {
       const decodedToken = this.jwtHelper.decodeToken(token);
       role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-
     }
     return role === 'Administrator';
   };
@@ -62,5 +68,9 @@ export class AuthenticationService {
 
   public resetPassword = (body: UserResetPasswordModel) => {
     return this.http.post(`${environment.API_URL}${this.accountsEndpoint}/ResetPassword`, body);
+  };
+
+  public confirmEmail = (body: UserConfirmEmailModel) => {
+    return this.http.post(`${environment.API_URL}${this.accountsEndpoint}/ConfirmEmail`, body);
   };
 }

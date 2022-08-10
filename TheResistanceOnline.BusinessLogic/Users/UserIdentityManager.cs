@@ -10,7 +10,9 @@ namespace TheResistanceOnline.BusinessLogic.Users
 {
     public interface IUserIdentityManager
     {
-        Task CreateIdentityAsync(User user, string? password);
+        Task ConfirmUsersEmailAsync(User user, string? token);
+
+        Task<string> CreateIdentityAsync(User user, string? password);
 
         Task CreateUserRoleAsync(User user, string role);
 
@@ -55,7 +57,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
             if (foundUser == null)
             {
-                throw new DomainException(typeof(User), user.Email, "Incorrect Email");
+                throw new DomainException(typeof(User), user.Email, "Email Not Found");
             }
 
             return foundUser;
@@ -65,7 +67,19 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         #region Public Methods
 
-        public async Task CreateIdentityAsync(User user, string? password)
+        public async Task ConfirmUsersEmailAsync(User user, string? token)
+        {
+            var foundUser = await FindUserByEmailAsync(user);
+
+            var confirmResult = await _userManager.ConfirmEmailAsync(foundUser, token);
+            if (!confirmResult.Succeeded)
+            {
+                throw new DomainException(typeof(User), user.Email, "Invalid Email Confirmation Request");
+            }
+        }
+
+        // returns email token confirmation
+        public async Task<string> CreateIdentityAsync(User user, string? password)
         {
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
@@ -76,6 +90,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
                     throw new DomainException(typeof(User), user.UserName, description);
                 }
             }
+
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
 
         public async Task CreateUserRoleAsync(User user, string role)
@@ -108,6 +124,12 @@ namespace TheResistanceOnline.BusinessLogic.Users
         public async Task<string> LoginUserByEmailAsync(User user, string? password)
         {
             var foundUser = await FindUserByEmailAsync(user);
+            var confirmedEmail = await _userManager.IsEmailConfirmedAsync(foundUser);
+            if (!confirmedEmail)
+            {
+                throw new DomainException(typeof(User), user.Email, "Please confirm email address");
+            }
+
             var passwordCheck = await _userManager.CheckPasswordAsync(foundUser, password);
             if (!passwordCheck)
             {

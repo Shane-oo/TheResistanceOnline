@@ -3,6 +3,7 @@ export interface UserRegisterModel {
   userName: string;
   password: string;
   confirmPassword: string;
+  clientUri: string;
 }
 
 export interface UserLoginModel {
@@ -23,6 +24,11 @@ export interface UserForgotPasswordModel {
 export interface UserResetPasswordModel {
   password: string;
   confirmPassword: string;
+  email: string;
+  token: string;
+}
+
+export interface UserConfirmEmailModel {
   email: string;
   token: string;
 }

@@ -17,6 +17,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
         Task ResetUserPasswordAsync([NotNull] UserResetPasswordCommand command);
 
         Task SendResetPasswordAsync([NotNull] UserForgotPasswordCommand command);
+
+        Task ConfirmUserEmailAsync([NotNull] UserConfirmEmailCommand command);
     }
 
     /*
@@ -59,8 +61,25 @@ namespace TheResistanceOnline.BusinessLogic.Users
                            Email = command.Email
                        };
 
-            await _identityManager.CreateIdentityAsync(user, command.Password);
+
+            var token = await _identityManager.CreateIdentityAsync(user, command.Password);
             await _identityManager.CreateUserRoleAsync(user, "User");
+
+            var param = new Dictionary<string, string?>
+                        {
+                            { "token", token },
+                            { "email", user.Email }
+                        };
+            var callback = QueryHelpers.AddQueryString(command.ClientUri, param);
+
+            var sendEmailCommand = new SendEmailCommand
+                                   {
+                                       EmailTo = user.Email!,
+                                       EmailSubject = "The Resistance Board Game Online - Confirm Email",
+                                       CancellationToken = command.CancellationToken,
+                                       EmailBody = "<h1> Click To Confirm Email: " + callback
+                                   };
+            await _emailService.SendEmailAsync(sendEmailCommand);
         }
 
 
@@ -122,6 +141,21 @@ namespace TheResistanceOnline.BusinessLogic.Users
                                    };
 
             await _emailService.SendEmailAsync(sendEmailCommand);
+        }
+
+        public async Task ConfirmUserEmailAsync(UserConfirmEmailCommand command)
+        {
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+            
+            var user = new User
+                       {
+                           Email = command.Email,
+                       };
+            await _identityManager.ConfirmUsersEmailAsync(user, command.Token);
+
         }
 
         #endregion

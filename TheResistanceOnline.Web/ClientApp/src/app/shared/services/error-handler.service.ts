@@ -45,7 +45,7 @@ export class ErrorHandlerService implements HttpInterceptor {
   };
 
   private handleBadRequest = (error: HttpErrorResponse) => {
-    if(this.router.url === '/user/register' || this.router.url == '/user/forgot-password') {
+    if(this.router.url === '/user/register') {
 
       if(error.error.errors) {
         if(error.error.errors.ConfirmPassword) {
@@ -55,7 +55,10 @@ export class ErrorHandlerService implements HttpInterceptor {
         this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
       }
     }
+    else{
+      this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
 
+    }
   };
 
   private handleUnauthorized = (error: HttpErrorResponse) => {

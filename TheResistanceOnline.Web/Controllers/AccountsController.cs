@@ -103,6 +103,24 @@ namespace TheResistanceOnline.Web.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [Route("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(UserConfirmEmailCommand command)
+        {
+            try
+            {
+                await _userService.ConfirmUserEmailAsync(command);
+            }
+            catch(DomainException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            // if ResetUserPasswordAsync() doesn't throw => successfully reset password
+
+            return Ok();
+        }
+        
         #endregion
     }
 }

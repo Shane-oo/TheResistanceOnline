@@ -51,9 +51,9 @@ export class UserLoginComponent implements OnInit {
                                                    // Route to redirect url or homepage
                                                    console.log(this.returnUrl);
                                                    this.router.navigate([this.returnUrl]).then(r => {
-                                                     this.swalService.showSwal(
-                                                       'Successfully Login',
-                                                       SwalTypesModel.Success);
+                                                     // this.swalService.showSwal(
+                                                     //   'Successfully Login',
+                                                     //   SwalTypesModel.Success);
                                                    });
                                                  },
                                                  error: (err: HttpErrorResponse) => {

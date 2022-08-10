@@ -6,6 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { PasswordValidatorService } from '../../shared/custom-validators/user/password-validator.service';
 import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-container.service';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
              selector: 'app-user-register',
@@ -49,7 +50,8 @@ export class UserRegisterComponent implements OnInit {
       userName: formValues.userName,
       email: formValues.email,
       password: formValues.password,
-      confirmPassword: formValues.confirmPassword
+      confirmPassword: formValues.confirmPassword,
+      clientUri: `${environment.Frontend_URL}/user/email-confirmation`
     };
 
     this.authService.registerUser(user).subscribe({
