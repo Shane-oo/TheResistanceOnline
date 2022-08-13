@@ -59,7 +59,7 @@ export class AuthenticationService {
       const decodedToken = this.jwtHelper.decodeToken(token);
       role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
     }
-    return role === 'Administrator';
+    return (role.includes('Administrator'));
   };
 
   public sendUserForgotPassword = (body: UserForgotPasswordModel) => {

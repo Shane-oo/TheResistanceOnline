@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -16,11 +17,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         Task CreateUserRoleAsync(User user, string role);
 
-        JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials);
-
         Task<string> GetPasswordResetTokenAsync(User user);
-
-        SigningCredentials GetSigningCredentials();
 
         Task<string> LoginUserByEmailAsync(User user, string? password);
 
@@ -32,13 +29,14 @@ namespace TheResistanceOnline.BusinessLogic.Users
         #region Fields
 
         private readonly IEmailService _emailService;
+
+        private static readonly string? _expiryInMinutes = Environment.GetEnvironmentVariable("ExpiryInMinutes");
         private static readonly string? _securityKey = Environment.GetEnvironmentVariable("SecurityKey");
 
         private readonly UserManager<User> _userManager;
         private static readonly string? _validAudience = Environment.GetEnvironmentVariable("ValidAudience");
         private static readonly string? _validIssuer = Environment.GetEnvironmentVariable("ValidIssuer");
-    
-        private static readonly string? _expiryInMinutes = Environment.GetEnvironmentVariable("ExpiryInMinutes");
+
         #endregion
 
         #region Construction
@@ -47,7 +45,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
         {
             _userManager = userManager;
             _emailService = emailService;
-            
+
             if (_validIssuer == null || _validAudience == null || _securityKey == null || _expiryInMinutes == null)
             {
                 throw new NullReferenceException("JWT settings not found UserIdentityManager");
@@ -68,6 +66,36 @@ namespace TheResistanceOnline.BusinessLogic.Users
             }
 
             return foundUser;
+        }
+
+        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
+        {
+            return new JwtSecurityToken(_validIssuer,
+                                        _validAudience,
+                                        expires: DateTime.Now.AddMinutes(Convert.ToDouble(_expiryInMinutes)),
+                                        signingCredentials: signingCredentials,
+                                        claims: claims);
+        }
+
+        private async Task<List<Claim>> GetClaims(User user)
+        {
+            var claims = new List<Claim>
+                         {
+                             new Claim(ClaimTypes.Name, user.Email)
+                         };
+
+            var roles = await _userManager.GetRolesAsync(user);
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+            return claims;
+        }
+
+        private SigningCredentials GetSigningCredentials()
+        {
+            var key = Encoding.UTF8.GetBytes(_securityKey);
+            var secret = new SymmetricSecurityKey(key);
+
+            return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
         #endregion
@@ -106,26 +134,10 @@ namespace TheResistanceOnline.BusinessLogic.Users
             await _userManager.AddToRoleAsync(user, role);
         }
 
-        public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials)
-        {
-            return new JwtSecurityToken(_validIssuer,
-                                        _validAudience,
-                                        expires: DateTime.Now.AddMinutes(Convert.ToDouble(_expiryInMinutes)),
-                                        signingCredentials: signingCredentials);
-        }
-
         public async Task<string> GetPasswordResetTokenAsync(User user)
         {
             var foundUser = await FindUserByEmailAsync(user);
             return await _userManager.GeneratePasswordResetTokenAsync(foundUser);
-        }
-
-        public SigningCredentials GetSigningCredentials()
-        {
-            var key = Encoding.UTF8.GetBytes(_securityKey);
-            var secret = new SymmetricSecurityKey(key);
-
-            return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
         public async Task<string> LoginUserByEmailAsync(User user, string? password)
@@ -150,9 +162,10 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 throw new DomainException(typeof(User), password, "Incorrect password");
             }
 
-            await _userManager.ResetAccessFailedCountAsync(user);
+            await _userManager.ResetAccessFailedCountAsync(foundUser);
             var signingCredentials = GetSigningCredentials();
-            var tokenOptions = GenerateTokenOptions(signingCredentials);
+            var claims = await GetClaims(foundUser);
+            var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return token;
         }
