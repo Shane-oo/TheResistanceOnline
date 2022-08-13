@@ -17,7 +17,7 @@ spec:
         app: theresistance-webapp
     spec:
       containers:
-      - image: theresistancecontainer.azurecr.io/theresistanceonline.web:latest
+      - image: theresistancecontainer.azurecr.io/theresistanceonlineweb:latest
         name: theresistance-webapp
         imagePullPolicy: Always
         resources: {}
