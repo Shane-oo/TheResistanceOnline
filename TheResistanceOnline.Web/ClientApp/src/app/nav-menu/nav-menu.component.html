@@ -45,13 +45,8 @@
           <ul *ngIf="!isUserAuthenticated" class="navbar-nav flex-grow">
 
             <li [routerLinkActive]="['link-active']" class="nav-item">
-              <a [routerLink]="['/user/login']" class="nav-link text-light"
-              >Login</a
-              >
-            </li>
-            <li [routerLinkActive]="['link-active']" class="nav-item">
-              <a [routerLink]="['/user/register']" class="nav-link text-light"
-              >Register</a
+              <a [routerLink]="['/user/']" class="nav-link text-light"
+              >Login /  Register</a
               >
             </li>
           </ul>

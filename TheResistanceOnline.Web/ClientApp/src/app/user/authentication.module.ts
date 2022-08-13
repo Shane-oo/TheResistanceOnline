@@ -24,8 +24,6 @@ import { UserComponent } from './user.component';
               CommonModule,
               ReactiveFormsModule,
               RouterModule.forChild([
-                                      {path: 'register', component: UserRegisterComponent},
-                                      {path: 'login', component: UserLoginComponent},
                                       {path: 'forgot-password', component: UserForgotPasswordComponent},
                                       {path: 'reset-password', component: UserResetPasswordComponent},
                                       {path: 'email-confirmation', component: UserEmailConfirmationComponent},
