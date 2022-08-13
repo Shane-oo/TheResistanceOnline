@@ -21,7 +21,7 @@ import { OverlayComponent } from '../ui/overlay/overlay.component';
 import { OverlayService } from '../ui/overlay/overlay.service';
 import { JwtModule } from '@auth0/angular-jwt';
 import { AuthGuard } from './shared/guards/auth.guard';
-import { AdminComponent } from './admin/admin/admin.component';
+import { AdminComponent } from './admin/admin.component';
 import { AdminGuard } from './shared/guards/admin.guard';
 
 export function tokenGetter() {
