@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { UserEditComponent } from './user-edit.component';
+import { AuthGuard } from '../../shared/guards/auth.guard';
 
 @NgModule({
             declarations: [UserEditComponent],
@@ -12,8 +13,9 @@ import { UserEditComponent } from './user-edit.component';
               CommonModule,
               ReactiveFormsModule,
               RouterModule.forChild([
-                                      {path: '', component: UserEditComponent}
-                                    ])
+                                      {path: '', component: UserEditComponent,canActivate:[AuthGuard]}
+                                    ])  ,
+
             ]
           })
 export class UserEditModule {

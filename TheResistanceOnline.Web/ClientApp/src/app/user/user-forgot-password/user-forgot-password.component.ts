@@ -36,7 +36,7 @@ export class UserForgotPasswordComponent implements OnInit {
 
     const forgotPasswordDto: UserForgotPasswordModel = {
       email: forgotPassword.email,
-      clientUri: `${environment.Frontend_URL}/user/reset-password`
+      clientUri: `${environment.Base_URL}/user/reset-password`
     };
 
     this.authService.sendUserForgotPassword(forgotPasswordDto).subscribe({

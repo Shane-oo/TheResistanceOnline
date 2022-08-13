@@ -36,6 +36,7 @@ builder.Services.AddContext();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -48,13 +49,13 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
+        
 app.UseAuthorization();
+       
 
-app.MapControllerRoute(
-                       "default",
-                       "{controller}/{action=Index}/{id?}");
-
-app.MapFallbackToFile("index.html");
-
+app.UseEndpoints(endpoints =>
+                 {
+                     endpoints.MapControllers();
+                 });
 
 app.Run();

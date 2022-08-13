@@ -100,9 +100,17 @@ namespace TheResistanceOnline.BusinessLogic.Users
             await _emailService.SendEmailAsync(sendEmailCommand);
         }
 
-        public Task<UserDetails> GetUserAsync(GetUserCommand command)
-        {
-            throw new NotImplementedException();
+        public async Task<UserDetails> GetUserAsync(GetUserCommand command)
+        { 
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            return new UserDetails
+                   {
+                       Email = "Shane"
+                   };
         }
 
 

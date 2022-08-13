@@ -34,3 +34,7 @@ export interface UserConfirmEmailModel {
   email: string;
   token: string;
 }
+
+export interface GetUserCommandModel {
+  userId: string;
+}

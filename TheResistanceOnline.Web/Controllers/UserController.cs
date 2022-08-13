@@ -6,12 +6,13 @@ using TheResistanceOnline.Data.Exceptions;
 
 namespace TheResistanceOnline.Web.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-
-    public class UsersController: ControllerBase
+    [Route("api/[controller]")]
+   
+    public class UserController: ControllerBase
     {
         #region Fields
+
 
         private readonly IUserService _userService;
 
@@ -19,7 +20,7 @@ namespace TheResistanceOnline.Web.Controllers
 
         #region Construction
 
-        public UsersController(IUserService userService)
+        public UserController(IUserService userService)
         {
             _userService = userService;
         }
@@ -29,21 +30,22 @@ namespace TheResistanceOnline.Web.Controllers
         #region Public Methods
 
         [HttpPost]
-        [Route("GetUser")]
         [Authorize]
-        public async Task<IActionResult> GetUserAsync(GetUserCommand command)
+        [Route("GetUser")]
+        public async Task<IActionResult> GetUser(GetUserCommand command)
         {
-            Console.WriteLine();
+            
             try
             {
-                var userDetails = await _userService.GetUserAsync(command);
-                //return Ok(userLoginResponse);
+                var userDetails =  await _userService.GetUserAsync(command);
                 return Ok(userDetails);
+
             }
             catch(DomainException ex)
             {
-                return Unauthorized(ex.Message);
+                return BadRequest(ex.Message);
             }
+            
         }
 
         #endregion

@@ -51,7 +51,7 @@ export class UserRegisterComponent implements OnInit {
       email: formValues.email,
       password: formValues.password,
       confirmPassword: formValues.confirmPassword,
-      clientUri: `${environment.Frontend_URL}/user/email-confirmation`
+      clientUri: `${environment.Base_URL}/user/email-confirmation`
     };
 
     this.authService.registerUser(user).subscribe({

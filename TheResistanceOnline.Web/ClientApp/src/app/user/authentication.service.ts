@@ -35,6 +35,7 @@ export class AuthenticationService {
 
   public logout = () => {
     localStorage.removeItem('TheResistanceToken');
+    localStorage.removeItem('TheResistanceUserId')
     this.sendAuthStateChange(false);
   };
   public sendAuthStateChange = (isAuthenticated: boolean) => {
@@ -59,7 +60,8 @@ export class AuthenticationService {
       const decodedToken = this.jwtHelper.decodeToken(token);
       role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
     }
-    return (role.includes('Administrator'));
+
+    return (role === 'Administrator');
   };
 
   public sendUserForgotPassword = (body: UserForgotPasswordModel) => {
@@ -74,4 +76,11 @@ export class AuthenticationService {
     return this.http.post(`${environment.API_URL}${this.accountsEndpoint}/ConfirmEmail`, body);
   };
 
+  public getUserId =():string=>{
+    const userId = localStorage.getItem('TheResistanceUserId');
+    if(userId){
+      return userId;
+    }
+    return "";
+  }
 }
