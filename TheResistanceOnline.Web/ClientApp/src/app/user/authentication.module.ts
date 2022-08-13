@@ -29,7 +29,7 @@ import { UserComponent } from './user.component';
                                       {path: 'forgot-password', component: UserForgotPasswordComponent},
                                       {path: 'reset-password', component: UserResetPasswordComponent},
                                       {path: 'email-confirmation', component: UserEmailConfirmationComponent},
-                                      {path: 'master', component: UserComponent}
+                                      {path: '', component: UserComponent}
                                     ])
             ]
           })
