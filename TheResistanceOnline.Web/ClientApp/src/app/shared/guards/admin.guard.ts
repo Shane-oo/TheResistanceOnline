@@ -8,7 +8,7 @@ import { AuthenticationService } from '../../user/authentication.service';
 export class AdminGuard implements CanActivate {
   constructor(private authService: AuthenticationService, private router: Router) {
   }
-  
+
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     return this.authService.isUserAdmin();
   }

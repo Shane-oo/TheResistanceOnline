@@ -45,7 +45,7 @@ export class ErrorHandlerService implements HttpInterceptor {
   };
 
   private handleBadRequest = (error: HttpErrorResponse) => {
-    if(this.router.url === '/user/register') {
+    if(this.router.url === '/user/register' || this.router.url === '/user/master') {
 
       if(error.error.errors) {
         if(error.error.errors.ConfirmPassword) {
@@ -54,15 +54,14 @@ export class ErrorHandlerService implements HttpInterceptor {
       } else {
         this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
       }
-    }
-    else{
+    } else {
       this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
 
     }
   };
 
   private handleUnauthorized = (error: HttpErrorResponse) => {
-    if(this.router.url === '/user/login') {
+    if(this.router.url === '/user/login' || this.router.url === '/user/master') {
       this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
     }
 

@@ -1,0 +1,11 @@
+.container {
+  display: flex;
+}
+
+.child {
+  flex: 1;
+}
+
+.child:first-child {
+  margin-right: 20px;
+}
