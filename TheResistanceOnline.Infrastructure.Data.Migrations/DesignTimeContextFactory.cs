@@ -16,7 +16,7 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations
                                                           .AddEnvironmentVariables()
                                                           .Build();
 
-            var connectionString = configuration.GetConnectionString("resistanceDb");
+            var connectionString = configuration.GetConnectionString("ResistanceDbDev");
 
             if (string.IsNullOrEmpty(connectionString))
             {

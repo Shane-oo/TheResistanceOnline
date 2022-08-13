@@ -12,13 +12,23 @@ namespace TheResistanceOnline.Web.DI;
 
 public static class DISetup
 {
+    #region Fields
+
+    private static readonly string? _connectionString = Environment.GetEnvironmentVariable("ResistanceDb");
+
+    private static readonly string? _securityKey = Environment.GetEnvironmentVariable("SecurityKey");
+    private static readonly string? _validAudience = Environment.GetEnvironmentVariable("ValidAudience");
+    private static readonly string? _validIssuer = Environment.GetEnvironmentVariable("ValidIssuer");
+
+    #endregion
+
     #region Public Methods
 
-    public static void AddAuthenticationServices(this IServiceCollection services, IConfigurationSection? jwtSettings)
+    public static void AddAuthenticationServices(this IServiceCollection services)
     {
-        if (jwtSettings == null)
+        if (_validIssuer == null || _validAudience == null || _securityKey == null)
         {
-            throw new ArgumentNullException(nameof(jwtSettings));
+            throw new NullReferenceException("JWT settings not found");
         }
 
         services.AddAuthentication(opt =>
@@ -33,17 +43,22 @@ public static class DISetup
                                                                                                ValidateAudience = true,
                                                                                                ValidateLifetime = true,
                                                                                                ValidateIssuerSigningKey = true,
-                                                                                               ValidIssuer = jwtSettings["validIssuer"],
-                                                                                               ValidAudience = jwtSettings["validAudience"],
+                                                                                               ValidIssuer = _validIssuer,
+                                                                                               ValidAudience = _validAudience,
                                                                                                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                                                                                                   .GetBytes(jwtSettings.GetSection("securityKey").Value))
+                                                                                                   .GetBytes(_securityKey))
                                                                                            };
                                                    });
     }
 
-    public static void AddContext(this IServiceCollection services, string connectionString)
+    public static void AddContext(this IServiceCollection services)
     {
-        services.AddDbContext<Context>(options => options.UseSqlServer(connectionString));
+        if (_connectionString == null)
+        {
+            throw new NullReferenceException("Connection string not found");
+        }
+
+        services.AddDbContext<Context>(options => options.UseSqlServer(_connectionString));
     }
 
     public static void AddServices(this IServiceCollection services)
@@ -65,7 +80,6 @@ public static class DISetup
                                                      options.Lockout.AllowedForNewUsers = true;
                                                      options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(7);
                                                      options.Lockout.MaxFailedAccessAttempts = 5;
-
                                                  })
                 .AddEntityFrameworkStores<Context>()
                 .AddDefaultTokenProviders();

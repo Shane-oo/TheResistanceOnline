@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.Data.Exceptions;
@@ -33,21 +32,26 @@ namespace TheResistanceOnline.BusinessLogic.Users
         #region Fields
 
         private readonly IEmailService _emailService;
-
-        private readonly IConfigurationSection _jwtSettings;
+        private static readonly string? _securityKey = Environment.GetEnvironmentVariable("SecurityKey");
 
         private readonly UserManager<User> _userManager;
-
+        private static readonly string? _validAudience = Environment.GetEnvironmentVariable("ValidAudience");
+        private static readonly string? _validIssuer = Environment.GetEnvironmentVariable("ValidIssuer");
+    
+        private static readonly string? _expiryInMinutes = Environment.GetEnvironmentVariable("ExpiryInMinutes");
         #endregion
 
         #region Construction
 
-        public UserIdentityManager(UserManager<User> userManager, IConfiguration configuration, IEmailService emailService)
+        public UserIdentityManager(UserManager<User> userManager, IEmailService emailService)
         {
             _userManager = userManager;
             _emailService = emailService;
-
-            _jwtSettings = configuration.GetSection("JwtSettings");
+            
+            if (_validIssuer == null || _validAudience == null || _securityKey == null || _expiryInMinutes == null)
+            {
+                throw new NullReferenceException("JWT settings not found UserIdentityManager");
+            }
         }
 
         #endregion
@@ -104,9 +108,9 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         public JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials)
         {
-            return new JwtSecurityToken(_jwtSettings["validIssuer"],
-                                        _jwtSettings["validAudience"],
-                                        expires: DateTime.Now.AddMinutes(Convert.ToDouble(_jwtSettings["expiryInMinutes"])),
+            return new JwtSecurityToken(_validIssuer,
+                                        _validAudience,
+                                        expires: DateTime.Now.AddMinutes(Convert.ToDouble(_expiryInMinutes)),
                                         signingCredentials: signingCredentials);
         }
 
@@ -118,7 +122,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         public SigningCredentials GetSigningCredentials()
         {
-            var key = Encoding.UTF8.GetBytes(_jwtSettings.GetSection("securityKey").Value);
+            var key = Encoding.UTF8.GetBytes(_securityKey);
             var secret = new SymmetricSecurityKey(key);
 
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
@@ -136,15 +140,16 @@ namespace TheResistanceOnline.BusinessLogic.Users
             var passwordCheck = await _userManager.CheckPasswordAsync(foundUser, password);
             if (!passwordCheck)
             {
-                await _userManager.AccessFailedAsync(foundUser); 
+                await _userManager.AccessFailedAsync(foundUser);
                 var accountIsLocked = await _userManager.IsLockedOutAsync(foundUser);
                 if (accountIsLocked)
                 {
                     throw new UnauthorizedAccessException();
                 }
+
                 throw new DomainException(typeof(User), password, "Incorrect password");
             }
-            
+
             await _userManager.ResetAccessFailedCountAsync(user);
             var signingCredentials = GetSigningCredentials();
             var tokenOptions = GenerateTokenOptions(signingCredentials);
@@ -158,7 +163,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
             // Use this for if user is locked out and expiry is not over yet
             await _userManager.SetLockoutEndDateAsync(foundUser, null);
             await _userManager.ResetPasswordAsync(foundUser, token, newPassword);
-
         }
 
         #endregion

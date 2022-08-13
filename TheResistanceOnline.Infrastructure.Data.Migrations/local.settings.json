@@ -1,9 +1,7 @@
 {
   "IsEncrypted": false,
-  "Values": {
-    "resistanceDb": "Data Source=localhost;Initial Catalog=resistanceDb;User Id=sa; Password=someThingComplicated1234;"
-  },
   "ConnectionStrings": {
-    "resistanceDb": "Data Source=localhost;Initial Catalog=resistanceDb;User Id=sa; Password=someThingComplicated1234;"
+    "ResistanceDbProd": "Server=tcp:resistanceonline.database.windows.net,1433;Initial Catalog=resistanceDb;Persist Security Info=False;User ID=resistanceonlineadmin;Password=H2iD63kBn49AApAk8Z^PYbB#N;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+    "ResistanceDbDev ": "Data Source=localhost;Initial Catalog=resistanceDb;User Id=sa; Password=someThingComplicated1234;"
   }
 }

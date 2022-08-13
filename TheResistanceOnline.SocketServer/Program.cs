@@ -21,7 +21,6 @@ builder.Services.AddControllers();
 
 // DISetup
 builder.Services.AddServices();
-//builder.Services.AddTransient<ITimerService, TimerService>();
 
 var app = builder.Build();
 

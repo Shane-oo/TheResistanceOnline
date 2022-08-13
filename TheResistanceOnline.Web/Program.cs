@@ -1,8 +1,4 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.EntityFrameworkCore;
-using TheResistanceOnline.Data.Users;
-using TheResistanceOnline.Infrastructure.Data;
 using TheResistanceOnline.Web.DI;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,14 +30,8 @@ builder.Services.Configure<StaticFileOptions>(options =>
                                                                                 };
                                               });
 builder.Services.AddServices();
-// TODO: kubernetes secret get ready
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-builder.Services.AddAuthenticationServices(jwtSettings);
-// TODO: kubernetes secret get ready
-var connectionString = builder.Configuration.GetConnectionString("resistanceDb");
-builder.Services.AddContext(connectionString);
-
-
+builder.Services.AddAuthenticationServices();
+builder.Services.AddContext();
 
 
 var app = builder.Build();

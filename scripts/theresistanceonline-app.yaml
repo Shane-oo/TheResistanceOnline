@@ -23,6 +23,17 @@ spec:
         resources: {}
         ports:
           - containerPort: 80 
+        env:
+          - name: ResistanceDb
+            value: "Server=tcp:resistanceonline.database.windows.net,1433;Initial Catalog=resistanceDb;Persist Security Info=False;User ID=resistanceonlineadmin;Password=H2iD63kBn49AApAk8Z^PYbB#N;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+          - name: SecurityKey
+            value: "fVqtLvM5P@JSBa863@VX"
+          - name: ValidIssuer
+            value: "TheResistanceAPI"
+          - name: ValidAudience
+            value: ”https://theresistanceboardgameonline.com”
+          - name: ExpiryInMinutes
+            value: "360"
 status: {}
 
 ---
