@@ -5,6 +5,7 @@ import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-cont
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoginResponseModel, UserLoginModel } from '../user.models';
 import { HttpErrorResponse } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
              selector: 'app-user-login',
@@ -40,7 +41,8 @@ export class UserLoginComponent implements OnInit {
 
     const user: UserLoginModel = {
       email: login.email,
-      password: login.password
+      password: login.password ,
+      clientUri: `${environment.Frontend_URL}/user/forgot-password`
     };
 
     this.authService.loginUser(user).subscribe({

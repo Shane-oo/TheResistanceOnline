@@ -7,6 +7,8 @@ namespace TheResistanceOnline.BusinessLogic.Users.Commands
     {
         #region Properties
 
+        public string? ClientUri { get; set; }
+
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match")]
         public string? ConfirmPassword { get; set; }
 
@@ -18,9 +20,6 @@ namespace TheResistanceOnline.BusinessLogic.Users.Commands
 
         [Required(ErrorMessage = "UserName is Required")]
         public string? UserName { get; set; }
-        
-        public string? ClientUri { get; set; }
-
 
         #endregion
     }

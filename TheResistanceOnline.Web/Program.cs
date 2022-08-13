@@ -34,22 +34,15 @@ builder.Services.Configure<StaticFileOptions>(options =>
                                                                                 };
                                               });
 builder.Services.AddServices();
+// TODO: kubernetes secret get ready
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 builder.Services.AddAuthenticationServices(jwtSettings);
 // TODO: kubernetes secret get ready
-const string CONNECTION_STRING = "Data Source=localhost;Initial Catalog=resistanceDb;User Id=sa; Password=someThingComplicated1234;";
+var connectionString = builder.Configuration.GetConnectionString("resistanceDb");
+builder.Services.AddContext(connectionString);
 
-// ToDo move these to Di setup
-builder.Services.AddDbContext<Context>(options => options.UseSqlServer(CONNECTION_STRING));
-builder.Services.AddIdentity<User, IdentityRole>(options =>
-                                                 {
-                                                     options.User.RequireUniqueEmail = true;
-                                                     //options.SignIn.RequireConfirmedEmail = true;
-                                                     // options.Password.RequireNonAlphanumeric = false;
-                                                     // options.Password.RequireDigit = true;
-                                                 })
-       .AddEntityFrameworkStores<Context>()
-       .AddDefaultTokenProviders();
+
+
 
 var app = builder.Build();
 

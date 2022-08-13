@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.Data.Exceptions;
 using TheResistanceOnline.Data.Users;
 
@@ -31,6 +32,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
     {
         #region Fields
 
+        private readonly IEmailService _emailService;
+
         private readonly IConfigurationSection _jwtSettings;
 
         private readonly UserManager<User> _userManager;
@@ -39,10 +42,10 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         #region Construction
 
-        public UserIdentityManager(UserManager<User> userManager, IConfiguration configuration)
+        public UserIdentityManager(UserManager<User> userManager, IConfiguration configuration, IEmailService emailService)
         {
             _userManager = userManager;
-
+            _emailService = emailService;
 
             _jwtSettings = configuration.GetSection("JwtSettings");
         }
@@ -133,9 +136,16 @@ namespace TheResistanceOnline.BusinessLogic.Users
             var passwordCheck = await _userManager.CheckPasswordAsync(foundUser, password);
             if (!passwordCheck)
             {
-                throw new DomainException(typeof(User), password, "Incorrect Password");
+                await _userManager.AccessFailedAsync(foundUser); 
+                var accountIsLocked = await _userManager.IsLockedOutAsync(foundUser);
+                if (accountIsLocked)
+                {
+                    throw new UnauthorizedAccessException();
+                }
+                throw new DomainException(typeof(User), password, "Incorrect password");
             }
-
+            
+            await _userManager.ResetAccessFailedCountAsync(user);
             var signingCredentials = GetSigningCredentials();
             var tokenOptions = GenerateTokenOptions(signingCredentials);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
@@ -145,7 +155,10 @@ namespace TheResistanceOnline.BusinessLogic.Users
         public async Task ResetPasswordAsync(User user, string? token, string? newPassword)
         {
             var foundUser = await FindUserByEmailAsync(user);
+            // Use this for if user is locked out and expiry is not over yet
+            await _userManager.SetLockoutEndDateAsync(foundUser, null);
             await _userManager.ResetPasswordAsync(foundUser, token, newPassword);
+
         }
 
         #endregion

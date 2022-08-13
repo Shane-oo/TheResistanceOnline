@@ -7,6 +7,8 @@ namespace TheResistanceOnline.BusinessLogic.Users.Commands
     {
         #region Properties
 
+        public string? ClientUri { get; set; }
+
         [Required(ErrorMessage = "Email is required.")]
         public string? Email { get; set; }
 

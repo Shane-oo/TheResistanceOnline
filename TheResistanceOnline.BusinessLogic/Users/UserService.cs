@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.WebUtilities;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Emails.Commands;
 using TheResistanceOnline.BusinessLogic.Users.Commands;
+using TheResistanceOnline.Data.Exceptions;
 using TheResistanceOnline.Data.Users;
 
 namespace TheResistanceOnline.BusinessLogic.Users
 {
     public interface IUserService
     {
+        Task ConfirmUserEmailAsync([NotNull] UserConfirmEmailCommand command);
+
         Task CreateUserAsync([NotNull] UserRegisterCommand command);
 
 
@@ -17,8 +20,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
         Task ResetUserPasswordAsync([NotNull] UserResetPasswordCommand command);
 
         Task SendResetPasswordAsync([NotNull] UserForgotPasswordCommand command);
-
-        Task ConfirmUserEmailAsync([NotNull] UserConfirmEmailCommand command);
     }
 
     /*
@@ -46,6 +47,20 @@ namespace TheResistanceOnline.BusinessLogic.Users
         #endregion
 
         #region Public Methods
+
+        public async Task ConfirmUserEmailAsync(UserConfirmEmailCommand command)
+        {
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            var user = new User
+                       {
+                           Email = command.Email,
+                       };
+            await _identityManager.ConfirmUsersEmailAsync(user, command.Token);
+        }
 
         public async Task CreateUserAsync(UserRegisterCommand command)
         {
@@ -94,8 +109,28 @@ namespace TheResistanceOnline.BusinessLogic.Users
                        {
                            Email = command.Email,
                        };
+            var token = "";
+            try
+            {
+                token = await _identityManager.LoginUserByEmailAsync(user, command.Password);
+            }
+            catch(UnauthorizedAccessException)
+            {
+                var sendEmailCommand = new SendEmailCommand
+                                       {
+                                           EmailTo = user.Email!,
+                                           EmailSubject = "The Resistance Board Game Online - Reset Password",
+                                           CancellationToken = command.CancellationToken,
+                                           EmailBody = "<h1> Please follow this link to reset your password " + command.ClientUri + "</h1>"
+                                       };
+                await _emailService.SendEmailAsync(sendEmailCommand);
 
-            return await _identityManager.LoginUserByEmailAsync(user, command.Password);
+                throw new DomainException(typeof(User), user.Email,
+                                          "Your account has been locked after too many failed login attempts. Please follow the instructions sent to " + user.Email +
+                                          " to reset your password");
+            }
+
+            return token;
         }
 
         public async Task ResetUserPasswordAsync(UserResetPasswordCommand command)
@@ -141,21 +176,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
                                    };
 
             await _emailService.SendEmailAsync(sendEmailCommand);
-        }
-
-        public async Task ConfirmUserEmailAsync(UserConfirmEmailCommand command)
-        {
-            if (command == null)
-            {
-                throw new ArgumentNullException(nameof(command));
-            }
-            
-            var user = new User
-                       {
-                           Email = command.Email,
-                       };
-            await _identityManager.ConfirmUsersEmailAsync(user, command.Token);
-
         }
 
         #endregion

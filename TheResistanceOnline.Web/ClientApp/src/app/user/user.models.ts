@@ -9,6 +9,7 @@ export interface UserRegisterModel {
 export interface UserLoginModel {
   email: string;
   password: string;
+  clientUri:string;
 }
 
 export interface LoginResponseModel {
