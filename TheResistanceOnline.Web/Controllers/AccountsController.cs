@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TheResistanceOnline.BusinessLogic.Users;
 using TheResistanceOnline.BusinessLogic.Users.Commands;
-using TheResistanceOnline.BusinessLogic.Users.Models;
 using TheResistanceOnline.Data.Exceptions;
 
 namespace TheResistanceOnline.Web.Controllers
@@ -28,7 +27,24 @@ namespace TheResistanceOnline.Web.Controllers
 
         #region Public Methods
 
-        [AllowAnonymous]
+        [HttpPost]
+        [Route("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(UserConfirmEmailCommand command)
+        {
+            try
+            {
+                await _userService.ConfirmUserEmailAsync(command);
+            }
+            catch(DomainException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            // if ResetUserPasswordAsync() doesn't throw => successfully reset password
+
+            return Ok();
+        }
+
         [HttpPost]
         [Route("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(UserForgotPasswordCommand command)
@@ -46,28 +62,21 @@ namespace TheResistanceOnline.Web.Controllers
             return Ok();
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login(UserLoginCommand command)
         {
-            var token = "";
             try
             {
-                token = await _userService.LoginUserAsync(command);
+                var userLoginResponse = await _userService.LoginUserAsync(command);
+                return Ok(userLoginResponse);
             }
             catch(DomainException ex)
             {
                 return Unauthorized(ex.Message);
             }
-
-            return Ok(new UserLoginResponse
-                      {
-                          Token = token
-                      });
         }
 
-        [AllowAnonymous]
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> RegisterUser(UserRegisterCommand command)
@@ -103,24 +112,6 @@ namespace TheResistanceOnline.Web.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [Route("ConfirmEmail")]
-        public async Task<IActionResult> ConfirmEmail(UserConfirmEmailCommand command)
-        {
-            try
-            {
-                await _userService.ConfirmUserEmailAsync(command);
-            }
-            catch(DomainException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-            // if ResetUserPasswordAsync() doesn't throw => successfully reset password
-
-            return Ok();
-        }
-        
         #endregion
     }
 }

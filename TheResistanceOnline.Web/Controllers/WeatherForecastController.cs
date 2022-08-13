@@ -5,7 +5,7 @@ namespace TheResistanceOnline.Web.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    //[Authorize]
+   
     public class WeatherForecastController: ControllerBase
     {
         #region Fields
@@ -31,6 +31,7 @@ namespace TheResistanceOnline.Web.Controllers
         #region Public Methods
 
         [HttpGet]
+        [Authorize]
         public IEnumerable<WeatherForecast> Get()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

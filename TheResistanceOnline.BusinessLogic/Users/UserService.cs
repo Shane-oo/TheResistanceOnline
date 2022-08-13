@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Emails.Commands;
 using TheResistanceOnline.BusinessLogic.Users.Commands;
+using TheResistanceOnline.BusinessLogic.Users.Models;
 using TheResistanceOnline.Data.Exceptions;
 using TheResistanceOnline.Data.Users;
 
@@ -14,8 +15,10 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         Task CreateUserAsync([NotNull] UserRegisterCommand command);
 
+        Task<UserDetails> GetUserAsync([NotNull] GetUserCommand command);
 
-        Task<string> LoginUserAsync([NotNull] UserLoginCommand command);
+
+        Task<UserLoginResponse> LoginUserAsync([NotNull] UserLoginCommand command);
 
         Task ResetUserPasswordAsync([NotNull] UserResetPasswordCommand command);
 
@@ -97,8 +100,13 @@ namespace TheResistanceOnline.BusinessLogic.Users
             await _emailService.SendEmailAsync(sendEmailCommand);
         }
 
+        public Task<UserDetails> GetUserAsync(GetUserCommand command)
+        {
+            throw new NotImplementedException();
+        }
 
-        public async Task<string> LoginUserAsync(UserLoginCommand command)
+
+        public async Task<UserLoginResponse> LoginUserAsync(UserLoginCommand command)
         {
             if (command == null)
             {
@@ -109,10 +117,10 @@ namespace TheResistanceOnline.BusinessLogic.Users
                        {
                            Email = command.Email,
                        };
-            var token = "";
+
             try
             {
-                token = await _identityManager.LoginUserByEmailAsync(user, command.Password);
+                return await _identityManager.LoginUserByEmailAsync(user, command.Password);
             }
             catch(UnauthorizedAccessException)
             {
@@ -129,8 +137,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
                                           "Your account has been locked after too many failed login attempts. Please follow the instructions sent to " + user.Email +
                                           " to reset your password");
             }
-
-            return token;
         }
 
         public async Task ResetUserPasswordAsync(UserResetPasswordCommand command)

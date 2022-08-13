@@ -73,4 +73,5 @@ export class AuthenticationService {
   public confirmEmail = (body: UserConfirmEmailModel) => {
     return this.http.post(`${environment.API_URL}${this.accountsEndpoint}/ConfirmEmail`, body);
   };
+
 }

@@ -9,11 +9,12 @@ export interface UserRegisterModel {
 export interface UserLoginModel {
   email: string;
   password: string;
-  clientUri:string;
+  clientUri: string;
 }
 
 export interface LoginResponseModel {
   token: string;
+  userId: string; //Guid???
 }
 
 export interface UserForgotPasswordModel {

@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using TheResistanceOnline.BusinessLogic.Emails;
+using TheResistanceOnline.BusinessLogic.Users.Models;
 using TheResistanceOnline.Data.Exceptions;
 using TheResistanceOnline.Data.Users;
 
@@ -19,7 +20,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         Task<string> GetPasswordResetTokenAsync(User user);
 
-        Task<string> LoginUserByEmailAsync(User user, string? password);
+        Task<UserLoginResponse> LoginUserByEmailAsync(User user, string? password);
 
         Task ResetPasswordAsync(User user, string? token, string? newPassword);
     }
@@ -140,7 +141,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
             return await _userManager.GeneratePasswordResetTokenAsync(foundUser);
         }
 
-        public async Task<string> LoginUserByEmailAsync(User user, string? password)
+        public async Task<UserLoginResponse> LoginUserByEmailAsync(User user, string? password)
         {
             var foundUser = await FindUserByEmailAsync(user);
             var confirmedEmail = await _userManager.IsEmailConfirmedAsync(foundUser);
@@ -167,7 +168,12 @@ namespace TheResistanceOnline.BusinessLogic.Users
             var claims = await GetClaims(foundUser);
             var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-            return token;
+            return new UserLoginResponse
+                   {
+                       Token = token,
+                       UserId = foundUser.Id
+                   };
+            
         }
 
         public async Task ResetPasswordAsync(User user, string? token, string? newPassword)

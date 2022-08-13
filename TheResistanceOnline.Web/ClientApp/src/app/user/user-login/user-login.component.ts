@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoginResponseModel, UserLoginModel } from '../user.models';
 import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { SessionStorageService } from '../../shared/services/session-storage.service';
 
 @Component({
              selector: 'app-user-login',
@@ -16,7 +17,7 @@ export class UserLoginComponent implements OnInit {
   public loginForm: FormGroup = new FormGroup({});
   private returnUrl: string = '';
 
-  constructor(private authService: AuthenticationService, private swalService: SwalContainerService, private router: Router, private route: ActivatedRoute) {
+  constructor(private authService: AuthenticationService, private swalService: SwalContainerService, private router: Router, private route: ActivatedRoute,private sessionService:SessionStorageService) {
   }
 
   ngOnInit(): void {
@@ -47,15 +48,12 @@ export class UserLoginComponent implements OnInit {
 
     this.authService.loginUser(user).subscribe({
                                                  next: (response: LoginResponseModel) => {
-                                                   console.log('In here');
                                                    localStorage.setItem('TheResistanceToken', response.token);
+                                                   this.sessionService.saveUserId(response.userId);
                                                    this.authService.sendAuthStateChange(true);
                                                    // Route to redirect url or homepage
-                                                   console.log(this.returnUrl);
                                                    this.router.navigate([this.returnUrl]).then(r => {
-                                                     // this.swalService.showSwal(
-                                                     //   'Successfully Login',
-                                                     //   SwalTypesModel.Success);
+
                                                    });
                                                  },
                                                  error: (err: HttpErrorResponse) => {

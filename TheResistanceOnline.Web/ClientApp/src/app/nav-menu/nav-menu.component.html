@@ -46,7 +46,7 @@
 
             <li [routerLinkActive]="['link-active']" class="nav-item">
               <a [routerLink]="['/user/']" class="nav-link text-light"
-              >Login /  Register</a
+              >Login / Register</a
               >
             </li>
           </ul>
@@ -60,6 +60,11 @@
             </li>
           </ul>
           <ul *ngIf="isUserAuthenticated" class="navbar-nav flex-grow">
+
+            <li [routerLinkActive]="['link-active']" class="nav-item">
+              <a [routerLink]="['/user/user-edit']" class="nav-link text-light"
+              >Profile</a
+              >
 
             <li class="nav-item">
               <a (click)="logout()" class="nav-link text-light"

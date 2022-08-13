@@ -55,7 +55,12 @@ export function tokenGetter() {
                                        path: 'user',
                                        loadChildren: () => import('./user/authentication.module').then(m => m.AuthenticationModule)
                                      },
-                                     {path: 'admin', component: AdminComponent, canActivate: [AuthGuard, AdminGuard]}
+                                     {path: 'admin', component: AdminComponent, canActivate: [AuthGuard, AdminGuard]},
+                                     {
+                                       path: 'user/user-edit',
+                                       loadChildren: () => import('./user/user-edit/user-edit.module').then(m => m.UserEditModule),
+                                       canActivate: [AuthGuard]
+                                     }
                                    ]),
               SweetAlert2Module.forRoot(),
               JwtModule.forRoot({

@@ -18,7 +18,7 @@ import { UserComponent } from './user.component';
               UserEmailConfirmationComponent,
               UserComponent],
             exports: [
-              UserRegisterComponent
+
             ],
             imports: [
               CommonModule,
