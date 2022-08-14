@@ -23,6 +23,7 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { AuthGuard } from './shared/guards/auth.guard';
 import { AdminComponent } from './admin/admin.component';
 import { AdminGuard } from './shared/guards/admin.guard';
+import { environment } from '../environments/environment';
 
 export function tokenGetter() {
   return localStorage.getItem('TheResistanceToken');
@@ -66,10 +67,7 @@ export function tokenGetter() {
               JwtModule.forRoot({
                                   config: {
                                     tokenGetter: tokenGetter,
-                                    allowedDomains: ['localhost:44452',
-                                      'theresistanceboardgameonline.com',
-                                      'localhost:7158',
-                                      'localhost:5001'],
+                                    allowedDomains: [environment.API_Domain, environment.Socket_Domain, environment.Base_Domain],
                                     disallowedRoutes: []
                                   }
                                 })

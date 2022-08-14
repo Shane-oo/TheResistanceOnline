@@ -49,13 +49,10 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
-        
-app.UseAuthorization();
-       
 
-app.UseEndpoints(endpoints =>
-                 {
-                     endpoints.MapControllers();
-                 });
+app.UseAuthorization();
+
+
+app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 app.Run();

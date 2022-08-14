@@ -1,12 +1,19 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TheResistanceOnline.Data.ProfilePictures;
 using TheResistanceOnline.Data.Users;
-using TheResistanceOnline.Infrastructure.Data.Configurations;
+using TheResistanceOnline.Infrastructure.Data.Configurations.ProfilePicturesConfigurations;
 
 namespace TheResistanceOnline.Infrastructure.Data;
 
 public class Context: IdentityDbContext<User>
 {
+    #region Properties
+
+    public DbSet<ProfilePicture> ProfilePictures { get; set; }
+
+    #endregion
+
     #region Construction
 
     public Context(DbContextOptions options): base(options)
@@ -21,10 +28,10 @@ public class Context: IdentityDbContext<User>
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfiguration(new UserRoleEntityConfiguration());
+
+        // modelBuilder.ApplyConfiguration(new UserRoleEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new ProfilePictureConfiguration());
     }
 
     #endregion
-
-    //public DbSet<object> objects {get;set;}
 }

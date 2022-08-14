@@ -101,7 +101,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
         }
 
         public async Task<UserDetails> GetUserAsync(GetUserCommand command)
-        { 
+        {
             if (command == null)
             {
                 throw new ArgumentNullException(nameof(command));
