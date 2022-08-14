@@ -17,9 +17,6 @@ namespace TheResistanceOnline.BusinessLogic.Core.Commands
         [Ignore]
         public Guid ParentCommandId { get; set; }
 
-        [Ignore]
-        public int UserId { get; set; }
-
         #endregion
 
         #region Construction
@@ -30,13 +27,8 @@ namespace TheResistanceOnline.BusinessLogic.Core.Commands
             CorrelationId = Guid.NewGuid();
         }
 
-        public CommandBase(int userId)
-        {
-            CommandId = Guid.NewGuid();
-            UserId = userId;
-        }
 
-        public CommandBase(ICommand parentCommand): this(parentCommand.UserId)
+        public CommandBase(ICommand parentCommand)
         {
             ParentCommandId = parentCommand.CommandId;
             CorrelationId = parentCommand.CorrelationId;

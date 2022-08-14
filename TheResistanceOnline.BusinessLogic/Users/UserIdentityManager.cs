@@ -93,6 +93,11 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         private SigningCredentials GetSigningCredentials()
         {
+            if (_securityKey == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
             var key = Encoding.UTF8.GetBytes(_securityKey);
             var secret = new SymmetricSecurityKey(key);
 

@@ -4,7 +4,7 @@ namespace TheResistanceOnline.BusinessLogic.Messages.Models
     {
         #region Properties
 
-        public string text { get; set; }
+        public string? Text { get; set; }
 
         #endregion
     }
