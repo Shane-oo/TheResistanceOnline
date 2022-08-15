@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\TheResistanceOnline.BusinessLogic\TheResistanceOnline.BusinessLogic.csproj" />
         <ProjectReference Include="..\TheResistanceOnline.Data\TheResistanceOnline.Data.csproj" />
     </ItemGroup>
 

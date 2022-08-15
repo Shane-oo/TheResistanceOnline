@@ -13,7 +13,7 @@ import { GetUserCommandModel } from '../user.models';
 export class UserEditComponent implements OnInit {
   public test: string = '';
   private _getUserCommand!: GetUserCommandModel;
-  private _userDetails!:UserDetailsModel;
+  public _userDetails!:UserDetailsModel;
   private _userId: string = '';
 
   constructor(private userEditService: UserEditService, private authService: AuthenticationService) {

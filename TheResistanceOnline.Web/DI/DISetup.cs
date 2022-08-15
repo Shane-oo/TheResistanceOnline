@@ -5,8 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Users;
+using TheResistanceOnline.BusinessLogic.Users.DbQueries;
+using TheResistanceOnline.Data;
+using TheResistanceOnline.Data.Core;
 using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Infrastructure.Data;
+using TheResistanceOnline.Infrastructure.Data.Queries.Users;
 
 namespace TheResistanceOnline.Web.DI;
 
@@ -59,6 +63,8 @@ public static class DISetup
         }
 
         services.AddDbContext<Context>(options => options.UseSqlServer(_connectionString));
+        services.AddScoped<IDataContext, DataContext>();
+        
     }
 
     public static void AddServices(this IServiceCollection services)
@@ -66,7 +72,7 @@ public static class DISetup
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserIdentityManager, UserIdentityManager>();
         services.AddScoped<IEmailService, EmailService>();
-
+        services.AddTransient<IUserDbQuery, UserDbQuery>();
         // Reset passwords tokens last for one hour
         services.Configure<DataProtectionTokenProviderOptions>(opt =>
                                                                    opt.TokenLifespan = TimeSpan.FromHours(1));
@@ -83,6 +89,8 @@ public static class DISetup
                                                  })
                 .AddEntityFrameworkStores<Context>()
                 .AddDefaultTokenProviders();
+
+        services.AddAutoMapper(typeof(UserMappingProfile));
     }
 
     #endregion

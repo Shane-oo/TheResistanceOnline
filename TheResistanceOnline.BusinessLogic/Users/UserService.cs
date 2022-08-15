@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.WebUtilities;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Emails.Commands;
 using TheResistanceOnline.BusinessLogic.Users.Commands;
+using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.BusinessLogic.Users.Models;
+using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Exceptions;
 using TheResistanceOnline.Data.Users;
 
@@ -33,6 +35,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
     {
         #region Fields
 
+        private readonly IDataContext _context;
+
         private readonly IEmailService _emailService;
 
         private readonly IUserIdentityManager _identityManager;
@@ -41,10 +45,11 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         #region Construction
 
-        public UserService(IUserIdentityManager identityManager, IEmailService emailService)
+        public UserService(IUserIdentityManager identityManager, IEmailService emailService, IDataContext context)
         {
             _identityManager = identityManager;
             _emailService = emailService;
+            _context = context;
         }
 
         #endregion
@@ -102,15 +107,13 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         public async Task<UserDetails> GetUserAsync(GetUserCommand command)
         {
-            if (command == null)
+            if (command == null || command.UserId == null)
             {
                 throw new ArgumentNullException(nameof(command));
             }
 
-            return new UserDetails
-                   {
-                       Email = "Shane"
-                   };
+            return await _context.Query<IUserDbQuery>().WithParams(command.UserId)
+                                 .ExecuteAsync(command.CancellationToken);
         }
 
 
