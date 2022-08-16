@@ -1,5 +1,6 @@
 export interface UserDetailsModel{
-  userName?: string;
-  email?: string;
+  id:string;
+  userName: string;
+  email: string;
   profilePictureId?:number
 }

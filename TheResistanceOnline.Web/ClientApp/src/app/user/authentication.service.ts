@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  GetUserCommandModel,
   LoginResponseModel,
   UserConfirmEmailModel,
   UserForgotPasswordModel,
@@ -11,6 +12,8 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Subject } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { Router } from '@angular/router';
+import { UserDetailsModel } from './user-edit/user-edit.models';
 
 
 @Injectable({
@@ -18,11 +21,12 @@ import { JwtHelperService } from '@auth0/angular-jwt';
             })
 export class AuthenticationService {
   private readonly accountsEndpoint = '/api/Accounts';
+  private readonly userController = '/api/User';
   private authChangeSub = new Subject<boolean>();
   public authChanged = this.authChangeSub.asObservable();
 
   // environment.API_URL
-  constructor(private http: HttpClient, private jwtHelper: JwtHelperService) {
+  constructor(private http: HttpClient, private jwtHelper: JwtHelperService, private router: Router) {
   }
 
   public registerUser = (body: UserRegisterModel) => {
@@ -35,7 +39,7 @@ export class AuthenticationService {
 
   public logout = () => {
     localStorage.removeItem('TheResistanceToken');
-    localStorage.removeItem('TheResistanceUserId')
+    localStorage.removeItem('TheResistanceUserId');
     this.sendAuthStateChange(false);
   };
   public sendAuthStateChange = (isAuthenticated: boolean) => {
@@ -76,11 +80,21 @@ export class AuthenticationService {
     return this.http.post(`${environment.API_URL}${this.accountsEndpoint}/ConfirmEmail`, body);
   };
 
-  public getUserId =():string=>{
+  public getUserId = (): string => {
     const userId = localStorage.getItem('TheResistanceUserId');
-    if(userId){
+    if(userId) {
       return userId;
+    } else {
+      // user is not logged in
+      this.sendAuthStateChange(false);
+      // Route to redirect url or homepage
+      this.router.navigate([`/user/login`]).then(r => {
+      });
+      return '';
     }
-    return "";
-  }
+  };
+
+  public getUserDetails = (body: GetUserCommandModel) => {
+    return this.http.post<UserDetailsModel>(`${environment.API_URL}${this.userController}/GetUser`, body);
+  };
 }

@@ -63,7 +63,7 @@
 
             <li [routerLinkActive]="['link-active']" class="nav-item">
               <a [routerLink]="['/user/user-edit']" class="nav-link text-light"
-              >Profile</a
+              >{{_userDetails ? 'Username: '+_userDetails.userName : 'Profile'}}</a
               >
 
             <li class="nav-item">
