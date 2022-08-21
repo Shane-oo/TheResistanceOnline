@@ -5,7 +5,9 @@ import { GameComponent } from './game/game.component';
 import { GameChatComponent } from './game/game-chat/game-chat.component';
 import { GameCanvasComponent } from './game/game-canvas/game-canvas.component';
 import { RouterModule } from '@angular/router';
-import { LobbyComponent } from './lobby/lobby.component';
+import { CreateGameComponent } from './create-game/create-game.component';
+import { JoinGameComponent } from './join-game/join-game.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -14,14 +16,17 @@ import { LobbyComponent } from './lobby/lobby.component';
               GameComponent,
               GameChatComponent,
               GameCanvasComponent,
-              LobbyComponent
+              CreateGameComponent,
+              JoinGameComponent
             ],
             imports: [
               CommonModule,
               RouterModule.forChild([
                                       {path: '', component: TheResistanceGameComponent},
                                       {path: 'game', component: GameComponent}
-                                    ])
+                                    ]),
+              ReactiveFormsModule,
+              FormsModule
             ]
           })
 export class TheResistanceGameModule {}

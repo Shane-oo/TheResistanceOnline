@@ -1,0 +1,45 @@
+<div class="">
+  <header>Create A Game</header>
+  <form (ngSubmit)="createGame(createGameForm.value)" [formGroup]="createGameForm" autocomplete="off" novalidate>
+    <div>
+      <label class="" for="lobbyName">Lobby Name:</label>
+
+      <input class="" formControlName="lobbyName" id="lobbyName" type="text"/>
+
+
+      <em *ngIf="validateControl('lobbyName') && hasError('lobbyName', 'required')">Lobby Name is required</em>
+    </div>
+
+    <!--channels-->
+    <div>
+      <div>
+        <label class=" " for="chatChannel">Chat Channel:</label>
+
+        <input #chatChannel (change)="onlyOneValue($event)" [checked]="chatChannel" class="" formControlName="chatChannel" id="chatChannel"
+               type="checkbox"/>
+
+
+      </div>
+      <div>
+        <label class=" " for="voiceChannel">Voice Channel:</label>
+
+        <input #voiceChannel (change)="onlyOneValue($event)" [checked]="voiceChannel" class="" formControlName="voiceChannel" id="voiceChannel"
+               type="checkbox"/>
+
+
+      </div>
+    </div>
+
+    <div class="field">
+
+      <input [disabled]="!createGameForm.valid" [style.background]="!createGameForm.valid? '#c9b4fe':'#682efc'" type="submit"
+             value="Create Game"
+      />
+
+    </div>
+  </form>
+
+</div>
+
+
+
