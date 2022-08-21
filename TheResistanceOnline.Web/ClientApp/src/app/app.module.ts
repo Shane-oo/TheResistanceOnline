@@ -9,9 +9,6 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
-import { GameComponent } from './game/game.component';
-import { GameCanvasComponent } from './game/game-canvas/game-canvas.component';
-import { GameChatComponent } from './game/game-chat/game-chat.component';
 import { ErrorHandlerService } from './shared/services/error-handler.service';
 
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
@@ -36,9 +33,6 @@ export function tokenGetter() {
               HomeComponent,
               CounterComponent,
               FetchDataComponent,
-              GameComponent,
-              GameCanvasComponent,
-              GameChatComponent,
               SwalContainerComponent,
               OverlayComponent,
               AdminComponent
@@ -51,7 +45,6 @@ export function tokenGetter() {
                                      {path: '', component: HomeComponent, pathMatch: 'full'},
                                      {path: 'counter', component: CounterComponent},
                                      {path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthGuard]},
-                                     {path: 'game', component: GameComponent, canActivate: [AuthGuard]},
                                      {
                                        path: 'user',
                                        loadChildren: () => import('./user/authentication.module').then(m => m.AuthenticationModule)
@@ -60,6 +53,11 @@ export function tokenGetter() {
                                      {
                                        path: 'user/user-edit',
                                        loadChildren: () => import('./user/user-edit/user-edit.module').then(m => m.UserEditModule),
+                                       canActivate: [AuthGuard]
+                                     },
+                                     {
+                                       path: 'the-resistance-game',
+                                       loadChildren: () => import('./the-resistance-game/the-resistance-game.module').then(m => m.TheResistanceGameModule),
                                        canActivate: [AuthGuard]
                                      }
                                    ]),
