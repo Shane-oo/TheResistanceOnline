@@ -32,44 +32,32 @@
             <a [routerLink]="['/counter']" class="nav-link text-light">Counter</a>
           </li>
           <li [routerLinkActive]="['link-active']" class="nav-item">
-            <a [routerLink]="['/fetch-data']" class="nav-link text-light"
-            >Fetch data</a
-            >
+            <a [routerLink]="['/fetch-data']" class="nav-link text-light">Fetch data</a>
           </li>
           <li [routerLinkActive]="['link-active']" class="nav-item">
-            <a [routerLink]="['/game']" class="nav-link text-light"
-            >Game</a
-            >
+            <a [routerLink]="['/game']" class="nav-link text-light">Game</a>
           </li>
 
           <ul *ngIf="!isUserAuthenticated" class="navbar-nav flex-grow">
 
             <li [routerLinkActive]="['link-active']" class="nav-item">
-              <a [routerLink]="['/user/']" class="nav-link text-light"
-              >Login / Register</a
-              >
+              <a [routerLink]="['/user/']" class="nav-link text-light">Login / Register</a>
             </li>
           </ul>
           <ul *ngIf="isUserAuthenticated && isUserAdmin " class="navbar-nav flex-grow">
 
             <li [routerLinkActive]="['link-active']" class="nav-item">
-              <a [routerLink]="['/admin']" class="nav-link text-light"
-              >Admin</a
-              >
+              <a [routerLink]="['/admin']" class="nav-link text-light">Admin</a>
 
             </li>
           </ul>
           <ul *ngIf="isUserAuthenticated" class="navbar-nav flex-grow">
 
             <li [routerLinkActive]="['link-active']" class="nav-item">
-              <a [routerLink]="['/user/user-edit']" class="nav-link text-light"
-              >{{_userDetails ? 'Username: '+_userDetails.userName : 'Profile'}}</a
-              >
+              <a [routerLink]="['/user/user-edit']" class="nav-link text-light">Profile</a>
 
             <li class="nav-item">
-              <a (click)="logout()" class="nav-link text-light"
-              >Logout</a
-              >
+              <a (click)="logout()" class="nav-link text-light">Logout</a>
 
           </ul>
         </ul>

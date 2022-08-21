@@ -17,9 +17,7 @@ import { UserComponent } from './user.component';
               UserResetPasswordComponent,
               UserEmailConfirmationComponent,
               UserComponent],
-            exports: [
-
-            ],
+            exports: [],
             imports: [
               CommonModule,
               ReactiveFormsModule,
@@ -27,6 +25,8 @@ import { UserComponent } from './user.component';
                                       {path: 'forgot-password', component: UserForgotPasswordComponent},
                                       {path: 'reset-password', component: UserResetPasswordComponent},
                                       {path: 'email-confirmation', component: UserEmailConfirmationComponent},
+                                      {path: 'login', component: UserLoginComponent},
+                                      {path: 'register', component: UserRegisterComponent},
                                       {path: '', component: UserComponent}
                                     ])
             ]

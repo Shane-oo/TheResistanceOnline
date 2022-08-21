@@ -3,7 +3,7 @@ using TheResistanceOnline.Data.Core;
 
 namespace TheResistanceOnline.BusinessLogic.Users.DbQueries
 {
-    public interface IUserDbQuery: IDbQuery<UserDetails>
+    public interface IUserDbQuery: IDbQuery<UserDetailsModel>
     {
         IUserDbQuery WithParams(string userId);
     }

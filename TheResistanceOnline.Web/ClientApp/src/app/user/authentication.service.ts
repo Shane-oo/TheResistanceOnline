@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {
-  GetUserCommandModel,
   LoginResponseModel,
   UserConfirmEmailModel,
   UserForgotPasswordModel,
@@ -21,7 +20,7 @@ import { UserDetailsModel } from './user-edit/user-edit.models';
             })
 export class AuthenticationService {
   private readonly accountsEndpoint = '/api/Accounts';
-  private readonly userController = '/api/User';
+  private readonly userEndpoint = '/api/User';
   private authChangeSub = new Subject<boolean>();
   public authChanged = this.authChangeSub.asObservable();
 
@@ -90,11 +89,22 @@ export class AuthenticationService {
       // Route to redirect url or homepage
       this.router.navigate([`/user/login`]).then(r => {
       });
-      return '';
     }
+    return '';
   };
 
-  public getUserDetails = (body: GetUserCommandModel) => {
-    return this.http.post<UserDetailsModel>(`${environment.API_URL}${this.userController}/GetUser`, body);
+  public getUserDetails = () => {
+    const id = this.getUserId();
+    return this.http.get<UserDetailsModel>(`${environment.API_URL}${this.userEndpoint}/${id}`)
   };
 }
+
+
+// getJob(id: number): Observable<JobEditModel> {
+//   return this.http.get<JobEditModel>(`${this.jobsEndpoint}/${id}`);
+// }
+
+//
+// recalculatePrices(jobId: number): Observable<JobEditModel> {
+//   return this.http.get<JobEditModel>(`${this.jobsEndpoint}/${jobId}/RecalculatePrices`);
+// }

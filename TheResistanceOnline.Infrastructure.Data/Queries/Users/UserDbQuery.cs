@@ -27,13 +27,13 @@ namespace TheResistanceOnline.Infrastructure.Data.Queries.Users
 
         #region Public Methods
 
-        public async Task<UserDetails> ExecuteAsync(CancellationToken cancellationToken)
+        public async Task<UserDetailsModel> ExecuteAsync(CancellationToken cancellationToken)
         {
             var user = await _context.Users.AsNoTracking() // not sure if should have AsNoTracking()
                                      .Include(p => p.ProfilePicture)
                                      .FirstOrDefaultAsync(u => u.Id == _userId,
                                                           cancellationToken);
-            return _mapper.Map<UserDetails>(user);
+            return _mapper.Map<UserDetailsModel>(user);
         }
 
         public IUserDbQuery WithParams(string userId)

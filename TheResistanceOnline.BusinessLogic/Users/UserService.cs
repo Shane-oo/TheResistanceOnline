@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.WebUtilities;
+using TheResistanceOnline.BusinessLogic.Core.Queries;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Emails.Commands;
 using TheResistanceOnline.BusinessLogic.Users.Commands;
@@ -17,7 +18,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         Task CreateUserAsync([NotNull] UserRegisterCommand command);
 
-        Task<UserDetails> GetUserAsync([NotNull] GetUserCommand command);
+        Task<UserDetailsModel> GetUserAsync([NotNull] ByIdQuery query);
 
 
         Task<UserLoginResponse> LoginUserAsync([NotNull] UserLoginCommand command);
@@ -105,15 +106,15 @@ namespace TheResistanceOnline.BusinessLogic.Users
             await _emailService.SendEmailAsync(sendEmailCommand);
         }
 
-        public async Task<UserDetails> GetUserAsync(GetUserCommand command)
+        public async Task<UserDetailsModel> GetUserAsync(ByIdQuery query)
         {
-            if (command == null || command.UserId == null)
+            if (query == null || string.IsNullOrEmpty(query.UserId))
             {
-                throw new ArgumentNullException(nameof(command));
+                throw new ArgumentNullException(nameof(query));
             }
 
-            return await _context.Query<IUserDbQuery>().WithParams(command.UserId)
-                                 .ExecuteAsync(command.CancellationToken);
+            return await _context.Query<IUserDbQuery>().WithParams(query.UserId)
+                                 .ExecuteAsync(query.CancellationToken);
         }
 
 

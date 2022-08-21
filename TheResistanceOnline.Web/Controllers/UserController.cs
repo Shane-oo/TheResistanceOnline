@@ -1,12 +1,13 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TheResistanceOnline.BusinessLogic.Core.Queries;
 using TheResistanceOnline.BusinessLogic.Users;
-using TheResistanceOnline.BusinessLogic.Users.Commands;
+using TheResistanceOnline.BusinessLogic.Users.Models;
 
 namespace TheResistanceOnline.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    //[Authorize]
     public class UserController: ControllerBase
     {
         #region Fields
@@ -26,14 +27,12 @@ namespace TheResistanceOnline.Web.Controllers
 
         #region Public Methods
 
-        [HttpPost]
-        [Authorize]
-        [Route("GetUser")]
-        public async Task<IActionResult> GetUser(GetUserCommand command)
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<UserDetailsModel>> GetUser([FromRoute] ByIdQuery query)
         {
             try
             {
-                var userDetails = await _userService.GetUserAsync(command);
+                var userDetails = await _userService.GetUserAsync(query);
                 return Ok(userDetails);
             }
             catch(Exception ex)
@@ -41,6 +40,10 @@ namespace TheResistanceOnline.Web.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        
+        // [Route("Roles")]
+        // public async Task<ActionResult<List<ModelBase>>> GetRoles([FromRoute] Query query) => await _userService.GetRolesAsync(query);
 
         #endregion
     }

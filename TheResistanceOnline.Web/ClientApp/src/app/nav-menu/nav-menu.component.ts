@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../user/authentication.service';
 import { Router } from '@angular/router';
-import { SwalContainerService } from '../../ui/swal/swal-container.service';
-import { SessionStorageService } from '../shared/services/session-storage.service';
-import { UserDetailsModel } from '../user/user-edit/user-edit.models';
 
 @Component({
              selector: 'app-nav-menu',
@@ -14,9 +11,8 @@ export class NavMenuComponent implements OnInit {
   isExpanded = false;
   isUserAuthenticated = false;
   isUserAdmin = false;
-  public _userDetails: UserDetailsModel | undefined;
 
-  constructor(private authService: AuthenticationService, private sessionService: SessionStorageService, private router: Router, private swalService: SwalContainerService) {
+  constructor(private authService: AuthenticationService, private router: Router) {
     this.authService.authChanged.subscribe(res => {
       this.isUserAuthenticated = res;
       this.isUserAdmin = this.authService.isUserAdmin();
@@ -25,11 +21,7 @@ export class NavMenuComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.authService.authChanged.subscribe(res => {
-      this.isUserAuthenticated = res;
-      this.isUserAdmin = this.authService.isUserAdmin();
-    });
-    this._userDetails = this.sessionService.getUserDetails();
+
   }
 
 
@@ -43,8 +35,8 @@ export class NavMenuComponent implements OnInit {
 
   logout() {
     this.authService.logout();
-    this.sessionService.removeSessionStorage();
     this.router.navigate(['/user']).then(r => {
     });
   }
+
 }

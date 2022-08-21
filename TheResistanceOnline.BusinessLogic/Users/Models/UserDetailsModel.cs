@@ -2,7 +2,7 @@ using TheResistanceOnline.Data.ProfilePictures;
 
 namespace TheResistanceOnline.BusinessLogic.Users.Models
 {
-    public class UserDetails
+    public class UserDetailsModel
     {
         #region Properties
 
