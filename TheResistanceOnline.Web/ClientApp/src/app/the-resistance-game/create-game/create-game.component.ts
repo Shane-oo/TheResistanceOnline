@@ -4,6 +4,7 @@ import { TheResistanceGameService } from '../the-resistance-game.service';
 import { GameValidatorService } from '../../shared/custom-validators/the-resistance-game/game-validator.service';
 import { CreateGameCommand } from '../the-resistance-game.models';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthenticationService } from '../../user/authentication.service';
 
 @Component({
              selector: 'app-create-game',
@@ -19,7 +20,7 @@ export class CreateGameComponent implements OnInit {
   @ViewChild('chatChannel') chatChannelElement!: ElementRef;
   @ViewChild('voiceChannel') voiceChannelElement!: ElementRef;
 
-  constructor(private theResistanceGameService: TheResistanceGameService, private gameValidatorService: GameValidatorService) {
+  constructor(private theResistanceGameService: TheResistanceGameService, private gameValidatorService: GameValidatorService, private authService: AuthenticationService) {
   }
 
   ngOnInit(): void {
@@ -57,29 +58,16 @@ export class CreateGameComponent implements OnInit {
     }
   }
 
-  // todo create interface
   public createGame = (createGameFormValue: CreateGameCommand) => {
     const formValues = {...createGameFormValue};
     const createGameCommand: CreateGameCommand = {
       lobbyName: formValues.lobbyName,
       createChatChannel: this.chatChannel,
-      createVoiceChannel: this.voiceChannel
+      createVoiceChannel: this.voiceChannel,
+      userId: this.authService.getUserId()
     };
 
-    this.theResistanceGameService.createGame(createGameCommand).subscribe({
-                                                                            next: () => {
-                                                                              // this.router.navigate([`/user/login`]).then(r => {
-                                                                              //   this.swalService.showSwal(
-                                                                              //     'Successfully registered! An email has been sent to '
-                                                                              //     + user.email
-                                                                              //     + ' please follow the link provided to confirm email address.',
-                                                                              //     SwalTypesModel.Success);
-                                                                              // });
-                                                                              // todo navigate to pre game lobby
-                                                                            },
-                                                                            error: (err: HttpErrorResponse) => {
-                                                                            }
-                                                                          });
+    this.theResistanceGameService.createGame(createGameCommand);
   };
 
 }

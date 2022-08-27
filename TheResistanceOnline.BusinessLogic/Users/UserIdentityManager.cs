@@ -97,7 +97,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
             {
                 throw new ArgumentNullException();
             }
-            
+
             var key = Encoding.UTF8.GetBytes(_securityKey);
             var secret = new SymmetricSecurityKey(key);
 
@@ -131,6 +131,9 @@ namespace TheResistanceOnline.BusinessLogic.Users
                     throw new DomainException(typeof(User), user.UserName, description);
                 }
             }
+            // added this for signalR????
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, user.Email));
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Name, user.UserName));
 
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
@@ -178,7 +181,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
                        Token = token,
                        UserId = foundUser.Id
                    };
-            
         }
 
         public async Task ResetPasswordAsync(User user, string? token, string? newPassword)

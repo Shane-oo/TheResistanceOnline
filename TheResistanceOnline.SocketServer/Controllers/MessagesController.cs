@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.BusinessLogic.Timers;
-using TheResistanceOnline.SocketServer.HubConfigurations;
 
 namespace TheResistanceOnline.SocketServer.Controllers
 {

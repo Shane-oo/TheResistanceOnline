@@ -1,18 +1,42 @@
-using JetBrains.Annotations;
+using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
+using TheResistanceOnline.BusinessLogic.Games.Models;
 
 namespace TheResistanceOnline.BusinessLogic.Games
 {
     public interface IGameService
     {
-        Task CreateGameAsync([NotNull] CreateGameCommand command);
     }
 
-    public class GameService  :IGameService
+    public class GameService: IGameService
     {
-        public async Task CreateGameAsync(CreateGameCommand command)
+        #region Fields
+
+        private readonly IHubContext<TheResistanceHub, ITheResistanceHub> _hubContext;
+
+        #endregion
+
+        #region Construction
+
+        public GameService(IHubContext<TheResistanceHub, ITheResistanceHub> hubContext)
         {
-            throw new NotImplementedException();
+            _hubContext = hubContext;
         }
+
+        #endregion
+
+        #region Public Methods
+        
+        public async Task sendMessage()
+        {
+            var messageModel = new MessageModel
+                               {
+                                   User = "Server",
+                                   Message = "Hello from server"
+                               };
+            await _hubContext.Clients.All.ReceivedMessage(messageModel);
+        }
+
+        #endregion
     }
 }

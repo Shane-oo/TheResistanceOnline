@@ -87,7 +87,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
 
             var token = await _identityManager.CreateIdentityAsync(user, command.Password);
-            await _identityManager.CreateUserRoleAsync(user, "User");
+            //todo this is broken
+            //await _identityManager.CreateUserRoleAsync(user, "User");
 
             var param = new Dictionary<string, string?>
                         {

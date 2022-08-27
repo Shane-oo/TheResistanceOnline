@@ -9,11 +9,13 @@ namespace TheResistanceOnline.BusinessLogic.Games.Commands
 
         public bool CreateChatChannel { get; set; }
 
+        public bool CreateVoiceChannel { get; set; }
+
         [Required]
         [MaxLength(50)]
         public string LobbyName { get; set; }
 
-        public bool CreateVoiceChannel { get; set; }
+        public string userId { get; set; }
 
         #endregion
     }
