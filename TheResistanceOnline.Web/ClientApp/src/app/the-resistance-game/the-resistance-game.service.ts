@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import * as signalR from '@microsoft/signalr';
 import { IHttpConnectionOptions } from '@microsoft/signalr';
 import { Subject } from 'rxjs';
+import { SwalContainerService, SwalTypesModel } from '../../ui/swal/swal-container.service';
 
 @Injectable({
               providedIn: 'root'
@@ -37,7 +38,7 @@ export class TheResistanceGameService {
     )
     .build();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private swalService: SwalContainerService) {
     this.connection.onclose(async() => {
       await this.start();
     });
@@ -74,4 +75,10 @@ export class TheResistanceGameService {
     });
   };
 
+  public addTooManyGamesListener = () => {
+    this.connection.on('tooManyGames', (response) => {
+      console.log("too many games recieved")
+      this.swalService.showSwal(response, SwalTypesModel.Error);
+    });
+  };
 }

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.BusinessLogic.Core.Queries;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
@@ -12,6 +11,12 @@ namespace TheResistanceOnline.SocketServer.Hubs
     [Authorize]
     public class TheResistanceHub: Hub
     {
+        #region Constants
+
+        private const int MAX_GAME_COUNT = 10;
+
+        #endregion
+
         #region Fields
 
         private static readonly Dictionary<string, string> _connectionIdToGroupMappingTable = new Dictionary<string, string>();
@@ -38,12 +43,14 @@ namespace TheResistanceOnline.SocketServer.Hubs
             await Clients.All.SendAsync("broadcastmessagedata", message);
         }
 
-       
+
         public async Task CreateGame(CreateGameCommand command)
         {
-            if (_connectionIdToGroupMappingTable.Count > 2)
+            if (_groupNameToGameDetailsMappingTable.Count == MAX_GAME_COUNT)
             {
-                // return not creating game
+                await Clients.Client(Context.ConnectionId).SendAsync("tooManyGames", "There Exists Too Many Games Currently Playing. " +
+                                                                                     "Please Wait Until Games Are Finished Before Creating A New Game");
+                return;
             }
 
             await Groups.AddToGroupAsync(Context.ConnectionId, command.LobbyName);
@@ -53,7 +60,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                     UserName = _connectionIdToUserMappingTable[Context.ConnectionId].UserName,
                                     ProfilePictureName = _connectionIdToUserMappingTable[Context.ConnectionId].ProfilePicture?.Name
                                 };
-            
+
             var newGame = new GameDetailsModel
                           {
                               LobbyName = command.LobbyName,
@@ -81,18 +88,21 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            var groupConnectionWasIn = _connectionIdToGroupMappingTable[Context.ConnectionId];
-            if (!string.IsNullOrEmpty(groupConnectionWasIn))
+            try
             {
+                var groupConnectionWasIn = _connectionIdToGroupMappingTable[Context.ConnectionId];
                 var userThatLeft = _connectionIdToUserMappingTable[Context.ConnectionId].UserName;
                 Clients.Group(groupConnectionWasIn).SendAsync("userLeftLobby", $"{userThatLeft}");
+                _connectionIdToUserMappingTable.Remove(Context.ConnectionId);
+                _connectionIdToGroupMappingTable.Remove(Context.ConnectionId);
+            }
+            catch(Exception ex)
+            {
+                // key does not exist in dictionary's all goods
             }
 
-            _connectionIdToUserMappingTable.Remove(Context.ConnectionId);
-            _connectionIdToGroupMappingTable.Remove(Context.ConnectionId);
             return base.OnDisconnectedAsync(exception);
         }
-        
 
         #endregion
     }

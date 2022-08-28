@@ -26,7 +26,7 @@ export class CreateGameComponent implements OnInit {
   @ViewChild('chatChannel') chatChannelElement!: ElementRef;
   @ViewChild('voiceChannel') voiceChannelElement!: ElementRef;
 
-  constructor(private theResistanceGameService: TheResistanceGameService, private gameValidatorService: GameValidatorService, private authService: AuthenticationService) {
+  constructor(private gameService: TheResistanceGameService, private gameValidatorService: GameValidatorService, private authService: AuthenticationService) {
   }
 
   ngOnInit(): void {
@@ -37,7 +37,8 @@ export class CreateGameComponent implements OnInit {
 
                                         });
     // todo dispose of this when game starts?
-    this.theResistanceGameService.addUserCreatedGameListener();
+    this.gameService.addUserCreatedGameListener();
+    this.gameService.addTooManyGamesListener();
 
   }
 
@@ -75,7 +76,7 @@ export class CreateGameComponent implements OnInit {
       userId: this.authService.getUserId()
     };
     // invoke createGame()
-    this.theResistanceGameService.createGame(createGameCommand)
+    this.gameService.createGame(createGameCommand);
 
 
   };
