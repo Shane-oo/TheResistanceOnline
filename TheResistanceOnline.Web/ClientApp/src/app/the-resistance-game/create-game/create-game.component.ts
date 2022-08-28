@@ -1,9 +1,8 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TheResistanceGameService } from '../the-resistance-game.service';
 import { GameValidatorService } from '../../shared/custom-validators/the-resistance-game/game-validator.service';
-import { CreateGameCommand } from '../the-resistance-game.models';
-import { HttpErrorResponse } from '@angular/common/http';
+import { CreateGameCommand, GameDetails } from '../the-resistance-game.models';
 import { AuthenticationService } from '../../user/authentication.service';
 
 @Component({
@@ -12,6 +11,13 @@ import { AuthenticationService } from '../../user/authentication.service';
              styleUrls: ['./create-game.component.css']
            })
 export class CreateGameComponent implements OnInit {
+
+  @Input() gameDetails: GameDetails = {
+    userInGame: false,
+    lobbyName: '',
+    users: []
+  };
+  @Output() userJoinedLobby = new EventEmitter<string>();
 
   public createGameForm: FormGroup = new FormGroup({});
   // Angular checkboxes broken
@@ -30,6 +36,8 @@ export class CreateGameComponent implements OnInit {
                                           voiceChannel: new FormControl(false)
 
                                         });
+    // todo dispose of this when game starts?
+    this.theResistanceGameService.addUserCreatedGameListener();
 
   }
 
@@ -66,8 +74,10 @@ export class CreateGameComponent implements OnInit {
       createVoiceChannel: this.voiceChannel,
       userId: this.authService.getUserId()
     };
+    // invoke createGame()
+    this.theResistanceGameService.createGame(createGameCommand)
 
-    this.theResistanceGameService.createGame(createGameCommand);
+
   };
 
 }

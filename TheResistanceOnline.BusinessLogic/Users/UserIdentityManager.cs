@@ -132,7 +132,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 }
             }
             // added this for signalR????
-            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, user.Email));
             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Name, user.UserName));
 
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
