@@ -5,11 +5,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.BusinessLogic.Timers;
+using TheResistanceOnline.BusinessLogic.Users;
+using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Infrastructure.Data;
+using TheResistanceOnline.Infrastructure.Data.Queries.Users;
 
 namespace TheResistanceOnline.SocketServer.DI
 {
@@ -41,7 +45,7 @@ namespace TheResistanceOnline.SocketServer.DI
                                        })
                     .AddJwtBearer(x =>
                                   {
-                                      x.RequireHttpsMetadata = false;
+                                      x.RequireHttpsMetadata = true;
                                       x.SaveToken = true;
                                       x.TokenValidationParameters = new TokenValidationParameters
                                                                     {
@@ -89,11 +93,16 @@ namespace TheResistanceOnline.SocketServer.DI
 
         public static void AddServices(this IServiceCollection services)
         {
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserIdentityManager, UserIdentityManager>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
+            services.AddAutoMapper(typeof(UserMappingProfile));
 
             services.AddTransient<ITimerService, TimerService>();
             //  services.AddTransient<ITheResistanceHub>();
             services.AddTransient<IGameService, GameService>();
-
+            //todo dont think this is needed?
             services.AddIdentity<User, IdentityRole>(options =>
                                                      {
                                                          options.User.RequireUniqueEmail = true;

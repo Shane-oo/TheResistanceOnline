@@ -8,6 +8,7 @@ import { RouterModule } from '@angular/router';
 import { CreateGameComponent } from './create-game/create-game.component';
 import { JoinGameComponent } from './join-game/join-game.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LobbyComponent } from './lobby/lobby.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
               GameChatComponent,
               GameCanvasComponent,
               CreateGameComponent,
-              JoinGameComponent
+              JoinGameComponent,
+              LobbyComponent
             ],
             imports: [
               CommonModule,

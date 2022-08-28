@@ -1,5 +1,6 @@
 using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.SocketServer.DI;
+using TheResistanceOnline.SocketServer.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
