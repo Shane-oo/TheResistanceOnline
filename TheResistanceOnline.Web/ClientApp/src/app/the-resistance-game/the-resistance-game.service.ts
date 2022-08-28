@@ -34,13 +34,26 @@ export class TheResistanceGameService {
       await this.start();
     });
 
-    this.start().then(r => console.log('connected'));
+    this.start().then(r =>console.log('connected'));
   }
+
+  public createGame = (body: CreateGameCommand) => {
+    console.log("1")
+    this.connection.invoke('JoinGroup', body.lobbyName)
+        .catch(err => console.log(err));
+
+   // this.connection.invoke('broadcastmessagedata', body.lobbyName)
+       // .catch(err => console.log(err));
+
+    console.log('Successfully joined group ' +  body.lobbyName);
+    console.log("2")
+    //return this.http.post(`${environment.Socket_URL}${this.gamesEndpoint}/Create`, body);
+  };
 
   // start the connection
   public async start() {
     try {
-      console.log('trying to connect');
+      console.log("trying to connect")
       await this.connection.start();
     } catch(err) {
       console.log(err);
@@ -48,17 +61,39 @@ export class TheResistanceGameService {
     }
   }
 
-  public createGame = (body: CreateGameCommand) => {
-    console.log('invoking CreateGame()');
-    this.connection.invoke('CreateGame', body)
-        .catch(err => console.log(err));
-  };
-
-
-  public addUserCreatedGameListener = () => {
-    this.connection.on('userCreatedGame', (newGame) => {
-      console.log('User created new game', newGame);
-    });
-  };
+  // public startConnection = () => {
+  //   console.log('starting connection');
+  //   this.hubConnection = new signalR.HubConnectionBuilder()
+  //     .withUrl(environment.Socket_URL + '/message', {
+  //       skipNegotiation: true,
+  //       transport: signalR.HttpTransportType.WebSockets
+  //
+  //     })
+  //     .build();
+  //
+  //   this.hubConnection.start()
+  //       .then(() => console.log('Connection started'))
+  //       .catch(err => console.log('Error while starting connection: ' + err));
+  // };
+  //
+  // public addTransferMessageListener = () => {
+  //   this.hubConnection.on('transfermessagedata', (data) => {
+  //     this.messages = data;
+  //     console.log(data);
+  //   });
+  // };
+  //
+  // public broadCastMessage = (sentMessage: string) => {
+  //   this.hubConnection.invoke('broadcastmessagedata', sentMessage)
+  //       .catch(err => console.log(err));
+  //   console.log('sent message ' + sentMessage);
+  // };
+  //
+  // public addBroadCastListener = () => {
+  //   this.hubConnection.on('broadcastmessagedata', (data) => {
+  //     this.broadCastedMessages = data;
+  //     console.log(data);
+  //   });
+  // };
 
 }

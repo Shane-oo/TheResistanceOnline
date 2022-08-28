@@ -1,8 +1,3 @@
 <p>game works!</p>
-<div *ngIf="!gameDetails.userInGame">
-  <app-create-game (userJoinedLobby)="changeUsersLobby($event)" [gameDetails]="gameDetails"></app-create-game>
-  <app-join-game></app-join-game>
-</div>
-<div *ngIf="gameDetails.userInGame">
-  <app-lobby  [gameDetails]="gameDetails"></app-lobby>
-</div>
+<app-create-game></app-create-game>
+<!--<app-join-game></app-join-game>-->

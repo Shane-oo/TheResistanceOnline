@@ -4,9 +4,3 @@ export interface CreateGameCommand {
   createVoiceChannel: boolean;
   userId: string;
 }
-
-export interface GameDetails {
-  userInGame: boolean;
-  lobbyName: string;
-  users:string[];// string of usernames
-}
