@@ -1,14 +1,22 @@
 import { Injectable } from '@angular/core';
-import { CreateGameCommand } from './the-resistance-game.models';
+import { CreateGameCommand, GameDetails } from './the-resistance-game.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import * as signalR from '@microsoft/signalr';
 import { IHttpConnectionOptions } from '@microsoft/signalr';
+import { Subject } from 'rxjs';
 
 @Injectable({
               providedIn: 'root'
             })
 export class TheResistanceGameService {
+  public gameDetails: GameDetails = {
+    userInGame: false,
+    playersDetails: [],
+    lobbyName: ''
+  };
+
+  public gameDetailsChanged: Subject<GameDetails> = new Subject<GameDetails>();
 
   private readonly gamesEndpoint = '/api/Games';
   private readonly token = localStorage.getItem('TheResistanceToken');
@@ -35,6 +43,10 @@ export class TheResistanceGameService {
     });
 
     this.start().then(r => console.log('connected'));
+
+    this.gameDetailsChanged.subscribe((value) => {
+      this.gameDetails = value;
+    });
   }
 
   // start the connection
@@ -58,6 +70,7 @@ export class TheResistanceGameService {
   public addUserCreatedGameListener = () => {
     this.connection.on('userCreatedGame', (newGame) => {
       console.log('User created new game', newGame);
+      this.gameDetailsChanged.next(newGame);
     });
   };
 

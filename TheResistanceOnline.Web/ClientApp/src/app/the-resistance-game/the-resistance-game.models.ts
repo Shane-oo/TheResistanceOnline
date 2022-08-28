@@ -8,5 +8,11 @@ export interface CreateGameCommand {
 export interface GameDetails {
   userInGame: boolean;
   lobbyName: string;
-  users:string[];// string of usernames
+  playersDetails: PlayerDetails[];
+}
+
+export interface PlayerDetails {
+
+  profilePictureName: string;
+  userName: string;
 }

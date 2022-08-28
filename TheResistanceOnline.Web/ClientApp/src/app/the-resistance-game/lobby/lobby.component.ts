@@ -11,7 +11,7 @@ export class LobbyComponent implements OnInit {
   @Input() gameDetails: GameDetails = {
     userInGame: false,
     lobbyName: '',
-    users: []
+    playersDetails: []
   };
 
   constructor(private gameService: TheResistanceGameService) {

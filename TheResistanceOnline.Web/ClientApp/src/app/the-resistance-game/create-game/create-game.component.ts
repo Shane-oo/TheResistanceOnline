@@ -15,7 +15,7 @@ export class CreateGameComponent implements OnInit {
   @Input() gameDetails: GameDetails = {
     userInGame: false,
     lobbyName: '',
-    users: []
+    playersDetails: []
   };
   @Output() userJoinedLobby = new EventEmitter<string>();
 

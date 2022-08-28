@@ -4,5 +4,13 @@
   <app-join-game></app-join-game>
 </div>
 <div *ngIf="gameDetails.userInGame">
-  <app-lobby  [gameDetails]="gameDetails"></app-lobby>
+  <app-lobby [gameDetails]="gameDetails"></app-lobby>
+</div>
+
+
+<div>
+  Game Details
+  {{gameDetails.lobbyName}}
+  {{gameDetails.playersDetails[0]?.userName}}
+  {{gameDetails.userInGame}}
 </div>

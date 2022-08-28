@@ -92,10 +92,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             _connectionIdToGroupMappingTable.Remove(Context.ConnectionId);
             return base.OnDisconnectedAsync(exception);
         }
-
-
-        //private static readonly ConcurrentDictionary<string, string> _connections = new ConcurrentDictionary<string, string>();
-
+        
 
         #endregion
     }

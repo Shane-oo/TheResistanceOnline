@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GameDetails } from './the-resistance-game.models';
+import { TheResistanceGameService } from './the-resistance-game.service';
 
 @Component({
              selector: 'app-the-resistance-game',
@@ -10,10 +11,14 @@ export class TheResistanceGameComponent implements OnInit {
   public gameDetails: GameDetails = {
     userInGame: false,
     lobbyName: '',
-    users:[]
+    playersDetails: []
   };
 
-  constructor() {
+  constructor(private gameService: TheResistanceGameService) {
+
+    this.gameService.gameDetailsChanged.subscribe((value: GameDetails) => {
+      this.gameDetails = value;
+    });
   }
 
   ngOnInit(): void {
