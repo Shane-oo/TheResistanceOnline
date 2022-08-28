@@ -10,7 +10,7 @@ using TheResistanceOnline.BusinessLogic.Users.Models;
 namespace TheResistanceOnline.SocketServer.Hubs
 {
     [Authorize]
-    public abstract class TheResistanceHub: Hub
+    public class TheResistanceHub: Hub
     {
         #region Fields
 
