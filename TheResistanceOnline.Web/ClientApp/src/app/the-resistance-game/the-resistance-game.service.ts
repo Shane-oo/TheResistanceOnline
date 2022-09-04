@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CreateGameCommand, GameDetails } from './the-resistance-game.models';
+import { CreateGameCommand, GameDetails, JoinGameCommand } from './the-resistance-game.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import * as signalR from '@microsoft/signalr';
@@ -11,8 +11,8 @@ import { SwalContainerService, SwalTypesModel } from '../../ui/swal/swal-contain
               providedIn: 'root'
             })
 export class TheResistanceGameService {
+
   public gameDetails: GameDetails = {
-    userInGame: false,
     playersDetails: [],
     lobbyName: ''
   };
@@ -21,6 +21,7 @@ export class TheResistanceGameService {
 
   private readonly gamesEndpoint = '/api/Games';
   private readonly token = localStorage.getItem('TheResistanceToken');
+
   private options: IHttpConnectionOptions = {
     accessTokenFactory: () => {
       let token = localStorage.getItem('TheResistanceToken');
@@ -29,7 +30,6 @@ export class TheResistanceGameService {
       }
       return '';
     }, transport: signalR.HttpTransportType.WebSockets, skipNegotiation: true
-
   };
 
   private connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
@@ -67,17 +67,53 @@ export class TheResistanceGameService {
         .catch(err => console.log(err));
   };
 
+  public joinGame = (body: JoinGameCommand) => {
+    this.connection.invoke('JoinGame', body).catch(err => console.log(err));
+  };
+
 
   public addUserCreatedGameListener = () => {
-    this.connection.on('userCreatedGame', (newGame) => {
+    this.connection.on('userCreatedGame', (newGame: GameDetails) => {
       console.log('User created new game', newGame);
       this.gameDetailsChanged.next(newGame);
     });
   };
 
+  public addGameAlreadyExistsListener = () => {
+    this.connection.on('gameAlreadyExists', (response: string) => {
+      this.swalService.showSwal(response, SwalTypesModel.Error);
+    });
+  };
+
   public addTooManyGamesListener = () => {
-    this.connection.on('tooManyGames', (response) => {
-      console.log("too many games recieved")
+    this.connection.on('tooManyGames', (response: string) => {
+      this.swalService.showSwal(response, SwalTypesModel.Error);
+    });
+  };
+
+
+  public addUserJoinedGameListener = () => {
+    this.connection.on('userJoinedGame', (game: GameDetails) => {
+      console.log('user joined game', game);
+      this.gameDetailsChanged.next(game);
+    });
+
+  };
+
+  public addUserLeftGameListener = () => {
+    this.connection.on('userLeftGame', (game: GameDetails) => {
+      this.gameDetailsChanged.next(game);
+    });
+  };
+
+  public addGameIsFullListener = () => {
+    this.connection.on('gameIsFull', (response: string) => {
+      this.swalService.showSwal(response, SwalTypesModel.Error);
+    });
+  };
+
+  public addGameDoesNotExistListener = () => {
+    this.connection.on('gameDoesNotExist', (response: string) => {
       this.swalService.showSwal(response, SwalTypesModel.Error);
     });
   };

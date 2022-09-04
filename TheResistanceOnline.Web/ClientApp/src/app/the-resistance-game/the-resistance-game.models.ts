@@ -2,11 +2,12 @@ export interface CreateGameCommand {
   lobbyName: string;
   createChatChannel: boolean;
   createVoiceChannel: boolean;
-  userId: string;
 }
 
+export interface JoinGameCommand{
+  lobbyName:string;
+}
 export interface GameDetails {
-  userInGame: boolean;
   lobbyName: string;
   playersDetails: PlayerDetails[];
 }

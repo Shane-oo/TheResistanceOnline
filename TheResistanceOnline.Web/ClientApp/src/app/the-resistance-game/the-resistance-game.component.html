@@ -1,9 +1,9 @@
 <p>game works!</p>
-<div *ngIf="!gameDetails.userInGame">
-  <app-create-game (userJoinedLobby)="changeUsersLobby($event)" [gameDetails]="gameDetails"></app-create-game>
+<div *ngIf="!userInGame">
+  <app-create-game ></app-create-game>
   <app-join-game></app-join-game>
 </div>
-<div *ngIf="gameDetails.userInGame">
+<div *ngIf="userInGame">
   <app-lobby [gameDetails]="gameDetails"></app-lobby>
 </div>
 
@@ -12,5 +12,13 @@
   Game Details
   {{gameDetails.lobbyName}}
   {{gameDetails.playersDetails[0]?.userName}}
-  {{gameDetails.userInGame}}
+  {{userInGame}}
+</div>
+<div>
+    <span>Users in Lobby</span>
+  <ul>
+    <li *ngFor="let player of gameDetails.playersDetails">
+      {{player.userName}}
+    </li>
+  </ul>
 </div>

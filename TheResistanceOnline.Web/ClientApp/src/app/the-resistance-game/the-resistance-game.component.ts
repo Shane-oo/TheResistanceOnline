@@ -8,8 +8,8 @@ import { TheResistanceGameService } from './the-resistance-game.service';
              styleUrls: ['./the-resistance-game.component.css']
            })
 export class TheResistanceGameComponent implements OnInit {
+  public userInGame: boolean = false;
   public gameDetails: GameDetails = {
-    userInGame: false,
     lobbyName: '',
     playersDetails: []
   };
@@ -18,15 +18,11 @@ export class TheResistanceGameComponent implements OnInit {
 
     this.gameService.gameDetailsChanged.subscribe((value: GameDetails) => {
       this.gameDetails = value;
+      this.userInGame = true;
     });
   }
 
   ngOnInit(): void {
   }
 
-  public changeUsersLobby = (lobbyName: string) => {
-
-    this.gameDetails.userInGame = true;
-    this.gameDetails.lobbyName = lobbyName;
-  };
 }

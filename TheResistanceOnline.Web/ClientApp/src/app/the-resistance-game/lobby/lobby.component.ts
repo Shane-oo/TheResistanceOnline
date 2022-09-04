@@ -9,7 +9,6 @@ import { TheResistanceGameService } from '../the-resistance-game.service';
            })
 export class LobbyComponent implements OnInit {
   @Input() gameDetails: GameDetails = {
-    userInGame: false,
     lobbyName: '',
     playersDetails: []
   };
@@ -21,6 +20,7 @@ export class LobbyComponent implements OnInit {
   ngOnInit(): void {
     //this.gameService.addUserJoinedLobbyListener();
     //this.gameService.addUserLeftLobbyListener();
+    this.gameService.addUserLeftGameListener();
   }
 
 }

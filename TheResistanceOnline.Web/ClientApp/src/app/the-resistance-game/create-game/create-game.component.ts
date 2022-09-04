@@ -1,9 +1,7 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TheResistanceGameService } from '../the-resistance-game.service';
-import { GameValidatorService } from '../../shared/custom-validators/the-resistance-game/game-validator.service';
-import { CreateGameCommand, GameDetails } from '../the-resistance-game.models';
-import { AuthenticationService } from '../../user/authentication.service';
+import { CreateGameCommand } from '../the-resistance-game.models';
 
 @Component({
              selector: 'app-create-game',
@@ -12,13 +10,6 @@ import { AuthenticationService } from '../../user/authentication.service';
            })
 export class CreateGameComponent implements OnInit {
 
-  @Input() gameDetails: GameDetails = {
-    userInGame: false,
-    lobbyName: '',
-    playersDetails: []
-  };
-  @Output() userJoinedLobby = new EventEmitter<string>();
-
   public createGameForm: FormGroup = new FormGroup({});
   // Angular checkboxes broken
   public chatChannel: boolean = true;
@@ -26,7 +17,7 @@ export class CreateGameComponent implements OnInit {
   @ViewChild('chatChannel') chatChannelElement!: ElementRef;
   @ViewChild('voiceChannel') voiceChannelElement!: ElementRef;
 
-  constructor(private gameService: TheResistanceGameService, private gameValidatorService: GameValidatorService, private authService: AuthenticationService) {
+  constructor(private gameService: TheResistanceGameService) {
   }
 
   ngOnInit(): void {
@@ -39,6 +30,7 @@ export class CreateGameComponent implements OnInit {
     // todo dispose of this when game starts?
     this.gameService.addUserCreatedGameListener();
     this.gameService.addTooManyGamesListener();
+    this.gameService.addGameAlreadyExistsListener();
 
   }
 
@@ -48,7 +40,6 @@ export class CreateGameComponent implements OnInit {
 
   public hasError = (controlName: string, errorName: string) => {
     return this.createGameForm.get(controlName)?.hasError(errorName);
-
   };
 
   public onlyOneValue(event: any) {
@@ -72,13 +63,10 @@ export class CreateGameComponent implements OnInit {
     const createGameCommand: CreateGameCommand = {
       lobbyName: formValues.lobbyName,
       createChatChannel: this.chatChannel,
-      createVoiceChannel: this.voiceChannel,
-      userId: this.authService.getUserId()
+      createVoiceChannel: this.voiceChannel
     };
     // invoke createGame()
     this.gameService.createGame(createGameCommand);
-
-
   };
 
 }

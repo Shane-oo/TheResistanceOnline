@@ -4,7 +4,8 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
     {
         #region Properties
 
-        public string? ProfilePictureName { get; set; }
+        public Guid PlayerId { get; set; }
+        public int? ProfilePictureId { get; set; }
 
         public string? UserName { get; set; }
 
