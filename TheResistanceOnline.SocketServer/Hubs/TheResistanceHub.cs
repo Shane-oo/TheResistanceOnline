@@ -48,7 +48,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                 {
                                     PlayerId = Guid.NewGuid(),
                                     UserName = _connectionIdToUserMappingTable[Context.ConnectionId].UserName,
-                                    ProfilePictureId = _connectionIdToUserMappingTable[Context.ConnectionId].ProfilePicture?.Id
+                                    ProfilePictureId = null     //todo what should profile pic be, discord prof pic?
                                 };
             if (string.IsNullOrEmpty(playerDetails.UserName))
             {
@@ -78,6 +78,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 return;
             }
 
+            //todo this shouldnt be needed if picking from list of 10
             if (_groupNameToGameDetailsMappingTable.Count == MAX_GAME_COUNT)
             {
                 await Clients.Client(Context.ConnectionId).SendAsync("tooManyGames", "There Exists Too Many Games Currently Playing. " +
@@ -91,7 +92,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             var playerDetails = CreateNewPlayer();
             if (playerDetails != null)
             {
-                _gameService.CreateNewGameDiscordChatAsync(command);
+                _gameService.AssignRoleToPlayerAsync(command, _connectionIdToUserMappingTable[Context.ConnectionId]);
                 
                 // todo denote the host
                 var newGame = new GameDetailsModel

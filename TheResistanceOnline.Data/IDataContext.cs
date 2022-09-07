@@ -5,7 +5,7 @@ namespace TheResistanceOnline.Data
 {
     public interface IDataContext
     {
-        void Add([NotNull] object? entity);
+        void Add([NotNull] object entity);
 
         T Query<T>() where T : class, IDbQuery;
 

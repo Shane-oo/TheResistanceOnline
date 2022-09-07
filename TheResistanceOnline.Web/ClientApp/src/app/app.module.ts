@@ -65,7 +65,10 @@ export function tokenGetter() {
               JwtModule.forRoot({
                                   config: {
                                     tokenGetter: tokenGetter,
-                                    allowedDomains: ['localhost:44452', 'theresistanceboardgameonline.com', 'theresistanceboardgameonline.com/server'],
+                                    allowedDomains: [environment.API_Domain,
+                                      environment.Socket_Domain,
+                                      environment.Base_Domain,
+                                      environment.Base_Domain + '/server'],
                                     disallowedRoutes: []
                                   }
                                 })
