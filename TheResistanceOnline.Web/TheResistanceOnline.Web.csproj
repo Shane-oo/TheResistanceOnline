@@ -28,6 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="ClientApp\src\app\shared\custom-validators\the-resistance-game" />
         <Folder Include="ClientApp\src\app\shared\services" />
         <Folder Include="ClientApp\src\assets\fonts" />
         <Folder Include="ClientApp\src\assets\images\profile-pictures" />

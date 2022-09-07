@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TheResistanceOnline.BusinessLogic.Core.Queries;
 using TheResistanceOnline.BusinessLogic.Users;
@@ -7,7 +8,7 @@ namespace TheResistanceOnline.Web.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     public class UserController: ControllerBase
     {
         #region Fields
@@ -41,10 +42,10 @@ namespace TheResistanceOnline.Web.Controllers
             }
         }
 
-        
+        #endregion
+
+
         // [Route("Roles")]
         // public async Task<ActionResult<List<ModelBase>>> GetRoles([FromRoute] Query query) => await _userService.GetRolesAsync(query);
-
-        #endregion
     }
 }

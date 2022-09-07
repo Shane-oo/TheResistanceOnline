@@ -1,0 +1,24 @@
+<p>game works!</p>
+<div *ngIf="!userInGame">
+  <app-create-game ></app-create-game>
+  <app-join-game></app-join-game>
+</div>
+<div *ngIf="userInGame">
+  <app-lobby [gameDetails]="gameDetails"></app-lobby>
+</div>
+
+
+<div>
+  Game Details
+  {{gameDetails.lobbyName}}
+  {{gameDetails.playersDetails[0]?.userName}}
+  {{userInGame}}
+</div>
+<div>
+    <span>Users in Lobby</span>
+  <ul>
+    <li *ngFor="let player of gameDetails.playersDetails">
+      {{player.userName}}
+    </li>
+  </ul>
+</div>

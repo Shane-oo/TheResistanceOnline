@@ -20,6 +20,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         Task<UserDetailsModel> GetUserAsync([NotNull] ByIdQuery query);
 
+        Task<UserDetailsModel> GetUserByEmailOrNameAsync([NotNull] ByIdAndNameQuery query);
 
         Task<UserLoginResponse> LoginUserAsync([NotNull] UserLoginCommand command);
 
@@ -87,7 +88,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
 
             var token = await _identityManager.CreateIdentityAsync(user, command.Password);
-            await _identityManager.CreateUserRoleAsync(user, "User");
+            //todo this is broken
+            //await _identityManager.CreateUserRoleAsync(user, "User");
 
             var param = new Dictionary<string, string?>
                         {
@@ -115,6 +117,16 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
             return await _context.Query<IUserDbQuery>().WithParams(query.UserId)
                                  .ExecuteAsync(query.CancellationToken);
+        }
+
+        public async Task<UserDetailsModel> GetUserByEmailOrNameAsync(ByIdAndNameQuery query)
+        {
+            if (query == null || string.IsNullOrEmpty(query.Name))
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            return await _context.Query<IUserByNameOrEmailDbQuery>().WithParams(query.Name).ExecuteAsync(query.CancellationToken);
         }
 
 

@@ -44,7 +44,6 @@ export class UserRegisterComponent implements OnInit {
   };
 
   public registerUser = (registerFormValue: UserRegisterModel) => {
-    console.log(typeof (registerFormValue));
     const formValues = {...registerFormValue};
     const user: UserRegisterModel = {
       userName: formValues.userName,

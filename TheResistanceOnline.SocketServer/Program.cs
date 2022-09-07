@@ -1,5 +1,6 @@
+using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.SocketServer.DI;
-using TheResistanceOnline.SocketServer.HubConfigurations;
+using TheResistanceOnline.SocketServer.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,12 +16,14 @@ builder.Services.AddCors(options =>
                                               );
                          });
 
+builder.Services.AddServices();
+builder.Services.AddAuthenticationServices();
+builder.Services.AddContext();
+
 builder.Services.AddSignalR();
 
 builder.Services.AddControllers();
 
-// DISetup
-builder.Services.AddServices();
 
 var app = builder.Build();
 
@@ -28,13 +31,21 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("CorsPolicy");
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
                  {
                      endpoints.MapControllers();
-                     endpoints.MapHub<TheResistanceHub>("/message");
+                     //todo map hubs dont forget
+                     //endpoints.MapHub<TheResistanceHub>("/message");
+                     endpoints.MapHub<TheResistanceHub>("/theresistancehub");        //// path will look like this https://localhost:44379/theresistancehub 
                  });
 
 app.Run();
+
+
+//  app.UseSignalR(route =>
+// {
+//     route.MapHub<ChatHub>("/chathub");
+// });
