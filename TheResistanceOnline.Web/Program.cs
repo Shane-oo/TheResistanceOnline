@@ -52,15 +52,11 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-                 {
-                     endpoints.MapControllerRoute("default",
-                                                  "{controller}/{action=Index}/{id?}");
-                 });
-// app.MapControllerRoute(
-//                        "default",
-//                        "{controller}/{action=Index}/{id?}");
-//
-// app.MapFallbackToFile("index.html");
+// dont touch
+app.MapControllerRoute(
+                        "default",
+                        "{controller}/{action=Index}/{id?}");
+
+app.MapFallbackToFile("index.html");
 
 app.Run();
