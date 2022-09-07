@@ -1,0 +1,110 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- main
+
+resources:
+- repo: self
+
+variables:
+
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'e9234e1a-42aa-4107-bd03-505f479531aa'
+  imageRepository: 'theresistanceonlineweb'
+  containerRegistry: 'theresistancecontainer.azurecr.io'
+  dockerfilePath: '**/TheResistanceOnline.Web/Dockerfile'
+  imageRepositorySocketServer: 'theresistanceonlinesocketserver'
+  socketServerDockerFilePath: '**/TheResistanceOnline.SocketServer/Dockerfile'
+  tag: 'latest'
+  imagePullSecret: 'theresistancecontainer95ee-auth'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+
+stages:
+
+- stage: Build1
+  displayName: Build Web App stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        buildContext: '$(Build.Repository.LocalPath)'
+        tags: |
+          $(tag)
+    - upload: manifests
+      artifact: manifests
+
+- stage: Build2
+  displayName: Build Socket Server stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepositorySocketServer)
+        dockerfile: $(socketServerDockerFilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        buildContext: '$(Build.Repository.LocalPath)'
+        tags: |
+          $(tag)
+    - upload: manifests
+      artifact: manifests
+      
+- stage: Deploy1
+  displayName: Deploy Web App stage
+  dependsOn: Build1
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    environment: 'TheResistanceOnline.ingress-basic'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              namespace: 'ingress-basic'
+              command: 'rollout'
+              arguments: 'restart deployment theresistance-webapp'
+
+- stage: Deploy2
+  displayName: Deploy Socket Server stage
+  dependsOn: Build2
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    environment: 'TheResistanceOnline.ingress-basic'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              namespace: 'ingress-basic'
+              command: 'rollout'
+              arguments: 'restart deployment socket-server'
