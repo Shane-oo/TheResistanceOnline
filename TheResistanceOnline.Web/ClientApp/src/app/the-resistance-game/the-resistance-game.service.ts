@@ -57,7 +57,7 @@ export class TheResistanceGameService {
       await this.connection.start();
     } catch(err) {
       console.log(err);
-      setTimeout(() => this.start(), 5000);
+      setTimeout(() => this.start(), 30000);
     }
   }
 

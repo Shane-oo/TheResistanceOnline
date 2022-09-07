@@ -56,7 +56,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
                         "default",
                         "{controller}/{action=Index}/{id?}");
-
+// dont touch maybe
 app.MapFallbackToFile("index.html");
 
 app.Run();
