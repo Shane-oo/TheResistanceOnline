@@ -17,7 +17,7 @@ namespace TheResistanceOnline.Data.ProfilePictures
         public int Id { get; set; }
 
         [Column("Name")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         #endregion
     }

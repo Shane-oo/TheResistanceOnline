@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
@@ -117,6 +118,8 @@ namespace TheResistanceOnline.SocketServer.DI
                     .AddDefaultTokenProviders();
 
             services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
+            
+            services.AddSingleton<DiscordSocketClient>();
         }
 
         #endregion
