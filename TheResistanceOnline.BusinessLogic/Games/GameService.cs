@@ -34,23 +34,19 @@ namespace TheResistanceOnline.BusinessLogic.Games
         {
             await _discordSocketClient.LoginAsync(TokenType.Bot, "MTAxNTkyNTAxMjc1MTk5MDg1NA.GZ9H5M.PSRnP3LEhfP_DWFEp0cULEpf0ciDWgrq2HqCVQ");
             await _discordSocketClient.StartAsync();
+            // need to wait for connected
+            while(_discordSocketClient.ConnectionState != ConnectionState.Connected)
+            {
+                 Console.WriteLine(_discordSocketClient.ConnectionState);
+            }
+            // there exists guilds , count =1
             Console.WriteLine(userDetails);
-            // var idk = _discordSocketClient.GroupChannels;
-            // foreach(var VARIABLE in idk)
-            // {
-            //     VARIABLE.
-            // }
-            // var socketPrivateChannels = _discordSocketClient.PrivateChannels;
-            // foreach(var VARIABLE in socketPrivateChannels)
-            // {
-            //     var recipients = VARIABLE.Recipients;
-            //     foreach(var recipient in recipients)
-            //     {
-            //          recipient.
-            //     }
-            // }
-            var newChannel = await _discordSocketClient.GetChannelAsync(81889909113225237);
-            Console.WriteLine(newChannel);
+            var privateChannels = _discordSocketClient.PrivateChannels;
+            foreach(var VARIABLE in privateChannels)
+            {
+                Console.WriteLine(VARIABLE);
+            }
+            
         }
 
         #endregion
