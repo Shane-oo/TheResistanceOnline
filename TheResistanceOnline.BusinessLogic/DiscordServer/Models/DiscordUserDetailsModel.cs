@@ -1,7 +1,8 @@
 using JetBrains.Annotations;
 
-namespace TheResistanceOnline.BusinessLogic.DiscordUsers.Models
+namespace TheResistanceOnline.BusinessLogic.DiscordServer.Models
 {
+    [UsedImplicitly]
     public class DiscordUserDetailsModel
     {
         #region Properties

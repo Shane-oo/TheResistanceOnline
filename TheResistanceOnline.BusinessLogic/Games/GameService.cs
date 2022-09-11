@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Discord;
-using Discord.WebSocket;
+using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
 using TheResistanceOnline.BusinessLogic.Users.Models;
 
@@ -15,15 +14,15 @@ namespace TheResistanceOnline.BusinessLogic.Games
     {
         #region Fields
 
-        private readonly DiscordSocketClient _discordSocketClient;
+        private readonly IDiscordServerService _discordServerService;
 
         #endregion
 
         #region Construction
 
-        public GameService(DiscordSocketClient discordSocketClient)
+        public GameService(IDiscordServerService discordServerService)
         {
-            _discordSocketClient = discordSocketClient;
+            _discordServerService = discordServerService;
         }
 
         #endregion
@@ -32,21 +31,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
 
         public async void AssignRoleToPlayerAsync(CreateGameCommand command, UserDetailsModel userDetails)
         {
-            await _discordSocketClient.LoginAsync(TokenType.Bot, "MTAxNTkyNTAxMjc1MTk5MDg1NA.GZ9H5M.PSRnP3LEhfP_DWFEp0cULEpf0ciDWgrq2HqCVQ");
-            await _discordSocketClient.StartAsync();
-            // need to wait for connected
-            while(_discordSocketClient.ConnectionState != ConnectionState.Connected)
-            {
-                 Console.WriteLine(_discordSocketClient.ConnectionState);
-            }
-            // there exists guilds , count =1
-            Console.WriteLine(userDetails);
-            var privateChannels = _discordSocketClient.PrivateChannels;
-            foreach(var VARIABLE in privateChannels)
-            {
-                Console.WriteLine(VARIABLE);
-            }
-            
+            await _discordServerService.AddRoleToUserAsync("Join Game-1","game-1");
         }
 
         #endregion
