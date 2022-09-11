@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity;
-using TheResistanceOnline.Data.DiscordUsers;
+using TheResistanceOnline.Data.DiscordServer;
 using TheResistanceOnline.Data.ProfilePictures;
 
 namespace TheResistanceOnline.Data.Users;

@@ -50,8 +50,7 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
             {
                 await Task.Delay(25);
             }
-
-
+            
         }
 
         #endregion

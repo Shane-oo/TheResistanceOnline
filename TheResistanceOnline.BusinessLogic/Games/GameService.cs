@@ -31,7 +31,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
 
         public async void AssignRoleToPlayerAsync(CreateGameCommand command, UserDetailsModel userDetails)
         {
-            await _discordServerService.AddRoleToUserAsync("Join Game-1","game-1");
+            await _discordServerService.AddRoleToUserAsync("Join Game-9","game-1");
         }
 
         #endregion

@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TheResistanceOnline.Data.DiscordUsers;
+using TheResistanceOnline.Data.DiscordServer;
 
-namespace TheResistanceOnline.Infrastructure.Data.Configurations.DiscordUsersConfigurations
+namespace TheResistanceOnline.Infrastructure.Data.Configurations.DiscordServerConfigurations
 {
     public class DiscordUserConfiguration: IEntityTypeConfiguration<DiscordUser>
 
@@ -11,7 +11,7 @@ namespace TheResistanceOnline.Infrastructure.Data.Configurations.DiscordUsersCon
 
         public void Configure(EntityTypeBuilder<DiscordUser> builder)
         {
-            builder.HasKey(d => d.Id)
+            builder.HasKey(u => u.Id)
                    .HasName("PK_DiscordUsers");
         }
 
