@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.BusinessLogic.Games;
-using TheResistanceOnline.BusinessLogic.Games.Commands;
 
 namespace TheResistanceOnline.SocketServer.Controllers
 {
@@ -19,16 +17,10 @@ namespace TheResistanceOnline.SocketServer.Controllers
 
         #region Construction
 
-        public GamesController( IGameService gameService)
+        public GamesController(IGameService gameService)
         {
             _gameService = gameService;
-  
         }
-
-        #endregion
-
-        #region Public Methods
-        
 
         #endregion
     }

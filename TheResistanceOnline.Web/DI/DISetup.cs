@@ -7,7 +7,6 @@ using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Users;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Core;
 using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Infrastructure.Data;
 using TheResistanceOnline.Infrastructure.Data.Queries.Users;
@@ -64,7 +63,6 @@ public static class DISetup
 
         services.AddDbContext<Context>(options => options.UseSqlServer(_connectionString));
         services.AddScoped<IDataContext, DataContext>();
-        
     }
 
     public static void AddServices(this IServiceCollection services)

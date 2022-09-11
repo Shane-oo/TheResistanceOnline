@@ -91,7 +91,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
             //todo this is broken
             //await _identityManager.CreateUserRoleAsync(user, "User");
 
-            var param = new Dictionary<string, string?>
+            var param = new Dictionary<string, string>
                         {
                             { "token", token },
                             { "email", user.Email }
@@ -191,7 +191,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
                        };
 
             var token = await _identityManager.GetPasswordResetTokenAsync(user);
-            var param = new Dictionary<string, string?>
+            var param = new Dictionary<string, string>
                         {
                             { "token", token },
                             { "email", command.Email }

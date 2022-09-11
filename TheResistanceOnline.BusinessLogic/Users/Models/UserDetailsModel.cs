@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using TheResistanceOnline.BusinessLogic.DiscordUsers.Models;
+using TheResistanceOnline.BusinessLogic.DiscordServer.Models;
 
 namespace TheResistanceOnline.BusinessLogic.Users.Models
 {

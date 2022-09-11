@@ -1,4 +1,3 @@
-using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.SocketServer.DI;
 using TheResistanceOnline.SocketServer.Hubs;
 
@@ -39,7 +38,7 @@ app.UseEndpoints(endpoints =>
                      endpoints.MapControllers();
                      //todo map hubs dont forget
                      //endpoints.MapHub<TheResistanceHub>("/message");
-                     endpoints.MapHub<TheResistanceHub>("/theresistancehub");        //// path will look like this https://localhost:44379/theresistancehub 
+                     endpoints.MapHub<TheResistanceHub>("/theresistancehub"); //// path will look like this https://localhost:44379/theresistancehub 
                  });
 
 app.Run();

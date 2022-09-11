@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using TheResistanceOnline.BusinessLogic.Core.Commands;
 
 namespace TheResistanceOnline.BusinessLogic.Users.Commands
@@ -6,9 +7,11 @@ namespace TheResistanceOnline.BusinessLogic.Users.Commands
     {
         #region Properties
 
-        public string? Email { get; set; }
+        [NotNull]
+        public string Email { get; set; }
 
-        public string? Token { get; set; }
+        [NotNull]
+        public string Token { get; set; }
 
         #endregion
     }

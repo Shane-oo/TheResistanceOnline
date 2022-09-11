@@ -1,9 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Users.Models;
 using TheResistanceOnline.Data.Exceptions;
 using TheResistanceOnline.Data.Users;
@@ -12,40 +12,37 @@ namespace TheResistanceOnline.BusinessLogic.Users
 {
     public interface IUserIdentityManager
     {
-        Task ConfirmUsersEmailAsync(User user, string? token);
+        Task ConfirmUsersEmailAsync([NotNull] User user, [NotNull] string token);
 
-        Task<string> CreateIdentityAsync(User user, string? password);
+        Task<string> CreateIdentityAsync([NotNull] User user, [NotNull] string password);
 
-        Task CreateUserRoleAsync(User user, string role);
+        Task CreateUserRoleAsync([NotNull] User user, [NotNull] string role);
 
-        Task<string> GetPasswordResetTokenAsync(User user);
+        Task<string> GetPasswordResetTokenAsync([NotNull] User user);
 
-        Task<UserLoginResponse> LoginUserByEmailAsync(User user, string? password);
+        Task<UserLoginResponse> LoginUserByEmailAsync([NotNull] User user, [NotNull] string password);
 
-        Task ResetPasswordAsync(User user, string? token, string? newPassword);
+        Task ResetPasswordAsync([NotNull] User user, [NotNull] string token, [NotNull] string newPassword);
     }
 
     public class UserIdentityManager: IUserIdentityManager
     {
         #region Fields
 
-        private readonly IEmailService _emailService;
-
-        private static readonly string? _expiryInMinutes = Environment.GetEnvironmentVariable("ExpiryInMinutes");
-        private static readonly string? _securityKey = Environment.GetEnvironmentVariable("SecurityKey");
+        private static readonly string _expiryInMinutes = Environment.GetEnvironmentVariable("ExpiryInMinutes");
+        private static readonly string _securityKey = Environment.GetEnvironmentVariable("SecurityKey");
 
         private readonly UserManager<User> _userManager;
-        private static readonly string? _validAudience = Environment.GetEnvironmentVariable("ValidAudience");
-        private static readonly string? _validIssuer = Environment.GetEnvironmentVariable("ValidIssuer");
+        private static readonly string _validAudience = Environment.GetEnvironmentVariable("ValidAudience");
+        private static readonly string _validIssuer = Environment.GetEnvironmentVariable("ValidIssuer");
 
         #endregion
 
         #region Construction
 
-        public UserIdentityManager(UserManager<User> userManager, IEmailService emailService)
+        public UserIdentityManager(UserManager<User> userManager)
         {
             _userManager = userManager;
-            _emailService = emailService;
 
             if (_validIssuer == null || _validAudience == null || _securityKey == null || _expiryInMinutes == null)
             {
@@ -69,7 +66,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
             return foundUser;
         }
 
-        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
+        private static JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
         {
             return new JwtSecurityToken(_validIssuer,
                                         _validAudience,
@@ -108,7 +105,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         #region Public Methods
 
-        public async Task ConfirmUsersEmailAsync(User user, string? token)
+        public async Task ConfirmUsersEmailAsync(User user, string token)
         {
             var foundUser = await FindUserByEmailAsync(user);
 
@@ -120,7 +117,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
         }
 
         // returns email token confirmation
-        public async Task<string> CreateIdentityAsync(User user, string? password)
+        public async Task<string> CreateIdentityAsync(User user, string password)
         {
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
@@ -131,6 +128,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
                     throw new DomainException(typeof(User), user.UserName, description);
                 }
             }
+
             // added this for signalR????
             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Name, user.UserName));
 
@@ -148,7 +146,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
             return await _userManager.GeneratePasswordResetTokenAsync(foundUser);
         }
 
-        public async Task<UserLoginResponse> LoginUserByEmailAsync(User user, string? password)
+        public async Task<UserLoginResponse> LoginUserByEmailAsync(User user, string password)
         {
             var foundUser = await FindUserByEmailAsync(user);
             var confirmedEmail = await _userManager.IsEmailConfirmedAsync(foundUser);
@@ -182,7 +180,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
                    };
         }
 
-        public async Task ResetPasswordAsync(User user, string? token, string? newPassword)
+        public async Task ResetPasswordAsync(User user, string token, string newPassword)
         {
             var foundUser = await FindUserByEmailAsync(user);
             // Use this for if user is locked out and expiry is not over yet
