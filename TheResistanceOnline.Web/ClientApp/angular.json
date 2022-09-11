@@ -24,7 +24,8 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              "src/assets"
+              "src/assets",
+              "src/favicon-32x32.png"
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
