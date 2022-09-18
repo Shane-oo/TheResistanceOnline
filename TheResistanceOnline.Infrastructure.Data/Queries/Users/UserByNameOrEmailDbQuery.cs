@@ -31,6 +31,7 @@ public class UserByNameOrEmailDbQuery: IUserByNameOrEmailDbQuery
     {
         var user = await _context.Users.AsNoTracking() // not sure if should have AsNoTracking()
                                  .Include(p => p.ProfilePicture)
+                                 .Include(ud => ud.DiscordUser)
                                  .FirstOrDefaultAsync(u => u.Email == _userNameOrEmail || u.UserName == _userNameOrEmail,
                                                       cancellationToken);
         return _mapper.Map<UserDetailsModel>(user);
