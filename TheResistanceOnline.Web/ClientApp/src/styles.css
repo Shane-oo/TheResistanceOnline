@@ -16,7 +16,7 @@ code {
 }
 
 /* Style the video: 100% width and height to cover the entire window */
-#Image{
+#Image {
   position: fixed;
   right: 0;
   bottom: 0;
@@ -45,4 +45,52 @@ code {
   top: 25px;
   left: 2px
 }
+
+
+/*New Nav Bar*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  /* todo//font-family: '';*/
+  width: calc(100% - 5rem);
+  height: 100vh;
+  /*margin-left: 0rem;*/
+  z-index: 0;
+  position: relative;
+  top: 0;
+  transition: all .5s ease;
+  background-image: linear-gradient(to right top, #000000, #0a0a0a, #121212, #181818, #1e1e1e);
+
+  /*padding: 3rem;*/
+
+
+}
+
+.body-trimmed {
+  width: calc(100% - 16.5625rem);
+  margin-left: 17.5625rem;
+  transition: all .5s ease;
+
+}
+
+.body-md-screen {
+  width: calc(100% - 5rem);
+  margin-left: 6rem;
+  transition: all .5s ease;
+
+}
+
+
+.gradient-text {
+  background-image: linear-gradient(to right, #04a5f9, #8f88fb, #e256ce, #ff0079, #fc2001);
+  background-clip: text;
+  color: transparent;
+}
+
+
 

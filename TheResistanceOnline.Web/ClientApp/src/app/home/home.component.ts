@@ -13,6 +13,7 @@ export class HomeComponent implements OnInit {
 
   }
 
+
 /*
   @ViewChild('Video')
   set mainVideoEl1(el: ElementRef) {

@@ -6,7 +6,7 @@ namespace TheResistanceOnline.BusinessLogic.Timers
     {
         bool CheckTimerHasStarted();
 
-        void Execute(object? stateInfo);
+        void Execute([NotNull] object stateInfo);
 
         void PrepareTimer(Action action);
     }

@@ -1,21 +1,19 @@
 using System.ComponentModel.DataAnnotations;
+using JetBrains.Annotations;
 using TheResistanceOnline.BusinessLogic.Core.Commands;
 
 namespace TheResistanceOnline.BusinessLogic.Games.Commands
 {
+    [UsedImplicitly]
     public class CreateGameCommand: CommandBase
     {
         #region Properties
-
-        public bool CreateChatChannel { get; set; }
-
-        public bool CreateVoiceChannel { get; set; }
-
+        
         [Required]
-        [MaxLength(50)]
+        [NotNull]
         public string LobbyName { get; set; }
 
-        public string userId { get; set; }
+        
 
         #endregion
     }

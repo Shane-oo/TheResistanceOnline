@@ -1,67 +1,38 @@
-<header>
-  <nav
-    class="navbar sticky-top navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3"
-    style="background-color: #1C1C1C;"
-  >
-    <div class="container">
-      <a [routerLink]="['/']" class="navbar-brand">The Resistance Board Game Online</a>
-      <button
-        (click)="toggle()"
-        [attr.aria-expanded]="isExpanded"
-        aria-label="Toggle navigation"
-        class="navbar-toggler"
-        data-target=".navbar-collapse"
-        data-toggle="collapse"
-        type="button"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div
-        [ngClass]="{ show: isExpanded }"
-        class="navbar-collapse collapse d-sm-inline-flex justify-content-end"
-      >
-        <ul class="navbar-nav flex-grow">
-          <li
-            [routerLinkActiveOptions]="{ exact: true }"
-            [routerLinkActive]="['link-active']"
-            class="nav-item"
-          >
-            <a [routerLink]="['/']" class="nav-link text-light">Home</a>
-          </li>
-          <li [routerLinkActive]="['link-active']" class="nav-item">
-            <a [routerLink]="['/counter']" class="nav-link text-light">Counter</a>
-          </li>
-          <li [routerLinkActive]="['link-active']" class="nav-item">
-            <a [routerLink]="['/fetch-data']" class="nav-link text-light">Fetch data</a>
-          </li>
-          <li [routerLinkActive]="['link-active']" class="nav-item">
-            <a [routerLink]="['/the-resistance-game/']" class="nav-link text-light">Game</a>
-          </li>
-
-          <ul *ngIf="!isUserAuthenticated" class="navbar-nav flex-grow">
-
-            <li [routerLinkActive]="['link-active']" class="nav-item">
-              <a [routerLink]="['/user/']" class="nav-link text-light">Login / Register</a>
-            </li>
-          </ul>
-          <ul *ngIf="isUserAuthenticated && isUserAdmin " class="navbar-nav flex-grow">
-
-            <li [routerLinkActive]="['link-active']" class="nav-item">
-              <a [routerLink]="['/admin']" class="nav-link text-light">Admin</a>
-
-            </li>
-          </ul>
-          <ul *ngIf="isUserAuthenticated" class="navbar-nav flex-grow">
-
-            <li [routerLinkActive]="['link-active']" class="nav-item">
-              <a [routerLink]="['/user/user-edit']" class="nav-link text-light">Profile</a>
-
-            <li class="nav-item">
-              <a (click)="logout()" class="nav-link text-light">Logout</a>
-
-          </ul>
-        </ul>
-      </div>
-    </div>
-  </nav>
-</header>
+<div [ngClass]="collapsed ? 'sidenav-collapsed':''" class="sidenav">
+  <div class="logo-container">
+    <button (click)="toggleCollapse()" class="logo">TRO</button>
+    <div *ngIf="collapsed" @fadeInOut class="logo-text">The Resistance Online</div>
+    <button (click)="closeSidenav()" *ngIf="collapsed" class="btn-close">
+      <i class="material-symbols-outlined">
+        close
+      </i>
+    </button>
+  </div>
+  <ul *ngIf="isUserAuthenticated" class="sidenav-nav">
+    <li *ngFor="let data of navDataLoggedIn" class="sidenav-nav-item">
+      <a [routerLinkActiveOptions]="{exact:true}" [routerLink]="[data.routeLink]"
+         class="sidenav-nav-link"
+         routerLinkActive="active">
+        <span class="sidenav-link-icon material-symbols-outlined">{{data.icon}}</span>
+        <span *ngIf="collapsed" @fadeInOut class="sidenav-link-text">{{data.label}}</span>
+      </a>
+    </li>
+    <li class="sidenav-nav-item logout">
+      <a (click)="logout()" class="sidenav-nav-link">
+        <span class="sidenav-link-icon material-symbols-outlined">logout</span>
+        <span *ngIf="collapsed" @fadeInOut class="sidenav-link-text">Logout</span>
+      </a>
+    </li>
+  </ul>
+  <ul *ngIf="!isUserAuthenticated" class="sidenav-nav">
+    <li *ngFor="let data of navDataNotLoggedIn" class="sidenav-nav-item">
+      <a [routerLinkActiveOptions]="{exact:true}" [routerLink]="[data.routeLink]"
+         class="sidenav-nav-link"
+         routerLinkActive="active">
+        <span class="sidenav-link-icon material-symbols-outlined">{{data.icon}}</span>
+        <span *ngIf="collapsed" @fadeInOut class="sidenav-link-text">{{data.label}}</span>
+      </a>
+    </li>
+  </ul>
+<!--To Do Admin Component-->
+</div>

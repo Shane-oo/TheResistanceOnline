@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TheResistanceOnline.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using TheResistanceOnline.Infrastructure.Data;
 namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20220907082010_AddDiscordUsersTable")]
+    partial class AddDiscordUsersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,183 +157,19 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TheResistanceOnline.Data.DiscordServer.DiscordChannel", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.DiscordUsers.DiscordUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id")
-                        .HasName("PK_DiscordChannels");
-
-                    b.ToTable("DiscordChannels");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "game-1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "game-2"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "game-3"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "game-4"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "game-5"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "game-6"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "game-7"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "game-8"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "game-9"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "game-10"
-                        });
-                });
-
-            modelBuilder.Entity("TheResistanceOnline.Data.DiscordServer.DiscordRole", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("DiscordChannelId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id")
-                        .HasName("PK_DiscordRoles");
-
-                    b.HasIndex("DiscordChannelId");
-
-                    b.ToTable("DiscordRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DiscordChannelId = 1,
-                            Name = "Can Join Game-1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DiscordChannelId = 2,
-                            Name = "Can Join Game-2"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DiscordChannelId = 3,
-                            Name = "Can Join Game-3"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            DiscordChannelId = 4,
-                            Name = "Can Join Game-4"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            DiscordChannelId = 5,
-                            Name = "Can Join Game-5"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            DiscordChannelId = 6,
-                            Name = "Can Join Game-6"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            DiscordChannelId = 7,
-                            Name = "Can Join Game-7"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            DiscordChannelId = 8,
-                            Name = "Can Join Game-8"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            DiscordChannelId = 9,
-                            Name = "Can Join Game-9"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            DiscordChannelId = 10,
-                            Name = "Can Join Game-10"
-                        });
-                });
-
-            modelBuilder.Entity("TheResistanceOnline.Data.DiscordServer.DiscordUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int?>("DiscordRoleId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DiscordTag")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Discriminator")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id")
                         .HasName("PK_DiscordUsers");
-
-                    b.HasIndex("DiscordRoleId");
 
                     b.ToTable("DiscordUsers");
                 });
@@ -519,29 +357,9 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TheResistanceOnline.Data.DiscordServer.DiscordRole", b =>
-                {
-                    b.HasOne("TheResistanceOnline.Data.DiscordServer.DiscordChannel", "DiscordChannel")
-                        .WithMany()
-                        .HasForeignKey("DiscordChannelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DiscordChannel");
-                });
-
-            modelBuilder.Entity("TheResistanceOnline.Data.DiscordServer.DiscordUser", b =>
-                {
-                    b.HasOne("TheResistanceOnline.Data.DiscordServer.DiscordRole", "DiscordRole")
-                        .WithMany()
-                        .HasForeignKey("DiscordRoleId");
-
-                    b.Navigation("DiscordRole");
-                });
-
             modelBuilder.Entity("TheResistanceOnline.Data.Users.User", b =>
                 {
-                    b.HasOne("TheResistanceOnline.Data.DiscordServer.DiscordUser", "DiscordUser")
+                    b.HasOne("TheResistanceOnline.Data.DiscordUsers.DiscordUser", "DiscordUser")
                         .WithMany()
                         .HasForeignKey("DiscordUserId");
 

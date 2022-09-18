@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using JetBrains.Annotations;
 
 namespace TheResistanceOnline.Data.ProfilePictures
 {
@@ -9,7 +10,8 @@ namespace TheResistanceOnline.Data.ProfilePictures
         #region Properties
 
         [Column("Description")]
-        public string? Description { get; set; }
+        [CanBeNull]
+        public string Description { get; set; }
 
         [Column("Id")]
         [Key]
@@ -17,7 +19,8 @@ namespace TheResistanceOnline.Data.ProfilePictures
         public int Id { get; set; }
 
         [Column("Name")]
-        public string? Name { get; set; }
+        [CanBeNull]
+        public string Name { get; set; }
 
         #endregion
     }

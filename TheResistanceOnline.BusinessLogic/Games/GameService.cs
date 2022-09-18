@@ -1,39 +1,37 @@
-using Discord;
-using Discord.WebSocket;
+using System.Diagnostics.CodeAnalysis;
+using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
+using TheResistanceOnline.BusinessLogic.Users.Models;
 
 namespace TheResistanceOnline.BusinessLogic.Games
 {
     public interface IGameService
     {
-        void CreateNewGameDiscordChatAsync(CreateGameCommand command);
+        void AssignRoleToPlayerAsync([NotNull] CreateGameCommand command, [NotNull] UserDetailsModel userDetails);
     }
 
     public class GameService: IGameService
     {
         #region Fields
 
-        private readonly DiscordSocketClient _discordSocketClient;
+        private readonly IDiscordServerService _discordServerService;
 
         #endregion
 
         #region Construction
 
-        public GameService(DiscordSocketClient discordSocketClient)
+        public GameService(IDiscordServerService discordServerService)
         {
-            _discordSocketClient = discordSocketClient;
+            _discordServerService = discordServerService;
         }
 
         #endregion
 
         #region Public Methods
 
-        public async void CreateNewGameDiscordChatAsync(CreateGameCommand command)
+        public async void AssignRoleToPlayerAsync(CreateGameCommand command, UserDetailsModel userDetails)
         {
-            await _discordSocketClient.LoginAsync(TokenType.Bot, "MTAxNTkyNTAxMjc1MTk5MDg1NA.GZ9H5M.PSRnP3LEhfP_DWFEp0cULEpf0ciDWgrq2HqCVQ");
-            await _discordSocketClient.StartAsync();
-            var newChannel = await  _discordSocketClient.GetChannelAsync(81889909113225237);
-            Console.WriteLine(newChannel);
+            await _discordServerService.AddRoleToUserAsync("Join Game-9","game-1");
         }
 
         #endregion

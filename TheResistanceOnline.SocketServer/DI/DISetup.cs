@@ -1,11 +1,13 @@
 using System.Security.Claims;
 using System.Text;
+using Discord;
 using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.BusinessLogic.Timers;
@@ -118,21 +120,28 @@ namespace TheResistanceOnline.SocketServer.DI
                     .AddDefaultTokenProviders();
 
             services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
-            
+            services.AddSingleton(new DiscordSocketConfig
+                                  {
+                                      AlwaysDownloadUsers = true,
+                                      GatewayIntents = GatewayIntents.All
+                                  });
             services.AddSingleton<DiscordSocketClient>();
+
+            services.AddTransient<IDiscordServerService, DiscordServerService>();
         }
 
         #endregion
     }
 
 
+    //todo wtf is this hahahah
     public sealed class EmailBasedUserIdProvider: IUserIdProvider
     {
         #region Public Methods
 
         public string? GetUserId(HubConnectionContext connection)
         {
-            return connection.User?.FindFirst(ClaimTypes.Email)?.Value;
+            return connection.User.FindFirst(ClaimTypes.Email)?.Value;
         }
 
         #endregion

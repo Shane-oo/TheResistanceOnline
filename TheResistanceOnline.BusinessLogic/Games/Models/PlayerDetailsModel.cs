@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+
 namespace TheResistanceOnline.BusinessLogic.Games.Models
 {
     public class PlayerDetailsModel
@@ -5,9 +7,11 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         #region Properties
 
         public Guid PlayerId { get; set; }
+       
         public int? ProfilePictureId { get; set; }
 
-        public string? UserName { get; set; }
+        [CanBeNull]
+        public string UserName { get; set; }
 
         #endregion
     }

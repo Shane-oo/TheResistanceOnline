@@ -5,14 +5,13 @@ namespace TheResistanceOnline.Web.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-   
     public class WeatherForecastController: ControllerBase
     {
         #region Fields
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        private static readonly string[] Summaries =
+        private static readonly string[] _summaries =
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
@@ -38,7 +37,7 @@ namespace TheResistanceOnline.Web.Controllers
                                                           {
                                                               Date = DateTime.Now.AddDays(index),
                                                               TemperatureC = Random.Shared.Next(-20, 55),
-                                                              Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+                                                              Summary = _summaries[Random.Shared.Next(_summaries.Length)]
                                                           })
                              .ToArray();
         }
