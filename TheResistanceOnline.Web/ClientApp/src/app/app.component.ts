@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from './user/authentication.service';
+import { SideNavToggle } from './nav-menu/nav-data';
 
 @Component({
              selector: 'app-root',
@@ -7,14 +8,33 @@ import { AuthenticationService } from './user/authentication.service';
            })
 export class AppComponent implements OnInit {
   title = 'app';
-  constructor(private authService :AuthenticationService) {
+  isSideNavCollapsed = false;
+  screenWidth = 0;
+
+  constructor(private authService: AuthenticationService) {
   }
 
-  ngOnInit():void{
-    console.log("in here")
-           if(this.authService.isUserAuthenticated()){
-             console.log(this.authService.isUserAuthenticated())
-             this.authService.sendAuthStateChange(true)
-           }
+  ngOnInit(): void {
+    console.log('in here');
+    if(this.authService.isUserAuthenticated()) {
+      console.log(this.authService.isUserAuthenticated());
+      this.authService.sendAuthStateChange(true);
+    }
+  }
+
+  onToggleSideNav(data: SideNavToggle): void {
+    this.screenWidth = data.screenWidth;
+    this.isSideNavCollapsed = data.collapsed;
+  }
+
+
+  getBodyClass(): string {
+    let styleClass = '';
+    if(this.isSideNavCollapsed && this.screenWidth > 768) {
+      styleClass = 'body-trimmed';
+    } else {
+      styleClass = 'body-md-screen';
+    }
+    return styleClass;
   }
 }

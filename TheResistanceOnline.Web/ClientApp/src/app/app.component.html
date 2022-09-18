@@ -1,10 +1,6 @@
-<body>
-<app-nav-menu></app-nav-menu>
+<app-nav-menu (onToggleSideNav)="onToggleSideNav($event)"></app-nav-menu>
 
-<div class="container">
-
+<div [ngClass]="getBodyClass()" class="body">
   <router-outlet></router-outlet>
-
 </div>
-</body>
 <overlay></overlay>
