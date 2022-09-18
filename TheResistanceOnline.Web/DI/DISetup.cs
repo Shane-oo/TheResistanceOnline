@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Users;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
@@ -89,6 +90,8 @@ public static class DISetup
                 .AddDefaultTokenProviders();
 
         services.AddAutoMapper(typeof(UserMappingProfile));
+        services.AddAutoMapper(typeof(DiscordServerMappingProfile));
+
     }
 
     #endregion

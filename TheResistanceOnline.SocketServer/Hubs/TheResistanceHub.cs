@@ -153,7 +153,10 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                Name = Context.User?.Identity?.Name
                                                                            });
             _connectionIdToUserMappingTable.Add(Context.ConnectionId, userDetails);
-
+            if (userDetails.DiscordUser == null)
+            {
+                // todo prompt
+            }
             await base.OnConnectedAsync();
         }
 
