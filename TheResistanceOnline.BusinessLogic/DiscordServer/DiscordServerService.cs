@@ -43,6 +43,14 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
 
         #region Private Methods
 
+        private async void CheckBotIsConnectedAsync()
+        {
+            if (_discordSocketClient.ConnectionState != ConnectionState.Connected)
+            {
+                await ConnectBotAsync();
+            }
+        }
+
         private async Task ConnectBotAsync()
         {
             //todo make environment variable
@@ -74,10 +82,7 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
 
         public async Task AddRoleToUserAsync(string roleName, string channelName)
         {
-            if (_discordSocketClient.ConnectionState != ConnectionState.Connected)
-            {
-                await ConnectBotAsync();
-            }
+            CheckBotIsConnectedAsync();
 
             // Only One Guild/Server so get First
             var guild = _discordSocketClient.Guilds.FirstOrDefault();
