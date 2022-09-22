@@ -95,7 +95,7 @@ export class AuthenticationService {
 
   public getUserDetails = () => {
     const id = this.getUserId();
-    return this.http.get<UserDetailsModel>(`${environment.API_URL}${this.userEndpoint}/${id}`)
+    return this.http.get<UserDetailsModel>(`${environment.API_URL}${this.userEndpoint}/${id}`);
   };
 }
 

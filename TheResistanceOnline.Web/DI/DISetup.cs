@@ -1,4 +1,6 @@
 using System.Text;
+using Discord;
+using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -62,16 +64,23 @@ public static class DISetup
             throw new NullReferenceException("Connection string not found");
         }
 
+        // Database
         services.AddDbContext<Context>(options => options.UseSqlServer(_connectionString));
         services.AddScoped<IDataContext, DataContext>();
     }
 
     public static void AddServices(this IServiceCollection services)
     {
+        // Services
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserIdentityManager, UserIdentityManager>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IDiscordServerService, DiscordServerService>();
+
+        // Queries
         services.AddTransient<IUserDbQuery, UserDbQuery>();
+
+        // Identities 
         // Reset passwords tokens last for one hour
         services.Configure<DataProtectionTokenProviderOptions>(opt =>
                                                                    opt.TokenLifespan = TimeSpan.FromHours(1));
@@ -89,9 +98,17 @@ public static class DISetup
                 .AddEntityFrameworkStores<Context>()
                 .AddDefaultTokenProviders();
 
+        // Mapping Profiles
         services.AddAutoMapper(typeof(UserMappingProfile));
         services.AddAutoMapper(typeof(DiscordServerMappingProfile));
 
+        // Discord Services
+        services.AddSingleton(new DiscordSocketConfig
+                              {
+                                  AlwaysDownloadUsers = true,
+                                  GatewayIntents = GatewayIntents.All
+                              });
+        services.AddSingleton<DiscordSocketClient>();
     }
 
     #endregion

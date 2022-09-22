@@ -21,6 +21,10 @@ export class LobbyComponent implements OnInit {
     //this.gameService.addUserJoinedLobbyListener();
     //this.gameService.addUserLeftLobbyListener();
     this.gameService.addUserLeftGameListener();
+
   }
 
+  ngOnDestroy() {
+    console.log('lobby destroyed');
+  }
 }

@@ -11,6 +11,10 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
         public DiscordServerMappingProfile()
         {
             CreateMap<DiscordUser, DiscordUserDetailsModel>();
+            CreateMap<DiscordUserResponseModel, DiscordUser>().ForMember(u => u.DiscordTag,
+                                                                         opt => opt.MapFrom(
+                                                                                            r => r.UserName + '#' + r.Discriminator
+                                                                                           ));
         }
 
         #endregion

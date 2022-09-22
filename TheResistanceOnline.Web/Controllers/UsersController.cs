@@ -9,7 +9,7 @@ namespace TheResistanceOnline.Web.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class UserController: ControllerBase
+    public class UsersController: ControllerBase
     {
         #region Fields
 
@@ -19,7 +19,7 @@ namespace TheResistanceOnline.Web.Controllers
 
         #region Construction
 
-        public UserController(IUserService userService)
+        public UsersController(IUserService userService)
         {
             _userService = userService;
         }

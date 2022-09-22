@@ -21,18 +21,19 @@ namespace TheResistanceOnline.SocketServer.Hubs
         #region Fields
 
         private static readonly Dictionary<string, string> _connectionIdToGroupNameMappingTable = new Dictionary<string, string>();
-        
+
         private static readonly Dictionary<string, Guid> _connectionIdToPlayerId = new Dictionary<string, Guid>();
         private static readonly Dictionary<string, UserDetailsModel> _connectionIdToUserMappingTable = new Dictionary<string, UserDetailsModel>();
+        private readonly IGameService _gameService;
         private static readonly Dictionary<string, GameDetailsModel> _groupNameToGameDetailsMappingTable = new Dictionary<string, GameDetailsModel>();
 
         private readonly IUserService _userService;
-        private readonly IGameService _gameService;
+
         #endregion
 
         #region Construction
 
-        public TheResistanceHub(IUserService userService,IGameService gameService)
+        public TheResistanceHub(IUserService userService, IGameService gameService)
         {
             _userService = userService;
             _gameService = gameService;
@@ -48,7 +49,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                 {
                                     PlayerId = Guid.NewGuid(),
                                     UserName = _connectionIdToUserMappingTable[Context.ConnectionId].UserName,
-                                    ProfilePictureId = null     //todo what should profile pic be, discord prof pic?
+                                    ProfilePictureId = null //todo what should profile pic be, discord prof pic?
                                 };
             if (string.IsNullOrEmpty(playerDetails.UserName))
             {
@@ -93,7 +94,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             if (playerDetails != null)
             {
                 _gameService.AssignRoleToPlayerAsync(command, _connectionIdToUserMappingTable[Context.ConnectionId]);
-                
+
                 // todo denote the host
                 var newGame = new GameDetailsModel
                               {
@@ -107,10 +108,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 _groupNameToGameDetailsMappingTable.Add(command.LobbyName, newGame);
 
                 await Clients.Group(command.LobbyName).SendAsync("userCreatedGame", newGame);
-            }
-            else
-            {
-                //error
             }
         }
 
@@ -155,8 +152,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
             _connectionIdToUserMappingTable.Add(Context.ConnectionId, userDetails);
             if (userDetails.DiscordUser == null)
             {
-                // todo prompt
+                await Clients.Client(Context.ConnectionId).SendAsync("discordNotFound");
             }
+
             await base.OnConnectedAsync();
         }
 

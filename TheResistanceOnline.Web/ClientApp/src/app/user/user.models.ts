@@ -38,3 +38,7 @@ export interface UserConfirmEmailModel {
 export interface GetUserCommandModel {
   userId: string;
 }
+
+export interface DiscordLoginResponseModel {
+  declinedLogin: boolean;
+}

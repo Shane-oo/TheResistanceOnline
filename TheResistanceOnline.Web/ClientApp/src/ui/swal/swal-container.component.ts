@@ -9,7 +9,9 @@ import { Component } from '@angular/core';
                      text=" {{ message }}"
                      [swalFireOnInit]="true"
                      (didClose)="isSwalVisible = false;isError = false"
-                     titleText="Error">
+                     titleText="Error"
+                     [backdrop]="false"
+               >
                </swal>
                <!--Success Component-->
                <swal *ngIf="isSwalVisible && isSuccess"
@@ -17,7 +19,9 @@ import { Component } from '@angular/core';
                      text=" {{ message }}"
                      [swalFireOnInit]="true"
                      (didClose)="isSwalVisible = false;isSuccess = false"
-                     titleText="Success">
+                     titleText="Success"
+                     [backdrop]="false"
+               >
                </swal>
              `,
              providers: []
@@ -29,6 +33,7 @@ export class SwalContainerComponent {
   public message: string = '';
   public isError: boolean = false;
   public isSuccess: boolean = false;
+
 
   constructor() {
   }

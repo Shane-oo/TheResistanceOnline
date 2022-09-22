@@ -1,3 +1,4 @@
+using AutoMapper;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.WebUtilities;
 using TheResistanceOnline.BusinessLogic.Core.Queries;
@@ -43,15 +44,18 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         private readonly IUserIdentityManager _identityManager;
 
+        private readonly IMapper _mapper;
+
         #endregion
 
         #region Construction
 
-        public UserService(IUserIdentityManager identityManager, IEmailService emailService, IDataContext context)
+        public UserService(IUserIdentityManager identityManager, IEmailService emailService, IDataContext context, IMapper mapper)
         {
             _identityManager = identityManager;
             _emailService = emailService;
             _context = context;
+            _mapper = mapper;
         }
 
         #endregion
@@ -115,8 +119,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 throw new ArgumentNullException(nameof(query));
             }
 
-            return await _context.Query<IUserDbQuery>().WithParams(query.UserId)
-                                 .ExecuteAsync(query.CancellationToken);
+            return _mapper.Map<UserDetailsModel>(await _context.Query<IUserDbQuery>().WithParams(query.UserId)
+                                                               .ExecuteAsync(query.CancellationToken));
         }
 
         public async Task<UserDetailsModel> GetUserByEmailOrNameAsync(ByIdAndNameQuery query)
