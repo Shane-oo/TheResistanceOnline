@@ -21,7 +21,8 @@ html {
 
 /*New SideNav*/
 .sidenav {
-  background-image: linear-gradient(to bottom, #000000, #0a0a0a, #121212, #181818, #1e1e1e);
+  /*background-image: linear-gradient(to bottom, #000000, #0a0a0a, #121212, #181818, #1e1e1e);*/
+  background: #0a0a0a;
   transition: all .5s ease;
   position: fixed;
   z-index: 1;
@@ -48,7 +49,8 @@ html {
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  border: none;
+  border: 1px solid #04a5f9;
+
   font-family: ethnocentric, serif;
   color: #04a5f9
 }
@@ -133,7 +135,7 @@ html {
 }
 
 .sidenav-nav-link:hover {
-  background-color: #81d2fd;
+  background-color: #68c9fd;
   color: #000;
 }
 
