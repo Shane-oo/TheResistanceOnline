@@ -31,7 +31,6 @@
         <Folder Include="ClientApp\src\app\shared\custom-validators\the-resistance-game" />
         <Folder Include="ClientApp\src\app\shared\services" />
         <Folder Include="ClientApp\src\assets\fonts" />
-        <Folder Include="ClientApp\src\assets\images" />
         <Folder Include="ClientApp\src\assets\textures" />
         <Folder Include="ClientApp\src\assets\videos" />
         <Folder Include="ClientApp\src\assets\models" />

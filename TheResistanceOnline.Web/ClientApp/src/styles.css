@@ -58,16 +58,15 @@ code {
 body {
   /* todo//font-family: '';*/
   width: calc(100% - 5rem);
-  height: 100vh;
+  height: 100%;
   /*margin-left: 0rem;*/
   z-index: 0;
   position: relative;
   top: 0;
   transition: all .5s ease;
-  background-image: linear-gradient(to right top, #000000, #0a0a0a, #121212, #181818, #1e1e1e);
-
-  /*padding: 3rem;*/
-
+  background-image: linear-gradient(to bottom, #1a1a1a, #222223, #292a2b, #303334, #383c3c);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 
 }
 

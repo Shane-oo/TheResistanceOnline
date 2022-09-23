@@ -28,7 +28,7 @@ export const navbarDataNotLoggedIn = [
   },
   {
     // Login Component
-    routeLink: 'user',
+    routeLink: 'user/login',
     icon: 'login',
     label: 'Login'
   }

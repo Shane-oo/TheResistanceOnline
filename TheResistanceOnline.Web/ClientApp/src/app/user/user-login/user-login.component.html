@@ -1,34 +1,78 @@
+<!--<div class="content">-->
+<!--  <header>Login</header>-->
+<!--  <form (ngSubmit)="loginUser(loginForm.value)" [formGroup]="loginForm" autocomplete="off" novalidate>-->
+
+<!--    <div class="mb-3 row">-->
+<!--      <label class="col-form-label col-sm-2" for="email">Email:</label>-->
+
+<!--      <input class="form-control" formControlName="email" id="email" type="email"/>-->
+
+<!--      <em *ngIf="validateControl('email') && hasError('email', 'email')">Please provide a valid email</em>-->
+<!--      <em *ngIf="validateControl('email') && hasError('email', 'required')">Email is required</em>-->
+
+<!--    </div>-->
+<!--    <div class="mb-3 row">-->
+<!--      <label class="col-form-label col-sm-2" for="password">Password:</label>-->
+
+<!--      <input class="form-control" formControlName="password" id="password" type="password"/>-->
+
+<!--      <em *ngIf="validateControl('password') && hasError('password', 'required')">Password is required</em>-->
+
+<!--    </div>-->
+<!--    <div class="pass">-->
+<!--      <a href="/user/forgot-password">Forgot Password?</a>-->
+<!--    </div>-->
+<!--    <br>-->
+<!--    <div class="field">-->
+
+<!--      <input [disabled]="!loginForm.valid" [style.background]="!loginForm.valid? '#c9b4fe':'#682efc'" type="submit"-->
+<!--             value="Login"-->
+<!--      />-->
+<!--    </div>-->
+<!--  </form>-->
+<!--</div>-->
+
 <div class="content">
-  <header>Login</header>
-  <form (ngSubmit)="loginUser(loginForm.value)" [formGroup]="loginForm" autocomplete="off" novalidate>
+  <div class="login-box">
+    <div class="login-io-box">
 
-    <div class="mb-3 row">
-      <label class="col-form-label col-sm-2" for="email">Email:</label>
-
-      <input class="form-control" formControlName="email" id="email" type="email"/>
-
-      <em *ngIf="validateControl('email') && hasError('email', 'email')">Please provide a valid email</em>
-      <em *ngIf="validateControl('email') && hasError('email', 'required')">Email is required</em>
-
+      <div class="sol-box">
+        <h2>Welcome back!</h2>
+        <div>
+          <form (ngSubmit)="loginUser(loginForm.value)" [formGroup]="loginForm" autocomplete="off" class="form-box" novalidate>
+            <div>
+              <p>Email</p>
+              <input formControlName="email" id="email" type="email">
+              <div class="validation">
+                <em *ngIf="validateControl('email') && hasError('email', 'email')">Please provide a valid email</em>
+                <em *ngIf="validateControl('email') && hasError('email', 'required')">Email is required</em>
+              </div>
+            </div>
+            <div>
+              <p>Password</p>
+              <input formControlName="password" id="password" type="password">
+              <div class="validation">
+                <em *ngIf="validateControl('password') && hasError('password', 'required')">Password is required</em>
+              </div>
+            </div>
+            <div>
+              <a class="forgot-pass-link"  href="/user/forgot-password">
+                <div>Forgot your password?</div>
+              </a>
+            </div>
+            <div>
+              <button  [disabled]="!loginForm.valid" [style.background]="!loginForm.valid? '#72767d':''" type="submit" class="login-button">Log In</button>
+            </div>
+            <div>
+              <span class="iht">Need an account?<a class="register-link" href="user/register">Register</a></span>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="sag-box">
+        <img alt="" class="logo" src="./assets/images/cyberpunk_man.png"/>
+        <h4>The Resistance Online</h4>
+      </div>
     </div>
-    <div class="mb-3 row">
-      <label class="col-form-label col-sm-2" for="password">Password:</label>
-
-      <input class="form-control" formControlName="password" id="password" type="password"/>
-
-      <em *ngIf="validateControl('password') && hasError('password', 'required')">Password is required</em>
-
-    </div>
-    <div class="pass">
-      <a href="/user/forgot-password">Forgot Password?</a>
-    </div>
-    <br>
-    <div class="field">
-
-      <input [disabled]="!loginForm.valid" [style.background]="!loginForm.valid? '#c9b4fe':'#682efc'" type="submit"
-             value="Login"
-      />
-    </div>
-  </form>
+  </div>
 </div>
-
