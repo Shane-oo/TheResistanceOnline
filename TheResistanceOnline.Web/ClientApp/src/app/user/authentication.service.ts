@@ -20,7 +20,7 @@ import { UserDetailsModel } from './user-edit/user-edit.models';
             })
 export class AuthenticationService {
   private readonly accountsEndpoint = '/api/Accounts';
-  private readonly userEndpoint = '/api/User';
+  private readonly userEndpoint = '/api/Users';
   private authChangeSub = new Subject<boolean>();
   public authChanged = this.authChangeSub.asObservable();
 
