@@ -185,7 +185,15 @@ namespace TheResistanceOnline.BusinessLogic.Users
             var foundUser = await FindUserByEmailAsync(user);
             // Use this for if user is locked out and expiry is not over yet
             await _userManager.SetLockoutEndDateAsync(foundUser, null);
-            await _userManager.ResetPasswordAsync(foundUser, token, newPassword);
+            var result = await _userManager.ResetPasswordAsync(foundUser, token, newPassword);
+            if (!result.Succeeded)
+            {
+                var description = result.Errors.FirstOrDefault()?.Description;
+                if (description != null)
+                {
+                    throw new DomainException(typeof(User), user.UserName, description);
+                }
+            }
         }
 
         #endregion

@@ -1,5 +1,3 @@
-
-
 <div class="content">
   <div class="register-box">
     <div class="register-io-box">
@@ -7,7 +5,7 @@
       <div class="sol-box">
         <h2>Create An Account</h2>
         <div>
-          <form (ngSubmit)="registerUser(registerForm.value)" [formGroup]="registerForm" autocomplete="off" class="form-box" novalidate>
+          <form (ngSubmit)="registerUser(registerForm.value)" [formGroup]="registerForm" class="form-box" novalidate>
             <div>
               <p>UserName</p>
               <input formControlName="userName" id="userName" type="text">
@@ -25,14 +23,15 @@
             </div>
             <div>
               <p>Password</p>
-              <input formControlName="password" id="password" type="password">
+              <input autocapitalize="off" autocomplete="new-password" formControlName="password" id="password" type="password">
               <div class="validation">
                 <em *ngIf="validateControl('password') && hasError('password', 'required')">Password is required</em>
               </div>
             </div>
             <div>
               <p>Confirm Password</p>
-              <input formControlName="confirmPassword" id="confirmPassword" type="password">
+              <input autocapitalize="off" autocomplete="new-password" formControlName="confirmPassword" id="confirmPassword"
+                     type="password">
               <div class="validation">
                 <em *ngIf="validateControl('confirmPassword') && hasError('confirmPassword', 'required')">Confirmation is required</em>
                 <em *ngIf="hasError('confirmPassword', 'mustMatch')">Passwords must match</em></div>
