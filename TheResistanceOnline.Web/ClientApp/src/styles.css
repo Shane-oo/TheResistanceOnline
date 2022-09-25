@@ -84,12 +84,5 @@ body {
 
 }
 
-
-.gradient-text {
-  background-image: linear-gradient(to right, #04a5f9, #8f88fb, #e256ce, #ff0079, #fc2001);
-  background-clip: text;
-  color: transparent;
-}
-
-
+.discord-button{font-size:20px;color:black;text-decoration: none}
 
