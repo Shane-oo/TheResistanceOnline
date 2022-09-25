@@ -78,10 +78,10 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         public async Task CreateUserAsync(UserRegisterCommand command)
         {
-            // if (command == null)
-            //{
-            throw new ArgumentNullException(nameof(command));
-            //}
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
 
 
             var user = new User
