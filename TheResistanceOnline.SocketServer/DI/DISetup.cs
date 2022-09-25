@@ -101,6 +101,7 @@ namespace TheResistanceOnline.SocketServer.DI
             services.AddScoped<IEmailService, EmailService>();
             services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
             services.AddAutoMapper(typeof(UserMappingProfile));
+            services.AddAutoMapper(typeof(DiscordServerMappingProfile));
 
             services.AddTransient<ITimerService, TimerService>();
             //  services.AddTransient<ITheResistanceHub>();

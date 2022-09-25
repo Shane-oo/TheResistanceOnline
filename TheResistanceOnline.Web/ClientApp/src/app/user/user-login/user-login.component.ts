@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoginResponseModel, UserLoginModel } from '../user.models';
 import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { navbarDataLoggedIn } from '../../nav-menu/nav-data';
 
 @Component({
              selector: 'app-user-login',
@@ -50,6 +51,7 @@ export class UserLoginComponent implements OnInit {
                                                    localStorage.setItem('TheResistanceToken', response.token);
                                                    localStorage.setItem('TheResistanceUserId', response.userId);
                                                    this.authService.sendAuthStateChange(true);
+
                                                    // Route to redirect url or homepage
                                                    this.router.navigate([this.returnUrl]).then(r => {
                                                    });

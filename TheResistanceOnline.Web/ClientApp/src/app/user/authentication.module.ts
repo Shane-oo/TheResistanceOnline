@@ -7,7 +7,6 @@ import { UserLoginComponent } from './user-login/user-login.component';
 import { UserForgotPasswordComponent } from './user-forgot-password/user-forgot-password.component';
 import { UserResetPasswordComponent } from './user-reset-password/user-reset-password.component';
 import { UserEmailConfirmationComponent } from './user-email-confirmation/user-email-confirmation.component';
-import { UserComponent } from './user.component';
 
 
 @NgModule({
@@ -15,8 +14,7 @@ import { UserComponent } from './user.component';
               UserLoginComponent,
               UserForgotPasswordComponent,
               UserResetPasswordComponent,
-              UserEmailConfirmationComponent,
-              UserComponent],
+              UserEmailConfirmationComponent],
             exports: [],
             imports: [
               CommonModule,
@@ -26,8 +24,7 @@ import { UserComponent } from './user.component';
                                       {path: 'reset-password', component: UserResetPasswordComponent},
                                       {path: 'email-confirmation', component: UserEmailConfirmationComponent},
                                       {path: 'login', component: UserLoginComponent},
-                                      {path: 'register', component: UserRegisterComponent},
-                                      {path: '', component: UserComponent}
+                                      {path: 'register', component: UserRegisterComponent}
                                     ])
             ]
           })

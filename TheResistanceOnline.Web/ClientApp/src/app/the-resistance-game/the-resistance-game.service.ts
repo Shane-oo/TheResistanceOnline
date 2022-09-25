@@ -48,6 +48,8 @@ export class TheResistanceGameService {
     this.gameDetailsChanged.subscribe((value) => {
       this.gameDetails = value;
     });
+    // todo Add Permanent Listeners
+
   }
 
   // start the connection
@@ -117,4 +119,16 @@ export class TheResistanceGameService {
       this.swalService.showSwal(response, SwalTypesModel.Error);
     });
   };
+
+  public addDiscordNotFoundListener = () => {
+    this.connection.on('discordNotFound', () => {
+      console.log("discord not found triggered")
+      this.swalService.fireDiscordLoginRequested();
+      this.swalService.discordLoginResponseChanged.subscribe((value) => {
+        console.log('in resistance game service discord login response is:', value);
+      });
+    });
+  };
 }
+
+

@@ -13,7 +13,8 @@ namespace TheResistanceOnline.Infrastructure.Data.Configurations.DiscordServerCo
         {
             builder.HasKey(c => c.Id)
                    .HasName("PK_DiscordChannels");
-
+            builder.Property(c => c.Name)
+                   .IsRequired();
             builder.HasData(new DiscordChannel
                             {
                                 Id = 1,
