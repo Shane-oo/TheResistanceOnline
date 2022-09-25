@@ -150,6 +150,14 @@
   }
 }
 
+@media only screen and (max-width: 414px) {
+  .register-box {
+    width: 275px;
+    height: 650px;
+    margin-left: 50px;
+  }
+}
+
 /*ToDo buy the non bold font and use here*/
 .validation {
   font-size: 10px;
