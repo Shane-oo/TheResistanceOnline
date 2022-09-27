@@ -30,7 +30,6 @@
 
     <ItemGroup>
       <Folder Include="Emails\Models" />
-      <Folder Include="UserSettings" />
     </ItemGroup>
 
     <ItemGroup>

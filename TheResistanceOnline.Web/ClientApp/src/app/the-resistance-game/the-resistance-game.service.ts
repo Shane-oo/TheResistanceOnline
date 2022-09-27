@@ -6,6 +6,9 @@ import * as signalR from '@microsoft/signalr';
 import { IHttpConnectionOptions } from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { SwalContainerService, SwalTypesModel } from '../../ui/swal/swal-container.service';
+import { UserSettingsService } from '../user/user-settings.service';
+import { UserSettingsUpdateCommand } from '../user/user-settings.models';
+import { DiscordLoginResponseModel } from '../user/user.models';
 
 @Injectable({
               providedIn: 'root'
@@ -38,7 +41,7 @@ export class TheResistanceGameService {
     )
     .build();
 
-  constructor(private http: HttpClient, private swalService: SwalContainerService) {
+  constructor(private http: HttpClient, private swalService: SwalContainerService, private userSettingsService: UserSettingsService) {
     this.connection.onclose(async() => {
       await this.start();
     });
@@ -122,10 +125,24 @@ export class TheResistanceGameService {
 
   public addDiscordNotFoundListener = () => {
     this.connection.on('discordNotFound', () => {
-      console.log("discord not found triggered")
+      console.log('discord not found triggered');
       this.swalService.fireDiscordLoginRequested();
-      this.swalService.discordLoginResponseChanged.subscribe((value) => {
-        console.log('in resistance game service discord login response is:', value);
+
+      this.swalService.discordLoginResponseChanged.subscribe((value: DiscordLoginResponseModel) => {
+        if(value.declinedLogin) {
+          let userSettingsUpdateCommand: UserSettingsUpdateCommand = {
+            updateUserWantsToUseDiscord: true,
+            userWantsToUseDiscord: false
+          };
+
+          this.userSettingsService.updateUserSettings(userSettingsUpdateCommand).subscribe({
+                                                                                             next: (response: any) => {
+                                                                                               this.swalService.showSwal(
+                                                                                                 'Successully declined Discord',
+                                                                                                 SwalTypesModel.Success);
+                                                                                             }
+                                                                                           });
+        }
       });
     });
   };

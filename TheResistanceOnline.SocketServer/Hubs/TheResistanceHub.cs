@@ -156,18 +156,19 @@ namespace TheResistanceOnline.SocketServer.Hubs
             var userDetails = _mapper.Map<UserDetailsModel>(user);
             _connectionIdToUserMappingTable.Add(Context.ConnectionId, userDetails);
 
-            // Discord User Does not exist Or User Wants to Use Discord And its been two weeks since said no 
+            // Discord User Does not exist Or User Wants to Use Discord And its been one week since said no 
             if (user.DiscordUser == null)
             {
                 if (user.UserSetting.UserWantsToUseDiscord)
                 {
                     await Clients.Client(Context.ConnectionId).SendAsync("discordNotFound");
                 }
-                else if (!user.UserSetting.UserWantsToUseDiscord && user.UserSetting.UserWantsToUseDiscordRecord <= DateTimeOffset.Now.AddDays(-14))
+                else if (user.UserSetting.UserWantsToUseDiscordRecord <= DateTimeOffset.Now.AddDays(-7))
                 {
                     await Clients.Client(Context.ConnectionId).SendAsync("discordNotFound");
                 }
             }
+            
 
             await base.OnConnectedAsync();
         }

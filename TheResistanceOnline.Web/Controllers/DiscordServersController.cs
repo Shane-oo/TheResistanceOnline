@@ -33,6 +33,8 @@ namespace TheResistanceOnline.Web.Controllers
         
         {
             await _discordServerService.CreateDiscordUserAsync(command);
+            
+            //todo send if user should be prompted to join discord server
             return Ok();
         }
 

@@ -103,13 +103,18 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
             if (command == null) throw new ArgumentNullException(nameof(command));
             var user = await _context.Query<IUserDbQuery>().WithParams(command.UserId)
                                      .ExecuteAsync(command.CancellationToken);
-            
+
             const string REQUEST_URI = "https://discord.com/api/users/@me";
             var discordUserResponse = await REQUEST_URI.WithOAuthBearerToken(command.AccessToken).GetJsonAsync<DiscordUserResponseModel>();
             var discordUser = _mapper.Map<DiscordUser>(discordUserResponse);
             user.DiscordUser = discordUser;
 
+            user.UserSetting.UserWantsToUseDiscord = true;
+            user.UserSetting.UserWantsToUseDiscordRecord = DateTimeOffset.Now;
+
             await _context.SaveChangesAsync(command.CancellationToken);
+
+            //todo find user in server, if they are not in server prompt user on frontend with server invite
         }
 
         #endregion
