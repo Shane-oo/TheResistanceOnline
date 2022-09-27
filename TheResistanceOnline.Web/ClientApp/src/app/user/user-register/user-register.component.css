@@ -49,6 +49,24 @@
   color: #04a5f9;
 }
 
+.form-box input[type="email"] {
+  font-family: yuzu, serif;
+  font-size: 20px;
+  color: #f3f3f3;
+}
+
+.form-box input[type="password"] {
+  font-family: yuzu, serif;
+  font-size: 20px;
+  color: #f3f3f3;
+}
+
+.form-box input[type="text"] {
+  font-family: yuzu, serif;
+  font-size: 20px;
+  color: #f3f3f3;
+}
+
 .form-box p {
   text-align: left;
 }
