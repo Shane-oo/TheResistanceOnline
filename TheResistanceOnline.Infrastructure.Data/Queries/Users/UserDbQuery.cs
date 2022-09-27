@@ -31,7 +31,8 @@ namespace TheResistanceOnline.Infrastructure.Data.Queries.Users
         {
             var user = await _context.Users // not sure if should have AsNoTracking()
                                      .Include(p => p.ProfilePicture)
-                                     .Include(d => d.DiscordUser)
+                                     .Include(ud => ud.DiscordUser)
+                                     .Include(us => us.UserSetting)
                                      .FirstAsync(u => u.Id == _userId,
                                                  cancellationToken);
             return user;
