@@ -9,6 +9,7 @@ using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Users;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
+using TheResistanceOnline.BusinessLogic.UserSettings;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Infrastructure.Data;
@@ -76,6 +77,7 @@ public static class DISetup
         services.AddScoped<IUserIdentityManager, UserIdentityManager>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IDiscordServerService, DiscordServerService>();
+        services.AddScoped<IUserSettingsService, UserSettingsService>();
 
         // Queries
         services.AddTransient<IUserDbQuery, UserDbQuery>();

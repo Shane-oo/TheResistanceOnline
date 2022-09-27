@@ -21,7 +21,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         Task<UserDetailsModel> GetUserAsync([NotNull] ByIdQuery query);
 
-        Task<UserDetailsModel> GetUserByEmailOrNameAsync([NotNull] ByIdAndNameQuery query);
+        Task<User> GetUserByEmailOrNameAsync([NotNull] ByIdAndNameQuery query);
 
         Task<UserLoginResponse> LoginUserAsync([NotNull] UserLoginCommand command);
 
@@ -123,7 +123,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
                                                                .ExecuteAsync(query.CancellationToken));
         }
 
-        public async Task<UserDetailsModel> GetUserByEmailOrNameAsync(ByIdAndNameQuery query)
+        public async Task<User> GetUserByEmailOrNameAsync(ByIdAndNameQuery query)
         {
             if (query == null || string.IsNullOrEmpty(query.Name))
             {

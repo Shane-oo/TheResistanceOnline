@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using TheResistanceOnline.BusinessLogic.Users.Models;
 using TheResistanceOnline.Data.Exceptions;
 using TheResistanceOnline.Data.Users;
+using TheResistanceOnline.Data.UserSettings;
 
 namespace TheResistanceOnline.BusinessLogic.Users
 {
@@ -119,6 +120,9 @@ namespace TheResistanceOnline.BusinessLogic.Users
         // returns email token confirmation
         public async Task<string> CreateIdentityAsync(User user, string password)
         {
+            var userSetting = new UserSetting();
+            user.UserSetting = userSetting;
+            
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
             {

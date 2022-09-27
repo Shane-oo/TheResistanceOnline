@@ -109,7 +109,12 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
             var discordUser = _mapper.Map<DiscordUser>(discordUserResponse);
             user.DiscordUser = discordUser;
 
+            user.UserSetting.UserWantsToUseDiscord = true;
+            user.UserSetting.UserWantsToUseDiscordRecord = DateTimeOffset.Now;
+
             await _context.SaveChangesAsync(command.CancellationToken);
+
+            //todo find user in server, if they are not in server prompt user on frontend with server invite
         }
 
         #endregion

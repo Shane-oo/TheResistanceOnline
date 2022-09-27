@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.BusinessLogic.Core.Queries;
@@ -27,16 +28,19 @@ namespace TheResistanceOnline.SocketServer.Hubs
         private readonly IGameService _gameService;
         private static readonly Dictionary<string, GameDetailsModel> _groupNameToGameDetailsMappingTable = new Dictionary<string, GameDetailsModel>();
 
+        private readonly IMapper _mapper;
+
         private readonly IUserService _userService;
 
         #endregion
 
         #region Construction
 
-        public TheResistanceHub(IUserService userService, IGameService gameService)
+        public TheResistanceHub(IUserService userService, IGameService gameService, IMapper mapper)
         {
             _userService = userService;
             _gameService = gameService;
+            _mapper = mapper;
         }
 
         #endregion
@@ -145,15 +149,26 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            var userDetails = await _userService.GetUserByEmailOrNameAsync(new ByIdAndNameQuery
-                                                                           {
-                                                                               Name = Context.User?.Identity?.Name
-                                                                           });
+            var user = await _userService.GetUserByEmailOrNameAsync(new ByIdAndNameQuery
+                                                                    {
+                                                                        Name = Context.User?.Identity?.Name
+                                                                    });
+            var userDetails = _mapper.Map<UserDetailsModel>(user);
             _connectionIdToUserMappingTable.Add(Context.ConnectionId, userDetails);
-            if (userDetails.DiscordUser == null)
+
+            // Discord User Does not exist Or User Wants to Use Discord And its been one week since said no 
+            if (user.DiscordUser == null)
             {
-                await Clients.Client(Context.ConnectionId).SendAsync("discordNotFound");
+                if (user.UserSetting.UserWantsToUseDiscord)
+                {
+                    await Clients.Client(Context.ConnectionId).SendAsync("discordNotFound");
+                }
+                else if (user.UserSetting.UserWantsToUseDiscordRecord <= DateTimeOffset.Now.AddDays(-7))
+                {
+                    await Clients.Client(Context.ConnectionId).SendAsync("discordNotFound");
+                }
             }
+            
 
             await base.OnConnectedAsync();
         }

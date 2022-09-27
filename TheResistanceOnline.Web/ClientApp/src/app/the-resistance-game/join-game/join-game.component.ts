@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DiscordServerService } from '../../shared/services/discord-server.service';
 import { CreateDiscordUserCommand } from '../../shared/models/discord-server.models';
 import { HttpErrorResponse } from '@angular/common/http';
+import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-container.service';
 
 @Component({
              selector: 'app-join-game',
@@ -16,7 +17,7 @@ export class JoinGameComponent implements OnInit {
 
   public joinGameForm: FormGroup = new FormGroup({});
 
-  constructor(private gameService: TheResistanceGameService, private discordServerService: DiscordServerService, private route: ActivatedRoute, private router: Router) {
+  constructor(private gameService: TheResistanceGameService, private discordServerService: DiscordServerService, private swalService: SwalContainerService, private route: ActivatedRoute, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -24,11 +25,7 @@ export class JoinGameComponent implements OnInit {
                                         lobbyName: new FormControl('poop', [Validators.required])
                                       });
     // check to see if route contains discord access token
-
-    // todo add a check for if in angular state value of does not want to add discord
-    // dont add listener
     let params = this.route.snapshot.fragment;
-
     if(params) {
       const data = JSON.parse(
         '{"' +
@@ -42,7 +39,10 @@ export class JoinGameComponent implements OnInit {
       let createDiscordUserCommand: CreateDiscordUserCommand = {tokenType: data?.token_type, accessToken: data?.access_token};
       this.discordServerService.createDiscordUser(createDiscordUserCommand).subscribe({
                                                                                         next: (response: any) => {
-                                                                                          console.log(response);
+                                                                                          this.swalService.showSwal(
+                                                                                            'Discord Account Successfully Activated!',
+                                                                                            SwalTypesModel.Success);
+                                                                                          //ToDo show server invite if user is not in discord server
                                                                                         },
                                                                                         error: (err: HttpErrorResponse) => {
                                                                                           console.log(err);
