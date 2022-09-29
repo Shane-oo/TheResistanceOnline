@@ -13,7 +13,7 @@
 
 .register-box {
   width: 500px;
-  height: 550px;
+  height: 575px;
   background-color: #1e1e1e;
   text-align: center;
   box-shadow: 0.0315rem 0 0.625rem 0 #fc2001;
@@ -171,7 +171,7 @@
 @media only screen and (max-width: 414px) {
   .register-box {
     width: 275px;
-    height: 650px;
+    height: 675px;
     margin-left: 50px;
   }
 }
