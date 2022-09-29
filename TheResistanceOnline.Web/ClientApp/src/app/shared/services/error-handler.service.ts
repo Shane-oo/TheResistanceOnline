@@ -45,26 +45,18 @@ export class ErrorHandlerService implements HttpInterceptor {
   };
 
   private handleBadRequest = (error: HttpErrorResponse) => {
-    if(this.router.url === '/user/register' || this.router.url === '/user/') {
-
-      if(error.error.errors) {
-        if(error.error.errors.ConfirmPassword) {
-          this.swalService.showSwal(error.error.errors.ConfirmPassword, SwalTypesModel.Error);
-        }
-      } else {
-        this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
+    if(error.error.errors) {
+      if(error.error.errors.ConfirmPassword) {
+        this.swalService.showSwal(error.error.errors.ConfirmPassword, SwalTypesModel.Error);
+        return;
       }
-    } else {
-      this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
-
     }
+    this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
+    return;
   };
 
   private handleUnauthorized = (error: HttpErrorResponse) => {
-    if(this.router.url === '/user/login' || this.router.url === '/user' || this.router.url === '/user/user-edit') {
-      this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
-    }
-
+    this.swalService.showSwal('Unauthorized: ' + error.error ? error.error : error.message, SwalTypesModel.Error);
   };
   private handleForbidden = (error: HttpErrorResponse) => {
     this.swalService.showSwal('Forbidden', SwalTypesModel.Error);

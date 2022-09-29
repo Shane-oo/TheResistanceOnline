@@ -95,4 +95,10 @@ body {
 }
 
 
+.swalError {
+  font-family: ethnocentric,sans-serif;
+  font-size: 15px;
+  color: whitesmoke;
+  text-align: left;
 
+}
