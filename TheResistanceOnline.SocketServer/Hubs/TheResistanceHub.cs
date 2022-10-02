@@ -34,7 +34,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                        {
                                                                                                                            ChannelName = "game-1",
                                                                                                                            IsVoiceChannel = false,
-                                                                                                                           IsAvailable = true
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -42,7 +43,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                        {
                                                                                                                            ChannelName = "game-2",
                                                                                                                            IsVoiceChannel = false,
-                                                                                                                           IsAvailable = true
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -50,7 +52,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                        {
                                                                                                                            ChannelName = "game-3",
                                                                                                                            IsVoiceChannel = false,
-                                                                                                                           IsAvailable = true
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -58,7 +61,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                        {
                                                                                                                            ChannelName = "game-4",
                                                                                                                            IsVoiceChannel = false,
-                                                                                                                           IsAvailable = true
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -66,7 +70,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                        {
                                                                                                                            ChannelName = "game-5",
                                                                                                                            IsVoiceChannel = false,
-                                                                                                                           IsAvailable = true
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -74,7 +79,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                        {
                                                                                                                            ChannelName = "game-6",
                                                                                                                            IsVoiceChannel = true,
-                                                                                                                           IsAvailable = true
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -82,7 +88,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                        {
                                                                                                                            ChannelName = "game-7",
                                                                                                                            IsVoiceChannel = true,
-                                                                                                                           IsAvailable = true
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -90,7 +97,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                        {
                                                                                                                            ChannelName = "game-8",
                                                                                                                            IsVoiceChannel = true,
-                                                                                                                           IsAvailable = true
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -98,7 +106,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                        {
                                                                                                                            ChannelName = "game-9",
                                                                                                                            IsVoiceChannel = true,
-                                                                                                                           IsAvailable = true
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -106,7 +115,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                        {
                                                                                                                            ChannelName = "game-10",
                                                                                                                            IsVoiceChannel = true,
-                                                                                                                           IsAvailable = true
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
                                                                                                                        }
                                                                                                                },
                                                                                                            };

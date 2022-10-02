@@ -1,13 +1,12 @@
 <div class="content">
-  <div class="available-games-box" style="color: white">
+  <div class="available-games-box">
     <h4>Available Games</h4>
     <div (click)="changeGameDetails(groupNameToGameDetails.value)"
          *ngFor="let groupNameToGameDetails of groupNameToGameDetailsMap | keyvalue: asIsOrder" class="available-game">
       <div class="available-game-content">
         <span class="gameName">{{groupNameToGameDetails.key}}</span>
         <span class="gamePlayerNumber">
-        <b *ngIf="groupNameToGameDetails.value.playersDetails?.length">{{groupNameToGameDetails.value.playersDetails.length}}/10</b>
-        <b *ngIf="!groupNameToGameDetails.value.playersDetails?.length">(0/10)</b>
+        <b>({{groupNameToGameDetails.value.playersDetails.length}}/10)</b>
         </span>
         <!--Chat Channel-->
         <span *ngIf="!groupNameToGameDetails.value.isVoiceChannel" class="channelIcon material-symbols-outlined">headset_off chat</span>

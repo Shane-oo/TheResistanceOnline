@@ -29,7 +29,6 @@ export class JoinGameComponent implements OnInit {
   constructor(private gameService: TheResistanceGameService, private discordServerService: DiscordServerService, private swalService: SwalContainerService, private route: ActivatedRoute, private router: Router) {
     this.gameService.groupNameToGameDetailsMapChanged.subscribe((value: Map<string, GameDetails>) => {
       this.groupNameToGameDetailsMap = value;
-      console.log('in subscription');
       console.log(this.groupNameToGameDetailsMap);
     });
   }
