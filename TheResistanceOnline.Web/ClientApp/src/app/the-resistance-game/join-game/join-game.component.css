@@ -1,0 +1,67 @@
+.content {
+  overflow: hidden;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-top: 20px;
+  font-family: ethnocentric, sans-serif;
+}
+
+.available-games-box {
+  width: 40%;
+  float: left;
+  height: fit-content;
+  background-color: #111111;
+  text-align: center;
+  box-shadow: 0.0315rem 0 0.625rem 0 black;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.game-details-box {
+  width: 60%;
+  border: 1px solid green;
+  float: left; /* add this */
+
+}
+
+.available-game {
+  padding: 10px;
+  margin-top: 25px;
+  height: 45px;
+  text-align: center;
+  background-color: #1e1e1e;
+  box-shadow: 0.0315rem 0 0.625rem 0 whitesmoke;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.available-game:hover {
+  box-shadow: 0.0315rem 0 0.625rem 0 #fc2001;
+
+}
+
+.available-game-content {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.gameName {
+  display: table-cell;
+  text-align: left;
+}
+
+.gamePlayerNumber {
+  display: table-cell;
+  text-align: center;
+}
+
+.channelIcon {
+  display: table-cell;
+  text-align: center;
+  line-height: 22.5px;
+  vertical-align: top;
+}

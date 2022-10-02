@@ -6,7 +6,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoginResponseModel, UserLoginModel } from '../user.models';
 import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { navbarDataLoggedIn } from '../../nav-menu/nav-data';
 
 @Component({
              selector: 'app-user-login',

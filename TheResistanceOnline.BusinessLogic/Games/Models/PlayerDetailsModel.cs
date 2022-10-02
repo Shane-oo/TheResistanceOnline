@@ -6,11 +6,15 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
     {
         #region Properties
 
-        public Guid PlayerId { get; set; }
-       
-        public int? ProfilePictureId { get; set; }
+        public string DiscordTag { get; set; }
 
         [CanBeNull]
+        public string DiscordUserName { get; set; }
+
+        public bool IsInAGame { get; set; }
+
+        public Guid PlayerId { get; set; }
+
         public string UserName { get; set; }
 
         #endregion

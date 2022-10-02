@@ -8,10 +8,10 @@ import { TheResistanceGameService } from '../the-resistance-game.service';
              styleUrls: ['./lobby.component.css']
            })
 export class LobbyComponent implements OnInit {
-  @Input() gameDetails: GameDetails = {
-    lobbyName: '',
-    playersDetails: []
-  };
+  // @Input() gameDetails: GameDetails = {
+  //   lobbyName: '',
+  //   playersDetails: []
+  // };
 
   constructor(private gameService: TheResistanceGameService) {
 

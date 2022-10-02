@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TheResistanceGameService } from '../the-resistance-game.service';
-import { JoinGameCommand } from '../the-resistance-game.models';
+import { GameDetails, JoinGameCommand } from '../the-resistance-game.models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DiscordServerService } from '../../shared/services/discord-server.service';
 import { CreateDiscordUserCommand } from '../../shared/models/discord-server.models';
@@ -16,11 +16,30 @@ import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-cont
 export class JoinGameComponent implements OnInit {
 
   public joinGameForm: FormGroup = new FormGroup({});
+  public groupNameToGameDetailsMap: Map<string, GameDetails> = new Map<string, GameDetails>();
+
+  public selectedGameDetails: GameDetails = {
+    channelName: '',
+    playersDetails: [],
+    isVoiceChannel: false,
+    isAvailable: false
+  };
+
 
   constructor(private gameService: TheResistanceGameService, private discordServerService: DiscordServerService, private swalService: SwalContainerService, private route: ActivatedRoute, private router: Router) {
+    this.gameService.groupNameToGameDetailsMapChanged.subscribe((value: Map<string, GameDetails>) => {
+      this.groupNameToGameDetailsMap = value;
+      console.log('in subscription');
+      console.log(this.groupNameToGameDetailsMap);
+    });
   }
 
+
   ngOnInit(): void {
+    // JoinGame Listeners
+    this.gameService.addReceiveAllGameDetailsToPlayersNotInGameListener();
+
+
     this.joinGameForm = new FormGroup({
                                         lobbyName: new FormControl('poop', [Validators.required])
                                       });
@@ -39,10 +58,12 @@ export class JoinGameComponent implements OnInit {
       let createDiscordUserCommand: CreateDiscordUserCommand = {tokenType: data?.token_type, accessToken: data?.access_token};
       this.discordServerService.createDiscordUser(createDiscordUserCommand).subscribe({
                                                                                         next: (response: any) => {
-                                                                                          this.swalService.showSwal(
-                                                                                            'Discord Account Successfully Activated!',
-                                                                                            SwalTypesModel.Success);
-                                                                                          //ToDo show server invite if user is not in discord server
+                                                                                          this.router.navigate([`/the-resistance-game`]).then(
+                                                                                            r => {
+                                                                                              this.swalService.showSwal(
+                                                                                                'Discord Account Added!',
+                                                                                                SwalTypesModel.Success);
+                                                                                            });
                                                                                         },
                                                                                         error: (err: HttpErrorResponse) => {
                                                                                           console.log(err);
@@ -51,13 +72,6 @@ export class JoinGameComponent implements OnInit {
     } else {
       this.gameService.addDiscordNotFoundListener();
     }
-
-    //todo add listeners here
-    this.gameService.addUserJoinedGameListener();
-    this.gameService.addGameIsFullListener();
-    this.gameService.addGameDoesNotExistListener();
-
-
   }
 
   ngOnDestroy() {
@@ -80,4 +94,13 @@ export class JoinGameComponent implements OnInit {
 
     this.gameService.joinGame(joinGameCommand);
   };
+
+  // orders the groupNameToGameDetailsMap in descending order
+  asIsOrder(a: any, b: any) {
+    return 1;
+  }
+
+  public changeGameDetails(gameDetails: GameDetails) {
+    this.selectedGameDetails = gameDetails;
+  }
 }

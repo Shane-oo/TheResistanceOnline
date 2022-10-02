@@ -21,12 +21,95 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         #region Fields
 
-        private static readonly Dictionary<string, string> _connectionIdToGroupNameMappingTable = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> _connectionIdToGroupNameMappingTable = new();
+        private static readonly Dictionary<string, PlayerDetailsModel> _connectionIdToPlayerDetailsMappingTable = new();
 
-        private static readonly Dictionary<string, Guid> _connectionIdToPlayerId = new Dictionary<string, Guid>();
-        private static readonly Dictionary<string, UserDetailsModel> _connectionIdToUserMappingTable = new Dictionary<string, UserDetailsModel>();
+        private static readonly Dictionary<string, Guid> _connectionIdToPlayerId = new();
         private readonly IGameService _gameService;
-        private static readonly Dictionary<string, GameDetailsModel> _groupNameToGameDetailsMappingTable = new Dictionary<string, GameDetailsModel>();
+
+        private static readonly Dictionary<string, GameDetailsModel> _groupNameToGameDetailsMappingTable = new()
+                                                                                                           {
+                                                                                                               {
+                                                                                                                   "game-1", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-1",
+                                                                                                                           IsVoiceChannel = false,
+                                                                                                                           IsAvailable = true
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-2", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-2",
+                                                                                                                           IsVoiceChannel = false,
+                                                                                                                           IsAvailable = true
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-3", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-3",
+                                                                                                                           IsVoiceChannel = false,
+                                                                                                                           IsAvailable = true
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-4", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-4",
+                                                                                                                           IsVoiceChannel = false,
+                                                                                                                           IsAvailable = true
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-5", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-5",
+                                                                                                                           IsVoiceChannel = false,
+                                                                                                                           IsAvailable = true
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-6", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-6",
+                                                                                                                           IsVoiceChannel = true,
+                                                                                                                           IsAvailable = true
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-7", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-7",
+                                                                                                                           IsVoiceChannel = true,
+                                                                                                                           IsAvailable = true
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-8", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-8",
+                                                                                                                           IsVoiceChannel = true,
+                                                                                                                           IsAvailable = true
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-9", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-9",
+                                                                                                                           IsVoiceChannel = true,
+                                                                                                                           IsAvailable = true
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-10", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-10",
+                                                                                                                           IsVoiceChannel = true,
+                                                                                                                           IsAvailable = true
+                                                                                                                       }
+                                                                                                               },
+                                                                                                           };
 
         private readonly IMapper _mapper;
 
@@ -52,8 +135,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             var playerDetails = new PlayerDetailsModel
                                 {
                                     PlayerId = Guid.NewGuid(),
-                                    UserName = _connectionIdToUserMappingTable[Context.ConnectionId].UserName,
-                                    ProfilePictureId = null //todo what should profile pic be, discord prof pic?
+                                    UserName = _connectionIdToPlayerDetailsMappingTable[Context.ConnectionId].UserName,
                                 };
             if (string.IsNullOrEmpty(playerDetails.UserName))
             {
@@ -62,6 +144,20 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
             _connectionIdToPlayerId.Add(Context.ConnectionId, playerDetails.PlayerId);
             return playerDetails;
+        }
+
+        private async Task SendAllGameDetailsToPlayersNotInGameAsync()
+        {
+            foreach(var (connectionId, playerDetails) in _connectionIdToPlayerDetailsMappingTable)
+            {
+                if (!playerDetails.IsInAGame)
+                {
+                    var availableGames = _groupNameToGameDetailsMappingTable.Where(gd => gd.Value.IsAvailable)
+                                                                            .OrderByDescending(gd => gd.Value.PlayersDetails?.Count)
+                                                                            .ToDictionary(p => p.Key, p => p.Value);
+                    await Clients.Client(connectionId).SendAsync("ReceiveAllGameDetailsToPlayersNotInGame", availableGames);
+                }
+            }
         }
 
         #endregion
@@ -97,12 +193,12 @@ namespace TheResistanceOnline.SocketServer.Hubs
             var playerDetails = CreateNewPlayer();
             if (playerDetails != null)
             {
-                _gameService.AssignRoleToPlayerAsync(command, _connectionIdToUserMappingTable[Context.ConnectionId]);
+                // _gameService.AssignRoleToPlayerAsync(command, _connectionIdToPlayerDetailsMappingTable[Context.ConnectionId]);
 
                 // todo denote the host
                 var newGame = new GameDetailsModel
                               {
-                                  LobbyName = command.LobbyName,
+                                  ChannelName = command.LobbyName,
                                   PlayersDetails = new List<PlayerDetailsModel>
                                                    {
                                                        playerDetails
@@ -154,7 +250,17 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                         Name = Context.User?.Identity?.Name
                                                                     });
             var userDetails = _mapper.Map<UserDetailsModel>(user);
-            _connectionIdToUserMappingTable.Add(Context.ConnectionId, userDetails);
+            var playerDetails = new PlayerDetailsModel
+                                {
+                                    PlayerId = new Guid(),
+                                    UserName = userDetails.UserName,
+                                    DiscordUserName = userDetails.DiscordUser?.UserName,
+                                    DiscordTag = userDetails.DiscordUser?.DiscordTag,
+                                };
+
+            _connectionIdToPlayerDetailsMappingTable.Add(Context.ConnectionId, playerDetails);
+
+            await SendAllGameDetailsToPlayersNotInGameAsync();
 
             // Discord User Does not exist Or User Wants to Use Discord And its been one week since said no 
             if (user.DiscordUser == null)
@@ -190,7 +296,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 _connectionIdToPlayerId.Remove(Context.ConnectionId);
             }
 
-            _connectionIdToUserMappingTable.Remove(Context.ConnectionId);
+            _connectionIdToPlayerDetailsMappingTable.Remove(Context.ConnectionId);
 
             return base.OnDisconnectedAsync(exception);
         }

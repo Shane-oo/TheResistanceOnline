@@ -15,12 +15,15 @@ import { DiscordLoginResponseModel } from '../user/user.models';
             })
 export class TheResistanceGameService {
 
-  public gameDetails: GameDetails = {
-    playersDetails: [],
-    lobbyName: ''
-  };
+  // public gameDetails: GameDetails = {
+  //   playersDetails: [],
+  //   lobbyName: ''
+  // };
 
   public gameDetailsChanged: Subject<GameDetails> = new Subject<GameDetails>();
+  //public allGameDetails
+  public groupNameToGameDetailsMapChanged: Subject<Map<string, GameDetails>> = new Subject<Map<string, GameDetails>>();
+
 
   private readonly gamesEndpoint = '/api/Games';
   private readonly token = localStorage.getItem('TheResistanceToken');
@@ -49,7 +52,7 @@ export class TheResistanceGameService {
     this.start().then(r => console.log('connected'));
 
     this.gameDetailsChanged.subscribe((value) => {
-      this.gameDetails = value;
+      // this.gameDetails = value;
     });
     // todo Add Permanent Listeners
 
@@ -65,6 +68,15 @@ export class TheResistanceGameService {
       setTimeout(() => this.start(), 30000);
     }
   }
+
+
+  // join-game Listeners
+  public addReceiveAllGameDetailsToPlayersNotInGameListener = () => {
+    this.connection.on('ReceiveAllGameDetailsToPlayersNotInGame', (map: Map<string, GameDetails> ) => {
+      this.groupNameToGameDetailsMapChanged.next(map);
+    });
+  };
+
 
   public createGame = (body: CreateGameCommand) => {
     console.log('invoking CreateGame()');

@@ -9,17 +9,17 @@ import { TheResistanceGameService } from './the-resistance-game.service';
            })
 export class TheResistanceGameComponent implements OnInit {
   public userInGame: boolean = false;
-  public gameDetails: GameDetails = {
-    lobbyName: '',
-    playersDetails: []
-  };
+  // public gameDetails: GameDetails = {
+  //   lobbyName: '',
+  //   playersDetails: []
+  // };
 
   constructor(private gameService: TheResistanceGameService) {
 
-    this.gameService.gameDetailsChanged.subscribe((value: GameDetails) => {
-      this.gameDetails = value;
-      this.userInGame = true;
-    });
+    // this.gameService.gameDetailsChanged.subscribe((value: GameDetails) => {
+    //   this.gameDetails = value;
+    //   this.userInGame = true;
+    // });
   }
 
   ngOnInit(): void {
