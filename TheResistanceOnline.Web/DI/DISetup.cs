@@ -80,6 +80,7 @@ public static class DISetup
         services.AddScoped<IUserSettingsService, UserSettingsService>();
 
         // Queries
+        services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
         services.AddTransient<IUserDbQuery, UserDbQuery>();
 
         // Identities 

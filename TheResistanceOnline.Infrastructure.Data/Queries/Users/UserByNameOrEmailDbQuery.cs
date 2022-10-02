@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
-using TheResistanceOnline.BusinessLogic.Users.Models;
 using TheResistanceOnline.Data.Users;
 
 namespace TheResistanceOnline.Infrastructure.Data.Queries.Users;
@@ -30,7 +29,7 @@ public class UserByNameOrEmailDbQuery: IUserByNameOrEmailDbQuery
 
     public async Task<User?> ExecuteAsync(CancellationToken cancellationToken)
     {
-        var user = await _context.Users.AsNoTracking() // not sure if should have AsNoTracking()
+        var user = await _context.Users
                                  .Include(p => p.ProfilePicture)
                                  .Include(ud => ud.DiscordUser)
                                  .Include(us => us.UserSetting)
