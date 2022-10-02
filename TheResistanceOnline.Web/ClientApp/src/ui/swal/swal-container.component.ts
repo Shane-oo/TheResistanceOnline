@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
                      [showConfirmButton]="false"
                      [timer]="7500"
                      icon="error"
-                     html="<h6 class=swalError>{{ message }}</h6>"
+                     html="<h6 class=swal>{{ message }}</h6>"
                      [swalFireOnInit]="true"
                      (didClose)="isSwalVisible = false;isError = false"
                      [backdrop]="false"
@@ -22,13 +22,17 @@ import Swal from 'sweetalert2';
                </swal>
                <!--Success Component-->
                <swal *ngIf="isSwalVisible && isSuccess"
+                     [toast]="true"
+                     position='top-end'
+                     [showConfirmButton]="false"
+                     [timer]="7500"
                      icon="success"
-                     text=" {{ message }}"
+                     html="<h6 class=swal>{{ message }}</h6>"
                      [swalFireOnInit]="true"
                      (didClose)="isSwalVisible = false;isSuccess = false"
-                     titleText="Success"
+                     background='#383838'
                      [backdrop]="false"
-               >
+                     (didOpen)="swalDidOpen($event)">
                </swal>
              `,
              providers: []
@@ -45,8 +49,6 @@ export class SwalContainerComponent {
   }
 
   public swalDidOpen(event: DidOpenEvent): void {
-    // Most events (those using $event in the example above) will let you access the modal native DOM node, like this:
-    console.log(event.modalElement);
     event.modalElement.addEventListener('mouseenter', Swal.stopTimer);
     event.modalElement.addEventListener('mouseleave', Swal.resumeTimer);
   }

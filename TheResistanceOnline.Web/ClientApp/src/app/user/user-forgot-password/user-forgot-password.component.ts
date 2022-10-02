@@ -43,12 +43,8 @@ export class UserForgotPasswordComponent implements OnInit {
                                                                            next: (_) => {
 
                                                                              this.swalService.showSwal(
-                                                                               'Reset Password link has been sent to '
-                                                                               + forgotPasswordDto.email
-                                                                               + ' please follow the link provided to change your password',
+                                                                               'Reset Password link has been sent',
                                                                                SwalTypesModel.Success);
-
-
                                                                            },
                                                                            error: (err: HttpErrorResponse) => {
                                                                            }
