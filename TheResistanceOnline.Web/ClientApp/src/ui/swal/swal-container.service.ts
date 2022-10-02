@@ -28,6 +28,8 @@ export class SwalContainerService {
     if(!this.container) {
       this.container = this.overlayService.addComponent(SwalContainerComponent);
     }
+    // close a previous alert
+    this.resetSwal();
     this.container.instance.message = message;
 
     switch(type) {
@@ -61,6 +63,12 @@ export class SwalContainerService {
           }
         });
   };
+
+  private resetSwal() {
+    this.container.instance.isSwalVisible = false;
+    this.container.instance.isError = false;
+    this.container.instance.isSuccess = false;
+  }
 }
 
 //  public showDiscordLoginRequested = () => {

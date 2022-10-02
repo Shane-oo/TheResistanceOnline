@@ -40,6 +40,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         private readonly IDataContext _context;
 
+        private readonly TimeSpan _cooldownMinutes = new(0, 5, 0);
+
         private readonly IEmailService _emailService;
 
         private readonly IUserIdentityManager _identityManager;
@@ -60,6 +62,25 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         #endregion
 
+        #region Private Methods
+
+        private async Task<User> FindUserByEmailAsync(string email)
+        {
+            var userQuery = new ByIdAndNameQuery
+                            {
+                                Name = email
+                            };
+            var user = await GetUserByEmailOrNameAsync(userQuery);
+            if (user == null)
+            {
+                throw new DomainException(typeof(User), "Email Not Found");
+            }
+
+            return user;
+        }
+
+        #endregion
+
         #region Public Methods
 
         public async Task ConfirmUserEmailAsync(UserConfirmEmailCommand command)
@@ -69,10 +90,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 throw new ArgumentNullException(nameof(command));
             }
 
-            var user = new User
-                       {
-                           Email = command.Email,
-                       };
+            var user = await FindUserByEmailAsync(command.Email);
+
             await _identityManager.ConfirmUsersEmailAsync(user, command.Token);
         }
 
@@ -83,28 +102,22 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 throw new ArgumentNullException(nameof(command));
             }
 
-
             var user = new User
                        {
                            UserName = command.UserName,
                            Email = command.Email
                        };
 
-
             var token = await _identityManager.CreateIdentityAsync(user, command.Password);
-            //todo this is broken
-            //await _identityManager.CreateUserRoleAsync(user, "User");
-
             var param = new Dictionary<string, string>
                         {
                             { "token", token },
                             { "email", user.Email }
                         };
             var callback = QueryHelpers.AddQueryString(command.ClientUri, param);
-
             var sendEmailCommand = new SendEmailCommand
                                    {
-                                       EmailTo = user.Email!,
+                                       EmailTo = user.Email,
                                        EmailSubject = "The Resistance Board Game Online - Confirm Email",
                                        CancellationToken = command.CancellationToken,
                                        EmailBody = "<h1> Click To Confirm Email: " + callback
@@ -141,10 +154,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 throw new ArgumentNullException(nameof(command));
             }
 
-            var user = new User
-                       {
-                           Email = command.Email,
-                       };
+            var user = await FindUserByEmailAsync(command.Email);
 
             try
             {
@@ -173,12 +183,13 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 throw new ArgumentNullException(nameof(command));
             }
 
-            var user = new User
-                       {
-                           Email = command.Email,
-                       };
+            var user = await FindUserByEmailAsync(command.Email);
 
             await _identityManager.ResetPasswordAsync(user, command.Token, command.Password);
+
+            user.UserSetting.ResetPasswordLinkSent = false;
+            user.UserSetting.ResetPasswordLinkSentRecord = null;
+            await _context.SaveChangesAsync(command.CancellationToken);
         }
 
         public async Task SendResetPasswordAsync(UserForgotPasswordCommand command)
@@ -188,10 +199,16 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 throw new ArgumentNullException(nameof(command));
             }
 
-            var user = new User
-                       {
-                           Email = command.Email,
-                       };
+            var user = await FindUserByEmailAsync(command.Email);
+
+            // Stop spamming of reset password email
+            if (user.UserSetting.ResetPasswordLinkSent && user.UserSetting.ResetPasswordLinkSentRecord.HasValue)
+            {
+                if (DateTimeOffset.Now < user.UserSetting.ResetPasswordLinkSentRecord.Value.Add(_cooldownMinutes))
+                {
+                    throw new DomainException(typeof(User), "reset password link already sent");
+                }
+            }
 
             var token = await _identityManager.GetPasswordResetTokenAsync(user);
             var param = new Dictionary<string, string>
@@ -209,6 +226,10 @@ namespace TheResistanceOnline.BusinessLogic.Users
                                    };
 
             await _emailService.SendEmailAsync(sendEmailCommand);
+
+            user.UserSetting.ResetPasswordLinkSent = true;
+            user.UserSetting.ResetPasswordLinkSentRecord = DateTimeOffset.Now;
+            await _context.SaveChangesAsync(command.CancellationToken);
         }
 
         #endregion

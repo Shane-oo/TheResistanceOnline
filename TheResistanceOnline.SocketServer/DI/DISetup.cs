@@ -79,13 +79,14 @@ namespace TheResistanceOnline.SocketServer.DI
                                                  };
                                   });
         }
-        
+
         public static void AddContext(this IServiceCollection services)
         {
             if (_connectionString == null)
             {
                 throw new NullReferenceException("Connection string not found");
             }
+
             services.AddDbContext<Context>(options => options.UseSqlServer(_connectionString));
             services.AddScoped<IDataContext, DataContext>();
         }
@@ -105,7 +106,7 @@ namespace TheResistanceOnline.SocketServer.DI
 
             // Queries
             services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
-
+            services.AddTransient<IUserDbQuery, UserDbQuery>();
             // Mapping Profiles
             services.AddAutoMapper(typeof(UserMappingProfile));
             services.AddAutoMapper(typeof(DiscordServerMappingProfile));

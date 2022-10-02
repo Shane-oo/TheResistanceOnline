@@ -163,12 +163,12 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 {
                     await Clients.Client(Context.ConnectionId).SendAsync("discordNotFound");
                 }
-                else if (user.UserSetting.UserWantsToUseDiscordRecord <= DateTimeOffset.Now.AddDays(-7))
+                else if (!user.UserSetting.UserWantsToUseDiscordRecord.HasValue || user.UserSetting.UserWantsToUseDiscordRecord.Value <= DateTimeOffset.Now.AddDays(-7))
                 {
                     await Clients.Client(Context.ConnectionId).SendAsync("discordNotFound");
                 }
             }
-            
+
 
             await base.OnConnectedAsync();
         }
