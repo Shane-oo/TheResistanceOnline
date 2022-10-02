@@ -95,7 +95,7 @@ public static class DISetup
                                                      options.Password.RequireDigit = true;
                                                      options.Lockout.AllowedForNewUsers = true;
                                                      options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(7);
-                                                     options.Lockout.MaxFailedAccessAttempts = 5;
+                                                     options.Lockout.MaxFailedAccessAttempts = 10;
                                                  })
                 .AddEntityFrameworkStores<Context>()
                 .AddDefaultTokenProviders();

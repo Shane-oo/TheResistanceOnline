@@ -57,9 +57,7 @@ export class UserRegisterComponent implements OnInit {
                                                     next: (_) => {
                                                       this.router.navigate([`/user/login`]).then(r => {
                                                         this.swalService.showSwal(
-                                                          'Successfully registered! An email has been sent to '
-                                                          + user.email
-                                                          + ' please follow the link provided to confirm email address.',
+                                                          'successfully registered! an email confirmation has been sent to you address',
                                                           SwalTypesModel.Success);
                                                       });
 

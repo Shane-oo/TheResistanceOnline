@@ -43,7 +43,7 @@ export class UserLoginComponent implements OnInit {
     const user: UserLoginModel = {
       email: login.email,
       password: login.password,
-      clientUri: `${environment.Base_URL}/user/forgot-password`
+      clientUri: `${environment.Base_URL}/user/reset-password`
     };
 
     this.authService.loginUser(user).subscribe({

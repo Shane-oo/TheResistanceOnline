@@ -122,7 +122,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
         {
             var userSetting = new UserSetting();
             user.UserSetting = userSetting;
-            
+
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
             {
@@ -157,6 +157,12 @@ namespace TheResistanceOnline.BusinessLogic.Users
             if (!confirmedEmail)
             {
                 throw new DomainException(typeof(User), user.Email, "Please confirm email address");
+            }
+
+            var accountLocked = await _userManager.IsLockedOutAsync(foundUser);
+            if (accountLocked)
+            {
+                throw new DomainException(typeof(User), "Account Is Locked, Please see your Emails for instructions to reset your password");
             }
 
             var passwordCheck = await _userManager.CheckPasswordAsync(foundUser, password);

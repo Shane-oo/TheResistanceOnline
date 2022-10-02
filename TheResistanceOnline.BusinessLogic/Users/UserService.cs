@@ -152,18 +152,17 @@ namespace TheResistanceOnline.BusinessLogic.Users
             }
             catch(UnauthorizedAccessException)
             {
-                var sendEmailCommand = new SendEmailCommand
-                                       {
-                                           EmailTo = user.Email!,
-                                           EmailSubject = "The Resistance Board Game Online - Reset Password",
-                                           CancellationToken = command.CancellationToken,
-                                           EmailBody = "<h1> Please follow this link to reset your password " + command.ClientUri + "</h1>"
-                                       };
-                await _emailService.SendEmailAsync(sendEmailCommand);
+                await SendResetPasswordAsync(new UserForgotPasswordCommand
+                                             {
+                                                 CancellationToken = command.CancellationToken,
+                                                 ClientUri = command.ClientUri,
+                                                 CommandId = command.CommandId,
+                                                 CorrelationId = command.CorrelationId,
+                                                 Email = command.Email
+                                             });
 
                 throw new DomainException(typeof(User), user.Email,
-                                          "Your account has been locked after too many failed login attempts. Please follow the instructions sent to " + user.Email +
-                                          " to reset your password");
+                                          "account is Now locked. instructions have been sent to your email address with a link to reset your password");
             }
         }
 
