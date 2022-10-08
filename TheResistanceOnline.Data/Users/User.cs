@@ -12,18 +12,12 @@ public class User: IdentityUser
 
     [CanBeNull]
     public DiscordUser DiscordUser { get; set; }
-
-    public int? DiscordUserId { get; set; }
-
+    
     [CanBeNull]
     public ProfilePicture ProfilePicture { get; set; }
-
-    public int? ProfilePictureId { get; set; }
-
+    
     [NotNull]
     public UserSetting UserSetting { get; set; }
-
-    public int UserSettingId { get; set; }
-
+    
     #endregion
 }

@@ -24,6 +24,7 @@ namespace TheResistanceOnline.BusinessLogic.Users.Commands
         public string Password { get; set; }
 
         [Required(ErrorMessage = "UserName is Required")]
+        [MaxLength(30,ErrorMessage = "UserName must be less than 30 Characters" )]
         [NotNull]
         public string UserName { get; set; }
 

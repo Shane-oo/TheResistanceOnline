@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CreateGameCommand, GameDetails, JoinGameCommand } from './the-resistance-game.models';
+import { GameDetails, JoinGameCommand } from './the-resistance-game.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import * as signalR from '@microsoft/signalr';
@@ -21,6 +21,7 @@ export class TheResistanceGameService {
   // };
 
   public gameDetailsChanged: Subject<GameDetails> = new Subject<GameDetails>();
+
   //public allGameDetails
   public groupNameToGameDetailsMapChanged: Subject<Map<string, GameDetails>> = new Subject<Map<string, GameDetails>>();
 
@@ -51,9 +52,6 @@ export class TheResistanceGameService {
 
     this.start().then(r => console.log('connected'));
 
-    this.gameDetailsChanged.subscribe((value) => {
-      // this.gameDetails = value;
-    });
     // todo Add Permanent Listeners
 
   }
@@ -72,71 +70,29 @@ export class TheResistanceGameService {
 
   // join-game Listeners
   public addReceiveAllGameDetailsToPlayersNotInGameListener = () => {
-    this.connection.on('ReceiveAllGameDetailsToPlayersNotInGame', (map: Map<string, GameDetails> ) => {
+    this.connection.on('ReceiveAllGameDetailsToPlayersNotInGame', (map: Map<string, GameDetails>) => {
+      console.log('recivec all game details');
       this.groupNameToGameDetailsMapChanged.next(map);
     });
   };
 
-
-  public createGame = (body: CreateGameCommand) => {
-    console.log('invoking CreateGame()');
-    this.connection.invoke('CreateGame', body)
-        .catch(err => console.log(err));
+  public removeReceiveAllGameDetailsToPlayersNotInGameListener = () => {
+    this.connection.off('ReceiveAllGameDetailsToPlayersNotInGame');
   };
 
   public joinGame = (body: JoinGameCommand) => {
-    this.connection.invoke('JoinGame', body).catch(err => console.log(err));
+    this.connection.invoke('ReceiveJoinGameCommand', body).then(() => {
+    }).catch(err => console.log(err));
   };
 
-
-  public addUserCreatedGameListener = () => {
-    this.connection.on('userCreatedGame', (newGame: GameDetails) => {
-      console.log('User created new game', newGame);
-      this.gameDetailsChanged.next(newGame);
-    });
-  };
-
-  public addGameAlreadyExistsListener = () => {
-    this.connection.on('gameAlreadyExists', (response: string) => {
-      this.swalService.showSwal(response, SwalTypesModel.Error);
-    });
-  };
-
-  public addTooManyGamesListener = () => {
-    this.connection.on('tooManyGames', (response: string) => {
-      this.swalService.showSwal(response, SwalTypesModel.Error);
-    });
-  };
-
-
-  public addUserJoinedGameListener = () => {
-    this.connection.on('userJoinedGame', (game: GameDetails) => {
-      console.log('user joined game', game);
-      this.gameDetailsChanged.next(game);
-    });
-
-  };
-
-  public addUserLeftGameListener = () => {
-    this.connection.on('userLeftGame', (game: GameDetails) => {
-      this.gameDetailsChanged.next(game);
-    });
-  };
-
-  public addGameIsFullListener = () => {
-    this.connection.on('gameIsFull', (response: string) => {
-      this.swalService.showSwal(response, SwalTypesModel.Error);
-    });
-  };
-
-  public addGameDoesNotExistListener = () => {
-    this.connection.on('gameDoesNotExist', (response: string) => {
-      this.swalService.showSwal(response, SwalTypesModel.Error);
+  public addReceiveGameDetailsListener = () => {
+    this.connection.on('ReceiveGameDetails', (gameDetails: GameDetails) => {
+      this.gameDetailsChanged.next(gameDetails);
     });
   };
 
   public addDiscordNotFoundListener = () => {
-    this.connection.on('discordNotFound', () => {
+    this.connection.on('ReceiveDiscordNotFound', () => {
       console.log('discord not found triggered');
       this.swalService.fireDiscordLoginRequested();
 
@@ -157,6 +113,9 @@ export class TheResistanceGameService {
         }
       });
     });
+  };
+  public removeDiscordNotFoundListener = () => {
+    this.connection.off('ReceiveDiscordNotFound');
   };
 }
 

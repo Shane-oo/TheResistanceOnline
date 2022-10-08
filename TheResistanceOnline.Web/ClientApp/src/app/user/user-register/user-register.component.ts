@@ -22,7 +22,7 @@ export class UserRegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.registerForm = new FormGroup({
-                                        userName: new FormControl('', [Validators.required]),
+                                        userName: new FormControl('', [Validators.required, Validators.maxLength(30)]),
                                         email: new FormControl('', [Validators.required, Validators.email]),
                                         password: new FormControl('', [Validators.required]),
                                         confirmPassword: new FormControl('')

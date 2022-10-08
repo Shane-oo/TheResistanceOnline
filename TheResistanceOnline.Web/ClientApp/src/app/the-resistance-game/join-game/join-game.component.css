@@ -7,7 +7,8 @@
   text-align: center;
   margin-top: 20px;
   font-family: ethnocentric, sans-serif;
-  color: white;
+  color: ghostwhite;
+  margin-left: 50px;
 }
 
 .available-games-box {
@@ -19,6 +20,8 @@
   box-shadow: 0.0315rem 0 0.625rem 0 black;
   border-radius: 10px;
   padding: 20px;
+  overflow: scroll;
+
 }
 
 .available-game {
@@ -30,6 +33,7 @@
   box-shadow: 0.0315rem 0 0.625rem 0 whitesmoke;
   border-radius: 10px;
   cursor: pointer;
+
 }
 
 .available-game:hover {
@@ -70,6 +74,7 @@
   border-radius: 10px;
   padding: 20px;
   margin-left: 10px;
+  overflow: scroll;
 }
 
 
@@ -81,6 +86,8 @@
     position: absolute;
     width: 100%;
     margin-right: 20px;
+    margin-left: 0;
+
   }
 
   .game-details-box {

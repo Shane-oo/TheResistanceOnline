@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { GameDetails } from '../../the-resistance-game.models';
+import { GameDetails, JoinGameCommand } from '../../the-resistance-game.models';
+import { TheResistanceGameService } from '../../the-resistance-game.service';
 
 @Component({
              selector: 'app-join-game-details',
@@ -15,10 +16,18 @@ export class JoinGameDetailsComponent implements OnInit {
     isAvailable: false
   };
 
-  constructor() {
+  constructor(private gameService: TheResistanceGameService) {
   }
 
   ngOnInit(): void {
   }
+
+  public joinGame = (channelName: string) => {
+    console.log('join ', channelName);
+    const joinGameCommand: JoinGameCommand = {
+      channelName: channelName
+    };
+    this.gameService.joinGame(joinGameCommand);
+  };
 
 }

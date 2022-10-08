@@ -20,7 +20,7 @@ export class LobbyComponent implements OnInit {
   ngOnInit(): void {
     //this.gameService.addUserJoinedLobbyListener();
     //this.gameService.addUserLeftLobbyListener();
-    this.gameService.addUserLeftGameListener();
+   // this.gameService.addUserLeftGameListener();
 
   }
 

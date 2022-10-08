@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TheResistanceOnline.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using TheResistanceOnline.Infrastructure.Data;
 namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20221008023637_FixOneToOneRelationships")]
+    partial class FixOneToOneRelationships
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -170,7 +172,7 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                     b.HasKey("Id")
                         .HasName("PK_DiscordChannels");
 
-                    b.ToTable("DiscordChannels", (string)null);
+                    b.ToTable("DiscordChannels");
 
                     b.HasData(
                         new
@@ -244,7 +246,7 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
 
                     b.HasIndex("DiscordChannelId");
 
-                    b.ToTable("DiscordRoles", (string)null);
+                    b.ToTable("DiscordRoles");
 
                     b.HasData(
                         new
@@ -344,7 +346,7 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
 
-                    b.ToTable("DiscordUsers", (string)null);
+                    b.ToTable("DiscordUsers");
                 });
 
             modelBuilder.Entity("TheResistanceOnline.Data.ProfilePictures.ProfilePicture", b =>
@@ -376,7 +378,7 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
 
-                    b.ToTable("ProfilePictures", (string)null);
+                    b.ToTable("ProfilePictures");
 
                     b.HasData(
                         new
@@ -505,7 +507,7 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
 
-                    b.ToTable("UserSettings", (string)null);
+                    b.ToTable("UserSettings");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

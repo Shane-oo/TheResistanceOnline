@@ -1,11 +1,5 @@
-export interface CreateGameCommand {
-  lobbyName: string;
-  createChatChannel: boolean;
-  createVoiceChannel: boolean;
-}
-
 export interface JoinGameCommand {
-  lobbyName: string;
+  channelName: string;
 }
 
 export interface GameDetails {
@@ -16,7 +10,14 @@ export interface GameDetails {
 }
 
 export interface PlayerDetails {
-  discordUserName: string;
-  profilePictureName: string;
+  discordUserName?: string;
   userName: string;
+  resistanceTeamWins: number;
+  spyTeamWins: number;
+}
+
+export interface GameDetailsResponse {
+  errorMessage?: string;
+  errorOccured: boolean;
+  gameDetails: GameDetails;
 }

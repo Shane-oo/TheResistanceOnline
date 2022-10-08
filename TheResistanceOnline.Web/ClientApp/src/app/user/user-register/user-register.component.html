@@ -11,6 +11,8 @@
               <input formControlName="userName" id="userName" type="text">
               <div class="validation">
                 <em *ngIf="validateControl('userName') && hasError('userName', 'required')">UserName is required</em>
+                <em *ngIf="validateControl('userName') && hasError('userName', 'maxlength')">UserName must be less than 30 characters</em>
+
               </div>
             </div>
             <div>
