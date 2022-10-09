@@ -13,16 +13,68 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
 {
     public interface IDiscordServerService
     {
-        Task AddRoleToUserAsync(string roleName, string discordTag);
+        void AddRoleToUserAsync(string roleName, string discordTag);
 
         Task CreateDiscordUserAsync([NotNull] CreateDiscordUserCommand command);
 
-        Task RemoveRoleFromUserAsync(string roleName, string discordTag);
+        Task<bool> DiscordUserInServerAsync(DiscordUser discordUser);
+
+        void RemoveRoleFromUserAsync(string roleName, string discordTag);
     }
 
     public class DiscordServerService: IDiscordServerService
     {
+        #region Constants
+
+        private const long SERVER_GUILD_ID = 1010777112703144017;
+
+        #endregion
+
         #region Fields
+
+        private readonly Dictionary<string, string> _channelNameToRoleMap = new Dictionary<string, string>
+                                                                            {
+                                                                                {
+                                                                                    "game-1",
+                                                                                    "Join Game-1"
+                                                                                },
+                                                                                {
+                                                                                    "game-2",
+                                                                                    "Join Game-2"
+                                                                                },
+                                                                                {
+                                                                                    "game-3",
+                                                                                    "Join Game-3"
+                                                                                },
+                                                                                {
+                                                                                    "game-4",
+                                                                                    "Join Game-4"
+                                                                                },
+                                                                                {
+                                                                                    "game-5",
+                                                                                    "Join Game-5"
+                                                                                },
+                                                                                {
+                                                                                    "game-6",
+                                                                                    "Join Game-6"
+                                                                                },
+                                                                                {
+                                                                                    "game-7",
+                                                                                    "Join Game-7"
+                                                                                },
+                                                                                {
+                                                                                    "game-8",
+                                                                                    "Join Game-8"
+                                                                                },
+                                                                                {
+                                                                                    "game-9",
+                                                                                    "Join Game-9"
+                                                                                },
+                                                                                {
+                                                                                    "game-10",
+                                                                                    "Join Game-10"
+                                                                                }
+                                                                            };
 
         private readonly IDataContext _context;
 
@@ -71,22 +123,24 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
                 await Task.Delay(25);
             }
 
-            var guild = _discordSocketClient.Guilds.First();
-
-            // wait for guild channels, roles and users fetched
-            while(guild.Channels.Count == 0)
+            var guild = _discordSocketClient.Guilds.FirstOrDefault(g => g.Id == SERVER_GUILD_ID);
+            if (guild != null)
             {
-                await Task.Delay(25);
-            }
+                // wait for guild channels, roles and users fetched
+                while(guild.Channels.Count == 0)
+                {
+                    await Task.Delay(25);
+                }
 
-            while(guild.Roles.Count == 0)
-            {
-                await Task.Delay(25);
-            }
+                while(guild.Roles.Count == 0)
+                {
+                    await Task.Delay(25);
+                }
 
-            while(guild.Users.Count <= 1)
-            {
-                await Task.Delay(25);
+                while(guild.Users.Count <= 1)
+                {
+                    await Task.Delay(25);
+                }
             }
         }
 
@@ -94,12 +148,13 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
 
         #region Public Methods
 
-        public async Task AddRoleToUserAsync(string roleName, string discordTag)
+        public async void AddRoleToUserAsync(string channelName, string discordTag)
         {
             await CheckBotIsConnectedAsync();
 
+            var roleName = _channelNameToRoleMap[channelName];
             // Only One Guild/Server so get First
-            var guild = _discordSocketClient.Guilds.FirstOrDefault();
+            var guild = _discordSocketClient.Guilds.FirstOrDefault(g => g.Id == SERVER_GUILD_ID);
             if (guild != null)
             {
                 var role = guild.Roles.FirstOrDefault(r => r.Name == roleName);
@@ -126,15 +181,24 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
             user.UserSetting.UserWantsToUseDiscordRecord = DateTimeOffset.Now;
 
             await _context.SaveChangesAsync(command.CancellationToken);
-
-            //todo find user in server, if they are not in server prompt user on frontend with server invite
         }
 
-        public async Task RemoveRoleFromUserAsync(string roleName, string discordTag)
+        // returns false if user not in server
+        // not used decided to scrap idea
+        public async Task<bool> DiscordUserInServerAsync(DiscordUser discordUser)
         {
             await CheckBotIsConnectedAsync();
 
-            var guild = _discordSocketClient.Guilds.FirstOrDefault();
+            var guild = _discordSocketClient.Guilds.FirstOrDefault(g => g.Id == SERVER_GUILD_ID);
+            var user = guild?.Users.FirstOrDefault(x => x.Username + "#" + x.Discriminator == discordUser.DiscordTag);
+            return user != null;
+        }
+
+        public async void RemoveRoleFromUserAsync(string channelName, string discordTag)
+        {
+            await CheckBotIsConnectedAsync();
+            var roleName = _channelNameToRoleMap[channelName];
+            var guild = _discordSocketClient.Guilds.FirstOrDefault(g => g.Id == SERVER_GUILD_ID);
             if (guild != null)
             {
                 var role = guild.Roles.FirstOrDefault(r => r.Name == roleName);

@@ -7,9 +7,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
 {
     public interface IGameService
     {
-        void AssignRoleToPlayerAsync([NotNull] JoinGameCommand command, [NotNull] PlayerDetailsModel playerDetails);
-
-        void UnAssignRoleToPlayerAsync(string channelName, PlayerDetailsModel playerDetails);
+ 
     }
 
     public class GameService: IGameService
@@ -75,16 +73,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
 
         #region Public Methods
 
-        public async void AssignRoleToPlayerAsync(JoinGameCommand command, PlayerDetailsModel playerDetails)
-        {
-            await _discordServerService.AddRoleToUserAsync(_channelNameToRoleMap[command.ChannelName], playerDetails.DiscordTag);
-        }
-
-        public async void UnAssignRoleToPlayerAsync(string channelName, PlayerDetailsModel playerDetails)
-        {
-            await _discordServerService.RemoveRoleFromUserAsync(_channelNameToRoleMap[channelName], playerDetails.DiscordTag);
-        }
-
+    
         #endregion
     }
 }

@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using JetBrains.Annotations;
 using TheResistanceOnline.Data.Users;
 

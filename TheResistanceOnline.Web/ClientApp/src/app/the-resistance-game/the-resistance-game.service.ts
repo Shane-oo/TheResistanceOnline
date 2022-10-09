@@ -82,11 +82,6 @@ export class TheResistanceGameService {
     }).catch(err => console.log(err));
   };
 
-  public addReceiveGameDetailsListener = () => {
-    this.connection.on('ReceiveGameDetails', (gameDetails: GameDetails) => {
-      this.gameDetailsChanged.next(gameDetails);
-    });
-  };
 
   public addDiscordNotFoundListener = () => {
     this.connection.on('ReceiveDiscordNotFound', () => {
@@ -113,6 +108,23 @@ export class TheResistanceGameService {
   };
   public removeDiscordNotFoundListener = () => {
     this.connection.off('ReceiveDiscordNotFound');
+  };
+
+  public addReceiveDiscordUserNotInDiscordServerListener = () => {
+    this.connection.on('ReceiveDiscordUserNotInDiscordServer', () => {
+      console.log('user found to not be in server');
+    });
+  };
+
+  public removeReceiveDiscordUserNotInDiscordServerListener = () => {
+    this.connection.off('ReceiveDiscordUserNotInDiscordServer');
+  };
+
+  // lobby listeners
+  public addReceiveGameDetailsListener = () => {
+    this.connection.on('ReceiveGameDetails', (gameDetails: GameDetails) => {
+      this.gameDetailsChanged.next(gameDetails);
+    });
   };
 
   // this will probably needed to be done somewhere
