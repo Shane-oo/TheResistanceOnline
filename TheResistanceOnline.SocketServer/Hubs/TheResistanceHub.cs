@@ -217,13 +217,17 @@ namespace TheResistanceOnline.SocketServer.Hubs
                     return base.OnDisconnectedAsync(exception);
                 }
 
+                var leavingPlayerDetails = _connectionIdToPlayerDetailsMappingTable[Context.ConnectionId];
+
                 var gameDetails = _groupNameToGameDetailsMappingTable[userGroupName];
-                gameDetails.PlayersDetails?.Remove(_connectionIdToPlayerDetailsMappingTable[Context.ConnectionId]);
+                gameDetails.PlayersDetails?.Remove(leavingPlayerDetails);
 
                 RemoveConnectionFromAllMaps(Context.ConnectionId);
 
                 SendGameDetailsToChannelGroupAsync(gameDetails, userGroupName);
                 SendAllGameDetailsToPlayersNotInGameAsync();
+
+                _gameService.UnAssignRoleToPlayerAsync(userGroupName, leavingPlayerDetails);
             }
             else
             {
@@ -242,7 +246,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 await Groups.AddToGroupAsync(Context.ConnectionId, command.ChannelName);
                 _connectionIdToGroupNameMappingTable.Add(Context.ConnectionId, command.ChannelName);
 
-                gameDetails.PlayersDetails.Add(_connectionIdToPlayerDetailsMappingTable[Context.ConnectionId]);
+                var newPlayerDetails = _connectionIdToPlayerDetailsMappingTable[Context.ConnectionId];
+
+                gameDetails.PlayersDetails.Add(newPlayerDetails);
                 gameDetails.IsAvailable = gameDetails.PlayersDetails.Count < MAX_GAME_COUNT;
                 _groupNameToGameDetailsMappingTable[command.ChannelName] = gameDetails;
 
@@ -252,7 +258,10 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                    command.ChannelName);
 
                 //todo add user to discord channel
-                // _gameService.AssignRoleToPlayerAsync();
+                if (!string.IsNullOrEmpty(newPlayerDetails.DiscordTag))
+                {
+                    _gameService.AssignRoleToPlayerAsync(command, newPlayerDetails);
+                }
             }
         }
 

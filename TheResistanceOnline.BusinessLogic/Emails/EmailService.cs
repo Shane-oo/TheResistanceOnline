@@ -8,14 +8,14 @@ namespace TheResistanceOnline.BusinessLogic.Emails
 {
     public interface IEmailService
     {
-        Task SendEmailAsync([NotNull] SendEmailCommand command);
+        void SendEmailAsync([NotNull] SendEmailCommand command);
     }
 
     public class EmailService: IEmailService
     {
         #region Public Methods
 
-        public async Task SendEmailAsync(SendEmailCommand command)
+        public async void SendEmailAsync(SendEmailCommand command)
         {
             if (command == null)
             {
