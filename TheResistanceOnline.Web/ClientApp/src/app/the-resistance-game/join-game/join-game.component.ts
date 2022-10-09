@@ -14,6 +14,8 @@ import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-cont
            })
 export class JoinGameComponent implements OnInit {
 
+  public showDiscordWidget: boolean = true;
+
   public groupNameToGameDetailsMap: Map<string, GameDetails> = new Map<string, GameDetails>();
 
   public selectedGameDetails: GameDetails = {
@@ -39,7 +41,7 @@ export class JoinGameComponent implements OnInit {
   ngOnInit(): void {
     // JoinGame Listeners
     this.gameService.addReceiveAllGameDetailsToPlayersNotInGameListener();
-
+    this.gameService.addReceiveDiscordUserNotInDiscordServerListener();
     // check to see if route contains discord access token
     let params = this.route.snapshot.fragment;
     if(params) {
@@ -75,7 +77,7 @@ export class JoinGameComponent implements OnInit {
     // remove all non required listeners
     this.gameService.removeReceiveAllGameDetailsToPlayersNotInGameListener();
     this.gameService.removeDiscordNotFoundListener();
-
+    this.gameService.removeReceiveDiscordUserNotInDiscordServerListener();
   }
 
   // orders the groupNameToGameDetailsMap in descending order
@@ -85,5 +87,9 @@ export class JoinGameComponent implements OnInit {
 
   public changeGameDetails(gameDetails: GameDetails) {
     this.selectedGameDetails = gameDetails;
+  }
+
+  public toggleDiscordWidget() {
+    this.showDiscordWidget = !this.showDiscordWidget;
   }
 }

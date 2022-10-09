@@ -3,11 +3,13 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.BusinessLogic.Core.Queries;
+using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 using TheResistanceOnline.BusinessLogic.Users;
 using TheResistanceOnline.BusinessLogic.Users.Models;
+using TheResistanceOnline.Data.Users;
 
 namespace TheResistanceOnline.SocketServer.Hubs
 {
@@ -24,6 +26,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         private static readonly Dictionary<string, string?> _connectionIdToGroupNameMappingTable = new();
         private static readonly Dictionary<string, PlayerDetailsModel> _connectionIdToPlayerDetailsMappingTable = new();
+
+        private readonly IDiscordServerService _discordServerService;
 
         private readonly IGameService _gameService;
 
@@ -129,10 +133,11 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         #region Construction
 
-        public TheResistanceHub(IUserService userService, IGameService gameService, IMapper mapper)
+        public TheResistanceHub(IUserService userService, IGameService gameService, IDiscordServerService discordServerService, IMapper mapper)
         {
             _userService = userService;
             _gameService = gameService;
+            _discordServerService = discordServerService;
             _mapper = mapper;
         }
 
@@ -157,6 +162,22 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                         .OrderByDescending(gd => gd.Value.PlayersDetails?.Count)
                                                                         .ToDictionary(p => p.Key, p => p.Value);
                 await Clients.Client(connectionId).SendAsync("ReceiveAllGameDetailsToPlayersNotInGame", availableGames);
+            }
+        }
+
+        private async void SendDiscordNotFoundAsync(User user, string connectionId)
+        {
+            // Discord User Does not exist Or User Wants to Use Discord And its been one week since said no 
+            if (user.DiscordUser == null)
+            {
+                if (user.UserSetting.UserWantsToUseDiscord)
+                {
+                    await Clients.Client(Context.ConnectionId).SendAsync("ReceiveDiscordNotFound");
+                }
+                else if (!user.UserSetting.UserWantsToUseDiscordRecord.HasValue || user.UserSetting.UserWantsToUseDiscordRecord.Value <= DateTimeOffset.Now.AddDays(-7))
+                {
+                    await Clients.Client(Context.ConnectionId).SendAsync("ReceiveDiscordNotFound");
+                }
             }
         }
 
@@ -190,18 +211,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
             SendAllGameDetailsToPlayersNotInGameAsync();
 
-            // Discord User Does not exist Or User Wants to Use Discord And its been one week since said no 
-            if (user.DiscordUser == null)
-            {
-                if (user.UserSetting.UserWantsToUseDiscord)
-                {
-                    await Clients.Client(Context.ConnectionId).SendAsync("ReceiveDiscordNotFound");
-                }
-                else if (!user.UserSetting.UserWantsToUseDiscordRecord.HasValue || user.UserSetting.UserWantsToUseDiscordRecord.Value <= DateTimeOffset.Now.AddDays(-7))
-                {
-                    await Clients.Client(Context.ConnectionId).SendAsync("ReceiveDiscordNotFound");
-                }
-            }
+            SendDiscordNotFoundAsync(user, Context.ConnectionId);
 
             await base.OnConnectedAsync();
         }
@@ -227,7 +237,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 SendGameDetailsToChannelGroupAsync(gameDetails, userGroupName);
                 SendAllGameDetailsToPlayersNotInGameAsync();
 
-                _gameService.UnAssignRoleToPlayerAsync(userGroupName, leavingPlayerDetails);
+                _discordServerService.RemoveRoleFromUserAsync(userGroupName, leavingPlayerDetails.DiscordTag);
             }
             else
             {
@@ -257,10 +267,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 SendGameDetailsToChannelGroupAsync(gameDetails,
                                                    command.ChannelName);
 
-                //todo add user to discord channel
                 if (!string.IsNullOrEmpty(newPlayerDetails.DiscordTag))
                 {
-                    _gameService.AssignRoleToPlayerAsync(command, newPlayerDetails);
+                    _discordServerService.AddRoleToUserAsync(command.ChannelName, newPlayerDetails.DiscordTag);
                 }
             }
         }

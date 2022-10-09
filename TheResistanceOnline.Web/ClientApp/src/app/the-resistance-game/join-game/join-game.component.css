@@ -77,6 +77,12 @@
   overflow: scroll;
 }
 
+@media only screen and (max-height: 590px) {
+  .iframe {
+    display: none;
+  }
+
+}
 
 @media only screen and (max-width: 760px) {
   .content {
@@ -119,4 +125,60 @@
     display: none;
 
   }
+
+  .discord-widget-large {
+    display: none;
+  }
+
+  .discord-widget-small {
+    display: none;
+  }
+}
+
+
+.discord-widget-large {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  max-width: 100%;
+  height: calc(100vh - 600px);
+  width: 350px;
+  max-height: 100%;
+}
+
+.discord-widget-small {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 350px;
+  max-width: 100%;
+  clip: rect(114px, 20000px, 20000px, 0px);
+}
+
+
+.iframe {
+  position: relative;
+}
+
+.hide-button-widget-large {
+  position: absolute;
+  right: 75px;
+  top: -245px;
+  color: ghostwhite;
+  cursor: pointer;
+}
+
+.hide-button-widget-small {
+  position: fixed;
+  bottom: 35px;
+  right: 150px;
+  color: ghostwhite;
+  cursor: pointer;
+}
+.hide-button-widget-small:hover{
+  color: #d1d1ff;
+}
+
+.hide-button-widget-large:hover{
+  color: #d1d1ff;
 }
