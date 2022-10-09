@@ -22,7 +22,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         #region Fields
 
-        private static readonly Dictionary<string, string> _connectionIdToGroupNameMappingTable = new();
+        private static readonly Dictionary<string, string?> _connectionIdToGroupNameMappingTable = new();
         private static readonly Dictionary<string, PlayerDetailsModel> _connectionIdToPlayerDetailsMappingTable = new();
 
         private readonly IGameService _gameService;
@@ -140,6 +140,13 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         #region Private Methods
 
+        private void RemoveConnectionFromAllMaps(string connectionId)
+        {
+            _connectionIdToGroupNameMappingTable.Remove(connectionId);
+            _connectionIdToPlayerDetailsMappingTable.Remove(Context.ConnectionId);
+            _connectionIdToPlayerDetailsMappingTable.Remove(Context.ConnectionId);
+        }
+
         private async void SendAllGameDetailsToPlayersNotInGameAsync()
         {
             foreach(var (connectionId, playerDetails) in _connectionIdToPlayerDetailsMappingTable)
@@ -153,7 +160,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             }
         }
 
-        private async Task SendGameDetailsToChannelGroup(GameDetailsModel gameDetails, string groupName)
+        private async void SendGameDetailsToChannelGroupAsync(GameDetailsModel gameDetails, string groupName)
         {
             await Clients.Group(groupName).SendAsync("ReceiveGameDetails", gameDetails);
         }
@@ -201,13 +208,27 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            var userInGroup = _connectionIdToGroupNameMappingTable.ContainsKey(Context.ConnectionId);
-            if (userInGroup)
+            if (_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var userGroupName))
             {
-                //todo   remove all info about user and SendAllGameDetailsToPlayersNotInGameAsync() and also SendGameDetailsToChannelGroup()
-            }
+                // shouldn't be null but just in case 
+                if (userGroupName == null)
+                {
+                    RemoveConnectionFromAllMaps(Context.ConnectionId);
+                    return base.OnDisconnectedAsync(exception);
+                }
 
-            _connectionIdToPlayerDetailsMappingTable.Remove(Context.ConnectionId);
+                var gameDetails = _groupNameToGameDetailsMappingTable[userGroupName];
+                gameDetails.PlayersDetails?.Remove(_connectionIdToPlayerDetailsMappingTable[Context.ConnectionId]);
+
+                RemoveConnectionFromAllMaps(Context.ConnectionId);
+
+                SendGameDetailsToChannelGroupAsync(gameDetails, userGroupName);
+                SendAllGameDetailsToPlayersNotInGameAsync();
+            }
+            else
+            {
+                RemoveConnectionFromAllMaps(Context.ConnectionId);
+            }
 
             return base.OnDisconnectedAsync(exception);
         }
@@ -216,19 +237,19 @@ namespace TheResistanceOnline.SocketServer.Hubs
         public async Task ReceiveJoinGameCommand(JoinGameCommand command)
         {
             var gameDetails = _groupNameToGameDetailsMappingTable[command.ChannelName];
-            if (gameDetails.PlayersDetails is { Count: < 10 })
+            if (gameDetails.PlayersDetails is { Count: < MAX_GAME_COUNT })
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, command.ChannelName);
                 _connectionIdToGroupNameMappingTable.Add(Context.ConnectionId, command.ChannelName);
 
                 gameDetails.PlayersDetails.Add(_connectionIdToPlayerDetailsMappingTable[Context.ConnectionId]);
-                gameDetails.IsAvailable = gameDetails.PlayersDetails.Count < 10;
+                gameDetails.IsAvailable = gameDetails.PlayersDetails.Count < MAX_GAME_COUNT;
                 _groupNameToGameDetailsMappingTable[command.ChannelName] = gameDetails;
 
                 SendAllGameDetailsToPlayersNotInGameAsync();
 
-                await SendGameDetailsToChannelGroup(gameDetails,
-                                                    command.ChannelName);
+                SendGameDetailsToChannelGroupAsync(gameDetails,
+                                                   command.ChannelName);
 
                 //todo add user to discord channel
                 // _gameService.AssignRoleToPlayerAsync();
