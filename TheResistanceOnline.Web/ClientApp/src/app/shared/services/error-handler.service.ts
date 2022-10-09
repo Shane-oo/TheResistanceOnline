@@ -50,6 +50,12 @@ export class ErrorHandlerService implements HttpInterceptor {
         this.swalService.showSwal(error.error.errors.ConfirmPassword, SwalTypesModel.Error);
         return;
       }
+      if(error.error.errors) {
+        console.log(error.error.errors)
+        this.swalService.showSwal(error.error.errors.UserName, SwalTypesModel.Error);
+        return;
+      }
+
     }
     this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
     return;

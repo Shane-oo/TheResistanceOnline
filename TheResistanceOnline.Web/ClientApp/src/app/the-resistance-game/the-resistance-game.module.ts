@@ -5,10 +5,10 @@ import { GameComponent } from './game/game.component';
 import { GameChatComponent } from './game/game-chat/game-chat.component';
 import { GameCanvasComponent } from './game/game-canvas/game-canvas.component';
 import { RouterModule } from '@angular/router';
-import { CreateGameComponent } from './create-game/create-game.component';
 import { JoinGameComponent } from './join-game/join-game.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LobbyComponent } from './lobby/lobby.component';
+import { JoinGameDetailsComponent } from './join-game/join-game-details/join-game-details.component';
 
 
 @NgModule({
@@ -17,9 +17,9 @@ import { LobbyComponent } from './lobby/lobby.component';
               GameComponent,
               GameChatComponent,
               GameCanvasComponent,
-              CreateGameComponent,
               JoinGameComponent,
-              LobbyComponent
+              LobbyComponent,
+              JoinGameDetailsComponent
             ],
             imports: [
               CommonModule,

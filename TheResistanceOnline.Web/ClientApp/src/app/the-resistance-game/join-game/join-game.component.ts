@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TheResistanceGameService } from '../the-resistance-game.service';
-import { JoinGameCommand } from '../the-resistance-game.models';
+import { GameDetails } from '../the-resistance-game.models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DiscordServerService } from '../../shared/services/discord-server.service';
 import { CreateDiscordUserCommand } from '../../shared/models/discord-server.models';
@@ -15,15 +14,32 @@ import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-cont
            })
 export class JoinGameComponent implements OnInit {
 
-  public joinGameForm: FormGroup = new FormGroup({});
+  public groupNameToGameDetailsMap: Map<string, GameDetails> = new Map<string, GameDetails>();
+
+  public selectedGameDetails: GameDetails = {
+    channelName: '',
+    playersDetails: [],
+    isVoiceChannel: false,
+    isAvailable: false
+  };
+
 
   constructor(private gameService: TheResistanceGameService, private discordServerService: DiscordServerService, private swalService: SwalContainerService, private route: ActivatedRoute, private router: Router) {
+    this.gameService.groupNameToGameDetailsMapChanged.subscribe((value: Map<string, GameDetails>) => {
+      const map = new Map(Object.entries(value));
+      this.groupNameToGameDetailsMap = map;
+
+      if(this.selectedGameDetails?.channelName.length > 0) {
+        this.selectedGameDetails = map.get(this.selectedGameDetails.channelName);
+      }
+    });
   }
 
+
   ngOnInit(): void {
-    this.joinGameForm = new FormGroup({
-                                        lobbyName: new FormControl('poop', [Validators.required])
-                                      });
+    // JoinGame Listeners
+    this.gameService.addReceiveAllGameDetailsToPlayersNotInGameListener();
+
     // check to see if route contains discord access token
     let params = this.route.snapshot.fragment;
     if(params) {
@@ -39,10 +55,12 @@ export class JoinGameComponent implements OnInit {
       let createDiscordUserCommand: CreateDiscordUserCommand = {tokenType: data?.token_type, accessToken: data?.access_token};
       this.discordServerService.createDiscordUser(createDiscordUserCommand).subscribe({
                                                                                         next: (response: any) => {
-                                                                                          this.swalService.showSwal(
-                                                                                            'Discord Account Successfully Activated!',
-                                                                                            SwalTypesModel.Success);
-                                                                                          //ToDo show server invite if user is not in discord server
+                                                                                          this.router.navigate([`/the-resistance-game`]).then(
+                                                                                            r => {
+                                                                                              this.swalService.showSwal(
+                                                                                                'Discord Account Added!',
+                                                                                                SwalTypesModel.Success);
+                                                                                            });
                                                                                         },
                                                                                         error: (err: HttpErrorResponse) => {
                                                                                           console.log(err);
@@ -51,33 +69,21 @@ export class JoinGameComponent implements OnInit {
     } else {
       this.gameService.addDiscordNotFoundListener();
     }
-
-    //todo add listeners here
-    this.gameService.addUserJoinedGameListener();
-    this.gameService.addGameIsFullListener();
-    this.gameService.addGameDoesNotExistListener();
-
-
   }
 
   ngOnDestroy() {
-    console.log('join-game destroyed');
+    // remove all non required listeners
+    this.gameService.removeReceiveAllGameDetailsToPlayersNotInGameListener();
+    this.gameService.removeDiscordNotFoundListener();
+
   }
 
-  public validateControl = (controlName: string) => {
-    return this.joinGameForm.get(controlName)?.invalid && this.joinGameForm.get(controlName)?.touched;
-  };
+  // orders the groupNameToGameDetailsMap in descending order
+  asIsOrder(a: any, b: any) {
+    return 1;
+  }
 
-  public hasError = (controlName: string, errorName: string) => {
-    return this.joinGameForm.get(controlName)?.hasError(errorName);
-  };
-
-  public joinGame = (joinGameFormValue: JoinGameCommand) => {
-    const formValues = {...joinGameFormValue};
-    const joinGameCommand: JoinGameCommand = {
-      lobbyName: formValues.lobbyName
-    };
-
-    this.gameService.joinGame(joinGameCommand);
-  };
+  public changeGameDetails(gameDetails: GameDetails) {
+    this.selectedGameDetails = gameDetails;
+  }
 }

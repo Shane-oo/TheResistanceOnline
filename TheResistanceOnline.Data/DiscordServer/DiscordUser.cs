@@ -1,4 +1,6 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using JetBrains.Annotations;
+using TheResistanceOnline.Data.Users;
 
 namespace TheResistanceOnline.Data.DiscordServer
 {
@@ -19,6 +21,10 @@ namespace TheResistanceOnline.Data.DiscordServer
         public string Discriminator { get; set; }
 
         public int Id { get; set; }
+
+        public User User { get; set; }
+
+        public string UserId { get; set; }
 
         [NotNull]
         public string UserName { get; set; }

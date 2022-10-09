@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using JetBrains.Annotations;
+using TheResistanceOnline.Data.Users;
 
 namespace TheResistanceOnline.Data.ProfilePictures
 {
@@ -21,6 +22,10 @@ namespace TheResistanceOnline.Data.ProfilePictures
         [Column("Name")]
         [CanBeNull]
         public string Name { get; set; }
+
+        public User User { get; set; }
+
+        public string UserId { get; set; }
 
         #endregion
     }

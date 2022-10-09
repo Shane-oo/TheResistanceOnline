@@ -95,10 +95,12 @@ body {
 }
 
 
-.swal{
-  font-family: ethnocentric,sans-serif;
+.swal {
+  font-family: ethnocentric, sans-serif;
   font-size: 15px;
   color: whitesmoke;
   text-align: left;
 
 }
+
+/*Home Page*/

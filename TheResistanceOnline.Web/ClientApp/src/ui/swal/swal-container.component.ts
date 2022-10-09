@@ -15,7 +15,6 @@ import Swal from 'sweetalert2';
                      html="<h6 class=swal>{{ message }}</h6>"
                      [swalFireOnInit]="true"
                      (didClose)="isSwalVisible = false;isError = false"
-                     [backdrop]="false"
                      background='#383838'
                      (didOpen)="swalDidOpen($event)">
 
@@ -31,7 +30,6 @@ import Swal from 'sweetalert2';
                      [swalFireOnInit]="true"
                      (didClose)="isSwalVisible = false;isSuccess = false"
                      background='#383838'
-                     [backdrop]="false"
                      (didOpen)="swalDidOpen($event)">
                </swal>
              `,

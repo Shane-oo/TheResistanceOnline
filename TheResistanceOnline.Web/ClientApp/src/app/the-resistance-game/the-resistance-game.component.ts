@@ -8,21 +8,32 @@ import { TheResistanceGameService } from './the-resistance-game.service';
              styleUrls: ['./the-resistance-game.component.css']
            })
 export class TheResistanceGameComponent implements OnInit {
-  public userInGame: boolean = false;
+  public userIsInGame: boolean = false;
   public gameDetails: GameDetails = {
-    lobbyName: '',
-    playersDetails: []
+    channelName: '',
+    playersDetails: [],
+    isVoiceChannel: false,
+    isAvailable: false
   };
 
   constructor(private gameService: TheResistanceGameService) {
 
     this.gameService.gameDetailsChanged.subscribe((value: GameDetails) => {
       this.gameDetails = value;
-      this.userInGame = true;
+      this.userIsInGame = true;
     });
+
+    this.gameService.addReceiveGameDetailsListener();
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    // start hub connection
+    await this.gameService.start().then(r => console.log('connected'));
+  }
+
+  async ngOnDestroy() {
+    // stop hub connection
+    await this.gameService.stop();
   }
 
 }

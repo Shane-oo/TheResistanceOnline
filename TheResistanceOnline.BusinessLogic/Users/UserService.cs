@@ -122,7 +122,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
                                        CancellationToken = command.CancellationToken,
                                        EmailBody = "<h1> Click To Confirm Email: " + callback
                                    };
-            await _emailService.SendEmailAsync(sendEmailCommand);
+            _emailService.SendEmailAsync(sendEmailCommand);
         }
 
         public async Task<UserDetailsModel> GetUserAsync(ByIdQuery query)
@@ -225,7 +225,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
                                        EmailBody = "<h1> Click To Reset Password: " + callback
                                    };
 
-            await _emailService.SendEmailAsync(sendEmailCommand);
+            _emailService.SendEmailAsync(sendEmailCommand);
 
             user.UserSetting.ResetPasswordLinkSent = true;
             user.UserSetting.ResetPasswordLinkSentRecord = DateTimeOffset.Now;

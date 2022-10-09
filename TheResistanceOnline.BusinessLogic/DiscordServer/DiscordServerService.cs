@@ -13,9 +13,11 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
 {
     public interface IDiscordServerService
     {
-        Task AddRoleToUserAsync(string roleName, string channelName);
+        Task AddRoleToUserAsync(string roleName, string discordTag);
 
         Task CreateDiscordUserAsync([NotNull] CreateDiscordUserCommand command);
+
+        Task RemoveRoleFromUserAsync(string roleName, string discordTag);
     }
 
     public class DiscordServerService: IDiscordServerService
@@ -43,7 +45,7 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
 
         #region Private Methods
 
-        private async void CheckBotIsConnectedAsync()
+        private async Task CheckBotIsConnectedAsync()
         {
             if (_discordSocketClient.ConnectionState != ConnectionState.Connected)
             {
@@ -56,6 +58,7 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
             //todo make environment variable
             await _discordSocketClient.LoginAsync(TokenType.Bot, "MTAxNTkyNTAxMjc1MTk5MDg1NA.GZ9H5M.PSRnP3LEhfP_DWFEp0cULEpf0ciDWgrq2HqCVQ");
             await _discordSocketClient.StartAsync();
+
             // wait for bot to be connected
             while(_discordSocketClient.ConnectionState != ConnectionState.Connected)
             {
@@ -69,8 +72,19 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
             }
 
             var guild = _discordSocketClient.Guilds.First();
+
             // wait for guild channels, roles and users fetched
-            while(guild.Channels.Count == 0 && guild.Roles.Count == 0 && guild.Users.Count <= 1)
+            while(guild.Channels.Count == 0)
+            {
+                await Task.Delay(25);
+            }
+
+            while(guild.Roles.Count == 0)
+            {
+                await Task.Delay(25);
+            }
+
+            while(guild.Users.Count <= 1)
             {
                 await Task.Delay(25);
             }
@@ -80,17 +94,16 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
 
         #region Public Methods
 
-        public async Task AddRoleToUserAsync(string roleName, string channelName)
+        public async Task AddRoleToUserAsync(string roleName, string discordTag)
         {
-            CheckBotIsConnectedAsync();
+            await CheckBotIsConnectedAsync();
 
             // Only One Guild/Server so get First
             var guild = _discordSocketClient.Guilds.FirstOrDefault();
             if (guild != null)
             {
-                var channel = guild.Channels.FirstOrDefault(c => c.Name == channelName);
                 var role = guild.Roles.FirstOrDefault(r => r.Name == roleName);
-                var user = guild.Users.FirstOrDefault(x => x.Discriminator == "9963" && x.Username == "shane");
+                var user = guild.Users.FirstOrDefault(x => x.Username + "#" + x.Discriminator == discordTag);
                 if (user != null && role != null)
                 {
                     await user.AddRoleAsync(role);
@@ -107,14 +120,30 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
             const string REQUEST_URI = "https://discord.com/api/users/@me";
             var discordUserResponse = await REQUEST_URI.WithOAuthBearerToken(command.AccessToken).GetJsonAsync<DiscordUserResponseModel>();
             var discordUser = _mapper.Map<DiscordUser>(discordUserResponse);
-            user.DiscordUser = discordUser;
 
+            user.DiscordUser = discordUser;
             user.UserSetting.UserWantsToUseDiscord = true;
             user.UserSetting.UserWantsToUseDiscordRecord = DateTimeOffset.Now;
 
             await _context.SaveChangesAsync(command.CancellationToken);
 
             //todo find user in server, if they are not in server prompt user on frontend with server invite
+        }
+
+        public async Task RemoveRoleFromUserAsync(string roleName, string discordTag)
+        {
+            await CheckBotIsConnectedAsync();
+
+            var guild = _discordSocketClient.Guilds.FirstOrDefault();
+            if (guild != null)
+            {
+                var role = guild.Roles.FirstOrDefault(r => r.Name == roleName);
+                var user = guild.Users.FirstOrDefault(x => x.Username + "#" + x.Discriminator == discordTag);
+                if (user != null && role != null)
+                {
+                    await user.RemoveRoleAsync(role);
+                }
+            }
         }
 
         #endregion

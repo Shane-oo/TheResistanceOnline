@@ -1,4 +1,5 @@
 using AutoMapper;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.BusinessLogic.Core.Queries;
@@ -21,12 +22,104 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         #region Fields
 
-        private static readonly Dictionary<string, string> _connectionIdToGroupNameMappingTable = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string?> _connectionIdToGroupNameMappingTable = new();
+        private static readonly Dictionary<string, PlayerDetailsModel> _connectionIdToPlayerDetailsMappingTable = new();
 
-        private static readonly Dictionary<string, Guid> _connectionIdToPlayerId = new Dictionary<string, Guid>();
-        private static readonly Dictionary<string, UserDetailsModel> _connectionIdToUserMappingTable = new Dictionary<string, UserDetailsModel>();
         private readonly IGameService _gameService;
-        private static readonly Dictionary<string, GameDetailsModel> _groupNameToGameDetailsMappingTable = new Dictionary<string, GameDetailsModel>();
+
+        private static readonly Dictionary<string, GameDetailsModel> _groupNameToGameDetailsMappingTable = new()
+                                                                                                           {
+                                                                                                               {
+                                                                                                                   "game-1", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-1",
+                                                                                                                           IsVoiceChannel = false,
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-2", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-2",
+                                                                                                                           IsVoiceChannel = false,
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-3", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-3",
+                                                                                                                           IsVoiceChannel = false,
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-4", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-4",
+                                                                                                                           IsVoiceChannel = false,
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-5", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-5",
+                                                                                                                           IsVoiceChannel = false,
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-6", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-6",
+                                                                                                                           IsVoiceChannel = true,
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-7", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-7",
+                                                                                                                           IsVoiceChannel = true,
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-8", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-8",
+                                                                                                                           IsVoiceChannel = true,
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-9", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-9",
+                                                                                                                           IsVoiceChannel = true,
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                       }
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "game-10", new GameDetailsModel
+                                                                                                                       {
+                                                                                                                           ChannelName = "game-10",
+                                                                                                                           IsVoiceChannel = true,
+                                                                                                                           IsAvailable = true,
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                       }
+                                                                                                               },
+                                                                                                           };
 
         private readonly IMapper _mapper;
 
@@ -47,105 +140,34 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         #region Private Methods
 
-        private PlayerDetailsModel? CreateNewPlayer()
+        private void RemoveConnectionFromAllMaps(string connectionId)
         {
-            var playerDetails = new PlayerDetailsModel
-                                {
-                                    PlayerId = Guid.NewGuid(),
-                                    UserName = _connectionIdToUserMappingTable[Context.ConnectionId].UserName,
-                                    ProfilePictureId = null //todo what should profile pic be, discord prof pic?
-                                };
-            if (string.IsNullOrEmpty(playerDetails.UserName))
-            {
-                return null;
-            }
+            _connectionIdToGroupNameMappingTable.Remove(connectionId);
+            _connectionIdToPlayerDetailsMappingTable.Remove(Context.ConnectionId);
+            _connectionIdToPlayerDetailsMappingTable.Remove(Context.ConnectionId);
+        }
 
-            _connectionIdToPlayerId.Add(Context.ConnectionId, playerDetails.PlayerId);
-            return playerDetails;
+        private async void SendAllGameDetailsToPlayersNotInGameAsync()
+        {
+            foreach(var (connectionId, playerDetails) in _connectionIdToPlayerDetailsMappingTable)
+            {
+                if (playerDetails.IsInAGame) continue;
+
+                var availableGames = _groupNameToGameDetailsMappingTable.Where(gd => gd.Value.IsAvailable)
+                                                                        .OrderByDescending(gd => gd.Value.PlayersDetails?.Count)
+                                                                        .ToDictionary(p => p.Key, p => p.Value);
+                await Clients.Client(connectionId).SendAsync("ReceiveAllGameDetailsToPlayersNotInGame", availableGames);
+            }
+        }
+
+        private async void SendGameDetailsToChannelGroupAsync(GameDetailsModel gameDetails, string groupName)
+        {
+            await Clients.Group(groupName).SendAsync("ReceiveGameDetails", gameDetails);
         }
 
         #endregion
 
         #region Public Methods
-
-        public async Task BroadcastMessageData(string message)
-        {
-            await Clients.All.SendAsync("broadcastmessagedata", message);
-        }
-
-
-        public async Task CreateGame(CreateGameCommand command)
-        {
-            var gameExists = _groupNameToGameDetailsMappingTable.ContainsKey(command.LobbyName);
-            if (gameExists)
-            {
-                await Clients.Client(Context.ConnectionId).SendAsync("gameAlreadyExists", $"{command.LobbyName} Already Exists");
-                return;
-            }
-
-            //todo this shouldnt be needed if picking from list of 10
-            if (_groupNameToGameDetailsMappingTable.Count == MAX_GAME_COUNT)
-            {
-                await Clients.Client(Context.ConnectionId).SendAsync("tooManyGames", "There Exists Too Many Games Currently Playing. " +
-                                                                                     "Please Wait Until Games Are Finished Before Creating A New Game");
-                return;
-            }
-
-            await Groups.AddToGroupAsync(Context.ConnectionId, command.LobbyName);
-            _connectionIdToGroupNameMappingTable.Add(Context.ConnectionId, command.LobbyName);
-
-            var playerDetails = CreateNewPlayer();
-            if (playerDetails != null)
-            {
-                _gameService.AssignRoleToPlayerAsync(command, _connectionIdToUserMappingTable[Context.ConnectionId]);
-
-                // todo denote the host
-                var newGame = new GameDetailsModel
-                              {
-                                  LobbyName = command.LobbyName,
-                                  PlayersDetails = new List<PlayerDetailsModel>
-                                                   {
-                                                       playerDetails
-                                                   }
-                              };
-
-                _groupNameToGameDetailsMappingTable.Add(command.LobbyName, newGame);
-
-                await Clients.Group(command.LobbyName).SendAsync("userCreatedGame", newGame);
-            }
-        }
-
-        public async Task JoinGame(JoinGameCommand command)
-        {
-            var gameExists = _groupNameToGameDetailsMappingTable.ContainsKey(command.LobbyName);
-            if (gameExists)
-            {
-                var gameDetails = _groupNameToGameDetailsMappingTable[command.LobbyName];
-                if (gameDetails.PlayersDetails is { Count: < 10 })
-                {
-                    var newPlayer = CreateNewPlayer();
-                    if (newPlayer != null)
-                    {
-                        await Groups.AddToGroupAsync(Context.ConnectionId, command.LobbyName);
-                        _connectionIdToGroupNameMappingTable.Add(Context.ConnectionId, command.LobbyName);
-
-
-                        gameDetails.PlayersDetails.Add(newPlayer);
-                        _groupNameToGameDetailsMappingTable[command.LobbyName] = gameDetails;
-
-                        await Clients.Group(command.LobbyName).SendAsync("userJoinedGame", gameDetails);
-                    }
-                }
-                else
-                {
-                    await Clients.Client(Context.ConnectionId).SendAsync("gameIsFull", "Game Is Full");
-                }
-            }
-            else
-            {
-                await Clients.Client(Context.ConnectionId).SendAsync("gameDoesNotExist", "No Such Game Exists");
-            }
-        }
 
         public override async Task OnConnectedAsync()
         {
@@ -153,46 +175,94 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                     {
                                                                         Name = Context.User?.Identity?.Name
                                                                     });
+
             var userDetails = _mapper.Map<UserDetailsModel>(user);
-            _connectionIdToUserMappingTable.Add(Context.ConnectionId, userDetails);
+            //todo add resistance wins and spy wins eventually
+            var playerDetails = new PlayerDetailsModel
+                                {
+                                    PlayerId = new Guid(),
+                                    UserName = userDetails.UserName,
+                                    DiscordUserName = userDetails.DiscordUser?.UserName,
+                                    DiscordTag = userDetails.DiscordUser?.DiscordTag,
+                                };
+
+            _connectionIdToPlayerDetailsMappingTable.Add(Context.ConnectionId, playerDetails);
+
+            SendAllGameDetailsToPlayersNotInGameAsync();
 
             // Discord User Does not exist Or User Wants to Use Discord And its been one week since said no 
             if (user.DiscordUser == null)
             {
                 if (user.UserSetting.UserWantsToUseDiscord)
                 {
-                    await Clients.Client(Context.ConnectionId).SendAsync("discordNotFound");
+                    await Clients.Client(Context.ConnectionId).SendAsync("ReceiveDiscordNotFound");
                 }
                 else if (!user.UserSetting.UserWantsToUseDiscordRecord.HasValue || user.UserSetting.UserWantsToUseDiscordRecord.Value <= DateTimeOffset.Now.AddDays(-7))
                 {
-                    await Clients.Client(Context.ConnectionId).SendAsync("discordNotFound");
+                    await Clients.Client(Context.ConnectionId).SendAsync("ReceiveDiscordNotFound");
                 }
             }
-
 
             await base.OnConnectedAsync();
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            var userInGroup = _connectionIdToGroupNameMappingTable.ContainsKey(Context.ConnectionId);
-            if (userInGroup)
+            if (_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var userGroupName))
             {
-                var groupConnectionWasIn = _connectionIdToGroupNameMappingTable[Context.ConnectionId];
-                var gamePlayerWasIn = _groupNameToGameDetailsMappingTable[groupConnectionWasIn];
-                var playerId = _connectionIdToPlayerId[Context.ConnectionId];
+                // shouldn't be null but just in case 
+                if (userGroupName == null)
+                {
+                    RemoveConnectionFromAllMaps(Context.ConnectionId);
+                    return base.OnDisconnectedAsync(exception);
+                }
 
-                gamePlayerWasIn.PlayersDetails?.RemoveAll(p => p.PlayerId == playerId);
+                var leavingPlayerDetails = _connectionIdToPlayerDetailsMappingTable[Context.ConnectionId];
 
-                Clients.Group(groupConnectionWasIn).SendAsync("userLeftGame", gamePlayerWasIn);
+                var gameDetails = _groupNameToGameDetailsMappingTable[userGroupName];
+                gameDetails.PlayersDetails?.Remove(leavingPlayerDetails);
 
-                _connectionIdToGroupNameMappingTable.Remove(Context.ConnectionId);
-                _connectionIdToPlayerId.Remove(Context.ConnectionId);
+                RemoveConnectionFromAllMaps(Context.ConnectionId);
+
+                SendGameDetailsToChannelGroupAsync(gameDetails, userGroupName);
+                SendAllGameDetailsToPlayersNotInGameAsync();
+
+                _gameService.UnAssignRoleToPlayerAsync(userGroupName, leavingPlayerDetails);
+            }
+            else
+            {
+                RemoveConnectionFromAllMaps(Context.ConnectionId);
             }
 
-            _connectionIdToUserMappingTable.Remove(Context.ConnectionId);
-
             return base.OnDisconnectedAsync(exception);
+        }
+
+        [UsedImplicitly]
+        public async Task ReceiveJoinGameCommand(JoinGameCommand command)
+        {
+            var gameDetails = _groupNameToGameDetailsMappingTable[command.ChannelName];
+            if (gameDetails.PlayersDetails is { Count: < MAX_GAME_COUNT })
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, command.ChannelName);
+                _connectionIdToGroupNameMappingTable.Add(Context.ConnectionId, command.ChannelName);
+
+                var newPlayerDetails = _connectionIdToPlayerDetailsMappingTable[Context.ConnectionId];
+
+                gameDetails.PlayersDetails.Add(newPlayerDetails);
+                gameDetails.IsAvailable = gameDetails.PlayersDetails.Count < MAX_GAME_COUNT;
+                _groupNameToGameDetailsMappingTable[command.ChannelName] = gameDetails;
+
+                SendAllGameDetailsToPlayersNotInGameAsync();
+
+                SendGameDetailsToChannelGroupAsync(gameDetails,
+                                                   command.ChannelName);
+
+                //todo add user to discord channel
+                if (!string.IsNullOrEmpty(newPlayerDetails.DiscordTag))
+                {
+                    _gameService.AssignRoleToPlayerAsync(command, newPlayerDetails);
+                }
+            }
         }
 
         #endregion
