@@ -15,11 +15,6 @@ import { DiscordLoginResponseModel } from '../user/user.models';
             })
 export class TheResistanceGameService {
 
-  // public gameDetails: GameDetails = {
-  //   playersDetails: [],
-  //   lobbyName: ''
-  // };
-
   public gameDetailsChanged: Subject<GameDetails> = new Subject<GameDetails>();
 
   //public allGameDetails
@@ -39,21 +34,14 @@ export class TheResistanceGameService {
     }, transport: signalR.HttpTransportType.WebSockets, skipNegotiation: true
   };
 
-  private connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
+  public connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
     .withUrl(environment.Socket_URL + '/theresistancehub',
              this.options
-    )
+    ).withAutomaticReconnect()
+    .configureLogging(signalR.LogLevel.Error)
     .build();
 
   constructor(private http: HttpClient, private swalService: SwalContainerService, private userSettingsService: UserSettingsService) {
-    this.connection.onclose(async() => {
-      await this.start();
-    });
-
-    this.start().then(r => console.log('connected'));
-
-    // todo Add Permanent Listeners
-
   }
 
   // start the connection
@@ -67,11 +55,20 @@ export class TheResistanceGameService {
     }
   }
 
+  public async stop() {
+    try {
+      await this.connection.stop();
+
+    } catch(err) {
+      console.log('error occured while disconnection');
+      console.log(err);
+    }
+  }
+
 
   // join-game Listeners
   public addReceiveAllGameDetailsToPlayersNotInGameListener = () => {
     this.connection.on('ReceiveAllGameDetailsToPlayersNotInGame', (map: Map<string, GameDetails>) => {
-      console.log('recivec all game details');
       this.groupNameToGameDetailsMapChanged.next(map);
     });
   };
@@ -106,7 +103,7 @@ export class TheResistanceGameService {
           this.userSettingsService.updateUserSettings(userSettingsUpdateCommand).subscribe({
                                                                                              next: (response: any) => {
                                                                                                this.swalService.showSwal(
-                                                                                                 'Successully declined Discord',
+                                                                                                 'Successfully declined Discord',
                                                                                                  SwalTypesModel.Success);
                                                                                              }
                                                                                            });
@@ -117,6 +114,15 @@ export class TheResistanceGameService {
   public removeDiscordNotFoundListener = () => {
     this.connection.off('ReceiveDiscordNotFound');
   };
+
+  // this will probably needed to be done somewhere
+  //https://code-maze.com/signalr-automatic-reconnect-option/
+  //  this.hubConnection.onreconnected(() => {
+  //   this.http.get('https://localhost:5001/api/chart')
+  //   .subscribe(res => {
+  //     console.log(res);
+  //   })
+  // })
 }
 
 

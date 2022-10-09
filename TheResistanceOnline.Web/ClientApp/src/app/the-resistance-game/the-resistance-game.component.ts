@@ -23,12 +23,17 @@ export class TheResistanceGameComponent implements OnInit {
       this.userIsInGame = true;
     });
 
-    //
-
     this.gameService.addReceiveGameDetailsListener();
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    // start hub connection
+    await this.gameService.start().then(r => console.log('connected'));
+  }
+
+  async ngOnDestroy() {
+    // stop hub connection
+    await this.gameService.stop();
   }
 
 }
