@@ -228,7 +228,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
             _emailService.SendEmailAsync(sendEmailCommand);
 
             user.UserSetting.ResetPasswordLinkSent = true;
-            user.UserSetting.ResetPasswordLinkSentRecord = DateTimeOffset.Now;
+            user.UserSetting.ResetPasswordLinkSentRecord = DateTimeOffset.UtcNow;
+
             await _context.SaveChangesAsync(command.CancellationToken);
         }
 

@@ -13,6 +13,7 @@ using TheResistanceOnline.BusinessLogic.UserSettings;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Infrastructure.Data;
+using TheResistanceOnline.Infrastructure.Data.Interceptors.CoreInterceptors;
 using TheResistanceOnline.Infrastructure.Data.Queries.Users;
 
 namespace TheResistanceOnline.Web.DI;
@@ -66,7 +67,12 @@ public static class DISetup
         }
 
         // Database
-        services.AddDbContext<Context>(options => options.UseSqlServer(_connectionString));
+        services.AddDbContext<Context>((sp, options) =>
+                                       {
+                                           var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
+                                           options.UseSqlServer(_connectionString)
+                                                  .AddInterceptors(auditableInterceptor ?? throw new InvalidOperationException("auditableInterceptor cannot be null"));
+                                       });
         services.AddScoped<IDataContext, DataContext>();
     }
 
@@ -82,6 +88,9 @@ public static class DISetup
         // Queries
         services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
         services.AddTransient<IUserDbQuery, UserDbQuery>();
+
+        // Interceptors
+        services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
 
         // Identities 
         // Reset passwords tokens last for one hour

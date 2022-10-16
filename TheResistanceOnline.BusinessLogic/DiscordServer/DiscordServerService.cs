@@ -178,7 +178,7 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
 
             user.DiscordUser = discordUser;
             user.UserSetting.UserWantsToUseDiscord = true;
-            user.UserSetting.UserWantsToUseDiscordRecord = DateTimeOffset.Now;
+            user.UserSetting.UserWantsToUseDiscordRecord = DateTimeOffset.UtcNow;
 
             await _context.SaveChangesAsync(command.CancellationToken);
         }
