@@ -15,6 +15,7 @@ using TheResistanceOnline.BusinessLogic.UserSettings;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Infrastructure.Data;
+using TheResistanceOnline.Infrastructure.Data.Interceptors.CoreInterceptors;
 using TheResistanceOnline.Infrastructure.Data.Queries.Users;
 
 namespace TheResistanceOnline.SocketServer.DI
@@ -87,7 +88,12 @@ namespace TheResistanceOnline.SocketServer.DI
                 throw new NullReferenceException("Connection string not found");
             }
 
-            services.AddDbContext<Context>(options => options.UseSqlServer(_connectionString));
+            services.AddDbContext<Context>((sp, options) =>
+                                           {
+                                               var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
+                                               options.UseSqlServer(_connectionString)
+                                                      .AddInterceptors(auditableInterceptor ?? throw new InvalidOperationException("auditableInterceptor cannot be null"));
+                                           });
             services.AddScoped<IDataContext, DataContext>();
         }
 
@@ -107,6 +113,10 @@ namespace TheResistanceOnline.SocketServer.DI
             // Queries
             services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
             services.AddTransient<IUserDbQuery, UserDbQuery>();
+
+            // Interceptors
+            services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
+
             // Mapping Profiles
             services.AddAutoMapper(typeof(UserMappingProfile));
             services.AddAutoMapper(typeof(DiscordServerMappingProfile));

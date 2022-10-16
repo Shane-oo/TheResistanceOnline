@@ -1,33 +1,35 @@
 using JetBrains.Annotations;
+using TheResistanceOnline.Data.Entities;
 using TheResistanceOnline.Data.Users;
 
-namespace TheResistanceOnline.Data.DiscordServer
+namespace TheResistanceOnline.Data.DiscordServer;
+
+public class DiscordUser: NamedEntity<int>, IAuditableEntity
 {
-    public class DiscordUser
-    {
-        #region Properties
+    #region Properties
 
-        [CanBeNull]
-        public DiscordRole DiscordRole { get; set; }
+    public DateTime CreatedOn { get; set; }
 
-        public int? DiscordRoleId { get; set; }
+    public DateTime? ModifiedOn { get; set; }
 
-        // Username + Discriminator
-        [NotNull]
-        public string DiscordTag { get; set; }
+    public string UserId { get; set; }
 
-        [NotNull]
-        public string Discriminator { get; set; }
+    public User User { get; set; }
 
-        public int Id { get; set; }
+    public int? DiscordRoleId { get; set; }
 
-        public User User { get; set; }
+    [CanBeNull]
+    public DiscordRole DiscordRole { get; set; }
 
-        public string UserId { get; set; }
+    // Username + Discriminator
+    [NotNull]
+    public string UserName { get; set; }
 
-        [NotNull]
-        public string UserName { get; set; }
+    [NotNull]
+    public string Discriminator { get; set; }
 
-        #endregion
-    }
+    [NotNull]
+    public string DiscordTag { get; set; }
+
+    #endregion
 }

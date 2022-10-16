@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Core;
+using TheResistanceOnline.Data.Core.Queries;
 
 namespace TheResistanceOnline.Infrastructure.Data
 {

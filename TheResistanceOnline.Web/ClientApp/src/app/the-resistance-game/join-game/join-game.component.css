@@ -147,12 +147,13 @@
 }
 
 .discord-widget-small {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  width: 350px;
-  max-width: 100%;
-  clip: rect(114px, 20000px, 20000px, 0px);
+  display: none;
+  /*position: fixed;*/
+  /*right: 0;*/
+  /*bottom: 0;*/
+  /*width: 350px;*/
+  /*max-width: 100%;*/
+  /*clip: rect(114px, 20000px, 20000px, 0px);*/
 }
 
 
@@ -170,7 +171,7 @@
 
 .hide-button-widget-small {
   position: fixed;
-  bottom: 35px;
+  bottom: 0;
   right: 150px;
   color: ghostwhite;
   cursor: pointer;

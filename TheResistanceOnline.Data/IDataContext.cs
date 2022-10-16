@@ -1,4 +1,5 @@
 using TheResistanceOnline.Data.Core;
+using TheResistanceOnline.Data.Core.Queries;
 
 namespace TheResistanceOnline.Data
 {
