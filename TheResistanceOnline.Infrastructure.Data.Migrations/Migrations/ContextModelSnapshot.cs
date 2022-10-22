@@ -317,6 +317,9 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("DiscordRoleId")
                         .HasColumnType("int");
 
@@ -328,14 +331,24 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserName")
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id")
                         .HasName("PK_DiscordUsers");
 
                     b.HasIndex("DiscordRoleId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("DiscordUsers");
                 });
@@ -359,8 +372,15 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasColumnName("Name");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id")
                         .HasName("PK_ProfilePictures");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("ProfilePictures");
 
@@ -409,8 +429,8 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("DiscordUserId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -424,6 +444,9 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -442,9 +465,6 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ProfilePictureId")
-                        .HasColumnType("int");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -457,8 +477,6 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DiscordUserId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -467,9 +485,39 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("ProfilePictureId");
-
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.UserSettings.UserSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("ResetPasswordLinkSent")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("ResetPasswordLinkSentRecord")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("UserWantsToUseDiscord")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("UserWantsToUseDiscordRecord")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("UserSettings");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -540,22 +588,40 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .WithMany()
                         .HasForeignKey("DiscordRoleId");
 
+                    b.HasOne("TheResistanceOnline.Data.Users.User", "User")
+                        .WithOne("DiscordUser")
+                        .HasForeignKey("TheResistanceOnline.Data.DiscordServer.DiscordUser", "UserId");
+
                     b.Navigation("DiscordRole");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.ProfilePictures.ProfilePicture", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Users.User", "User")
+                        .WithOne("ProfilePicture")
+                        .HasForeignKey("TheResistanceOnline.Data.ProfilePictures.ProfilePicture", "UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.UserSettings.UserSetting", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Users.User", "User")
+                        .WithOne("UserSetting")
+                        .HasForeignKey("TheResistanceOnline.Data.UserSettings.UserSetting", "UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TheResistanceOnline.Data.Users.User", b =>
                 {
-                    b.HasOne("TheResistanceOnline.Data.DiscordServer.DiscordUser", "DiscordUser")
-                        .WithMany()
-                        .HasForeignKey("DiscordUserId");
-
-                    b.HasOne("TheResistanceOnline.Data.ProfilePictures.ProfilePicture", "ProfilePicture")
-                        .WithMany()
-                        .HasForeignKey("ProfilePictureId");
-
                     b.Navigation("DiscordUser");
 
                     b.Navigation("ProfilePicture");
+
+                    b.Navigation("UserSetting");
                 });
 #pragma warning restore 612, 618
         }

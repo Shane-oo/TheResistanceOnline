@@ -11,8 +11,7 @@ export const enum SwalTypesModel {
   Success,
   Warning,
   Error,
-  // Custom Logic
-  DiscordLoginRequested
+
 }
 
 @Injectable()
@@ -29,6 +28,8 @@ export class SwalContainerService {
     if(!this.container) {
       this.container = this.overlayService.addComponent(SwalContainerComponent);
     }
+    // close a previous alert
+    this.resetSwal();
     this.container.instance.message = message;
 
     switch(type) {
@@ -43,15 +44,16 @@ export class SwalContainerService {
   }
 
   public fireDiscordLoginRequested = () => {
-    let idk = environment.Discord_Generated_URL;
     Swal.fire({
-                title: 'hello',
+                title: 'Discord Social Login',
                 backdrop: false,
                 showCancelButton: true,
                 cancelButtonText: 'I Don\'t Want To Use Discord',
-                html: `<a href=${environment.Discord_Generated_URL}>
-                        Login With Discord
-                       </a>`
+                html: `<h6>Chat or talk with your friends throughout the game via our Discord Server Channels!</h6>
+                       <a href=${environment.Discord_Generated_URL} class="discord-button">
+                       <i class='fab fa-discord'></i> Login With Discord
+                       </a>`,
+                showConfirmButton: false
               })
         .then((result: SweetAlertResult) => {
           if(result.isDenied || result.isDismissed) {
@@ -61,6 +63,12 @@ export class SwalContainerService {
           }
         });
   };
+
+  private resetSwal() {
+    this.container.instance.isSwalVisible = false;
+    this.container.instance.isError = false;
+    this.container.instance.isSuccess = false;
+  }
 }
 
 //  public showDiscordLoginRequested = () => {

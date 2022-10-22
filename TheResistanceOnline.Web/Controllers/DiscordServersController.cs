@@ -30,9 +30,17 @@ namespace TheResistanceOnline.Web.Controllers
         [HttpPost]
         [Route("CreateDiscordUser")]
         public async Task<IActionResult> CreateDiscordUser(CreateDiscordUserCommand command)
-        
+
         {
-            await _discordServerService.CreateDiscordUserAsync(command);
+            try
+            {
+                await _discordServerService.CreateDiscordUserAsync(command);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
             return Ok();
         }
 

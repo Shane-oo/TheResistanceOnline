@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using TheResistanceOnline.BusinessLogic.Users.Models;
 using TheResistanceOnline.Data.Exceptions;
 using TheResistanceOnline.Data.Users;
+using TheResistanceOnline.Data.UserSettings;
 
 namespace TheResistanceOnline.BusinessLogic.Users
 {
@@ -54,18 +55,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         #region Private Methods
 
-        private async Task<User> FindUserByEmailAsync(User user)
-        {
-            var foundUser = await _userManager.FindByEmailAsync(user.Email);
-
-            if (foundUser == null)
-            {
-                throw new DomainException(typeof(User), user.Email, "Email Not Found");
-            }
-
-            return foundUser;
-        }
-
         private static JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
         {
             return new JwtSecurityToken(_validIssuer,
@@ -107,9 +96,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         public async Task ConfirmUsersEmailAsync(User user, string token)
         {
-            var foundUser = await FindUserByEmailAsync(user);
-
-            var confirmResult = await _userManager.ConfirmEmailAsync(foundUser, token);
+            var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
             if (!confirmResult.Succeeded)
             {
                 throw new DomainException(typeof(User), user.Email, "Invalid Email Confirmation Request");
@@ -119,6 +106,9 @@ namespace TheResistanceOnline.BusinessLogic.Users
         // returns email token confirmation
         public async Task<string> CreateIdentityAsync(User user, string password)
         {
+            var userSetting = new UserSetting();
+            user.UserSetting = userSetting;
+
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
             {
@@ -142,24 +132,28 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         public async Task<string> GetPasswordResetTokenAsync(User user)
         {
-            var foundUser = await FindUserByEmailAsync(user);
-            return await _userManager.GeneratePasswordResetTokenAsync(foundUser);
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
         }
 
         public async Task<UserLoginResponse> LoginUserByEmailAsync(User user, string password)
         {
-            var foundUser = await FindUserByEmailAsync(user);
-            var confirmedEmail = await _userManager.IsEmailConfirmedAsync(foundUser);
+            var confirmedEmail = await _userManager.IsEmailConfirmedAsync(user);
             if (!confirmedEmail)
             {
                 throw new DomainException(typeof(User), user.Email, "Please confirm email address");
             }
 
-            var passwordCheck = await _userManager.CheckPasswordAsync(foundUser, password);
+            var accountLocked = await _userManager.IsLockedOutAsync(user);
+            if (accountLocked)
+            {
+                throw new DomainException(typeof(User), "Account Is Locked, Please see your Emails for instructions to reset your password");
+            }
+
+            var passwordCheck = await _userManager.CheckPasswordAsync(user, password);
             if (!passwordCheck)
             {
-                await _userManager.AccessFailedAsync(foundUser);
-                var accountIsLocked = await _userManager.IsLockedOutAsync(foundUser);
+                await _userManager.AccessFailedAsync(user);
+                var accountIsLocked = await _userManager.IsLockedOutAsync(user);
                 if (accountIsLocked)
                 {
                     throw new UnauthorizedAccessException();
@@ -168,24 +162,23 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 throw new DomainException(typeof(User), password, "Incorrect password");
             }
 
-            await _userManager.ResetAccessFailedCountAsync(foundUser);
+            await _userManager.ResetAccessFailedCountAsync(user);
             var signingCredentials = GetSigningCredentials();
-            var claims = await GetClaims(foundUser);
+            var claims = await GetClaims(user);
             var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return new UserLoginResponse
                    {
                        Token = token,
-                       UserId = foundUser.Id
+                       UserId = user.Id
                    };
         }
 
         public async Task ResetPasswordAsync(User user, string token, string newPassword)
         {
-            var foundUser = await FindUserByEmailAsync(user);
             // Use this for if user is locked out and expiry is not over yet
-            await _userManager.SetLockoutEndDateAsync(foundUser, null);
-            var result = await _userManager.ResetPasswordAsync(foundUser, token, newPassword);
+            await _userManager.SetLockoutEndDateAsync(user, null);
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
             if (!result.Succeeded)
             {
                 var description = result.Errors.FirstOrDefault()?.Description;

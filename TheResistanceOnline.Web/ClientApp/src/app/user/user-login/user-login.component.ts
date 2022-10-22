@@ -6,7 +6,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoginResponseModel, UserLoginModel } from '../user.models';
 import { HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { navbarDataLoggedIn } from '../../nav-menu/nav-data';
 
 @Component({
              selector: 'app-user-login',
@@ -43,7 +42,7 @@ export class UserLoginComponent implements OnInit {
     const user: UserLoginModel = {
       email: login.email,
       password: login.password,
-      clientUri: `${environment.Base_URL}/user/forgot-password`
+      clientUri: `${environment.Base_URL}/user/reset-password`
     };
 
     this.authService.loginUser(user).subscribe({

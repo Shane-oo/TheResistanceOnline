@@ -33,7 +33,7 @@ spec:
           - name: ValidAudience
             value: ”https://theresistanceboardgameonline.com”
           - name: ExpiryInMinutes
-            value: "360"
+            value: "5760"
 status: {}
 
 ---

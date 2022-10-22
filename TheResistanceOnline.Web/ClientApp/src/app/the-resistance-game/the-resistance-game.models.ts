@@ -1,19 +1,33 @@
-export interface CreateGameCommand {
-  lobbyName: string;
-  createChatChannel: boolean;
-  createVoiceChannel: boolean;
+export interface JoinGameCommand {
+  channelName: string;
 }
 
-export interface JoinGameCommand{
-  lobbyName:string;
-}
 export interface GameDetails {
-  lobbyName: string;
+  channelName: string;
   playersDetails: PlayerDetails[];
+  isVoiceChannel: boolean;
+  isAvailable: boolean;
 }
 
 export interface PlayerDetails {
-
-  profilePictureName: string;
+  discordUserName?: string;
   userName: string;
+  resistanceTeamWins: number;
+  spyTeamWins: number;
+}
+
+export interface GameDetailsResponse {
+  errorMessage?: string;
+  errorOccured: boolean;
+  gameDetails: GameDetails;
+}
+
+export interface GameOptions {
+  timeLimitMinutes: number;
+  moveTimeLimitMinutes: number;
+  botCount: number;
+}
+
+export interface StartGameCommand {
+  gameOptions: GameOptions;
 }

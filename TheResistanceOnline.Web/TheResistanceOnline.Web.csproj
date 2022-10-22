@@ -30,7 +30,6 @@
     <ItemGroup>
         <Folder Include="ClientApp\src\app\shared\custom-validators\the-resistance-game" />
         <Folder Include="ClientApp\src\app\shared\services" />
-        <Folder Include="ClientApp\src\assets\fonts" />
         <Folder Include="ClientApp\src\assets\textures" />
         <Folder Include="ClientApp\src\assets\videos" />
         <Folder Include="ClientApp\src\assets\models" />
@@ -41,6 +40,11 @@
         <ProjectReference Include="..\TheResistanceOnline.BusinessLogic\TheResistanceOnline.BusinessLogic.csproj" />
         <ProjectReference Include="..\TheResistanceOnline.Data\TheResistanceOnline.Data.csproj" />
         <ProjectReference Include="..\TheResistanceOnline.Infrastructure.Data\TheResistanceOnline.Infrastructure.Data.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Users\Error.cshtml" />
+      <_ContentIncludedByDefault Remove="Users\_ViewImports.cshtml" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

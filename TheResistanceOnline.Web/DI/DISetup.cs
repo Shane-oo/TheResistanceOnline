@@ -9,9 +9,11 @@ using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Users;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
+using TheResistanceOnline.BusinessLogic.UserSettings;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Infrastructure.Data;
+using TheResistanceOnline.Infrastructure.Data.Interceptors.CoreInterceptors;
 using TheResistanceOnline.Infrastructure.Data.Queries.Users;
 
 namespace TheResistanceOnline.Web.DI;
@@ -65,7 +67,12 @@ public static class DISetup
         }
 
         // Database
-        services.AddDbContext<Context>(options => options.UseSqlServer(_connectionString));
+        services.AddDbContext<Context>((sp, options) =>
+                                       {
+                                           var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
+                                           options.UseSqlServer(_connectionString)
+                                                  .AddInterceptors(auditableInterceptor ?? throw new InvalidOperationException("auditableInterceptor cannot be null"));
+                                       });
         services.AddScoped<IDataContext, DataContext>();
     }
 
@@ -76,9 +83,14 @@ public static class DISetup
         services.AddScoped<IUserIdentityManager, UserIdentityManager>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IDiscordServerService, DiscordServerService>();
+        services.AddScoped<IUserSettingsService, UserSettingsService>();
 
         // Queries
+        services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
         services.AddTransient<IUserDbQuery, UserDbQuery>();
+
+        // Interceptors
+        services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
 
         // Identities 
         // Reset passwords tokens last for one hour
@@ -93,7 +105,7 @@ public static class DISetup
                                                      options.Password.RequireDigit = true;
                                                      options.Lockout.AllowedForNewUsers = true;
                                                      options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(7);
-                                                     options.Lockout.MaxFailedAccessAttempts = 5;
+                                                     options.Lockout.MaxFailedAccessAttempts = 10;
                                                  })
                 .AddEntityFrameworkStores<Context>()
                 .AddDefaultTokenProviders();

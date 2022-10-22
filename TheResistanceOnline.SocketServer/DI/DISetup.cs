@@ -1,10 +1,8 @@
-using System.Security.Claims;
 using System.Text;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TheResistanceOnline.BusinessLogic.DiscordServer;
@@ -13,9 +11,11 @@ using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.BusinessLogic.Timers;
 using TheResistanceOnline.BusinessLogic.Users;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
+using TheResistanceOnline.BusinessLogic.UserSettings;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Infrastructure.Data;
+using TheResistanceOnline.Infrastructure.Data.Interceptors.CoreInterceptors;
 using TheResistanceOnline.Infrastructure.Data.Queries.Users;
 
 namespace TheResistanceOnline.SocketServer.DI
@@ -81,8 +81,6 @@ namespace TheResistanceOnline.SocketServer.DI
                                   });
         }
 
-        //new SymmetricSecurityKey(Encoding.UTF8
-        // .GetBytes(_securityKey))
         public static void AddContext(this IServiceCollection services)
         {
             if (_connectionString == null)
@@ -90,23 +88,40 @@ namespace TheResistanceOnline.SocketServer.DI
                 throw new NullReferenceException("Connection string not found");
             }
 
-            services.AddDbContext<Context>(options => options.UseSqlServer(_connectionString));
+            services.AddDbContext<Context>((sp, options) =>
+                                           {
+                                               var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
+                                               options.UseSqlServer(_connectionString)
+                                                      .AddInterceptors(auditableInterceptor ?? throw new InvalidOperationException("auditableInterceptor cannot be null"));
+                                           });
             services.AddScoped<IDataContext, DataContext>();
         }
 
         public static void AddServices(this IServiceCollection services)
         {
+            // Services
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserIdentityManager, UserIdentityManager>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IDiscordServerService, DiscordServerService>();
+            services.AddScoped<IUserSettingsService, UserSettingsService>();
+            services.AddScoped<IGameService, GameService>();
+          
+            //ToDo probs not needed
+            services.AddScoped<ITimerService, TimerService>();
+
+            // Queries
             services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
+            services.AddTransient<IUserDbQuery, UserDbQuery>();
+
+            // Interceptors
+            services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
+
+            // Mapping Profiles
             services.AddAutoMapper(typeof(UserMappingProfile));
             services.AddAutoMapper(typeof(DiscordServerMappingProfile));
 
-            services.AddTransient<ITimerService, TimerService>();
-            //  services.AddTransient<ITheResistanceHub>();
-            services.AddTransient<IGameService, GameService>();
-            //todo dont think this is needed?
+            // Identities
             services.AddIdentity<User, IdentityRole>(options =>
                                                      {
                                                          options.User.RequireUniqueEmail = true;
@@ -119,30 +134,14 @@ namespace TheResistanceOnline.SocketServer.DI
                                                      })
                     .AddEntityFrameworkStores<Context>()
                     .AddDefaultTokenProviders();
+            // Discord Services
 
-            services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
             services.AddSingleton(new DiscordSocketConfig
                                   {
                                       AlwaysDownloadUsers = true,
                                       GatewayIntents = GatewayIntents.All
                                   });
             services.AddSingleton<DiscordSocketClient>();
-
-            services.AddTransient<IDiscordServerService, DiscordServerService>();
-        }
-
-        #endregion
-    }
-
-
-    //todo wtf is this hahahah
-    public sealed class EmailBasedUserIdProvider: IUserIdProvider
-    {
-        #region Public Methods
-
-        public string? GetUserId(HubConnectionContext connection)
-        {
-            return connection.User.FindFirst(ClaimTypes.Email)?.Value;
         }
 
         #endregion

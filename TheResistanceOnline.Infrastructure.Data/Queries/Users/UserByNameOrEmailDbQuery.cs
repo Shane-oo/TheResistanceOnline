@@ -1,7 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
-using TheResistanceOnline.BusinessLogic.Users.Models;
+using TheResistanceOnline.Data.Users;
 
 namespace TheResistanceOnline.Infrastructure.Data.Queries.Users;
 
@@ -27,14 +27,15 @@ public class UserByNameOrEmailDbQuery: IUserByNameOrEmailDbQuery
 
     #region Public Methods
 
-    public async Task<UserDetailsModel> ExecuteAsync(CancellationToken cancellationToken)
+    public async Task<User?> ExecuteAsync(CancellationToken cancellationToken)
     {
-        var user = await _context.Users.AsNoTracking() // not sure if should have AsNoTracking()
+        var user = await _context.Users
                                  .Include(p => p.ProfilePicture)
                                  .Include(ud => ud.DiscordUser)
+                                 .Include(us => us.UserSetting)
                                  .FirstOrDefaultAsync(u => u.Email == _userNameOrEmail || u.UserName == _userNameOrEmail,
                                                       cancellationToken);
-        return _mapper.Map<UserDetailsModel>(user);
+        return user;
     }
 
     public IUserByNameOrEmailDbQuery WithParams(string nameOrEmail)

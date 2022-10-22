@@ -1,10 +1,7 @@
-namespace TheResistanceOnline.Data.DiscordServer
-{
+using TheResistanceOnline.Data.Entities;
 
-    public class DiscordChannel
-    {
-        public int Id { get; set; }
-        
-        public string Name { get; set; }
-    }
+namespace TheResistanceOnline.Data.DiscordServer;
+
+public class DiscordChannel: NamedEntity<int>
+{
 }

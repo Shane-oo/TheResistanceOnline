@@ -1,0 +1,129 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  padding: 10px;
+}
+
+.grid-item {
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  text-align: left;
+  margin: 17px;
+  height: 130px;
+  width: 90%;
+  background-color: #1e1e1e;
+  box-shadow: 0.0315rem 0 0.625rem 0 whitesmoke;
+  border-radius: 10px;
+  padding: 5px;
+
+}
+
+.grid-item h6 {
+  font-family: yuzu, serif;
+}
+
+/*  font-family: yuzu, serif;
+*/
+
+
+.content {
+  overflow: hidden;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin-top: 20px;
+  font-family: ethnocentric, sans-serif;
+  color: ghostwhite;
+  margin-left: 50px;
+}
+
+.lobby-box {
+  width: 100%;
+  float: left;
+  height: 800px;
+  background-color: #111111;
+  text-align: center;
+  padding: 20px;
+  overflow: scroll;
+
+}
+
+.middle {
+}
+
+.wins {
+  float: right;
+  margin: 1px;
+  bottom: 0;
+}
+
+.resistanceWins {
+  color: #fc2001;
+
+}
+
+.spyWins {
+  color: #04a5f9;
+
+}
+
+.game-options {
+  color: ghostwhite;
+}
+
+.game-options select {
+  width: fit-content;
+  background-color: #383838;
+  color: ghostwhite;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.game-options input {
+  width: 20%;
+  background-color: #383838;
+  color: ghostwhite;
+  border-radius: 5px;
+  padding: 5px;
+  text-align: center;
+}
+
+
+.form-box {
+  font-family: ethnocentric, serif;
+  font-size: 16px;
+  font-weight: 100;
+  color: ghostwhite;
+}
+
+.form-box p {
+  text-align: center;
+}
+
+.form-box div {
+  padding: 10px;
+}
+
+.start-button {
+  text-align: center;
+  background-color: #1e1e1e;
+  padding: 15px;
+  width: 100%;
+  color: #e6e6e6;
+  border: none;
+  border-radius: 5px;
+}
+
+.start-button:hover {
+  box-shadow: 0.0315rem 0 0.625rem 0 #fc2001;
+  -webkit-transition: box-shadow 500ms linear;
+  -ms-transition: box-shadow 500ms linear;
+  transition: box-shadow 500ms linear;
+}
+
+.validation {
+  font-size: 16px;
+  color: #fc2001;
+  text-align: center;
+  padding: 0;
+}

@@ -1,23 +1,27 @@
 import { Injectable } from '@angular/core';
-import { CreateGameCommand, GameDetails, JoinGameCommand } from './the-resistance-game.models';
+import { GameDetails, JoinGameCommand, StartGameCommand } from './the-resistance-game.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import * as signalR from '@microsoft/signalr';
 import { IHttpConnectionOptions } from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { SwalContainerService, SwalTypesModel } from '../../ui/swal/swal-container.service';
+import { UserSettingsService } from '../user/user-settings.service';
+import { UserSettingsUpdateCommand } from '../user/user-settings.models';
+import { DiscordLoginResponseModel } from '../user/user.models';
 
 @Injectable({
               providedIn: 'root'
             })
 export class TheResistanceGameService {
 
-  public gameDetails: GameDetails = {
-    playersDetails: [],
-    lobbyName: ''
-  };
-
   public gameDetailsChanged: Subject<GameDetails> = new Subject<GameDetails>();
+
+  public hostChanged: Subject<boolean> = new Subject<boolean>();
+
+  //public allGameDetails
+  public groupNameToGameDetailsMapChanged: Subject<Map<string, GameDetails>> = new Subject<Map<string, GameDetails>>();
+
 
   private readonly gamesEndpoint = '/api/Games';
   private readonly token = localStorage.getItem('TheResistanceToken');
@@ -32,24 +36,14 @@ export class TheResistanceGameService {
     }, transport: signalR.HttpTransportType.WebSockets, skipNegotiation: true
   };
 
-  private connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
+  public connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
     .withUrl(environment.Socket_URL + '/theresistancehub',
              this.options
-    )
+    ).withAutomaticReconnect()
+    .configureLogging(signalR.LogLevel.Error)
     .build();
 
-  constructor(private http: HttpClient, private swalService: SwalContainerService) {
-    this.connection.onclose(async() => {
-      await this.start();
-    });
-
-    this.start().then(r => console.log('connected'));
-
-    this.gameDetailsChanged.subscribe((value) => {
-      this.gameDetails = value;
-    });
-    // todo Add Permanent Listeners
-
+  constructor(private http: HttpClient, private swalService: SwalContainerService, private userSettingsService: UserSettingsService) {
   }
 
   // start the connection
@@ -63,72 +57,105 @@ export class TheResistanceGameService {
     }
   }
 
-  public createGame = (body: CreateGameCommand) => {
-    console.log('invoking CreateGame()');
-    this.connection.invoke('CreateGame', body)
-        .catch(err => console.log(err));
+  public async stop() {
+    try {
+      await this.connection.stop();
+
+    } catch(err) {
+      console.log('error occured while disconnection');
+      console.log(err);
+    }
+  }
+
+
+  // join-game Listeners
+  public addReceiveAllGameDetailsToPlayersNotInGameListener = () => {
+    this.connection.on('ReceiveAllGameDetailsToPlayersNotInGame', (map: Map<string, GameDetails>) => {
+      this.groupNameToGameDetailsMapChanged.next(map);
+    });
+  };
+
+  public removeReceiveAllGameDetailsToPlayersNotInGameListener = () => {
+    this.connection.off('ReceiveAllGameDetailsToPlayersNotInGame');
   };
 
   public joinGame = (body: JoinGameCommand) => {
-    this.connection.invoke('JoinGame', body).catch(err => console.log(err));
+    this.connection.invoke('ReceiveJoinGameCommand', body).then(() => {
+    }).catch(err => console.log(err));
   };
 
-
-  public addUserCreatedGameListener = () => {
-    this.connection.on('userCreatedGame', (newGame: GameDetails) => {
-      console.log('User created new game', newGame);
-      this.gameDetailsChanged.next(newGame);
-    });
-  };
-
-  public addGameAlreadyExistsListener = () => {
-    this.connection.on('gameAlreadyExists', (response: string) => {
-      this.swalService.showSwal(response, SwalTypesModel.Error);
-    });
-  };
-
-  public addTooManyGamesListener = () => {
-    this.connection.on('tooManyGames', (response: string) => {
-      this.swalService.showSwal(response, SwalTypesModel.Error);
-    });
-  };
-
-
-  public addUserJoinedGameListener = () => {
-    this.connection.on('userJoinedGame', (game: GameDetails) => {
-      console.log('user joined game', game);
-      this.gameDetailsChanged.next(game);
-    });
-
-  };
-
-  public addUserLeftGameListener = () => {
-    this.connection.on('userLeftGame', (game: GameDetails) => {
-      this.gameDetailsChanged.next(game);
-    });
-  };
-
-  public addGameIsFullListener = () => {
-    this.connection.on('gameIsFull', (response: string) => {
-      this.swalService.showSwal(response, SwalTypesModel.Error);
-    });
-  };
-
-  public addGameDoesNotExistListener = () => {
-    this.connection.on('gameDoesNotExist', (response: string) => {
-      this.swalService.showSwal(response, SwalTypesModel.Error);
-    });
-  };
 
   public addDiscordNotFoundListener = () => {
-    this.connection.on('discordNotFound', () => {
-      console.log("discord not found triggered")
+    this.connection.on('ReceiveDiscordNotFound', () => {
+      console.log('discord not found triggered');
       this.swalService.fireDiscordLoginRequested();
-      this.swalService.discordLoginResponseChanged.subscribe((value) => {
-        console.log('in resistance game service discord login response is:', value);
+
+      this.swalService.discordLoginResponseChanged.subscribe((value: DiscordLoginResponseModel) => {
+        if(value.declinedLogin) {
+          let userSettingsUpdateCommand: UserSettingsUpdateCommand = {
+            updateUserWantsToUseDiscord: true,
+            userWantsToUseDiscord: false
+          };
+
+          this.userSettingsService.updateUserSettings(userSettingsUpdateCommand).subscribe({
+                                                                                             next: (response: any) => {
+                                                                                               this.swalService.showSwal(
+                                                                                                 'Successfully declined Discord',
+                                                                                                 SwalTypesModel.Success);
+                                                                                             }
+                                                                                           });
+        }
       });
     });
   };
+  public removeDiscordNotFoundListener = () => {
+    this.connection.off('ReceiveDiscordNotFound');
+  };
+
+  public addReceiveDiscordUserNotInDiscordServerListener = () => {
+    this.connection.on('ReceiveDiscordUserNotInDiscordServer', () => {
+      console.log('user found to not be in server');
+    });
+  };
+
+  public removeReceiveDiscordUserNotInDiscordServerListener = () => {
+    this.connection.off('ReceiveDiscordUserNotInDiscordServer');
+  };
+
+  // lobby listeners
+  public addReceiveGameDetailsListener = () => {
+    this.connection.on('ReceiveGameDetails', (gameDetails: GameDetails) => {
+      this.gameDetailsChanged.next(gameDetails);
+    });
+  };
+  public removeReceiveGameListener = () => {
+    this.connection.off('ReceiveGameDetails');
+  };
+
+  public addReceiveGameHostListener = () => {
+    this.connection.on('ReceiveGameHost', (isTheHost: boolean) => {
+      this.hostChanged.next(isTheHost);
+    });
+  };
+
+  public removeReceiveGameHostListener = () => {
+    this.connection.off('ReceiveGameHost');
+  };
+
+  public startGame = (body: StartGameCommand) => {
+    console.log('sending body:',body)
+    this.connection.invoke('ReceiveStartGameCommand', body).then(() => {
+    }).catch(err => console.log(err));
+  };
+
+  // this will probably needed to be done somewhere
+  //https://code-maze.com/signalr-automatic-reconnect-option/
+  //  this.hubConnection.onreconnected(() => {
+  //   this.http.get('https://localhost:5001/api/chart')
+  //   .subscribe(res => {
+  //     console.log(res);
+  //   })
+  // })
 }
 
 

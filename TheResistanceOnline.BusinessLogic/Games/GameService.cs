@@ -1,37 +1,73 @@
-using System.Diagnostics.CodeAnalysis;
-using TheResistanceOnline.BusinessLogic.DiscordServer;
-using TheResistanceOnline.BusinessLogic.Games.Commands;
-using TheResistanceOnline.BusinessLogic.Users.Models;
+using TheResistanceOnline.BusinessLogic.Games.Models;
 
 namespace TheResistanceOnline.BusinessLogic.Games
 {
-    public interface IGameService
+    public interface IGameService: IGameSubject
     {
-        void AssignRoleToPlayerAsync([NotNull] CreateGameCommand command, [NotNull] UserDetailsModel userDetails);
+        List<IBotObserver> CreateBotObservers(int botCount);
+        
+        void UpdateGameDetails(GameDetailsModel gameDetails);
     }
 
-    public class GameService: IGameService
+    public class GameService: IGameService, IGameObserver
     {
         #region Fields
 
-        private readonly IDiscordServerService _discordServerService;
-
-        #endregion
-
-        #region Construction
-
-        public GameService(IDiscordServerService discordServerService)
-        {
-            _discordServerService = discordServerService;
-        }
+        private List<IBotObserver> _observers = new List<IBotObserver>();
 
         #endregion
 
         #region Public Methods
 
-        public async void AssignRoleToPlayerAsync(CreateGameCommand command, UserDetailsModel userDetails)
+        // Subject Function
+        public void Attach(IBotObserver observer)
         {
-            await _discordServerService.AddRoleToUserAsync("Join Game-9","game-1");
+            _observers.Add(observer);
+        }
+
+        public List<IBotObserver> CreateBotObservers(int botCount)
+        {
+            for(var i = 0; i < botCount; i++)
+            {
+                var botObserver = new BayesBotObserver();
+                Attach(botObserver);
+            }
+
+            return _observers;
+        }
+
+        // Subject Function
+        public void Detach(IBotObserver observer)
+        {
+            _observers.Remove(observer);
+        }
+
+        public void Dispose()
+        {
+            _observers = null;
+        }
+
+        // Subject Function
+        public void Notify(GameDetailsModel gameDetails)
+        {
+            foreach(var observer in _observers)
+            {
+                observer.Update(gameDetails);
+            }
+        }
+
+        // Observer Function
+        public void Update(GameDetailsModel gameDetails)
+        {
+            Console.WriteLine(" Revieved GameDetails from the resistance hub subject", gameDetails);
+
+            UpdateGameDetails(gameDetails);
+        }
+
+        // Subject Function
+        public void UpdateGameDetails(GameDetailsModel gameDetails)
+        {
+            Notify(gameDetails);
         }
 
         #endregion

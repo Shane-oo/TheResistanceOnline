@@ -6,14 +6,15 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
     {
         #region Properties
 
-        [NotNull]
-        public string LobbyName { get; set; }
+        public string ChannelName { get; set; }
+
+        public bool IsVoiceChannel { get; set; }
+        
+        public bool IsAvailable { get; set; }
 
         [CanBeNull]
         public List<PlayerDetailsModel> PlayersDetails { get; set; }
-
-        public bool UserInGame { get; set; }
-
+        
         #endregion
     }
 }

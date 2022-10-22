@@ -1,0 +1,69 @@
+.host-header {
+  font-size: 15px;
+  font-family: yuzu, serif;
+}
+
+.game-details {
+
+
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+th, td {
+  word-wrap: break-word;
+}
+
+th {
+  border-bottom: solid slategrey;
+}
+
+.playerDetails-table {
+  font-size: 13px;
+}
+
+.playerDetails-table th {
+  font-size: 10px;
+}
+
+.playerDetails-table td {
+  padding-top: 35px;
+}
+
+.name {
+  font-size: 13px;
+  font-family: yuzu, serif;
+}
+
+.resistanceWins {
+  color: #04a5f9;
+}
+
+.spyWins {
+  color: #fc2001;
+
+}
+
+.join-game-button {
+  text-align: center;
+  background-color: #1e1e1e;
+  padding: 15px;
+  width: 75%;
+  color: #e6e6e6;
+  border: none;
+  font-size: 14px;
+  margin-top: 50px;
+  box-shadow: 0.0315rem 0 0.625rem 0 ghostwhite;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.join-game-button:hover {
+  box-shadow: 0.0315rem 0 0.625rem 0 #fc2001;
+  -webkit-transition: box-shadow 500ms linear;
+  -ms-transition: box-shadow 500ms linear;
+  transition: box-shadow 500ms linear;
+}
