@@ -4,9 +4,9 @@ namespace TheResistanceOnline.BusinessLogic.Games
 {
     public interface IGameService: IGameSubject
     {
+        List<IBotObserver> CreateBotObservers(int botCount);
+        
         void UpdateGameDetails(GameDetailsModel gameDetails);
-
-        void CreateBotObservers(int botCount);
     }
 
     public class GameService: IGameService, IGameObserver
@@ -14,11 +14,6 @@ namespace TheResistanceOnline.BusinessLogic.Games
         #region Fields
 
         private readonly List<IBotObserver> _observers = new List<IBotObserver>();
-
-        #endregion
-
-        #region Construction
-        
 
         #endregion
 
@@ -30,10 +25,29 @@ namespace TheResistanceOnline.BusinessLogic.Games
             _observers.Add(observer);
         }
 
+        public List<IBotObserver> CreateBotObservers(int botCount)
+        {
+            for(var i = 0; i < botCount; i++)
+            {
+                var botObserver = new BayesBotObserver();
+                Attach(botObserver);
+            }
+
+            return _observers;
+        }
+
         // Subject Function
         public void Detach(IBotObserver observer)
         {
             _observers.Remove(observer);
+        }
+
+        public void Dispose()
+        {
+            foreach(var observer in _observers)
+            {
+                Detach(observer);
+            }
         }
 
         // Subject Function
@@ -57,15 +71,6 @@ namespace TheResistanceOnline.BusinessLogic.Games
         public void UpdateGameDetails(GameDetailsModel gameDetails)
         {
             Notify(gameDetails);
-        }
-
-        public void CreateBotObservers(int botCount)
-        {
-            for(var i = 0; i < botCount; i++)
-            {
-                var botObserver = new BayesBotObserver();
-                Attach(botObserver);
-            }
         }
 
         #endregion

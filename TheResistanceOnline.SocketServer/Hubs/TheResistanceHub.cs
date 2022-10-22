@@ -124,7 +124,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                },
                                                                                                            };
 
-        private static readonly Dictionary<string, List<IGameObserver>> _groupNameToGameObservers = new();
+        private static readonly Dictionary<string, IGameObserver> _groupNameToGameObserver = new();
         private readonly IMapper _mapper;
 
         private readonly IUserService _userService;
@@ -143,6 +143,16 @@ namespace TheResistanceOnline.SocketServer.Hubs
         #endregion
 
         #region Private Methods
+
+        private void CheckGameOver(GameDetailsModel gameDetails, PlayerDetailsModel playerDetails, string userGroupName)
+        {
+            //todo this is not working
+            if (gameDetails.PlayersDetails != null && !gameDetails.IsAvailable && gameDetails.PlayersDetails.Any(x => !x.IsBot))
+            {
+                Detach(userGroupName);
+                gameDetails.IsAvailable = true;
+            }
+        }
 
         private void RemoveConnectionFromAllMaps(string connectionId)
         {
@@ -197,29 +207,22 @@ namespace TheResistanceOnline.SocketServer.Hubs
         // Subject Function
         public void Attach(IGameObserver observer, string groupName)
         {
-            if (_groupNameToGameObservers.TryGetValue(groupName, out var observers))
-            {
-                observers.Add(observer);
-            }
+            _groupNameToGameObserver.Add(groupName, observer);
         }
         // Subject Function
 
-        public void Detach(IGameObserver observer, string groupName)
+        public void Detach(string groupName)
         {
-            if (_groupNameToGameObservers.TryGetValue(groupName, out var observers))
-            {
-                observers.Remove(observer);
-            }
+            if (!_groupNameToGameObserver.TryGetValue(groupName, out var observer)) return;
+            observer.Dispose();
+            _groupNameToGameObserver.Remove(groupName);
         }
         // Subject Function
 
         public void Notify(GameDetailsModel gameDetails, string groupName)
         {
-            if (!_groupNameToGameObservers.TryGetValue(groupName, out var observers)) return;
-            foreach(var observer in observers)
-            {
-                observer.Update(gameDetails);
-            }
+            if (!_groupNameToGameObserver.TryGetValue(groupName, out var observer)) return;
+            observer.Update(gameDetails);
         }
 
         public override async Task OnConnectedAsync()
@@ -266,6 +269,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
                 var gameDetails = _groupNameToGameDetailsMappingTable[userGroupName];
                 gameDetails.PlayersDetails?.Remove(leavingPlayerDetails);
+
+                //todo this is not working
+                CheckGameOver(gameDetails, leavingPlayerDetails, userGroupName);
 
                 RemoveConnectionFromAllMaps(Context.ConnectionId);
 
@@ -314,18 +320,33 @@ namespace TheResistanceOnline.SocketServer.Hubs
         [UsedImplicitly]
         public void ReceiveStartGameCommand(StartGameCommand command)
         {
-            if (_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var userGroupName))
+            if (_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var groupName))
             {
-                if (userGroupName != null)
+                if (groupName != null)
                 {
-                    _groupNameToGameObservers.Add(userGroupName, new List<IGameObserver>());
                     var gameService = new GameService();
-                    gameService.CreateBotObservers(command.GameOptions.BotCount);
-                    Attach(gameService, userGroupName);
+                    var botObservers = gameService.CreateBotObservers(command.GameOptions.BotCount);
 
-                    if (_groupNameToGameDetailsMappingTable.TryGetValue(userGroupName, out var gameDetails))
+                    Attach(gameService, groupName);
+
+                    if (_groupNameToGameDetailsMappingTable.TryGetValue(groupName, out var gameDetails))
                     {
-                        Notify(gameDetails, userGroupName);
+                        foreach(var botObserver in botObservers)
+                        {
+                            gameDetails.PlayersDetails?.Add(new PlayerDetailsModel
+                                                            {
+                                                                IsBot = true,
+                                                                BotObserver = botObserver,
+                                                                UserName = "WALL - E"
+                                                            });
+                        }
+
+                        Notify(gameDetails, groupName);
+
+                        // start game
+                        gameDetails.IsAvailable = false;
+                        SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
+                        SendAllGameDetailsToPlayersNotInGameAsync();
                     }
                 }
             }

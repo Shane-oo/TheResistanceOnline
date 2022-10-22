@@ -6,6 +6,8 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
     {
         #region Properties
 
+        public IBotObserver BotObserver { get; set; }
+
         public string ConnectionId { get; set; }
 
         public string DiscordTag { get; set; }
@@ -24,6 +26,11 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         public int SpyTeamWins { get; set; }
 
         public string UserName { get; set; }
+
+        #endregion
+
+        #region Public Methods
+        
 
         #endregion
     }

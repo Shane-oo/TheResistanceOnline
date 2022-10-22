@@ -8,4 +8,9 @@ public class BayesBotObserver:IBotObserver
     {
         Console.WriteLine("GameDetails have been updated",gameDetails);
     }
+
+    public void GetChoice()
+    {
+        Console.WriteLine("asked for choice");
+    }
 }
