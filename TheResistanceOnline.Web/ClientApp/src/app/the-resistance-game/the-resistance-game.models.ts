@@ -21,3 +21,13 @@ export interface GameDetailsResponse {
   errorOccured: boolean;
   gameDetails: GameDetails;
 }
+
+export interface GameOptions {
+  timeLimitMinutes: number;
+  moveTimeLimitMinutes: number;
+  botCount: number;
+}
+
+export interface StartGameCommand {
+  gameOptions: GameOptions;
+}

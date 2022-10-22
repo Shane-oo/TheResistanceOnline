@@ -13,7 +13,7 @@ namespace TheResistanceOnline.Infrastructure.Data.Configurations.DiscordServerCo
         {
             builder.HasKey(u => u.Id)
                    .HasName("PK_DiscordUsers");
-            builder.Property(u => u.UserName).IsRequired();
+            builder.Property(u => u.Name).IsRequired();
             builder.Property(u => u.DiscordTag).IsRequired();
             builder.Property(u => u.Discriminator).IsRequired();
         }

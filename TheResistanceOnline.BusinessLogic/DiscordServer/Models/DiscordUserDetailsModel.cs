@@ -19,7 +19,7 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer.Models
         public string Discriminator { get; set; }
 
         [NotNull]
-        public string UserName { get; set; }
+        public string Name { get; set; }
 
         #endregion
     }

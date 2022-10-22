@@ -11,15 +11,14 @@ namespace TheResistanceOnline.SocketServer.Controllers
     {
         #region Fields
 
-        private readonly IGameService _gameService;
 
         #endregion
 
         #region Construction
 
-        public GamesController(IGameService gameService)
+        public GamesController()
         {
-            _gameService = gameService;
+          
         }
 
         #endregion

@@ -1,0 +1,74 @@
+<div class="content grid-container">
+  <div class="lobby-box">
+    <div *ngFor="let playerDetail of gameDetails.playersDetails | slice:0:middle;" class="grid-item">
+      <b class="wins resistanceWins">{{playerDetail.resistanceTeamWins}}</b>
+      <b class="wins spyWins">{{playerDetail.spyTeamWins}}</b>
+      <h6> {{playerDetail.userName}}</h6>
+      <h6 *ngIf="playerDetail.discordUserName" class="discord-name"><i class='fab fa-discord'></i> : {{playerDetail.discordUserName}}</h6>
+    </div>
+  </div>
+  <div class="lobby-box middle">
+    <h3>{{gameDetails.channelName}}</h3>
+    <div *ngIf="!isTheHost">
+      <p *ngIf="gameDetails.playersDetails.length<5">Waiting for more players...</p>
+      <p *ngIf="gameDetails.playersDetails.length>=5">Waiting for Host to Start Game...</p>
+    </div>
+    <div *ngIf="isTheHost" class="game-options">
+      <div>
+        <h4>Game Options</h4>
+      </div>
+      <form (ngSubmit)="startGame(gameOptionsForm.value)" [formGroup]="gameOptionsForm" class="form-box" novalidate>
+        <div>
+          <p>Amount of Bots</p>
+          <input (change)="botCountChanged()" formControlName="botCount" id="botCount" max="{{10 - gameDetails.playersDetails.length}}"
+                 min="0"
+                 type="number">
+          <div class="validation">
+            <em *ngIf="validateControl('botCount') && hasError('botCount', 'max')">Too Many Bots</em>
+            <em *ngIf="validateControl('botCount') && hasError('botCount', 'min')">Cannot be less than zero</em>
+          </div>
+        </div>
+        <div>
+          <p>Game Time Limit</p>
+          <select formControlName="timeLimitMinutes" id="timeLimitMinutes">
+            <option *ngFor="let opt of timeLimitOptions" [value]="opt.minutes">{{opt.minutesString}}</option>
+          </select>
+          <div class="validation">
+            <em *ngIf="validateControl('timeLimitMinutes') && hasError('timeLimitMinutes', 'required')">Timelimit is required</em>
+          </div>
+        </div>
+        <div>
+          <p>Voting/Decision Time Limit</p>
+          <select formControlName="moveTimeLimitMinutes" id="moveTimeLimitMinutes">
+            <option *ngFor="let opt of moveTimeLimitOptions" [value]="opt.minutes">{{opt.minutesString}}</option>
+          </select>
+          <div class="validation">
+            <em *ngIf="validateControl('moveTimeLimitMinutes') && hasError('moveTimeLimitMinutes', 'required')">Move TimeLimit is
+              required</em>
+          </div>
+        </div>
+
+        <!--   player count validation-->
+        <div class="validation">
+          <em *ngIf=" hasError('botCount', 'max')">Too Many Players</em>
+          <em *ngIf=" hasError('playerCount', 'min')">Not Enough Players To Start Game</em>
+          <button [disabled]="!gameOptionsForm.valid" [style.background]="!gameOptionsForm.valid? '#5f5f5f':''"
+                  [style.box-shadow]="!gameOptionsForm.valid? 'none':''" class="start-button"
+                  type="submit">
+            Start Game
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+  <div class="lobby-box">
+    <div *ngFor="let playerDetail of gameDetails.playersDetails | slice:middle:10;" class="grid-item">
+      <b class="wins resistanceWins">{{playerDetail.resistanceTeamWins}}</b>
+      <b class="wins spyWins">{{playerDetail.spyTeamWins}}</b>
+      <h6> {{playerDetail.userName}}</h6>
+      <h6 *ngIf="playerDetail.discordUserName" class="discord-name"><i class='fab fa-discord'></i> : {{playerDetail.discordUserName}}</h6>
+    </div>
+  </div>
+</div>

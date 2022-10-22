@@ -105,8 +105,8 @@ namespace TheResistanceOnline.SocketServer.DI
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IDiscordServerService, DiscordServerService>();
             services.AddScoped<IUserSettingsService, UserSettingsService>();
-            services.AddTransient<IGameService, GameService>();
-
+            services.AddScoped<IGameService, GameService>();
+          
             //ToDo probs not needed
             services.AddScoped<ITimerService, TimerService>();
 

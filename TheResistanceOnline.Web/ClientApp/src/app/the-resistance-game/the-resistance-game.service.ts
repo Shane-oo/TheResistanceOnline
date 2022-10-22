@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { GameDetails, JoinGameCommand } from './the-resistance-game.models';
+import { GameDetails, JoinGameCommand, StartGameCommand } from './the-resistance-game.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import * as signalR from '@microsoft/signalr';
@@ -16,6 +16,8 @@ import { DiscordLoginResponseModel } from '../user/user.models';
 export class TheResistanceGameService {
 
   public gameDetailsChanged: Subject<GameDetails> = new Subject<GameDetails>();
+
+  public hostChanged: Subject<boolean> = new Subject<boolean>();
 
   //public allGameDetails
   public groupNameToGameDetailsMapChanged: Subject<Map<string, GameDetails>> = new Subject<Map<string, GameDetails>>();
@@ -125,6 +127,25 @@ export class TheResistanceGameService {
     this.connection.on('ReceiveGameDetails', (gameDetails: GameDetails) => {
       this.gameDetailsChanged.next(gameDetails);
     });
+  };
+  public removeReceiveGameListener = () => {
+    this.connection.off('ReceiveGameDetails');
+  };
+
+  public addReceiveGameHostListener = () => {
+    this.connection.on('ReceiveGameHost', (isTheHost: boolean) => {
+      this.hostChanged.next(isTheHost);
+    });
+  };
+
+  public removeReceiveGameHostListener = () => {
+    this.connection.off('ReceiveGameHost');
+  };
+
+  public startGame = (body: StartGameCommand) => {
+    console.log('sending body:',body)
+    this.connection.invoke('ReceiveStartGameCommand', body).then(() => {
+    }).catch(err => console.log(err));
   };
 
   // this will probably needed to be done somewhere

@@ -14,11 +14,12 @@ using TheResistanceOnline.Data.Users;
 namespace TheResistanceOnline.SocketServer.Hubs
 {
     [Authorize]
-    public class TheResistanceHub: Hub
+    public class TheResistanceHub: Hub, IResistanceHubSubject
     {
         #region Constants
 
         private const int MAX_GAME_COUNT = 10;
+        private const int MAX_PLAYER_COUNT = 10;
 
         #endregion
 
@@ -28,8 +29,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
         private static readonly Dictionary<string, PlayerDetailsModel> _connectionIdToPlayerDetailsMappingTable = new();
 
         private readonly IDiscordServerService _discordServerService;
-
-        private readonly IGameService _gameService;
 
         private static readonly Dictionary<string, GameDetailsModel> _groupNameToGameDetailsMappingTable = new()
                                                                                                            {
@@ -125,7 +124,16 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                },
                                                                                                            };
 
+        private static readonly Dictionary<string, IGameObserver> _groupNameToGameObserver = new();
         private readonly IMapper _mapper;
+
+        private readonly List<string?> _randomBotNames = new()
+                                                         {
+                                                             "WALL - E", "R2D2", "K9", "Optimus Prime", "Rosie", "Bender", "C-3PO", "HAL 9000", "Data", "ASIMO", "The Terminator",
+                                                             "Micro", "EVA", "RAM", "Sputnik", "Humanoid", "Chip", "Robo", "Robocop", "Alpha", "Beta", "Gamma", "Siri",
+                                                             "Raspberry Pie", "AstroBoy", "Chappie", "Ultron", "Omega", "Hydra", "Pixels"
+                                                         };
+
 
         private readonly IUserService _userService;
 
@@ -133,10 +141,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         #region Construction
 
-        public TheResistanceHub(IUserService userService, IGameService gameService, IDiscordServerService discordServerService, IMapper mapper)
+        public TheResistanceHub(IUserService userService, IDiscordServerService discordServerService, IMapper mapper)
         {
             _userService = userService;
-            _gameService = gameService;
             _discordServerService = discordServerService;
             _mapper = mapper;
         }
@@ -144,6 +151,21 @@ namespace TheResistanceOnline.SocketServer.Hubs
         #endregion
 
         #region Private Methods
+
+        private void CheckGameOver(GameDetailsModel gameDetails, string userGroupName)
+        {
+            if (gameDetails.PlayersDetails != null && !gameDetails.IsAvailable && gameDetails.PlayersDetails.All(x => x.IsBot))
+            {
+                Detach(userGroupName);
+                gameDetails.PlayersDetails = new List<PlayerDetailsModel>();
+                gameDetails.IsAvailable = true;
+            }
+        }
+
+        private string? GetRandomName()
+        {
+            return _randomBotNames.MinBy(x => Guid.NewGuid());
+        }
 
         private void RemoveConnectionFromAllMaps(string connectionId)
         {
@@ -158,14 +180,14 @@ namespace TheResistanceOnline.SocketServer.Hubs
             {
                 if (playerDetails.IsInAGame) continue;
 
-                var availableGames = _groupNameToGameDetailsMappingTable.Where(gd => gd.Value.IsAvailable)
+                var availableGames = _groupNameToGameDetailsMappingTable.Where(gd => gd.Value.IsAvailable && gd.Value.PlayersDetails?.Count < MAX_PLAYER_COUNT)
                                                                         .OrderByDescending(gd => gd.Value.PlayersDetails?.Count)
                                                                         .ToDictionary(p => p.Key, p => p.Value);
                 await Clients.Client(connectionId).SendAsync("ReceiveAllGameDetailsToPlayersNotInGame", availableGames);
             }
         }
 
-        private async void SendDiscordNotFoundAsync(User user, string connectionId)
+        private async void SendDiscordNotFoundAsync(User user)
         {
             // Discord User Does not exist Or User Wants to Use Discord And its been one week since said no 
             if (user.DiscordUser == null)
@@ -184,11 +206,37 @@ namespace TheResistanceOnline.SocketServer.Hubs
         private async void SendGameDetailsToChannelGroupAsync(GameDetailsModel gameDetails, string groupName)
         {
             await Clients.Group(groupName).SendAsync("ReceiveGameDetails", gameDetails);
+
+            //todo send ReceiveGameHost : boolean to the host
+            var host = gameDetails.PlayersDetails?.FirstOrDefault(p => !p.IsBot);
+
+            if (host != null) await Clients.Client(host.ConnectionId).SendAsync("ReceiveGameHost", true);
         }
 
         #endregion
 
         #region Public Methods
+
+        // Subject Function
+        public void Attach(IGameObserver observer, string groupName)
+        {
+            _groupNameToGameObserver.Add(groupName, observer);
+        }
+
+        // Subject Function
+        public void Detach(string groupName)
+        {
+            if (!_groupNameToGameObserver.TryGetValue(groupName, out var observer)) return;
+            observer.Dispose();
+            _groupNameToGameObserver.Remove(groupName);
+        }
+
+        // Subject Function
+        public void Notify(GameDetailsModel gameDetails, string groupName)
+        {
+            if (!_groupNameToGameObserver.TryGetValue(groupName, out var observer)) return;
+            observer.Update(gameDetails);
+        }
 
         public override async Task OnConnectedAsync()
         {
@@ -201,17 +249,20 @@ namespace TheResistanceOnline.SocketServer.Hubs
             //todo add resistance wins and spy wins eventually
             var playerDetails = new PlayerDetailsModel
                                 {
+                                    ConnectionId = Context.ConnectionId,
                                     PlayerId = new Guid(),
                                     UserName = userDetails.UserName,
-                                    DiscordUserName = userDetails.DiscordUser?.UserName,
+                                    DiscordUserName = userDetails.DiscordUser?.Name,
                                     DiscordTag = userDetails.DiscordUser?.DiscordTag,
+                                    ResistanceTeamWins = 420,
+                                    SpyTeamWins = 69
                                 };
 
             _connectionIdToPlayerDetailsMappingTable.Add(Context.ConnectionId, playerDetails);
 
             SendAllGameDetailsToPlayersNotInGameAsync();
 
-            SendDiscordNotFoundAsync(user, Context.ConnectionId);
+            SendDiscordNotFoundAsync(user);
 
             await base.OnConnectedAsync();
         }
@@ -232,12 +283,17 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 var gameDetails = _groupNameToGameDetailsMappingTable[userGroupName];
                 gameDetails.PlayersDetails?.Remove(leavingPlayerDetails);
 
+                CheckGameOver(gameDetails, userGroupName);
+
                 RemoveConnectionFromAllMaps(Context.ConnectionId);
 
                 SendGameDetailsToChannelGroupAsync(gameDetails, userGroupName);
                 SendAllGameDetailsToPlayersNotInGameAsync();
 
-                _discordServerService.RemoveRoleFromUserAsync(userGroupName, leavingPlayerDetails.DiscordTag);
+                if (!string.IsNullOrEmpty(leavingPlayerDetails.DiscordTag))
+                {
+                    _discordServerService.RemoveRoleFromUserAsync(userGroupName, leavingPlayerDetails.DiscordTag);
+                }
             }
             else
             {
@@ -259,17 +315,49 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 var newPlayerDetails = _connectionIdToPlayerDetailsMappingTable[Context.ConnectionId];
 
                 gameDetails.PlayersDetails.Add(newPlayerDetails);
-                gameDetails.IsAvailable = gameDetails.PlayersDetails.Count < MAX_GAME_COUNT;
                 _groupNameToGameDetailsMappingTable[command.ChannelName] = gameDetails;
 
                 SendAllGameDetailsToPlayersNotInGameAsync();
-
-                SendGameDetailsToChannelGroupAsync(gameDetails,
-                                                   command.ChannelName);
+                SendGameDetailsToChannelGroupAsync(gameDetails, command.ChannelName);
 
                 if (!string.IsNullOrEmpty(newPlayerDetails.DiscordTag))
                 {
                     _discordServerService.AddRoleToUserAsync(command.ChannelName, newPlayerDetails.DiscordTag);
+                }
+            }
+        }
+
+        [UsedImplicitly]
+        public void ReceiveStartGameCommand(StartGameCommand command)
+        {
+            if (_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var groupName))
+            {
+                if (groupName != null)
+                {
+                    var gameService = new GameService();
+                    var botObservers = gameService.CreateBotObservers(command.GameOptions.BotCount);
+
+                    Attach(gameService, groupName);
+
+                    if (_groupNameToGameDetailsMappingTable.TryGetValue(groupName, out var gameDetails))
+                    {
+                        foreach(var botObserver in botObservers)
+                        {
+                            gameDetails.PlayersDetails?.Add(new PlayerDetailsModel
+                                                            {
+                                                                IsBot = true,
+                                                                BotObserver = botObserver,
+                                                                UserName = GetRandomName()
+                                                            });
+                        }
+
+                        Notify(gameDetails, groupName);
+
+                        // start game
+                        gameDetails.IsAvailable = false;
+                        SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
+                        SendAllGameDetailsToPlayersNotInGameAsync();
+                    }
                 }
             }
         }

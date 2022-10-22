@@ -169,6 +169,7 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
         public async Task CreateDiscordUserAsync(CreateDiscordUserCommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
+            
             var user = await _context.Query<IUserDbQuery>().WithParams(command.UserId)
                                      .ExecuteAsync(command.CancellationToken);
 

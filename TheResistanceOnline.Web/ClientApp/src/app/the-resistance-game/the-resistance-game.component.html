@@ -2,7 +2,9 @@
   <app-join-game></app-join-game>
 </div>
 <div *ngIf="userIsInGame">
-  <span> in game {{gameDetails.channelName}}</span>
+
+  <app-game-lobby *ngIf="gameDetails.isAvailable" [gameDetails]="gameDetails" [isTheHost]="isTheHost"></app-game-lobby>
+  <app-game *ngIf="!gameDetails.isAvailable"></app-game>
 </div>
 <!--<div *ngIf="!userInGame">-->
 <!--</div>-->

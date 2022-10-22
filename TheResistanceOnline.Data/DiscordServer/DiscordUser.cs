@@ -21,14 +21,11 @@ public class DiscordUser: NamedEntity<int>, IAuditableEntity
     [CanBeNull]
     public DiscordRole DiscordRole { get; set; }
 
-    // Username + Discriminator
-    [NotNull]
-    public string UserName { get; set; }
-
     [NotNull]
     public string Discriminator { get; set; }
 
     [NotNull]
+    // Username + Discriminator
     public string DiscordTag { get; set; }
 
     #endregion
