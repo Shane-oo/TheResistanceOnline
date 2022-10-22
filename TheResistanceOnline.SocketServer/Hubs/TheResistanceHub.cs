@@ -127,6 +127,14 @@ namespace TheResistanceOnline.SocketServer.Hubs
         private static readonly Dictionary<string, IGameObserver> _groupNameToGameObserver = new();
         private readonly IMapper _mapper;
 
+        private readonly List<string?> _randomBotNames = new()
+                                                         {
+                                                             "WALL - E", "R2D2", "K9", "Optimus Prime", "Rosie", "Bender", "C-3PO", "HAL 9000", "Data", "ASIMO", "The Terminator",
+                                                             "Micro", "EVA", "RAM", "Sputnik", "Humanoid", "Chip", "Robo", "Robocop", "Alpha", "Beta", "Gamma", "Siri",
+                                                             "Raspberry Pie", "AstroBoy", "Chappie", "Ultron", "Omega", "Hydra", "Pixels"
+                                                         };
+
+
         private readonly IUserService _userService;
 
         #endregion
@@ -144,14 +152,19 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         #region Private Methods
 
-        private void CheckGameOver(GameDetailsModel gameDetails, PlayerDetailsModel playerDetails, string userGroupName)
+        private void CheckGameOver(GameDetailsModel gameDetails, string userGroupName)
         {
-            //todo this is not working
-            if (gameDetails.PlayersDetails != null && !gameDetails.IsAvailable && gameDetails.PlayersDetails.Any(x => !x.IsBot))
+            if (gameDetails.PlayersDetails != null && !gameDetails.IsAvailable && gameDetails.PlayersDetails.All(x => x.IsBot))
             {
                 Detach(userGroupName);
+                gameDetails.PlayersDetails = new List<PlayerDetailsModel>();
                 gameDetails.IsAvailable = true;
             }
+        }
+
+        private string? GetRandomName()
+        {
+            return _randomBotNames.MinBy(x => Guid.NewGuid());
         }
 
         private void RemoveConnectionFromAllMaps(string connectionId)
@@ -209,16 +222,16 @@ namespace TheResistanceOnline.SocketServer.Hubs
         {
             _groupNameToGameObserver.Add(groupName, observer);
         }
-        // Subject Function
 
+        // Subject Function
         public void Detach(string groupName)
         {
             if (!_groupNameToGameObserver.TryGetValue(groupName, out var observer)) return;
             observer.Dispose();
             _groupNameToGameObserver.Remove(groupName);
         }
-        // Subject Function
 
+        // Subject Function
         public void Notify(GameDetailsModel gameDetails, string groupName)
         {
             if (!_groupNameToGameObserver.TryGetValue(groupName, out var observer)) return;
@@ -270,8 +283,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 var gameDetails = _groupNameToGameDetailsMappingTable[userGroupName];
                 gameDetails.PlayersDetails?.Remove(leavingPlayerDetails);
 
-                //todo this is not working
-                CheckGameOver(gameDetails, leavingPlayerDetails, userGroupName);
+                CheckGameOver(gameDetails, userGroupName);
 
                 RemoveConnectionFromAllMaps(Context.ConnectionId);
 
@@ -306,9 +318,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 _groupNameToGameDetailsMappingTable[command.ChannelName] = gameDetails;
 
                 SendAllGameDetailsToPlayersNotInGameAsync();
-
-                SendGameDetailsToChannelGroupAsync(gameDetails,
-                                                   command.ChannelName);
+                SendGameDetailsToChannelGroupAsync(gameDetails, command.ChannelName);
 
                 if (!string.IsNullOrEmpty(newPlayerDetails.DiscordTag))
                 {
@@ -337,7 +347,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                             {
                                                                 IsBot = true,
                                                                 BotObserver = botObserver,
-                                                                UserName = "WALL - E"
+                                                                UserName = GetRandomName()
                                                             });
                         }
 

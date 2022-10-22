@@ -13,7 +13,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
     {
         #region Fields
 
-        private readonly List<IBotObserver> _observers = new List<IBotObserver>();
+        private List<IBotObserver> _observers = new List<IBotObserver>();
 
         #endregion
 
@@ -44,10 +44,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
 
         public void Dispose()
         {
-            foreach(var observer in _observers)
-            {
-                Detach(observer);
-            }
+            _observers = null;
         }
 
         // Subject Function
