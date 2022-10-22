@@ -24,7 +24,6 @@ export class JoinGameDetailsComponent implements OnInit {
 
 
   public joinGame = (channelName: string) => {
-    console.log('join ', channelName);
     const joinGameCommand: JoinGameCommand = {
       channelName: channelName
     };

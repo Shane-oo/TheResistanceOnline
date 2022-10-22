@@ -22,6 +22,12 @@ export interface GameDetailsResponse {
   gameDetails: GameDetails;
 }
 
-export interface GameOptions{
+export interface GameOptions {
   timeLimitMinutes: number;
+  moveTimeLimitMinutes: number;
+  botCount: number;
+}
+
+export interface StartGameCommand {
+  gameOptions: GameOptions;
 }

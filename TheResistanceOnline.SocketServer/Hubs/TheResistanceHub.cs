@@ -14,7 +14,7 @@ using TheResistanceOnline.Data.Users;
 namespace TheResistanceOnline.SocketServer.Hubs
 {
     [Authorize]
-    public class TheResistanceHub: Hub
+    public class TheResistanceHub: Hub, IResistanceHubSubject
     {
         #region Constants
 
@@ -30,8 +30,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         private readonly IDiscordServerService _discordServerService;
 
-        private readonly IGameService _gameService;
-
         private static readonly Dictionary<string, GameDetailsModel> _groupNameToGameDetailsMappingTable = new()
                                                                                                            {
                                                                                                                {
@@ -40,66 +38,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                            ChannelName = "game-1",
                                                                                                                            IsVoiceChannel = false,
                                                                                                                            IsAvailable = true,
-                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>
-                                                                                                                               {
-                                                                                                                                   new()
-                                                                                                                                   {
-                                                                                                                                       UserName = "Player1",
-                                                                                                                                       DiscordUserName = "Player1Discord",
-                                                                                                                                       IsBot = true
-                                                                                                                                   },
-                                                                                                                                   new()
-                                                                                                                                   {
-                                                                                                                                       UserName =
-                                                                                                                                           "LO5aYGQtjQvesTr2ydC1f2ZTv9CuCt00",
-                                                                                                                                       DiscordUserName =
-                                                                                                                                           "LO5aYGQtjQvesTr2ydC1f2ZTv9CuCt00",
-                                                                                                                                       ResistanceTeamWins = 1010,
-                                                                                                                                       SpyTeamWins = 4200000,
-                                                                                                                                       IsBot = true
-                                                                                                                                   },
-                                                                                                                                   new()
-                                                                                                                                   {
-                                                                                                                                       UserName = "Player3",
-                                                                                                                                       DiscordUserName = "Player3Discord",
-                                                                                                                                       IsBot = true
-                                                                                                                                   },
-                                                                                                                                   new()
-                                                                                                                                   {
-                                                                                                                                       UserName = "Player3",
-                                                                                                                                       DiscordUserName = "Player4Discord",
-                                                                                                                                       IsBot = true
-                                                                                                                                   },
-                                                                                                                                   new()
-                                                                                                                                   {
-                                                                                                                                       UserName = "Player5",
-                                                                                                                                       DiscordUserName = "Player5Discord",
-                                                                                                                                       IsBot = true
-                                                                                                                                   },
-                                                                                                                                   new()
-                                                                                                                                   {
-                                                                                                                                       UserName = "Player6",
-                                                                                                                                       DiscordUserName = "Player6Discord",
-                                                                                                                                       IsBot = true
-                                                                                                                                   },
-                                                                                                                                   new()
-                                                                                                                                   {
-                                                                                                                                       UserName = "Player7",
-                                                                                                                                       DiscordUserName = "Player7Discord",
-                                                                                                                                       IsBot = true
-                                                                                                                                   },
-                                                                                                                                   new()
-                                                                                                                                   {
-                                                                                                                                       UserName = "Player8",
-                                                                                                                                       DiscordUserName = "Player8Discord",
-                                                                                                                                       IsBot = true
-                                                                                                                                   },
-                                                                                                                                   new()
-                                                                                                                                   {
-                                                                                                                                       UserName = "Player9",
-                                                                                                                                       IsBot = true
-                                                                                                                                   },
-                                                                                                                               }
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -185,6 +124,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                },
                                                                                                            };
 
+        private static readonly Dictionary<string, List<IGameObserver>> _groupNameToGameObservers = new();
         private readonly IMapper _mapper;
 
         private readonly IUserService _userService;
@@ -193,10 +133,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         #region Construction
 
-        public TheResistanceHub(IUserService userService, IGameService gameService, IDiscordServerService discordServerService, IMapper mapper)
+        public TheResistanceHub(IUserService userService, IDiscordServerService discordServerService, IMapper mapper)
         {
             _userService = userService;
-            _gameService = gameService;
             _discordServerService = discordServerService;
             _mapper = mapper;
         }
@@ -254,6 +193,34 @@ namespace TheResistanceOnline.SocketServer.Hubs
         #endregion
 
         #region Public Methods
+
+        // Subject Function
+        public void Attach(IGameObserver observer, string groupName)
+        {
+            if (_groupNameToGameObservers.TryGetValue(groupName, out var observers))
+            {
+                observers.Add(observer);
+            }
+        }
+        // Subject Function
+
+        public void Detach(IGameObserver observer, string groupName)
+        {
+            if (_groupNameToGameObservers.TryGetValue(groupName, out var observers))
+            {
+                observers.Remove(observer);
+            }
+        }
+        // Subject Function
+
+        public void Notify(GameDetailsModel gameDetails, string groupName)
+        {
+            if (!_groupNameToGameObservers.TryGetValue(groupName, out var observers)) return;
+            foreach(var observer in observers)
+            {
+                observer.Update(gameDetails);
+            }
+        }
 
         public override async Task OnConnectedAsync()
         {
@@ -340,6 +307,26 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 if (!string.IsNullOrEmpty(newPlayerDetails.DiscordTag))
                 {
                     _discordServerService.AddRoleToUserAsync(command.ChannelName, newPlayerDetails.DiscordTag);
+                }
+            }
+        }
+
+        [UsedImplicitly]
+        public void ReceiveStartGameCommand(StartGameCommand command)
+        {
+            if (_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var userGroupName))
+            {
+                if (userGroupName != null)
+                {
+                    _groupNameToGameObservers.Add(userGroupName, new List<IGameObserver>());
+                    var gameService = new GameService();
+                    gameService.CreateBotObservers(command.GameOptions.BotCount);
+                    Attach(gameService, userGroupName);
+
+                    if (_groupNameToGameDetailsMappingTable.TryGetValue(userGroupName, out var gameDetails))
+                    {
+                        Notify(gameDetails, userGroupName);
+                    }
                 }
             }
         }

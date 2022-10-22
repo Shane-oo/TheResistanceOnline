@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { GameDetails, GameOptions } from '../the-resistance-game.models';
+import { GameDetails, GameOptions, StartGameCommand } from '../the-resistance-game.models';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { TheResistanceGameService } from '../the-resistance-game.service';
 
 interface TimeLimit {
   minutesString: string;
@@ -13,8 +14,6 @@ interface TimeLimit {
              styleUrls: ['./game-lobby.component.css']
            })
 export class GameLobbyComponent implements OnInit {
-  public MAX_PLAYER_COUNT = 10;
-  public MIN_PLAYER_COUNT = 5;
   @Input() gameDetails: GameDetails = {
     channelName: '',
     playersDetails: [],
@@ -22,25 +21,27 @@ export class GameLobbyComponent implements OnInit {
     isAvailable: false
   };
   @Input() isTheHost: boolean = false;
-
   public gameOptionsForm: FormGroup = new FormGroup({});
-
   public middle: number = 0;
-  public defaultTimeLimit: TimeLimit = {
+  private MAX_PLAYER_COUNT = 10;
+  private MIN_PLAYER_COUNT = 5;
+  private defaultTimeLimit: TimeLimit = {
     minutesString: '45 Minutes',
     minutes: 45
   };
   public timeLimitOptions: TimeLimit[] = [{minutesString: '30 Minutes', minutes: 30}, this.defaultTimeLimit,
     {minutesString: '60 Minutes', minutes: 60}, {minutesString: '90 Minutes', minutes: 90}];
 
-  public defaultMoveTimeLimit: TimeLimit = {
+  private defaultMoveTimeLimit: TimeLimit = {
     minutesString: '5 Minutes',
     minutes: 5
   };
   public moveTimeLimitOptions: TimeLimit[] = [{minutesString: '2 Minutes', minutes: 2}, this.defaultMoveTimeLimit,
     {minutesString: '7 Minutes', minutes: 7}, {minutesString: '10 Minutes', minutes: 10}];
 
-  constructor() {
+
+
+  constructor(private gameService:TheResistanceGameService) {
   }
 
   ngOnInit(): void {
@@ -79,6 +80,15 @@ export class GameLobbyComponent implements OnInit {
   public startGame = (gameOptionsFormValue: GameOptions) => {
     const formValues = {...gameOptionsFormValue};
     console.log(formValues);
+    const startGameCommand: StartGameCommand = {
+      gameOptions: {
+        timeLimitMinutes: formValues.timeLimitMinutes,
+        moveTimeLimitMinutes: formValues.moveTimeLimitMinutes,
+        botCount: formValues.botCount
+      }
+    };
+    this.gameService.startGame(startGameCommand);
+
   };
 
   public botCountChanged = () => {

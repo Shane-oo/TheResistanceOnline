@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { GameDetails, JoinGameCommand } from './the-resistance-game.models';
+import { GameDetails, JoinGameCommand, StartGameCommand } from './the-resistance-game.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import * as signalR from '@microsoft/signalr';
@@ -140,6 +140,12 @@ export class TheResistanceGameService {
 
   public removeReceiveGameHostListener = () => {
     this.connection.off('ReceiveGameHost');
+  };
+
+  public startGame = (body: StartGameCommand) => {
+    console.log('sending body:',body)
+    this.connection.invoke('ReceiveStartGameCommand', body).then(() => {
+    }).catch(err => console.log(err));
   };
 
   // this will probably needed to be done somewhere

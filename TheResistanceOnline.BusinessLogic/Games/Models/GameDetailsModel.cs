@@ -15,7 +15,6 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         [CanBeNull]
         public List<PlayerDetailsModel> PlayersDetails { get; set; }
         
-        
         #endregion
     }
 }
