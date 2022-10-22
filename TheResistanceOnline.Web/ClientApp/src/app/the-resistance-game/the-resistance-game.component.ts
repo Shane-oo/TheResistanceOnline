@@ -16,6 +16,8 @@ export class TheResistanceGameComponent implements OnInit {
     isAvailable: false
   };
 
+  public isTheHost: boolean = false;
+
   constructor(private gameService: TheResistanceGameService) {
 
     this.gameService.gameDetailsChanged.subscribe((value: GameDetails) => {
@@ -23,7 +25,12 @@ export class TheResistanceGameComponent implements OnInit {
       this.userIsInGame = true;
     });
 
+    this.gameService.hostChanged.subscribe((value: boolean) => {
+      this.isTheHost = value;
+    });
+
     this.gameService.addReceiveGameDetailsListener();
+    this.gameService.addReceiveGameHostListener();
   }
 
   async ngOnInit() {

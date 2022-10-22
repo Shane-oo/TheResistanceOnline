@@ -19,6 +19,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
         #region Constants
 
         private const int MAX_GAME_COUNT = 10;
+        private const int MAX_PLAYER_COUNT = 10;
 
         #endregion
 
@@ -39,7 +40,66 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                            ChannelName = "game-1",
                                                                                                                            IsVoiceChannel = false,
                                                                                                                            IsAvailable = true,
-                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>
+                                                                                                                               {
+                                                                                                                                   new()
+                                                                                                                                   {
+                                                                                                                                       UserName = "Player1",
+                                                                                                                                       DiscordUserName = "Player1Discord",
+                                                                                                                                       IsBot = true
+                                                                                                                                   },
+                                                                                                                                   new()
+                                                                                                                                   {
+                                                                                                                                       UserName =
+                                                                                                                                           "LO5aYGQtjQvesTr2ydC1f2ZTv9CuCt00",
+                                                                                                                                       DiscordUserName =
+                                                                                                                                           "LO5aYGQtjQvesTr2ydC1f2ZTv9CuCt00",
+                                                                                                                                       ResistanceTeamWins = 1010,
+                                                                                                                                       SpyTeamWins = 4200000,
+                                                                                                                                       IsBot = true
+                                                                                                                                   },
+                                                                                                                                   new()
+                                                                                                                                   {
+                                                                                                                                       UserName = "Player3",
+                                                                                                                                       DiscordUserName = "Player3Discord",
+                                                                                                                                       IsBot = true
+                                                                                                                                   },
+                                                                                                                                   new()
+                                                                                                                                   {
+                                                                                                                                       UserName = "Player3",
+                                                                                                                                       DiscordUserName = "Player4Discord",
+                                                                                                                                       IsBot = true
+                                                                                                                                   },
+                                                                                                                                   new()
+                                                                                                                                   {
+                                                                                                                                       UserName = "Player5",
+                                                                                                                                       DiscordUserName = "Player5Discord",
+                                                                                                                                       IsBot = true
+                                                                                                                                   },
+                                                                                                                                   new()
+                                                                                                                                   {
+                                                                                                                                       UserName = "Player6",
+                                                                                                                                       DiscordUserName = "Player6Discord",
+                                                                                                                                       IsBot = true
+                                                                                                                                   },
+                                                                                                                                   new()
+                                                                                                                                   {
+                                                                                                                                       UserName = "Player7",
+                                                                                                                                       DiscordUserName = "Player7Discord",
+                                                                                                                                       IsBot = true
+                                                                                                                                   },
+                                                                                                                                   new()
+                                                                                                                                   {
+                                                                                                                                       UserName = "Player8",
+                                                                                                                                       DiscordUserName = "Player8Discord",
+                                                                                                                                       IsBot = true
+                                                                                                                                   },
+                                                                                                                                   new()
+                                                                                                                                   {
+                                                                                                                                       UserName = "Player9",
+                                                                                                                                       IsBot = true
+                                                                                                                                   },
+                                                                                                                               }
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -158,14 +218,14 @@ namespace TheResistanceOnline.SocketServer.Hubs
             {
                 if (playerDetails.IsInAGame) continue;
 
-                var availableGames = _groupNameToGameDetailsMappingTable.Where(gd => gd.Value.IsAvailable)
+                var availableGames = _groupNameToGameDetailsMappingTable.Where(gd => gd.Value.IsAvailable && gd.Value.PlayersDetails?.Count < MAX_PLAYER_COUNT)
                                                                         .OrderByDescending(gd => gd.Value.PlayersDetails?.Count)
                                                                         .ToDictionary(p => p.Key, p => p.Value);
                 await Clients.Client(connectionId).SendAsync("ReceiveAllGameDetailsToPlayersNotInGame", availableGames);
             }
         }
 
-        private async void SendDiscordNotFoundAsync(User user, string connectionId)
+        private async void SendDiscordNotFoundAsync(User user)
         {
             // Discord User Does not exist Or User Wants to Use Discord And its been one week since said no 
             if (user.DiscordUser == null)
@@ -184,6 +244,11 @@ namespace TheResistanceOnline.SocketServer.Hubs
         private async void SendGameDetailsToChannelGroupAsync(GameDetailsModel gameDetails, string groupName)
         {
             await Clients.Group(groupName).SendAsync("ReceiveGameDetails", gameDetails);
+
+            //todo send ReceiveGameHost : boolean to the host
+            var host = gameDetails.PlayersDetails?.FirstOrDefault(p => !p.IsBot);
+
+            if (host != null) await Clients.Client(host.ConnectionId).SendAsync("ReceiveGameHost", true);
         }
 
         #endregion
@@ -201,17 +266,20 @@ namespace TheResistanceOnline.SocketServer.Hubs
             //todo add resistance wins and spy wins eventually
             var playerDetails = new PlayerDetailsModel
                                 {
+                                    ConnectionId = Context.ConnectionId,
                                     PlayerId = new Guid(),
                                     UserName = userDetails.UserName,
-                                    DiscordUserName = userDetails.DiscordUser?.UserName,
+                                    DiscordUserName = userDetails.DiscordUser?.Name,
                                     DiscordTag = userDetails.DiscordUser?.DiscordTag,
+                                    ResistanceTeamWins = 420,
+                                    SpyTeamWins = 69
                                 };
 
             _connectionIdToPlayerDetailsMappingTable.Add(Context.ConnectionId, playerDetails);
 
             SendAllGameDetailsToPlayersNotInGameAsync();
 
-            SendDiscordNotFoundAsync(user, Context.ConnectionId);
+            SendDiscordNotFoundAsync(user);
 
             await base.OnConnectedAsync();
         }
@@ -237,7 +305,10 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 SendGameDetailsToChannelGroupAsync(gameDetails, userGroupName);
                 SendAllGameDetailsToPlayersNotInGameAsync();
 
-                _discordServerService.RemoveRoleFromUserAsync(userGroupName, leavingPlayerDetails.DiscordTag);
+                if (!string.IsNullOrEmpty(leavingPlayerDetails.DiscordTag))
+                {
+                    _discordServerService.RemoveRoleFromUserAsync(userGroupName, leavingPlayerDetails.DiscordTag);
+                }
             }
             else
             {
@@ -259,7 +330,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 var newPlayerDetails = _connectionIdToPlayerDetailsMappingTable[Context.ConnectionId];
 
                 gameDetails.PlayersDetails.Add(newPlayerDetails);
-                gameDetails.IsAvailable = gameDetails.PlayersDetails.Count < MAX_GAME_COUNT;
                 _groupNameToGameDetailsMappingTable[command.ChannelName] = gameDetails;
 
                 SendAllGameDetailsToPlayersNotInGameAsync();

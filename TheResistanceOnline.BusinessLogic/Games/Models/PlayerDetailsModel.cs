@@ -6,10 +6,14 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
     {
         #region Properties
 
+        public string ConnectionId { get; set; }
+
         public string DiscordTag { get; set; }
 
         [CanBeNull]
         public string DiscordUserName { get; set; }
+
+        public bool IsBot { get; set; }
 
         public bool IsInAGame { get; set; }
 

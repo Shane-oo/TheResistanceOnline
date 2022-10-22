@@ -17,6 +17,8 @@ export class TheResistanceGameService {
 
   public gameDetailsChanged: Subject<GameDetails> = new Subject<GameDetails>();
 
+  public hostChanged: Subject<boolean> = new Subject<boolean>();
+
   //public allGameDetails
   public groupNameToGameDetailsMapChanged: Subject<Map<string, GameDetails>> = new Subject<Map<string, GameDetails>>();
 
@@ -125,6 +127,19 @@ export class TheResistanceGameService {
     this.connection.on('ReceiveGameDetails', (gameDetails: GameDetails) => {
       this.gameDetailsChanged.next(gameDetails);
     });
+  };
+  public removeReceiveGameListener = () => {
+    this.connection.off('ReceiveGameDetails');
+  };
+
+  public addReceiveGameHostListener = () => {
+    this.connection.on('ReceiveGameHost', (isTheHost: boolean) => {
+      this.hostChanged.next(isTheHost);
+    });
+  };
+
+  public removeReceiveGameHostListener = () => {
+    this.connection.off('ReceiveGameHost');
   };
 
   // this will probably needed to be done somewhere

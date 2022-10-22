@@ -14,7 +14,8 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
             CreateMap<DiscordUserResponseModel, DiscordUser>().ForMember(u => u.DiscordTag,
                                                                          opt => opt.MapFrom(
                                                                                             r => r.UserName + '#' + r.Discriminator
-                                                                                           ));
+                                                                                           ))
+                                                              .ForMember(u => u.Name, opt => opt.MapFrom(r => r.UserName));
         }
 
         #endregion

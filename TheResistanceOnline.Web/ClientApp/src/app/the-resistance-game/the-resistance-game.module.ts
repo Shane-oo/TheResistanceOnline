@@ -7,8 +7,8 @@ import { GameCanvasComponent } from './game/game-canvas/game-canvas.component';
 import { RouterModule } from '@angular/router';
 import { JoinGameComponent } from './join-game/join-game.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { LobbyComponent } from './lobby/lobby.component';
 import { JoinGameDetailsComponent } from './join-game/join-game-details/join-game-details.component';
+import { GameLobbyComponent } from './game-lobby/game-lobby.component';
 
 
 @NgModule({
@@ -18,8 +18,8 @@ import { JoinGameDetailsComponent } from './join-game/join-game-details/join-gam
               GameChatComponent,
               GameCanvasComponent,
               JoinGameComponent,
-              LobbyComponent,
-              JoinGameDetailsComponent
+              JoinGameDetailsComponent,
+              GameLobbyComponent
             ],
             imports: [
               CommonModule,

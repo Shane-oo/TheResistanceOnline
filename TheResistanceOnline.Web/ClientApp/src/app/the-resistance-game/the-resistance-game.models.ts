@@ -21,3 +21,7 @@ export interface GameDetailsResponse {
   errorOccured: boolean;
   gameDetails: GameDetails;
 }
+
+export interface GameOptions{
+  timeLimitMinutes: number;
+}

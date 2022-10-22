@@ -87,9 +87,15 @@ export class JoinGameComponent implements OnInit {
 
   public changeGameDetails(gameDetails: GameDetails) {
     this.selectedGameDetails = gameDetails;
+    this.toggleDiscordWidget(true);
   }
 
-  public toggleDiscordWidget() {
-    this.showDiscordWidget = !this.showDiscordWidget;
+  public toggleDiscordWidget(offPermanently:boolean) {
+    if(offPermanently){
+      this.showDiscordWidget = false;
+    }
+    else {
+      this.showDiscordWidget = !this.showDiscordWidget;
+    }
   }
 }
