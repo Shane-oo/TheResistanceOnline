@@ -31,7 +31,7 @@
         <div>
           <p>Game Time Limit</p>
           <select formControlName="timeLimitMinutes" id="timeLimitMinutes">
-            <option *ngFor="let opt of timeLimitOptions" [value]="opt.minutes">{{opt.minutesString}}</option>
+            <option *ngFor="let opt of timeLimitOptions" [ngValue]="opt.minutes">{{opt.minutesString}}</option>
           </select>
           <div class="validation">
             <em *ngIf="validateControl('timeLimitMinutes') && hasError('timeLimitMinutes', 'required')">Timelimit is required</em>
@@ -40,7 +40,7 @@
         <div>
           <p>Voting/Decision Time Limit</p>
           <select formControlName="moveTimeLimitMinutes" id="moveTimeLimitMinutes">
-            <option *ngFor="let opt of moveTimeLimitOptions" [value]="opt.minutes">{{opt.minutesString}}</option>
+            <option *ngFor="let opt of moveTimeLimitOptions"  [ngValue]="opt.minutes">{{opt.minutesString}}</option>
           </select>
           <div class="validation">
             <em *ngIf="validateControl('moveTimeLimitMinutes') && hasError('moveTimeLimitMinutes', 'required')">Move TimeLimit is
