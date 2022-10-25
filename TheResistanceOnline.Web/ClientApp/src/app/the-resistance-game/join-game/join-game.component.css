@@ -20,9 +20,14 @@
   box-shadow: 0.0315rem 0 0.625rem 0 black;
   border-radius: 10px;
   padding: 20px;
-  overflow: hidden;
   overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
 
+}
+.available-games-box::-webkit-scrollbar { /* WebKit */
+  width: 0;
+  height: 0;
 }
 
 .available-game {
@@ -75,8 +80,13 @@
   border-radius: 10px;
   padding: 20px;
   margin-left: 10px;
-  overflow: hidden;
   overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+.game-details-box::-webkit-scrollbar { /* WebKit */
+  width: 0;
+  height: 0;
 }
 
 @media only screen and (max-height: 590px) {
@@ -88,8 +98,9 @@
 
 @media only screen and (max-width: 760px) {
   .content {
-    overflow: hidden;
     overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
     display: revert;
     justify-content: center;
     position: absolute;
@@ -98,22 +109,36 @@
     margin-left: 0;
 
   }
+  .content::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+  }
 
   .game-details-box {
     width: 95%;
-    overflow: hidden;
     overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
     height: 500px;
     margin-top: 10px;
     margin-left: 0;
 
   }
+  .game-details-box::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+  }
 
   .available-games-box {
     width: 95%;
-    overflow: hidden;
     overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
     height: 500px;
+  }
+  .available-games-box::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
   }
 
   .gameName {
