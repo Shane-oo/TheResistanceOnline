@@ -44,7 +44,8 @@
   background-color: #111111;
   text-align: center;
   padding: 20px;
-  overflow: scroll;
+  overflow: hidden;
+  overflow-y: scroll;
 
 }
 

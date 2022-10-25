@@ -20,7 +20,8 @@
   box-shadow: 0.0315rem 0 0.625rem 0 black;
   border-radius: 10px;
   padding: 20px;
-  overflow: scroll;
+  overflow: hidden;
+  overflow-y: scroll;
 
 }
 
@@ -74,7 +75,8 @@
   border-radius: 10px;
   padding: 20px;
   margin-left: 10px;
-  overflow: scroll;
+  overflow: hidden;
+  overflow-y: scroll;
 }
 
 @media only screen and (max-height: 590px) {
@@ -86,7 +88,8 @@
 
 @media only screen and (max-width: 760px) {
   .content {
-    overflow: scroll;
+    overflow: hidden;
+    overflow-y: scroll;
     display: revert;
     justify-content: center;
     position: absolute;
@@ -98,6 +101,7 @@
 
   .game-details-box {
     width: 95%;
+    overflow: hidden;
     overflow-y: scroll;
     height: 500px;
     margin-top: 10px;
@@ -107,6 +111,7 @@
 
   .available-games-box {
     width: 95%;
+    overflow: hidden;
     overflow-y: scroll;
     height: 500px;
   }
