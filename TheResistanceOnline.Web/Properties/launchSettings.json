@@ -15,7 +15,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy",
-        "ResistanceDb": "Data Source=localhost;Initial Catalog=resistanceDb;User Id=sa; Password=someThingComplicated1234;",
+        "ResistanceDb": "Data Source=localhost;Initial Catalog=resistanceDb;User Id=sa; Password=someThingComplicated1234;TrustServerCertificate=True;",
         "SecurityKey": "fVqtLvM5P@JSBa863@VX",
         "ValidIssuer":  "TheResistanceAPI",
         "ValidAudience": "https://localhost:44452",
