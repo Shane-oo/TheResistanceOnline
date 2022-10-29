@@ -53,6 +53,7 @@ export class AuthenticationService {
       }
 
     }
+    console.log('is User Authenticated', isUserAuthenticated);
     return isUserAuthenticated;
   };
 
