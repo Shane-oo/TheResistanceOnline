@@ -1,13 +1,18 @@
 using System.Text;
+using Azure.Identity;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Games;
+using TheResistanceOnline.BusinessLogic.Settings;
+using TheResistanceOnline.BusinessLogic.Settings.Models;
 using TheResistanceOnline.BusinessLogic.Timers;
 using TheResistanceOnline.BusinessLogic.Users;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
@@ -24,22 +29,49 @@ namespace TheResistanceOnline.SocketServer.DI
     {
         #region Fields
 
-        private static readonly string? _connectionString = Environment.GetEnvironmentVariable("ResistanceDb");
-
-        private static readonly string? _securityKey = Environment.GetEnvironmentVariable("SecurityKey");
-        private static readonly string? _validAudience = Environment.GetEnvironmentVariable("ValidAudience");
-        private static readonly string? _validIssuer = Environment.GetEnvironmentVariable("ValidIssuer");
+        private static readonly string? _appConfiguration = Environment.GetEnvironmentVariable("AppConfigurationConnection");
 
         #endregion
 
+        #region Private Methods
+
+        private static Settings GetSettings(IServiceProvider services)
+        {
+            return services.GetRequiredService<IOptions<Settings>>().Value;
+        }
+
+        #endregion
+
+
+        public static void AddAppSettings(this IServiceCollection services, WebApplicationBuilder builder)
+        {
+            if (string.IsNullOrEmpty(_appConfiguration))
+            {
+                throw new ArgumentNullException(_appConfiguration, "Missing AppConfigurationConnection");
+            }
+
+#if DEBUG
+            builder.Configuration.AddAzureAppConfiguration(options =>
+                                                           {
+                                                               options.Connect(_appConfiguration).ConfigureKeyVault(kv => { kv.SetCredential(new DefaultAzureCredential()); });
+                                                               options.Select(KeyFilter.Any, "Dev");
+                                                           });
+            services.Configure<Settings>(builder.Configuration.GetSection("DevApp:AppSettings"));
+#elif RELEASE
+        builder.Configuration.AddAzureAppConfiguration(options =>
+                                                       {
+                                                           options.Connect(new Uri(_appConfiguration), new ManagedIdentityCredential())
+                                                                  .ConfigureKeyVault(kv => { kv.SetCredential(new DefaultAzureCredential()); });
+                                                           options.Select(KeyFilter.Any, "Prod");
+                                                       });
+        services.Configure<Settings>(builder.Configuration.GetSection("ProdApp:AppSettings"));
+#endif
+        }
         #region Public Methods
 
         public static void AddAuthenticationServices(this IServiceCollection services)
         {
-            if (_validIssuer == null || _validAudience == null || _securityKey == null)
-            {
-                throw new NullReferenceException("JWT settings not found");
-            }
+            var serviceProvider = services.BuildServiceProvider();
 
             services.AddAuthentication(x =>
                                        {
@@ -54,7 +86,7 @@ namespace TheResistanceOnline.SocketServer.DI
                                                                     {
                                                                         ValidateIssuerSigningKey = true,
                                                                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                                                                                                                        .GetBytes(_securityKey)),
+                                                                                                                        .GetBytes(GetSettings(serviceProvider).JWTSecurityKey)) ,
                                                                         ValidateIssuer = false,
                                                                         ValidateAudience = false
                                                                     };
@@ -83,15 +115,11 @@ namespace TheResistanceOnline.SocketServer.DI
 
         public static void AddContext(this IServiceCollection services)
         {
-            if (_connectionString == null)
-            {
-                throw new NullReferenceException("Connection string not found");
-            }
-
+        
             services.AddDbContext<Context>((sp, options) =>
                                            {
                                                var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
-                                               options.UseSqlServer(_connectionString)
+                                               options.UseSqlServer(GetSettings(sp).ResistanceDbConnectionString)
                                                       .AddInterceptors(auditableInterceptor ?? throw new InvalidOperationException("auditableInterceptor cannot be null"));
                                            });
             services.AddScoped<IDataContext, DataContext>();
@@ -100,13 +128,14 @@ namespace TheResistanceOnline.SocketServer.DI
         public static void AddServices(this IServiceCollection services)
         {
             // Services
+            services.AddScoped<ISettingsService, SettingsService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserIdentityManager, UserIdentityManager>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IDiscordServerService, DiscordServerService>();
             services.AddScoped<IUserSettingsService, UserSettingsService>();
             services.AddScoped<IGameService, GameService>();
-          
+
             //ToDo probs not needed
             services.AddScoped<ITimerService, TimerService>();
 

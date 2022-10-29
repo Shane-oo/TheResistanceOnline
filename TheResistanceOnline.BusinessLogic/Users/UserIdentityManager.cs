@@ -4,6 +4,7 @@ using System.Text;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using TheResistanceOnline.BusinessLogic.Settings;
 using TheResistanceOnline.BusinessLogic.Users.Models;
 using TheResistanceOnline.Data.Exceptions;
 using TheResistanceOnline.Data.Users;
@@ -30,36 +31,29 @@ namespace TheResistanceOnline.BusinessLogic.Users
     {
         #region Fields
 
-        private static readonly string _expiryInMinutes = Environment.GetEnvironmentVariable("ExpiryInMinutes");
-        private static readonly string _securityKey = Environment.GetEnvironmentVariable("SecurityKey");
+        private readonly ISettingsService _settings;
 
         private readonly UserManager<User> _userManager;
-        private static readonly string _validAudience = Environment.GetEnvironmentVariable("ValidAudience");
-        private static readonly string _validIssuer = Environment.GetEnvironmentVariable("ValidIssuer");
 
         #endregion
 
         #region Construction
 
-        public UserIdentityManager(UserManager<User> userManager)
+        public UserIdentityManager(UserManager<User> userManager, ISettingsService settings)
         {
             _userManager = userManager;
-
-            if (_validIssuer == null || _validAudience == null || _securityKey == null || _expiryInMinutes == null)
-            {
-                throw new NullReferenceException("JWT settings not found UserIdentityManager");
-            }
+            _settings = settings;
         }
 
         #endregion
 
         #region Private Methods
 
-        private static JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
+        private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
         {
-            return new JwtSecurityToken(_validIssuer,
-                                        _validAudience,
-                                        expires: DateTime.Now.AddMinutes(Convert.ToDouble(_expiryInMinutes)),
+            return new JwtSecurityToken(_settings.GetAppSettings().JWTValidIssuer,
+                                        _settings.GetAppSettings().JWTValidAudience,
+                                        expires: DateTime.Now.AddMinutes(Convert.ToDouble(_settings.GetAppSettings().JWTExpiryInMinutes)),
                                         signingCredentials: signingCredentials,
                                         claims: claims);
         }
@@ -79,12 +73,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         private SigningCredentials GetSigningCredentials()
         {
-            if (_securityKey == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            var key = Encoding.UTF8.GetBytes(_securityKey);
+            
+            var key = Encoding.UTF8.GetBytes(_settings.GetAppSettings().JWTSecurityKey);
             var secret = new SymmetricSecurityKey(key);
 
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
