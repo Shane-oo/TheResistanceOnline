@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using TheResistanceOnline.BusinessLogic.Emails.Commands;
+using TheResistanceOnline.BusinessLogic.Settings;
 using TheResistanceOnline.Data.Exceptions;
 
 namespace TheResistanceOnline.BusinessLogic.Emails
@@ -13,6 +14,21 @@ namespace TheResistanceOnline.BusinessLogic.Emails
 
     public class EmailService: IEmailService
     {
+        #region Fields
+
+        private readonly ISettingsService _settings;
+
+        #endregion
+
+        #region Construction
+
+        public EmailService(ISettingsService settings)
+        {
+            _settings = settings;
+        }
+
+        #endregion
+
         #region Public Methods
 
         public async void SendEmailAsync(SendEmailCommand command)
@@ -22,8 +38,7 @@ namespace TheResistanceOnline.BusinessLogic.Emails
                 throw new ArgumentNullException(nameof(command));
             }
 
-            // ToDo store safely                                                                                                                      
-            var sendGridClient = new SendGridClient("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");
+            var sendGridClient = new SendGridClient(_settings.GetAppSettings().SendGridClientToken);
             var emailFrom = new EmailAddress
                             {
                                 Email = "theresistanceboardgameonline@gmail.com",

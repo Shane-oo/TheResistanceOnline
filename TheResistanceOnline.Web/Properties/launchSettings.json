@@ -15,11 +15,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy",
-        "ResistanceDb": "Data Source=localhost;Initial Catalog=resistanceDb;User Id=sa; Password=someThingComplicated1234;TrustServerCertificate=True;",
-        "SecurityKey": "fVqtLvM5P@JSBa863@VX",
-        "ValidIssuer":  "TheResistanceAPI",
-        "ValidAudience": "https://localhost:44452",
-        "ExpiryInMinutes": "5760"
+        "AppConfigurationConnection": "Endpoint=https://theresistanceconfiguration.azconfig.io;Id=gjJt-lg-s0:3vxOy39fs09PQr7sqO/f;Secret=x4Rt/aAbkl7xKY4Ju8GAPbSzVuTVVpALy2Hm3m29eps="
       }
     },
     "IIS Express": {

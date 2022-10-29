@@ -22,7 +22,10 @@ spec:
         imagePullPolicy: Always
         resources: {}
         ports:
-          - containerPort: 80 
+          - containerPort: 80
+        env:
+          - name: AppConfigurationConnection
+            value: "https://theresistanceconfiguration.azconfig.io"
 status: {}
 
 ---

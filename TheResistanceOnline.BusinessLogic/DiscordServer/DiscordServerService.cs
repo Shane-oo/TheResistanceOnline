@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Flurl.Http;
 using TheResistanceOnline.BusinessLogic.DiscordServer.Commands;
 using TheResistanceOnline.BusinessLogic.DiscordServer.Models;
+using TheResistanceOnline.BusinessLogic.Settings;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.DiscordServer;
@@ -80,17 +81,19 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
 
         private readonly DiscordSocketClient _discordSocketClient;
         private readonly IMapper _mapper;
+        private readonly ISettingsService _settings;
 
         #endregion
 
         #region Construction
 
-        public DiscordServerService(IDataContext context, DiscordSocketClient discordSocketClient, IMapper mapper)
+        public DiscordServerService(IDataContext context, ISettingsService settings, DiscordSocketClient discordSocketClient, IMapper mapper)
         {
             _context = context;
 
             _discordSocketClient = discordSocketClient;
             _mapper = mapper;
+            _settings = settings;
         }
 
         #endregion
@@ -107,8 +110,7 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
 
         private async Task ConnectBotAsync()
         {
-            //todo make environment variable
-            await _discordSocketClient.LoginAsync(TokenType.Bot, "MTAxNTkyNTAxMjc1MTk5MDg1NA.GZ9H5M.PSRnP3LEhfP_DWFEp0cULEpf0ciDWgrq2HqCVQ");
+            await _discordSocketClient.LoginAsync(TokenType.Bot, _settings.GetAppSettings().DiscordLoginToken);
             await _discordSocketClient.StartAsync();
 
             // wait for bot to be connected
@@ -169,7 +171,7 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
         public async Task CreateDiscordUserAsync(CreateDiscordUserCommand command)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
-            
+
             var user = await _context.Query<IUserDbQuery>().WithParams(command.UserId)
                                      .ExecuteAsync(command.CancellationToken);
 

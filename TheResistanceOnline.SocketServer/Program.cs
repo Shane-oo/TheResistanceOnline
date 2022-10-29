@@ -4,6 +4,7 @@ using TheResistanceOnline.SocketServer.Hubs;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddAppSettings(builder);
 builder.Services.AddCors(options =>
                          {
                              options.AddPolicy("CorsPolicy", corsPolicy => corsPolicy
@@ -43,8 +44,3 @@ app.UseEndpoints(endpoints =>
 
 app.Run();
 
-
-//  app.UseSignalR(route =>
-// {
-//     route.MapHub<ChatHub>("/chathub");
-// });
