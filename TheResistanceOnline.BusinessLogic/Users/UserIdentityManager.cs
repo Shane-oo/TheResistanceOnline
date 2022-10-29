@@ -54,9 +54,21 @@ namespace TheResistanceOnline.BusinessLogic.Users
             var validIssuer = _settings.GetAppSettings().JWTValidIssuer;
             var validAudience = _settings.GetAppSettings().JWTValidAudience;
             var expiryInMinutes = _settings.GetAppSettings().JWTExpiryInMinutes;
-            if (string.IsNullOrEmpty(validIssuer) || string.IsNullOrEmpty(validAudience) || string.IsNullOrEmpty(expiryInMinutes))
+            if (string.IsNullOrEmpty(validIssuer) )
             {
-                throw new DomainException(typeof(string), "Missing Jwt Settings");
+                throw new DomainException(typeof(string), "Missing Jwt validIssuer");
+            }
+
+            if (string.IsNullOrEmpty(validAudience))
+            {
+                throw new DomainException(typeof(string), "Missing Jwt Valid Audience");
+
+            }
+
+            if (string.IsNullOrEmpty(expiryInMinutes))
+            {
+                throw new DomainException(typeof(string), "Missing Jwt Expiry In Minutes");
+
             }
 
             return new JwtSecurityToken(_settings.GetAppSettings().JWTValidIssuer,
