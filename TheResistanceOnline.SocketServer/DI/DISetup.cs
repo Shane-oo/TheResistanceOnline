@@ -141,6 +141,11 @@ namespace TheResistanceOnline.SocketServer.DI
             services.AddScoped<IUserSettingsService, UserSettingsService>();
             services.AddScoped<IGameService, GameService>();
 
+                    
+            // Cache Services
+            services.AddScoped<UserService>();
+            services.AddScoped<IUserService, CachedUserService>();
+
             //ToDo probs not needed
             services.AddScoped<ITimerService, TimerService>();
 

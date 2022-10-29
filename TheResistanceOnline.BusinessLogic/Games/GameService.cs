@@ -59,8 +59,6 @@ namespace TheResistanceOnline.BusinessLogic.Games
         // Observer Function
         public void Update(GameDetailsModel gameDetails)
         {
-            Console.WriteLine(" Revieved GameDetails from the resistance hub subject", gameDetails);
-
             UpdateGameDetails(gameDetails);
         }
 
