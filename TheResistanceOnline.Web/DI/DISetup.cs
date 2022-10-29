@@ -1,12 +1,17 @@
 using System.Text;
+using Azure.Identity;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Emails;
+using TheResistanceOnline.BusinessLogic.Settings;
+using TheResistanceOnline.BusinessLogic.Settings.Models;
 using TheResistanceOnline.BusinessLogic.Users;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.BusinessLogic.UserSettings;
@@ -22,24 +27,51 @@ public static class DISetup
 {
     #region Fields
 
-    private static readonly string? _connectionString = Environment.GetEnvironmentVariable("ResistanceDb");
+    private static readonly string? _appConfiguration = Environment.GetEnvironmentVariable("AppConfigurationConnection");
 
-    private static readonly string? _securityKey = Environment.GetEnvironmentVariable("SecurityKey");
-    private static readonly string? _validAudience = Environment.GetEnvironmentVariable("ValidAudience");
-    private static readonly string? _validIssuer = Environment.GetEnvironmentVariable("ValidIssuer");
+    #endregion
+
+    #region Private Methods
+
+    private static Settings GetSettings(IServiceProvider services)
+    {
+        return services.GetRequiredService<IOptions<Settings>>().Value;
+    }
 
     #endregion
 
     #region Public Methods
 
-    public static void AddAuthenticationServices(this IServiceCollection services)
+    public static void AddAppSettings(this IServiceCollection services, WebApplicationBuilder builder)
     {
-        if (_validIssuer == null || _validAudience == null || _securityKey == null)
+        if (string.IsNullOrEmpty(_appConfiguration))
         {
-            throw new NullReferenceException("JWT settings not found");
+            throw new ArgumentNullException(_appConfiguration, "Missing AppConfigurationConnection");
         }
 
-        services.AddAuthentication(opt =>
+#if DEBUG
+        builder.Configuration.AddAzureAppConfiguration(options =>
+                                                       {
+                                                           options.Connect(_appConfiguration).ConfigureKeyVault(kv => { kv.SetCredential(new DefaultAzureCredential()); });
+                                                           options.Select(KeyFilter.Any, "Dev");
+                                                       });
+        services.Configure<Settings>(builder.Configuration.GetSection("DevApp:AppSettings"));
+#elif RELEASE
+        builder.Configuration.AddAzureAppConfiguration(options =>
+                                                       {
+                                                           options.Connect(new Uri(_appConfiguration), new ManagedIdentityCredential())
+                                                                  .ConfigureKeyVault(kv => { kv.SetCredential(new DefaultAzureCredential()); });
+                                                           options.Select(KeyFilter.Any, "Prod");
+                                                       });
+        services.Configure<Settings>(builder.Configuration.GetSection("ProdApp:AppSettings"));
+#endif
+    }
+
+    public static void AddAuthenticationServices(this IServiceCollection services)
+    {
+        var serviceProvider = services.BuildServiceProvider();
+
+        services.AddAuthentication(opt => 
                                    {
                                        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                                        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -51,26 +83,22 @@ public static class DISetup
                                                                                                ValidateAudience = true,
                                                                                                ValidateLifetime = true,
                                                                                                ValidateIssuerSigningKey = true,
-                                                                                               ValidIssuer = _validIssuer,
-                                                                                               ValidAudience = _validAudience,
+                                                                                               ValidIssuer = GetSettings(serviceProvider).JWTValidIssuer,
+                                                                                               ValidAudience = GetSettings(serviceProvider).JWTValidAudience,
                                                                                                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                                                                                                   .GetBytes(_securityKey))
+                                                                                                   .GetBytes(GetSettings(serviceProvider).JWTSecurityKey))
                                                                                            };
                                                    });
     }
 
     public static void AddContext(this IServiceCollection services)
     {
-        if (_connectionString == null)
-        {
-            throw new NullReferenceException("Connection string not found");
-        }
 
         // Database
         services.AddDbContext<Context>((sp, options) =>
                                        {
                                            var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
-                                           options.UseSqlServer(_connectionString)
+                                           options.UseSqlServer(GetSettings(sp).ResistanceDbConnectionString)
                                                   .AddInterceptors(auditableInterceptor ?? throw new InvalidOperationException("auditableInterceptor cannot be null"));
                                        });
         services.AddScoped<IDataContext, DataContext>();
@@ -79,6 +107,7 @@ public static class DISetup
     public static void AddServices(this IServiceCollection services)
     {
         // Services
+        services.AddScoped<ISettingsService, SettingsService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserIdentityManager, UserIdentityManager>();
         services.AddScoped<IEmailService, EmailService>();

@@ -24,16 +24,8 @@ spec:
         ports:
           - containerPort: 80
         env:
-          - name: ResistanceDb
-            value: "Server=tcp:resistanceonline.database.windows.net,1433;Database=resistanceDb;Authentication=Active Directory Default"
-          - name: SecurityKey
-            value: "fVqtLvM5P@JSBa863@VX"
-          - name: ValidIssuer
-            value: "TheResistanceAPI"
-          - name: ValidAudience
-            value: ”https://theresistanceboardgameonline.com”
-          - name: ExpiryInMinutes
-            value: "5760" 
+          - name: AppConfigurationConnection
+            value: "https://theresistanceconfiguration.azconfig.io"
 status: {}
 
 ---
