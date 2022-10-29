@@ -38,7 +38,7 @@ namespace TheResistanceOnline.Web.Controllers
                             {
                                 UserId = User.FindFirst(ClaimTypes.UserData)?.Value
                             };
-                var userDetails = await _userService.GetUserAsync(query);
+                var userDetails = await _userService.GetUserByIdAsync(query);
                 return Ok(userDetails);
             }
             catch(Exception ex)

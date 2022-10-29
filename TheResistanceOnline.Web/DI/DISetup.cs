@@ -117,7 +117,11 @@ public static class DISetup
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IDiscordServerService, DiscordServerService>();
         services.AddScoped<IUserSettingsService, UserSettingsService>();
-
+        
+        // Cache Services
+        services.AddScoped<UserService>();
+        services.AddScoped<IUserService, CachedUserService>();
+        
         // Queries
         services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
         services.AddTransient<IUserDbQuery, UserDbQuery>();
