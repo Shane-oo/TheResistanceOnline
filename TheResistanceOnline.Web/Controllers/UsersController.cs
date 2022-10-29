@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TheResistanceOnline.BusinessLogic.Core.Queries;
@@ -28,11 +29,15 @@ namespace TheResistanceOnline.Web.Controllers
 
         #region Public Methods
 
-        [HttpGet("{userId}")]
-        public async Task<ActionResult<UserDetailsModel>> GetUser([FromRoute] ByIdQuery query)
+        [HttpGet]
+        public async Task<ActionResult<UserDetailsModel>> GetUser()
         {
             try
             {
+                var query = new ByIdQuery
+                            {
+                                UserId = User.FindFirst(ClaimTypes.UserData)?.Value
+                            };
                 var userDetails = await _userService.GetUserAsync(query);
                 return Ok(userDetails);
             }
@@ -43,6 +48,20 @@ namespace TheResistanceOnline.Web.Controllers
         }
 
         #endregion
+
+        // [HttpGet("{userId}")]
+        // public async Task<ActionResult<UserDetailsModel>> GetUser([FromRoute] ByIdQuery query)
+        // {
+        //     try
+        //     {
+        //         var userDetails = await _userService.GetUserAsync(query);
+        //         return Ok(userDetails);
+        //     }
+        //     catch(Exception ex)
+        //     {
+        //         return BadRequest(ex.Message);
+        //     }
+        // }
 
 
         // [Route("Roles")]

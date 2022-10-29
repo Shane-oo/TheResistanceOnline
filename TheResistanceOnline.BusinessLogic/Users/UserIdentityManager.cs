@@ -62,7 +62,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
         {
             var claims = new List<Claim>
                          {
-                             new Claim(ClaimTypes.Name, user.Email)
+                             new(ClaimTypes.Name, user.Email),
+                             new(ClaimTypes.UserData,user.Id)
                          };
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -158,8 +159,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return new UserLoginResponse
                    {
-                       Token = token,
-                       UserId = user.Id
+                       Token = token
                    };
         }
 

@@ -48,7 +48,6 @@ export class UserLoginComponent implements OnInit {
     this.authService.loginUser(user).subscribe({
                                                  next: (response: LoginResponseModel) => {
                                                    localStorage.setItem('TheResistanceToken', response.token);
-                                                   localStorage.setItem('TheResistanceUserId', response.userId);
                                                    this.authService.sendAuthStateChange(true);
 
                                                    // Route to redirect url or homepage

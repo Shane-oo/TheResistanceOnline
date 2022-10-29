@@ -10,8 +10,6 @@ namespace TheResistanceOnline.Infrastructure.Data
         #region Fields
 
         private readonly Context _context;
-
-        // TODO what is service provider?
         private readonly IServiceProvider _serviceProvider;
 
         #endregion
