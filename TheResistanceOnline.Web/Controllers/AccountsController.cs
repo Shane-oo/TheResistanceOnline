@@ -32,15 +32,12 @@ public class AccountsController: ControllerBase
         try
         {
             await _userService.ConfirmUserEmailAsync(command);
+            return Ok();
         }
         catch(Exception ex)
         {
             return BadRequest(ex.Message);
         }
-
-        // if ResetUserPasswordAsync() doesn't throw => successfully reset password
-
-        return Ok();
     }
 
     [HttpPost]
@@ -50,14 +47,12 @@ public class AccountsController: ControllerBase
         try
         {
             await _userService.SendResetPasswordAsync(command);
+            return Ok();
         }
         catch(Exception ex)
         {
             return BadRequest(ex.Message);
         }
-        // if SendResetPasswordAsync() doesn't throw => successfully sent reset email
-
-        return Ok();
     }
 
     [HttpPost]
@@ -82,14 +77,12 @@ public class AccountsController: ControllerBase
         try
         {
             await _userService.CreateUserAsync(command);
+            return Ok();
         }
         catch(Exception ex)
         {
             return BadRequest(ex.Message);
         }
-
-        // if CreateUserAsync() doesn't throw => successfully registered
-        return Ok();
     }
 
     [HttpPost]
@@ -99,15 +92,12 @@ public class AccountsController: ControllerBase
         try
         {
             await _userService.ResetUserPasswordAsync(command);
+            return Ok();
         }
         catch(Exception ex)
         {
             return BadRequest(ex.Message);
         }
-
-        // if ResetUserPasswordAsync() doesn't throw => successfully reset password
-
-        return Ok();
     }
 
     #endregion

@@ -38,12 +38,13 @@ export class AuthenticationService {
 
   public logout = () => {
     localStorage.removeItem('TheResistanceToken');
-    localStorage.removeItem('TheResistanceUserId');
     this.sendAuthStateChange(false);
   };
+
   public sendAuthStateChange = (isAuthenticated: boolean) => {
     this.authChangeSub.next(isAuthenticated);
   };
+
   public isUserAuthenticated = (): boolean => {
     const token = localStorage.getItem('TheResistanceToken');
     let isUserAuthenticated = false;
@@ -51,9 +52,7 @@ export class AuthenticationService {
       if(!this.jwtHelper.isTokenExpired(token)) {
         isUserAuthenticated = true;
       }
-
     }
-    console.log('is User Authenticated', isUserAuthenticated);
     return isUserAuthenticated;
   };
 
@@ -64,8 +63,25 @@ export class AuthenticationService {
       const decodedToken = this.jwtHelper.decodeToken(token);
       role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
     }
-
     return (role === 'Administrator');
+  };
+
+  // here if need - not used
+  public getUserId = (): string => {
+    const token = localStorage.getItem('TheResistanceToken');
+    let userId = '';
+    if(token) {
+      const decodedToken = this.jwtHelper.decodeToken(token);
+      userId = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata'];
+    }
+    if(userId.length === 0) {
+      //user is not logged in
+      this.sendAuthStateChange(false);
+      // Route to redirect url or homepage
+      this.router.navigate([`/user/login`]).then(r => {
+      });
+    }
+    return userId;
   };
 
   public sendUserForgotPassword = (body: UserForgotPasswordModel) => {
@@ -80,32 +96,23 @@ export class AuthenticationService {
     return this.http.post(`${environment.API_URL}${this.accountsEndpoint}/ConfirmEmail`, body);
   };
 
-  public getUserId = (): string => {
-    const userId = localStorage.getItem('TheResistanceUserId');
-    if(userId) {
-      return userId;
-    } else {
-      // user is not logged in
-      this.sendAuthStateChange(false);
-      // Route to redirect url or homepage
-      this.router.navigate([`/user/login`]).then(r => {
-      });
-    }
-    return '';
-  };
+  // public getUserId = (): string => {
+  //   const userId = localStorage.getItem('TheResistanceUserId');
+  //   if(userId) {
+  //     return userId;
+  //   } else {
+  //     // user is not logged in
+  //     this.sendAuthStateChange(false);
+  //     // Route to redirect url or homepage
+  //     this.router.navigate([`/user/login`]).then(r => {
+  //     });
+  //   }
+  //   return '';
+  // };
 
   public getUserDetails = () => {
-    const id = this.getUserId();
-    return this.http.get<UserDetailsModel>(`${environment.API_URL}${this.userEndpoint}/${id}`);
+    // example of id query's
+    //    return this.http.get<UserDetailsModel>(`${environment.API_URL}${this.userEndpoint}/${id}`);
+    return this.http.get<UserDetailsModel>(`${environment.API_URL}${this.userEndpoint}`);
   };
 }
-
-
-// getJob(id: number): Observable<JobEditModel> {
-//   return this.http.get<JobEditModel>(`${this.jobsEndpoint}/${id}`);
-// }
-
-//
-// recalculatePrices(jobId: number): Observable<JobEditModel> {
-//   return this.http.get<JobEditModel>(`${this.jobsEndpoint}/${jobId}/RecalculatePrices`);
-// }

@@ -1,13 +1,12 @@
 using System.Text;
-using Azure.Identity;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Settings;
@@ -44,19 +43,14 @@ public static class DISetup
 
     public static void AddAppSettings(this IServiceCollection services, WebApplicationBuilder builder)
     {
+#if DEBUG
+        services.Configure<Settings>(builder.Configuration.GetSection("DevApp:AppSettings"));
+#elif RELEASE
         if (string.IsNullOrEmpty(_appConfiguration))
         {
             throw new ArgumentNullException(_appConfiguration, "Missing AppConfigurationConnection");
         }
 
-#if DEBUG
-        builder.Configuration.AddAzureAppConfiguration(options =>
-                                                       {
-                                                           options.Connect(_appConfiguration).ConfigureKeyVault(kv => { kv.SetCredential(new DefaultAzureCredential()); });
-                                                           options.Select(KeyFilter.Any, "Dev");
-                                                       });
-        services.Configure<Settings>(builder.Configuration.GetSection("DevApp:AppSettings"));
-#elif RELEASE
         builder.Configuration.AddAzureAppConfiguration(options =>
                                                        {
                                                            options.Connect(new Uri(_appConfiguration), new ManagedIdentityCredential())
@@ -65,6 +59,16 @@ public static class DISetup
                                                        });
         services.Configure<Settings>(builder.Configuration.GetSection("ProdApp:AppSettings"));
 #endif
+        var serviceProvider = services.BuildServiceProvider();
+
+        var settings = GetSettings(serviceProvider);
+        if (settings.GetType().GetProperties()
+                    .Where(pi => pi.PropertyType == typeof(string))
+                    .Select(pi => (string)pi.GetValue(settings)!)
+                    .Any(string.IsNullOrEmpty))
+        {
+            throw new ArgumentNullException(nameof(settings), $"Empty Setting Value(s) {JsonConvert.SerializeObject(settings)}");
+        }
     }
 
     public static void AddAuthenticationServices(this IServiceCollection services)

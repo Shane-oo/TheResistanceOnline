@@ -9,9 +9,6 @@ namespace TheResistanceOnline.BusinessLogic.Users.Models
         [NotNull]
         public string Token { get; set; }
 
-        [NotNull]
-        public string UserId { get; set; }
-
         #endregion
     }
 }
