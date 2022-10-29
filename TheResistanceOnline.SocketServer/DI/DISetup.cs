@@ -42,6 +42,7 @@ namespace TheResistanceOnline.SocketServer.DI
 
         #endregion
 
+        #region Public Methods
 
         public static void AddAppSettings(this IServiceCollection services, WebApplicationBuilder builder)
         {
@@ -67,7 +68,6 @@ namespace TheResistanceOnline.SocketServer.DI
         services.Configure<Settings>(builder.Configuration.GetSection("ProdApp:AppSettings"));
 #endif
         }
-        #region Public Methods
 
         public static void AddAuthenticationServices(this IServiceCollection services)
         {
@@ -86,7 +86,7 @@ namespace TheResistanceOnline.SocketServer.DI
                                                                     {
                                                                         ValidateIssuerSigningKey = true,
                                                                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                                                                                                                        .GetBytes(GetSettings(serviceProvider).JWTSecurityKey)) ,
+                                                                                                                        .GetBytes(GetSettings(serviceProvider).JWTSecurityKey)),
                                                                         ValidateIssuer = false,
                                                                         ValidateAudience = false
                                                                     };
@@ -115,7 +115,6 @@ namespace TheResistanceOnline.SocketServer.DI
 
         public static void AddContext(this IServiceCollection services)
         {
-        
             services.AddDbContext<Context>((sp, options) =>
                                            {
                                                var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
