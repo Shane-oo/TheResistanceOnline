@@ -61,7 +61,7 @@ public static class DISetup
                                                        {
                                                            options.Connect(new Uri(_appConfiguration), new ManagedIdentityCredential())
                                                                   .ConfigureKeyVault(kv => { kv.SetCredential(new DefaultAzureCredential()); });
-                                                           options.Select(KeyFilter.Any, "Prod");
+                                                           options.Select("*", "Prod");
                                                        });
         services.Configure<Settings>(builder.Configuration.GetSection("ProdApp:AppSettings"));
 #endif
