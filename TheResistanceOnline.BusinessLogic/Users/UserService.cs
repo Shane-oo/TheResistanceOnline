@@ -19,7 +19,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         Task CreateUserAsync([NotNull] UserRegisterCommand command);
 
-        Task<UserDetailsModel> GetUserAsync([NotNull] ByIdQuery query);
+        Task<UserDetailsModel> GetUserByIdAsync([NotNull] ByIdQuery query);
 
         Task<User> GetUserByEmailOrNameAsync([NotNull] ByIdAndNameQuery query);
 
@@ -47,7 +47,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
         private readonly IUserIdentityManager _identityManager;
 
         private readonly IMapper _mapper;
-
+        
         #endregion
 
         #region Construction
@@ -125,7 +125,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
             _emailService.SendEmailAsync(sendEmailCommand);
         }
 
-        public async Task<UserDetailsModel> GetUserAsync(ByIdQuery query)
+        public async Task<UserDetailsModel> GetUserByIdAsync(ByIdQuery query)
         {
             if (query == null || string.IsNullOrEmpty(query.UserId))
             {

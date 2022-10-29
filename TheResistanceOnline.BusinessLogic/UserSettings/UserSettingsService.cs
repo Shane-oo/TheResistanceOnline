@@ -40,13 +40,13 @@ namespace TheResistanceOnline.BusinessLogic.UserSettings
                 throw new DomainException(typeof(User), "User Not Found");
             }
 
+            //if(command.updateSetting){do}
             if (command.UpdateUserWantsToUseDiscord)
             {
                 user.UserSetting.UserWantsToUseDiscord = command.UserWantsToUseDiscord;
                 user.UserSetting.UserWantsToUseDiscordRecord = DateTimeOffset.Now;
             }
 
-            //if(command.updateSetting){do}
             await _context.SaveChangesAsync(command.CancellationToken);
         }
 

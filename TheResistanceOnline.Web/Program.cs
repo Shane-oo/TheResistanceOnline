@@ -33,6 +33,7 @@ builder.Services.Configure<StaticFileOptions>(options =>
 builder.Services.AddServices();
 builder.Services.AddAuthenticationServices();
 builder.Services.AddContext();
+builder.Services.AddMemoryCache();
 
 
 var app = builder.Build();
