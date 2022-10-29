@@ -71,7 +71,7 @@ public static class DISetup
     {
         var serviceProvider = services.BuildServiceProvider();
 
-        services.AddAuthentication(opt => 
+        services.AddAuthentication(opt =>
                                    {
                                        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                                        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -93,7 +93,6 @@ public static class DISetup
 
     public static void AddContext(this IServiceCollection services)
     {
-
         // Database
         services.AddDbContext<Context>((sp, options) =>
                                        {

@@ -52,8 +52,10 @@ export class ErrorHandlerService implements HttpInterceptor {
       }
       if(error.error.errors) {
         console.log(error.error.errors)
-        this.swalService.showSwal(error.error.errors.UserName, SwalTypesModel.Error);
-        return;
+        if(error.error.errors.UserName) {
+          this.swalService.showSwal(error.error.errors.UserName, SwalTypesModel.Error);
+          return;
+        }
       }
 
     }
