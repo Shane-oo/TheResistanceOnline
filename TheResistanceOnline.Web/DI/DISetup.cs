@@ -1,4 +1,5 @@
 using System.Text;
+using Azure.Identity;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
