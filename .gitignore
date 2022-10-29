@@ -13,3 +13,7 @@ _ReSharper.*
 bin
 obj
 packages
+TheResistanceOnline.Web/appsettings.Development.json
+TheResistanceOnline.SocketServer/appsettings.Development.json
+TheResistanceOnline.Web/appsettings.Development.json
+TheResistanceOnline.SocketServer/appsettings.Development.json
