@@ -14,7 +14,6 @@ export interface UserLoginModel {
 
 export interface LoginResponseModel {
   token: string;
-  userId: string; //Guid???
 }
 
 export interface UserForgotPasswordModel {
@@ -36,7 +35,6 @@ export interface UserConfirmEmailModel {
 }
 
 export interface GetUserCommandModel {
-  userId: string;
 }
 
 export interface DiscordLoginResponseModel {

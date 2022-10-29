@@ -16,7 +16,7 @@ export class DiscordServerService {
   }
 
   public createDiscordUser = (body: CreateDiscordUserCommand) => {
-    body.userId = this.authService.getUserId();
+    // body.userId = this.authService.getUserId();
     return this.http.post(`${environment.API_URL}${this.discordServersEndpoint}/CreateDiscordUser`, body);
   };
 }

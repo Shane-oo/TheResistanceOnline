@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TheResistanceOnline.BusinessLogic.DiscordServer;
@@ -34,6 +35,7 @@ namespace TheResistanceOnline.Web.Controllers
         {
             try
             {
+                command.UserId = User.FindFirst(ClaimTypes.UserData)?.Value;
                 await _discordServerService.CreateDiscordUserAsync(command);
             }
             catch(Exception ex)

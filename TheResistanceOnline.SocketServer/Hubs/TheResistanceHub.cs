@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
@@ -207,7 +208,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
         {
             await Clients.Group(groupName).SendAsync("ReceiveGameDetails", gameDetails);
 
-            //todo send ReceiveGameHost : boolean to the host
             var host = gameDetails.PlayersDetails?.FirstOrDefault(p => !p.IsBot);
 
             if (host != null) await Clients.Client(host.ConnectionId).SendAsync("ReceiveGameHost", true);
