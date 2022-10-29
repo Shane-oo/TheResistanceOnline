@@ -51,6 +51,14 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
         {
+            var validIssuer = _settings.GetAppSettings().JWTValidIssuer;
+            var validAudience = _settings.GetAppSettings().JWTValidAudience;
+            var expiryInMinutes = _settings.GetAppSettings().JWTExpiryInMinutes;
+            if (string.IsNullOrEmpty(validIssuer) || string.IsNullOrEmpty(validAudience) || string.IsNullOrEmpty(expiryInMinutes))
+            {
+                throw new DomainException(typeof(string), "Missing Jwt Settings");
+            }
+
             return new JwtSecurityToken(_settings.GetAppSettings().JWTValidIssuer,
                                         _settings.GetAppSettings().JWTValidAudience,
                                         expires: DateTime.Now.AddMinutes(Convert.ToDouble(_settings.GetAppSettings().JWTExpiryInMinutes)),
@@ -73,7 +81,12 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         private SigningCredentials GetSigningCredentials()
         {
-            
+            var securityKey = _settings.GetAppSettings().JWTSecurityKey;
+            if (string.IsNullOrEmpty(securityKey))
+            {
+                throw new DomainException(typeof(string), "Missing Jwt Security Key");
+            }
+
             var key = Encoding.UTF8.GetBytes(_settings.GetAppSettings().JWTSecurityKey);
             var secret = new SymmetricSecurityKey(key);
 
