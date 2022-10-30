@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.Data.Users;
@@ -10,17 +9,15 @@ public class UserByNameOrEmailDbQuery: IUserByNameOrEmailDbQuery
     #region Fields
 
     private readonly Context _context;
-    private readonly IMapper _mapper;
     private string? _userNameOrEmail;
 
     #endregion
 
     #region Construction
 
-    public UserByNameOrEmailDbQuery(Context context, IMapper mapper)
+    public UserByNameOrEmailDbQuery(Context context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     #endregion

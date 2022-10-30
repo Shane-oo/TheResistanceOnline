@@ -19,9 +19,9 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         Task CreateUserAsync([NotNull] UserRegisterCommand command);
 
-        Task<UserDetailsModel> GetUserByIdAsync([NotNull] ByIdQuery query);
-
         Task<User> GetUserByEmailOrNameAsync([NotNull] ByIdAndNameQuery query);
+
+        Task<UserDetailsModel> GetUserByUserIdAsync([NotNull] ByIdQuery query);
 
         Task<UserLoginResponse> LoginUserAsync([NotNull] UserLoginCommand command);
 
@@ -47,7 +47,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
         private readonly IUserIdentityManager _identityManager;
 
         private readonly IMapper _mapper;
-        
+
         #endregion
 
         #region Construction
@@ -125,17 +125,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
             _emailService.SendEmailAsync(sendEmailCommand);
         }
 
-        public async Task<UserDetailsModel> GetUserByIdAsync(ByIdQuery query)
-        {
-            if (query == null || string.IsNullOrEmpty(query.UserId))
-            {
-                throw new ArgumentNullException(nameof(query));
-            }
-
-            return _mapper.Map<UserDetailsModel>(await _context.Query<IUserDbQuery>().WithParams(query.UserId)
-                                                               .ExecuteAsync(query.CancellationToken));
-        }
-
         public async Task<User> GetUserByEmailOrNameAsync(ByIdAndNameQuery query)
         {
             if (query == null || string.IsNullOrEmpty(query.Name))
@@ -144,6 +133,17 @@ namespace TheResistanceOnline.BusinessLogic.Users
             }
 
             return await _context.Query<IUserByNameOrEmailDbQuery>().WithParams(query.Name).ExecuteAsync(query.CancellationToken);
+        }
+
+        public async Task<UserDetailsModel> GetUserByUserIdAsync(ByIdQuery query)
+        {
+            if (query == null || string.IsNullOrEmpty(query.UserId))
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            return _mapper.Map<UserDetailsModel>(await _context.Query<IUserDbQuery>().WithParams(query.UserId)
+                                                               .ExecuteAsync(query.CancellationToken));
         }
 
 

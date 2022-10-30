@@ -1,6 +1,6 @@
 using TheResistanceOnline.BusinessLogic.Games.Models;
 
-namespace TheResistanceOnline.BusinessLogic.Games;
+namespace TheResistanceOnline.BusinessLogic.Games.BotObservers;
 
 public class BayesBotObserver:IBotObserver
 {

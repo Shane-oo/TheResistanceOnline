@@ -1,3 +1,4 @@
+using TheResistanceOnline.BusinessLogic.Games.BotObservers;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 
 namespace TheResistanceOnline.BusinessLogic.Games
