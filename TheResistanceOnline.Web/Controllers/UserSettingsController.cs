@@ -34,7 +34,6 @@ namespace TheResistanceOnline.Web.Controllers
         {
             try
             {
-                command.UserId = User.FindFirst(ClaimTypes.UserData)?.Value;
                 await _userSettingsService.UpdateUserSettingsAsync(command);
                 return Ok();
             }
