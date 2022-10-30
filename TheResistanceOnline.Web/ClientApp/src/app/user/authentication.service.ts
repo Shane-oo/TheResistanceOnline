@@ -66,7 +66,6 @@ export class AuthenticationService {
     return (role === 'Administrator');
   };
 
-  // here if need - not used
   public getUserId = (): string => {
     const token = localStorage.getItem('TheResistanceToken');
     let userId = '';
@@ -111,8 +110,7 @@ export class AuthenticationService {
   // };
 
   public getUserDetails = () => {
-    // example of id query's
-    //    return this.http.get<UserDetailsModel>(`${environment.API_URL}${this.userEndpoint}/${id}`);
-    return this.http.get<UserDetailsModel>(`${environment.API_URL}${this.userEndpoint}`);
+    const id = this.getUserId();
+    return this.http.get<UserDetailsModel>(`${environment.API_URL}${this.userEndpoint}/${id}`);
   };
 }

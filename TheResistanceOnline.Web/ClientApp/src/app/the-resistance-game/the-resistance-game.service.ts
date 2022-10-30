@@ -94,7 +94,7 @@ export class TheResistanceGameService {
         if(value.declinedLogin) {
           let userSettingsUpdateCommand: UserSettingsUpdateCommand = {
             updateUserWantsToUseDiscord: true,
-            userWantsToUseDiscord: false
+            userWantsToUseDiscord: false,
           };
 
           this.userSettingsService.updateUserSettings(userSettingsUpdateCommand).subscribe({

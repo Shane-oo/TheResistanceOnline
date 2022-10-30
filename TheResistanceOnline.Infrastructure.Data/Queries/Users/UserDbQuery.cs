@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.Data.Users;
@@ -10,17 +9,15 @@ namespace TheResistanceOnline.Infrastructure.Data.Queries.Users
         #region Fields
 
         private readonly Context _context;
-        private readonly IMapper _mapper;
         private string? _userId;
 
         #endregion
 
         #region Construction
 
-        public UserDbQuery(Context context, IMapper mapper)
+        public UserDbQuery(Context context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
         #endregion
@@ -29,7 +26,7 @@ namespace TheResistanceOnline.Infrastructure.Data.Queries.Users
 
         public async Task<User> ExecuteAsync(CancellationToken cancellationToken)
         {
-            var user = await _context.Users // not sure if should have AsNoTracking()
+            var user = await _context.Users
                                      .Include(p => p.ProfilePicture)
                                      .Include(ud => ud.DiscordUser)
                                      .Include(us => us.UserSetting)
