@@ -28,7 +28,7 @@
 .content {
   overflow-y: scroll;
   scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
   background-size: cover;
   display: flex;
   justify-content: center;
@@ -38,6 +38,7 @@
   color: ghostwhite;
   margin-left: 50px;
 }
+
 .content::-webkit-scrollbar { /* WebKit */
   width: 0;
   height: 0;
@@ -52,9 +53,10 @@
   padding: 20px;
   overflow-y: scroll;
   scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
 
 }
+
 .lobby-box::-webkit-scrollbar { /* WebKit */
   width: 0;
   height: 0;
@@ -138,4 +140,55 @@
   color: #fc2001;
   text-align: center;
   padding: 0;
+}
+
+
+
+
+@media only screen and (max-width: 760px) {
+  .content {
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    display: revert;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+    margin-right: 20px;
+    margin-left: 0;
+
+  }
+
+  .content::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+  }
+
+  .lobby-box {
+    width: 95%;
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    height: 500px;
+    margin-top: 10px;
+    margin-left: 0;
+  }
+
+  .lobby-box::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+  }
+
+  .form-box {
+    width: 95%;
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    height: 500px;
+  }
+
+  .form-box::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+  }
 }
