@@ -51,8 +51,10 @@ export class TheResistanceGameService {
     try {
       console.log('trying to connect');
       await this.connection.start();
+      this.swalService.showSwal('Connected To Server', SwalTypesModel.Success);
     } catch(err) {
       console.log(err);
+      this.swalService.showSwal('Error Connecting To Server', SwalTypesModel.Error);
       setTimeout(() => this.start(), 30000);
     }
   }
@@ -87,14 +89,13 @@ export class TheResistanceGameService {
 
   public addDiscordNotFoundListener = () => {
     this.connection.on('ReceiveDiscordNotFound', () => {
-      console.log('discord not found triggered');
       this.swalService.fireDiscordLoginRequested();
 
       this.swalService.discordLoginResponseChanged.subscribe((value: DiscordLoginResponseModel) => {
         if(value.declinedLogin) {
           let userSettingsUpdateCommand: UserSettingsUpdateCommand = {
             updateUserWantsToUseDiscord: true,
-            userWantsToUseDiscord: false,
+            userWantsToUseDiscord: false
           };
 
           this.userSettingsService.updateUserSettings(userSettingsUpdateCommand).subscribe({
@@ -114,7 +115,6 @@ export class TheResistanceGameService {
 
   public addReceiveDiscordUserNotInDiscordServerListener = () => {
     this.connection.on('ReceiveDiscordUserNotInDiscordServer', () => {
-      console.log('user found to not be in server');
     });
   };
 
@@ -143,7 +143,6 @@ export class TheResistanceGameService {
   };
 
   public startGame = (body: StartGameCommand) => {
-    console.log('sending body:',body)
     this.connection.invoke('ReceiveStartGameCommand', body).then(() => {
     }).catch(err => console.log(err));
   };
