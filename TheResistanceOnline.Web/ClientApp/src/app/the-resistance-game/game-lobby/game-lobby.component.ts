@@ -40,8 +40,7 @@ export class GameLobbyComponent implements OnInit {
     {minutesString: '7 Minutes', minutes: 7}, {minutesString: '10 Minutes', minutes: 10}];
 
 
-
-  constructor(private gameService:TheResistanceGameService) {
+  constructor(private gameService: TheResistanceGameService) {
   }
 
   ngOnInit(): void {
@@ -98,6 +97,9 @@ export class GameLobbyComponent implements OnInit {
     }
   };
 
+  public leaveGame = () => {
+    location.reload();
+  };
 
   // for example of submit -> start game
   // public registerUser = (registerFormValue: UserRegisterModel) => {
