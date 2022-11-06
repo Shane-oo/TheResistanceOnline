@@ -24,7 +24,6 @@ export class TheResistanceGameService {
 
 
   private readonly gamesEndpoint = '/api/Games';
-  private readonly token = localStorage.getItem('TheResistanceToken');
 
   private options: IHttpConnectionOptions = {
     accessTokenFactory: () => {
@@ -33,7 +32,10 @@ export class TheResistanceGameService {
         return token;
       }
       return '';
-    }, transport: signalR.HttpTransportType.WebSockets, skipNegotiation: true
+    },
+    transport: signalR.HttpTransportType.WebSockets,
+    skipNegotiation: true,
+    timeout: 600000 // 10 minutes
   };
 
   public connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
@@ -99,7 +101,7 @@ export class TheResistanceGameService {
           };
 
           this.userSettingsService.updateUserSettings(userSettingsUpdateCommand).subscribe({
-                                                                                             next: (response: any) => {
+                                                                                             next: (_) => {
                                                                                                this.swalService.showSwal(
                                                                                                  'Successfully declined Discord',
                                                                                                  SwalTypesModel.Success);
@@ -146,6 +148,13 @@ export class TheResistanceGameService {
     this.connection.invoke('ReceiveStartGameCommand', body).then(() => {
     }).catch(err => console.log(err));
   };
+
+  public addReceiveGameFinishedListener = () => {
+    this.connection.on('ReceiveGameFinished', () => {
+      location.reload();
+    });
+  };
+
 
   // this will probably needed to be done somewhere
   //https://code-maze.com/signalr-automatic-reconnect-option/

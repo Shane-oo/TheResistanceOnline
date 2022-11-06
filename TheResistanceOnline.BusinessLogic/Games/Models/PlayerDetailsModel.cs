@@ -25,12 +25,9 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
 
         public int SpyTeamWins { get; set; }
 
+        public TeamModel Team { get; set; }
+
         public string UserName { get; set; }
-
-        #endregion
-
-        #region Public Methods
-        
 
         #endregion
     }

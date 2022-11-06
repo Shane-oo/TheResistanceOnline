@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using AutoMapper;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
@@ -126,14 +125,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                            };
 
         private static readonly Dictionary<string, IGameObserver> _groupNameToGameObserver = new();
+        private static readonly Dictionary<string, Timer> _groupNameToGameTimer = new();
         private readonly IMapper _mapper;
-
-        private readonly List<string?> _randomBotNames = new()
-                                                         {
-                                                             "WALL - E", "R2D2", "K9", "Optimus Prime", "Rosie", "Bender", "C-3PO", "HAL 9000", "Data", "ASIMO", "The Terminator",
-                                                             "Micro", "EVA", "RAM", "Sputnik", "Humanoid", "Chip", "Robo", "Robocop", "Alpha", "Beta", "Gamma", "Siri",
-                                                             "Raspberry Pie", "AstroBoy", "Chappie", "Ultron", "Omega", "Hydra", "Pixels"
-                                                         };
 
 
         private readonly IUserService _userService;
@@ -160,12 +153,10 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 Detach(userGroupName);
                 gameDetails.PlayersDetails = new List<PlayerDetailsModel>();
                 gameDetails.IsAvailable = true;
+                if (!_groupNameToGameTimer.TryGetValue(userGroupName, out var gameTimer)) return;
+                gameTimer.Dispose();
+                _groupNameToGameTimer.Remove(userGroupName);
             }
-        }
-
-        private string? GetRandomName()
-        {
-            return _randomBotNames.MinBy(x => Guid.NewGuid());
         }
 
         private void RemoveConnectionFromAllMaps(string connectionId)
@@ -188,7 +179,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             }
         }
 
-        private async void SendDiscordNotFoundAsync(User user)
+        private async void SendDiscordNotFoundIfDiscordNotFoundAsync(User user)
         {
             // Discord User Does not exist Or User Wants to Use Discord And its been one week since said no 
             if (user.DiscordUser == null)
@@ -213,6 +204,26 @@ namespace TheResistanceOnline.SocketServer.Hubs
             if (host != null) await Clients.Client(host.ConnectionId).SendAsync("ReceiveGameHost", true);
         }
 
+        // call this function when game timer is finished
+        // todo when hub is receiving commands from clients perform check for IsFinished and if true call this function
+        private async void SendGameFinishedToGroupAsync(string groupName)
+        {
+            //todo save all details before its deletion
+            // this will refresh everyone in games page => triggering onDisconnectAsync() that will check for game over
+            await Clients.Group(groupName).SendAsync("ReceiveGameFinished");
+        }
+
+
+        private static void SetGameToFinished(object? groupName)
+        {
+            var groupNameString = groupName?.ToString();
+            if (groupNameString != null)
+            {
+                if (!_groupNameToGameDetailsMappingTable.TryGetValue(groupNameString, out var gameDetails)) return;
+                gameDetails.IsFinished = true;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -234,8 +245,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
         // Subject Function
         public void Notify(GameDetailsModel gameDetails, string groupName)
         {
-            if (!_groupNameToGameObserver.TryGetValue(groupName, out var observer)) return;
-            observer.Update(gameDetails);
+            if (!_groupNameToGameObserver.TryGetValue(groupName, out var gameObserver)) return;
+            gameObserver.Update(gameDetails);
         }
 
         public override async Task OnConnectedAsync()
@@ -250,7 +261,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             var playerDetails = new PlayerDetailsModel
                                 {
                                     ConnectionId = Context.ConnectionId,
-                                    PlayerId = new Guid(),
+                                    PlayerId = Guid.NewGuid(),
                                     UserName = userDetails.UserName,
                                     DiscordUserName = userDetails.DiscordUser?.Name,
                                     DiscordTag = userDetails.DiscordUser?.DiscordTag,
@@ -262,7 +273,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
             SendAllGameDetailsToPlayersNotInGameAsync();
 
-            SendDiscordNotFoundAsync(user);
+            SendDiscordNotFoundIfDiscordNotFoundAsync(user);
 
             await base.OnConnectedAsync();
         }
@@ -330,36 +341,47 @@ namespace TheResistanceOnline.SocketServer.Hubs
         [UsedImplicitly]
         public void ReceiveStartGameCommand(StartGameCommand command)
         {
-            if (_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var groupName))
+            // get group name and game details
+            if (!_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var groupName)) return;
+            if (groupName == null) return;
+            if (!_groupNameToGameDetailsMappingTable.TryGetValue(groupName, out var gameDetails)) return;
+
+            // create gameService observer
+            var gameServiceObserver = new GameService();
+            // create bot observers and attach them to game service which is also subject to bots 
+            var botObservers = gameServiceObserver.CreateBotObservers(command.GameOptions.BotCount);
+
+            // attach gameService observer to hub subject
+            Attach(gameServiceObserver, groupName);
+
+            // add bots to game details
+            foreach(var botObserver in botObservers)
             {
-                if (groupName != null)
-                {
-                    var gameService = new GameService();
-                    var botObservers = gameService.CreateBotObservers(command.GameOptions.BotCount);
+                var botPlayersDetails = new PlayerDetailsModel
+                                        {
+                                            PlayerId = Guid.NewGuid(),
+                                            IsBot = true,
+                                            BotObserver = botObserver,
+                                            UserName = gameServiceObserver.GetRandomBotName()
+                                        };
+                botObserver.PlayerId = botPlayersDetails.PlayerId;
 
-                    Attach(gameService, groupName);
-
-                    if (_groupNameToGameDetailsMappingTable.TryGetValue(groupName, out var gameDetails))
-                    {
-                        foreach(var botObserver in botObservers)
-                        {
-                            gameDetails.PlayersDetails?.Add(new PlayerDetailsModel
-                                                            {
-                                                                IsBot = true,
-                                                                BotObserver = botObserver,
-                                                                UserName = GetRandomName()
-                                                            });
-                        }
-
-                        Notify(gameDetails, groupName);
-
-                        // start game
-                        gameDetails.IsAvailable = false;
-                        SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
-                        SendAllGameDetailsToPlayersNotInGameAsync();
-                    }
-                }
+                gameDetails.PlayersDetails?.Add(botPlayersDetails);
             }
+
+            // shuffle player order
+            GameService.ShufflePlayerOrderAndAssignTeams(gameDetails);
+
+
+            Notify(gameDetails, groupName);
+
+            // start game
+            var gameTimer = new Timer(SetGameToFinished, groupName, command.GameOptions.TimeLimitMinutes * 60000, Timeout.Infinite);
+            _groupNameToGameTimer.Add(groupName, gameTimer);
+
+            gameDetails.IsAvailable = false;
+            SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
+            SendAllGameDetailsToPlayersNotInGameAsync();
         }
 
         #endregion

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TheResistanceGameService } from '../the-resistance-game.service';
 
 @Component({
              selector: 'app-game',
@@ -7,10 +8,11 @@ import { Component, OnInit } from '@angular/core';
            })
 export class GameComponent implements OnInit {
 
-  constructor() {
+  constructor(private gameService: TheResistanceGameService) {
   }
 
   ngOnInit(): void {
+    this.gameService.addReceiveGameFinishedListener();
   }
 
 }

@@ -2,15 +2,32 @@ using TheResistanceOnline.BusinessLogic.Games.Models;
 
 namespace TheResistanceOnline.BusinessLogic.Games.BotObservers;
 
-public class BayesBotObserver:IBotObserver
+public class BayesBotObserver: IBotObserver
 {
-    public void Update(GameDetailsModel gameDetails)
-    {
-        Console.WriteLine("GameDetails have been updated",gameDetails);
-    }
+    #region Fields
+
+    private GameDetailsModel _gameDetails = new GameDetailsModel();
+
+    #endregion
+
+    #region Properties
+
+    public Guid PlayerId { get; set; }
+
+    #endregion
+
+    #region Public Methods
 
     public void GetChoice()
     {
         Console.WriteLine("asked for choice");
     }
+
+    public void Update(GameDetailsModel gameDetails)
+    {
+        Console.WriteLine("this is the bots playerId", PlayerId);
+        _gameDetails = gameDetails;
+    }
+
+    #endregion
 }
