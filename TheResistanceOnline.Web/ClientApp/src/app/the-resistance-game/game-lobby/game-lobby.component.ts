@@ -67,6 +67,12 @@ export class GameLobbyComponent implements OnInit {
     this.botCountChanged();
   }
 
+  ngOnDestroy() {
+    // remove all non required listeners
+    this.gameService.removeReceivePlayerId();
+    this.gameService.removeReceiveGameHostListener();
+  }
+
   public validateControl = (controlName: string) => {
     return this.gameOptionsForm.get(controlName)?.invalid && this.gameOptionsForm.get(controlName)?.touched;
   };

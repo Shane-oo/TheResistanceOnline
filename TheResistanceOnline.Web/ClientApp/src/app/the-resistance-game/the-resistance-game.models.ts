@@ -14,6 +14,10 @@ export interface PlayerDetails {
   userName: string;
   resistanceTeamWins: number;
   spyTeamWins: number;
+  isBot: boolean;
+  isMissionLeader: boolean;
+  playerId: string;
+  team: TeamModel;
 }
 
 export interface GameDetailsResponse {
@@ -30,4 +34,10 @@ export interface GameOptions {
 
 export interface StartGameCommand {
   gameOptions: GameOptions;
+}
+
+
+enum TeamModel {
+  Resistance,
+  Spy
 }

@@ -213,6 +213,11 @@ namespace TheResistanceOnline.SocketServer.Hubs
             await Clients.Group(groupName).SendAsync("ReceiveGameFinished");
         }
 
+        private async void SendPlayerIdToClientAsync(Guid playerId)
+        {
+            await Clients.Client(Context.ConnectionId).SendAsync("ReceivePlayerId", playerId);
+        }
+
 
         private static void SetGameToFinished(object? groupName)
         {
@@ -328,6 +333,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 gameDetails.PlayersDetails.Add(newPlayerDetails);
                 _groupNameToGameDetailsMappingTable[command.ChannelName] = gameDetails;
 
+                SendPlayerIdToClientAsync(newPlayerDetails.PlayerId);
                 SendAllGameDetailsToPlayersNotInGameAsync();
                 SendGameDetailsToChannelGroupAsync(gameDetails, command.ChannelName);
 

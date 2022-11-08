@@ -16,7 +16,7 @@ import { DiscordLoginResponseModel } from '../user/user.models';
 export class TheResistanceGameService {
 
   public gameDetailsChanged: Subject<GameDetails> = new Subject<GameDetails>();
-
+  public playerIdChanged: Subject<string> = new Subject<string>();
   public hostChanged: Subject<boolean> = new Subject<boolean>();
 
   //public allGameDetails
@@ -83,11 +83,21 @@ export class TheResistanceGameService {
     this.connection.off('ReceiveAllGameDetailsToPlayersNotInGame');
   };
 
+  public addReceivePlayerId = () => {
+    this.connection.on('ReceivePlayerId', (playerId: string) => {
+      this.playerIdChanged.next(playerId);
+    });
+
+  };
+
+  public removeReceivePlayerId = () => {
+    this.connection.off('ReceivePlayerId');
+  };
+
   public joinGame = (body: JoinGameCommand) => {
     this.connection.invoke('ReceiveJoinGameCommand', body).then(() => {
     }).catch(err => console.log(err));
   };
-
 
   public addDiscordNotFoundListener = () => {
     this.connection.on('ReceiveDiscordNotFound', () => {

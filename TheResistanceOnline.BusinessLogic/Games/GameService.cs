@@ -132,6 +132,8 @@ namespace TheResistanceOnline.BusinessLogic.Games
                     player.Team = spyPlayers.Any(p => p.PlayerId == player.PlayerId) ? TeamModel.Spy : TeamModel.Resistance;
                 }
 
+                // denote first player as mission leader
+                shuffledPlayerDetails.First().IsMissionLeader = true;
                 gameDetails.PlayersDetails = shuffledPlayerDetails;
             }
 
