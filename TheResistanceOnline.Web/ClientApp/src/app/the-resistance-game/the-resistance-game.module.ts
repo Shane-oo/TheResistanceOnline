@@ -21,14 +21,14 @@ import { GameLobbyComponent } from './game-lobby/game-lobby.component';
               JoinGameDetailsComponent,
               GameLobbyComponent
             ],
-            imports: [
-              CommonModule,
-              RouterModule.forChild([
-                                      {path: '', component: TheResistanceGameComponent},
-                                      {path: 'game', component: GameComponent}
-                                    ]),
-              ReactiveFormsModule,
-              FormsModule
-            ]
+              imports: [
+                  CommonModule,
+                  RouterModule.forChild([
+                                            {path: '', component: TheResistanceGameComponent},
+                                            {path: 'game', component: GameComponent}
+                                        ]),
+                  ReactiveFormsModule,
+                  FormsModule
+              ]
           })
 export class TheResistanceGameModule {}

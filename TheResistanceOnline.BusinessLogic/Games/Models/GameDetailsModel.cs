@@ -8,13 +8,15 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
 
         public string ChannelName { get; set; }
 
-        public bool IsVoiceChannel { get; set; }
-        
         public bool IsAvailable { get; set; }
+
+        public bool IsFinished { get; set; }
+
+        public bool IsVoiceChannel { get; set; }
 
         [CanBeNull]
         public List<PlayerDetailsModel> PlayersDetails { get; set; }
-        
+
         #endregion
     }
 }

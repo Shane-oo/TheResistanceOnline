@@ -9,5 +9,5 @@ public interface IGameSubject
     void Detach(IBotObserver observer);
 
     // Notify all bot observers about an event.
-    void Notify(GameDetailsModel gameDetails);
+    void Notify();
 }

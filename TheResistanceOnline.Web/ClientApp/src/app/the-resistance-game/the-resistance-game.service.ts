@@ -16,7 +16,7 @@ import { DiscordLoginResponseModel } from '../user/user.models';
 export class TheResistanceGameService {
 
   public gameDetailsChanged: Subject<GameDetails> = new Subject<GameDetails>();
-
+  public playerIdChanged: Subject<string> = new Subject<string>();
   public hostChanged: Subject<boolean> = new Subject<boolean>();
 
   //public allGameDetails
@@ -24,7 +24,6 @@ export class TheResistanceGameService {
 
 
   private readonly gamesEndpoint = '/api/Games';
-  private readonly token = localStorage.getItem('TheResistanceToken');
 
   private options: IHttpConnectionOptions = {
     accessTokenFactory: () => {
@@ -33,7 +32,10 @@ export class TheResistanceGameService {
         return token;
       }
       return '';
-    }, transport: signalR.HttpTransportType.WebSockets, skipNegotiation: true
+    },
+    transport: signalR.HttpTransportType.WebSockets,
+    skipNegotiation: true,
+    timeout: 600000 // 10 minutes
   };
 
   public connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
@@ -81,11 +83,21 @@ export class TheResistanceGameService {
     this.connection.off('ReceiveAllGameDetailsToPlayersNotInGame');
   };
 
+  public addReceivePlayerId = () => {
+    this.connection.on('ReceivePlayerId', (playerId: string) => {
+      this.playerIdChanged.next(playerId);
+    });
+
+  };
+
+  public removeReceivePlayerId = () => {
+    this.connection.off('ReceivePlayerId');
+  };
+
   public joinGame = (body: JoinGameCommand) => {
     this.connection.invoke('ReceiveJoinGameCommand', body).then(() => {
     }).catch(err => console.log(err));
   };
-
 
   public addDiscordNotFoundListener = () => {
     this.connection.on('ReceiveDiscordNotFound', () => {
@@ -99,7 +111,7 @@ export class TheResistanceGameService {
           };
 
           this.userSettingsService.updateUserSettings(userSettingsUpdateCommand).subscribe({
-                                                                                             next: (response: any) => {
+                                                                                             next: (_) => {
                                                                                                this.swalService.showSwal(
                                                                                                  'Successfully declined Discord',
                                                                                                  SwalTypesModel.Success);
@@ -146,6 +158,13 @@ export class TheResistanceGameService {
     this.connection.invoke('ReceiveStartGameCommand', body).then(() => {
     }).catch(err => console.log(err));
   };
+
+  public addReceiveGameFinishedListener = () => {
+    this.connection.on('ReceiveGameFinished', () => {
+      location.reload();
+    });
+  };
+
 
   // this will probably needed to be done somewhere
   //https://code-maze.com/signalr-automatic-reconnect-option/
