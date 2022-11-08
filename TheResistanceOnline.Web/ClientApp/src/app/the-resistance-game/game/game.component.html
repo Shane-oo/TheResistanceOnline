@@ -1,5 +1,18 @@
-<p>game works!</p>
+<div>
+  <!--  <app-game-canvas>-->
+  <!--  </app-game-canvas>-->
+</div>
 
-<app-game-canvas>
-</app-game-canvas>
-
+<div class="content">
+  <div class="grid-container lobby-box">
+    <div *ngFor="let playerDetail of gameDetails.playersDetails" class="grid-item">
+      <div>
+        <h6> {{playerDetail.userName}}</h6>
+        <i class="fa-solid fa-person-military-rifle"></i>
+      </div>
+      <div *ngIf="playerDetail.discordUserName">
+        <h6 class="discord-name"><i class='fab fa-discord'></i> : {{playerDetail.discordUserName}}</h6>
+      </div>
+    </div>
+  </div>
+</div>
