@@ -16,7 +16,8 @@ import Swal from 'sweetalert2';
                      [swalFireOnInit]="true"
                      (didClose)="isSwalVisible = false;isError = false"
                      background='#383838'
-                     (didOpen)="swalDidOpen($event)">
+                     (didOpen)="swalDidOpen($event)"
+                     >
 
                </swal>
                <!--Success Component-->
@@ -24,7 +25,7 @@ import Swal from 'sweetalert2';
                      [toast]="true"
                      position='top-end'
                      [showConfirmButton]="false"
-                     [timer]="7500"
+                     [timer]="2000"
                      icon="success"
                      html="<h6 class=swal>{{ message }}</h6>"
                      [swalFireOnInit]="true"

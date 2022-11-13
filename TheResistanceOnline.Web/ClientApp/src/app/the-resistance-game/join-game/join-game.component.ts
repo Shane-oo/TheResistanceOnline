@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TheResistanceGameService } from '../the-resistance-game.service';
-import { GameDetails } from '../the-resistance-game.models';
+import { GameDetails, GameStage } from '../the-resistance-game.models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DiscordServerService } from '../../shared/services/discord-server.service';
 import { CreateDiscordUserCommand } from '../../shared/models/discord-server.models';
@@ -22,7 +22,13 @@ export class JoinGameComponent implements OnInit {
     channelName: '',
     playersDetails: [],
     isVoiceChannel: false,
-    isAvailable: false
+    isAvailable: false,
+    missionRound: 0,
+    missionTeam: [],
+    missionSize: 0,
+    gameStage: GameStage.GameStart,
+    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0}
+
   };
 
 
@@ -90,11 +96,10 @@ export class JoinGameComponent implements OnInit {
     this.toggleDiscordWidget(true);
   }
 
-  public toggleDiscordWidget(offPermanently:boolean) {
-    if(offPermanently){
+  public toggleDiscordWidget(offPermanently: boolean) {
+    if(offPermanently) {
       this.showDiscordWidget = false;
-    }
-    else {
+    } else {
       this.showDiscordWidget = !this.showDiscordWidget;
     }
   }
