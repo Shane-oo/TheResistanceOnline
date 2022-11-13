@@ -88,6 +88,73 @@ namespace TheResistanceOnline.BusinessLogic.Games
             _observers = null;
         }
 
+        public int GetMissionSize(int missionRound, int playerCount)
+        {
+            switch(playerCount)
+            {
+                case FIVE_MAN_GAME:
+                    switch(missionRound)
+                    {
+                        case 1:
+                        case 3:
+                            return 2;
+                        case 2:
+                        case 4:
+                        case 5:
+                            return 3;
+                    }
+
+                    break;
+                case SIX_MAN_GAME:
+                    switch(missionRound)
+                    {
+                        case 1:
+                            return 2;
+                        case 2:
+                        case 4:
+                            return 3;
+                        case 3:
+                        case 5:
+                            return 4;
+                    }
+
+                    break;
+                case SEVEN_MAN_GAME:
+                    switch(missionRound)
+                    {
+                        case 1:
+                            return 2;
+                        case 2:
+                        case 3:
+                            return 3;
+                        case 4:
+                        case 5:
+                            return 4;
+                    }
+
+                    break;
+                case EIGHT_MAN_GAME:
+                case NINE_MAN_GAME:
+                case TEN_MAN_GAME:
+                    // 8,9,10 man teams are the same
+                    switch(missionRound)
+                    {
+                        case 1:
+                            return 3;
+                        case 2:
+                        case 3:
+                            return 4;
+                        case 4:
+                        case 5:
+                            return 5;
+                    }
+
+                    break;
+            }
+
+            return -1;
+        }
+
         public string GetRandomBotName()
         {
             return _randomBotNames.MinBy(x => Guid.NewGuid());
@@ -103,7 +170,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
         }
 
 
-        public static GameDetailsModel ShufflePlayerOrderAndAssignTeams(GameDetailsModel gameDetails)
+        public GameDetailsModel SetUpNewGame(GameDetailsModel gameDetails)
         {
             if (gameDetails.PlayersDetails != null)
             {
@@ -133,12 +200,21 @@ namespace TheResistanceOnline.BusinessLogic.Games
                 }
 
                 // denote first player as mission leader
-                shuffledPlayerDetails.First().IsMissionLeader = true;
-                gameDetails.PlayersDetails = shuffledPlayerDetails;
+                //todo put this back after testing mission leader functionality
+                /*
+                gameDetails.PlayersDetails = shuffledPlayerDetails*/
+
+                gameDetails.PlayersDetails = shuffledPlayerDetails.OrderBy(x => x.IsBot).ToList();
+                gameDetails.PlayersDetails.First().IsMissionLeader = true;
             }
 
+            gameDetails.MissionTeam = new List<PlayerDetailsModel>();
+            gameDetails.MissionRound = 1;
+            gameDetails.MissionSize = GetMissionSize(gameDetails.MissionRound, gameDetails.PlayersDetails!.Count);
+            gameDetails.GameStage = GameStageModel.GameStart;
             return gameDetails;
         }
+
 
         // Observer Function - hub calls this function when game details change
         public void Update(GameDetailsModel gameDetails)

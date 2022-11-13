@@ -6,6 +6,7 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
     public class PlayerDetailsModel
     {
         #region Properties
+
         // dont send to front end
         [JsonIgnore]
         public IBotObserver BotObserver { get; set; }
@@ -26,6 +27,8 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         public Guid PlayerId { get; set; }
 
         public int ResistanceTeamWins { get; set; }
+
+        public bool SelectedTeamMember { get; set; }
 
         public int SpyTeamWins { get; set; }
 

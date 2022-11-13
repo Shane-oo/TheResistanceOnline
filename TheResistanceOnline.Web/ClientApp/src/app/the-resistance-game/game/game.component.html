@@ -2,17 +2,65 @@
   <!--  <app-game-canvas>-->
   <!--  </app-game-canvas>-->
 </div>
-
+<!--todo change this to 1 = MissionPropose-->
 <div class="content">
-  <div class="grid-container lobby-box">
-    <div *ngFor="let playerDetail of gameDetails.playersDetails" class="grid-item">
-      <div>
-        <h6> {{playerDetail.userName}}</h6>
-        <i class="fa-solid fa-person-military-rifle"></i>
+  <div class="countdown-values">
+    <div>
+      <div>The Resistance</div>
+      <div style="float: left">
+        <span>Game Time Limit: </span>
+        <countdown #gameCountdown [config]="gameCountdownConfig" class="countdowns"></countdown>
       </div>
-      <div *ngIf="playerDetail.discordUserName">
-        <h6 class="discord-name"><i class='fab fa-discord'></i> : {{playerDetail.discordUserName}}</h6>
+      <div style="float: right">
+        <span>Move Time Limit: </span>
+        <countdown #moveCountdown (event)="handleCountdownEvent($event)" [config]="moveCountdownConfig" class="countdowns"></countdown>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="gameDetails.gameStage === 0">
+    <div class="game-values">
+
+      <div>
+        <h6>Mission Round: <b>{{gameDetails.missionRound}}</b></h6>
+        <h6 *ngIf="missionLeaderPlayerId === playerId">Mission Team:<b> {{gameDetails.missionTeam.length}}/{{gameDetails.missionSize}}</b>
+        </h6>
+        <h6 *ngIf="missionLeaderPlayerId !== playerId">Mission Size:<b> {{gameDetails.missionSize}}</b></h6>
+
+        <div *ngIf="missionLeaderPlayerId === playerId">
+          <h6> Team Members:
+            <span *ngFor="let playerDetail of gameDetails.missionTeam">&nbsp;{{playerDetail.userName}}&nbsp;</span>
+          </h6>
+          <button (click)="submitTeam()"
+                  [disabled]="gameDetails.missionTeam.length !== gameDetails.missionSize"
+                  [ngClass]="gameDetails.missionTeam.length !== gameDetails.missionSize ? 'button-disabled':'propose-team-button'">
+            Submit Team
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="grid-container lobby-box">
+      <div *ngFor="let playerDetail of gameDetails.playersDetails" class="grid-item">
+
+        <div class="top-row-icons">
+          <fa-icon *ngIf="playerDetail.playerId === missionLeaderPlayerId" [icon]="missionLeaderIcon"></fa-icon>
+          <!--For If User is Mission Team Leader
+              They Will have Selectable Mission Team Member Icons-->
+          <div *ngIf="missionLeaderPlayerId === playerId">
+            <fa-icon (click)="teamMemberClicked(playerDetail.playerId)" [icon]="addMemberIcon" class="fa-lg icon-click"></fa-icon>
+          </div>
+
+          <fa-icon *ngIf="gameDetails.missionTeam?.includes(playerDetail)" [icon]="missionTeamMemberIcon"></fa-icon>
+
+        </div>
+        <div>
+          <h6> {{playerDetail.userName}}</h6>
+          <i class="fa-solid fa-person-military-rifle"></i>
+        </div>
+        <div *ngIf="playerDetail.discordUserName">
+          <h6 class="discord-name"><i class='fab fa-discord'></i> : {{playerDetail.discordUserName}}</h6>
+        </div>
       </div>
     </div>
   </div>
 </div>
+<!---->

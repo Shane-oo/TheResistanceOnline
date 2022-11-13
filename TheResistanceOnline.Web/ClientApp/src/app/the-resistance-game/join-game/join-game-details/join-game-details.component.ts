@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { GameDetails, JoinGameCommand } from '../../the-resistance-game.models';
+import { GameDetails, GameStage, JoinGameCommand } from '../../the-resistance-game.models';
 import { TheResistanceGameService } from '../../the-resistance-game.service';
 
 @Component({
@@ -13,7 +13,12 @@ export class JoinGameDetailsComponent implements OnInit {
     channelName: '',
     playersDetails: [],
     isVoiceChannel: false,
-    isAvailable: false
+    isAvailable: false,
+    missionRound: 0,
+    missionTeam: [],
+    missionSize: 0,
+    gameStage: GameStage.GameStart,
+    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0}
   };
 
   constructor(private gameService: TheResistanceGameService) {
