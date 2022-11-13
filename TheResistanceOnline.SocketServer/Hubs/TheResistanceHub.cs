@@ -352,6 +352,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
             if (groupName == null) return;
             if (!_groupNameToGameDetailsMappingTable.TryGetValue(groupName, out var gameDetails)) return;
 
+            gameDetails.GameOptions = command.GameOptions;
+
             // create gameService observer
             var gameServiceObserver = new GameService();
             // create bot observers and attach them to game service which is also subject to bots 
@@ -376,7 +378,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             }
 
             // shuffle player order
-            GameService.ShufflePlayerOrderAndAssignTeams(gameDetails);
+            gameDetails = gameServiceObserver.SetUpNewGame(gameDetails);
 
 
             Notify(gameDetails, groupName);

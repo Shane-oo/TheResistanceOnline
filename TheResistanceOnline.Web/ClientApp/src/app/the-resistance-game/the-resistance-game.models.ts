@@ -7,17 +7,23 @@ export interface GameDetails {
   playersDetails: PlayerDetails[];
   isVoiceChannel: boolean;
   isAvailable: boolean;
+  missionRound: number;
+  missionTeam: PlayerDetails[];
+  missionSize: number;
+  gameStage: GameStage;
+  gameOptions:GameOptions;
 }
 
 export interface PlayerDetails {
   discordUserName?: string;
-  userName: string;
+  userName?: string;
   resistanceTeamWins: number;
   spyTeamWins: number;
   isBot: boolean;
   isMissionLeader: boolean;
   playerId: string;
   team: TeamModel;
+  selectedTeamMember: boolean;
 }
 
 export interface GameDetailsResponse {
@@ -40,4 +46,13 @@ export interface StartGameCommand {
 enum TeamModel {
   Resistance,
   Spy
+}
+
+export enum GameStage {
+  GameStart,     // spies find out who the other spies are
+  MissionPropose, // Mission Team Leader Selects the Mission Team
+  Vote, // Everyone Votes on the proposed team for mission
+  VoteResults, // Show the results from the most recent vote
+  Mission, // If Vote Successful Mission Members go on mission
+  MissionResults// Show the results from the most recent mission
 }

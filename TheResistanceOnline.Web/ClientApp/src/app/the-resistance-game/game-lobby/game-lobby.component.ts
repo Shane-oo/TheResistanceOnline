@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { GameDetails, GameOptions, StartGameCommand } from '../the-resistance-game.models';
+import { GameDetails, GameOptions, GameStage, StartGameCommand } from '../the-resistance-game.models';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TheResistanceGameService } from '../the-resistance-game.service';
 
@@ -18,7 +18,12 @@ export class GameLobbyComponent implements OnInit {
     channelName: '',
     playersDetails: [],
     isVoiceChannel: false,
-    isAvailable: false
+    isAvailable: false,
+    missionRound: 0,
+    missionTeam: [],
+    missionSize: 0,
+    gameStage: GameStage.GameStart,
+    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0}
   };
   @Input() isTheHost: boolean = false;
   public gameOptionsForm: FormGroup = new FormGroup({});
