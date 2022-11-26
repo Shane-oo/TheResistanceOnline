@@ -44,6 +44,12 @@ code {
   src: url("./assets/fonts/Yuzu.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "satella";
+  src: url("./assets/fonts/SatellaRegular-ZVVaz.ttf") format("truetype");
+}
+
+
 #gui {
   position: absolute;
   top: 25px;
