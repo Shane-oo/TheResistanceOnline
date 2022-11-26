@@ -10,6 +10,7 @@
   color: ghostwhite;
   margin-left: 50px;
 
+  height: 850px;
   border-radius: 10px;
   background-color: #1e1e1e;
   box-shadow: 0.0315rem 0 0.625rem 0 #fc0114;
@@ -53,6 +54,8 @@
   overflow-y: scroll;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+  margin-top: 55px;
 }
 
 .game-values::-webkit-scrollbar { /* WebKit */
@@ -101,7 +104,7 @@
     display: revert;
     justify-content: center;
     position: absolute;
-    width: 100%;
+    width: 90%;
     margin-right: 20px;
     margin-left: 0;
 
@@ -134,7 +137,7 @@
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* Internet Explorer 10+ */
     height: fit-content;
-    margin-top: 10px;
+    margin-top: 50px;
     margin-left: 0;
 
   }
@@ -232,3 +235,7 @@ border-radius: 5px;
 .start-button:hover {
 background: #367bee;
 }*/
+
+.canvas{
+  height: 325px;
+}
