@@ -5,25 +5,20 @@
 }
 
 .grid-item {
-  border: 1px solid rgba(0, 0, 0, 0.8);
   text-align: left;
   margin: 17px;
-  height: 130px;
+  height: 100px;
   width: 90%;
-  background-color: #1e1e1e;
-  box-shadow: 0.0315rem 0 0.625rem 0 whitesmoke;
-  border-radius: 10px;
+  background-color: #303338;
+  border-radius: 5px;
   padding: 5px;
-
 }
 
 .grid-item h6 {
-  font-family: yuzu, serif;
+  font-family: satella, serif;
+  font-size: 17px;
+  color: ghostwhite;
 }
-
-/*  font-family: yuzu, serif;
-*/
-
 
 .content {
   overflow-y: scroll;
@@ -37,6 +32,11 @@
   font-family: ethnocentric, sans-serif;
   color: ghostwhite;
   margin-left: 50px;
+
+  border-radius: 10px;
+  background-color: #1e1e1e;
+  box-shadow: 0.0315rem 0 0.625rem 0 #fc0114;
+
 }
 
 .content::-webkit-scrollbar { /* WebKit */
@@ -45,16 +45,25 @@
 }
 
 .lobby-box {
-  width: 100%;
+
   float: left;
-  height: 800px;
-  background-color: #111111;
+
   text-align: center;
   padding: 20px;
   overflow-y: scroll;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* Internet Explorer 10+ */
 
+  border-radius: 10px;
+  background-color: #1e1e1e;
+  /*
+  box-shadow: 0.0315rem 0 0.625rem 0 #fc0114;
+  */
+  width: 750px;
+  height: 750px;
+  margin-left: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .lobby-box::-webkit-scrollbar { /* WebKit */
@@ -72,12 +81,12 @@
 }
 
 .resistanceWins {
-  color: #fc2001;
+  color: #367bee;
 
 }
 
 .spyWins {
-  color: #04a5f9;
+  color: #fc0114;
 
 }
 
@@ -87,7 +96,7 @@
 
 .game-options select {
   width: fit-content;
-  background-color: #383838;
+  background-color: #303338;
   color: ghostwhite;
   border-radius: 5px;
   padding: 5px;
@@ -95,7 +104,7 @@
 
 .game-options input {
   width: 20%;
-  background-color: #383838;
+  background-color: #303338;
   color: ghostwhite;
   border-radius: 5px;
   padding: 5px;
@@ -120,49 +129,44 @@
 
 .start-button {
   text-align: center;
-  background-color: #1e1e1e;
   padding: 15px;
-  width: 100%;
-  color: #e6e6e6;
   border: none;
+  cursor: pointer;
+  background-color: #6583f2;
+  width: 100%;
+  color: ghostwhite;
   border-radius: 5px;
 }
 
 .start-button:hover {
-  box-shadow: 0.0315rem 0 0.625rem 0 #fc2001;
-  -webkit-transition: box-shadow 500ms linear;
-  -ms-transition: box-shadow 500ms linear;
-  transition: box-shadow 500ms linear;
+  background: #367bee;
 }
 
+
 .validation {
-  font-size: 16px;
-  color: #fc2001;
+  font-size: 12px;
+  color: #fc0114;
   text-align: center;
   padding: 0;
 }
 
 .leave-game-button {
   text-align: center;
-  background-color: #1e1e1e;
-  box-shadow: 0.0315rem 0 0.625rem 0 whitesmoke;
-  width: 20%;
-  color: ghostwhite;
   border: none;
-  border-radius: 5px;
-  margin-left: 60px;
+  margin-left: 50px;
   padding: 15px;
   font-family: ethnocentric, sans-serif;
-
+  font-size: 12px;
+  margin-top: 10px;
+  cursor: pointer;
+  background-color: #6583f2;
+  width: 20%;
+  color: ghostwhite;
+  border-radius: 5px;
 }
 
 .leave-game-button:hover {
-  box-shadow: 0.0315rem 0 0.625rem 0 #fc2001;
-  background-color: #111111;
-  -webkit-transition: box-shadow 500ms linear;
-  -ms-transition: box-shadow 500ms linear;
-  transition: box-shadow 500ms linear, background-color 500ms linear;
-
+  background: #367bee;
 }
 
 
@@ -177,7 +181,9 @@
     width: 100%;
     margin-right: 20px;
     margin-left: 0;
-
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
   }
 
   .content::-webkit-scrollbar { /* WebKit */
@@ -193,6 +199,8 @@
     height: 500px;
     margin-top: 10px;
     margin-left: 0;
+    box-shadow: 0.0315rem 0 0.625rem 0 #fc0114;
+
   }
 
   .lobby-box::-webkit-scrollbar { /* WebKit */

@@ -1,8 +1,8 @@
 <div class="content">
-  <h4>Game Details</h4>
+  <h4 class="whiteText">Game Details</h4>
   <div class="game-details" *ngIf="selectedGameDetails?.channelName">
-    <h6>{{selectedGameDetails.channelName}}</h6>
-    <h6>{{selectedGameDetails.playersDetails.length}} / 10 players</h6>
+    <h6 >{{selectedGameDetails.channelName}}</h6>
+    <h6 >{{selectedGameDetails.playersDetails.length}} / 10 players</h6>
     <h6 *ngIf="selectedGameDetails.playersDetails[0]">Host: <span
       class="host-header">{{selectedGameDetails.playersDetails[0].userName}}</span></h6>
     <div class="playerDetails-table">

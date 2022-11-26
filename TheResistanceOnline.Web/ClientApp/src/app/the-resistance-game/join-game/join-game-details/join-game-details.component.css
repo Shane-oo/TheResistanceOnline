@@ -1,6 +1,15 @@
 .host-header {
-  font-size: 15px;
-  font-family: yuzu, serif;
+  font-family: satella, serif;
+  font-size: 17px;
+  color: ghostwhite;
+}
+
+.blueText {
+  color: #367bee;
+}
+
+.whiteText {
+  color: ghostwhite;
 }
 
 .game-details {
@@ -34,36 +43,53 @@ th {
 }
 
 .name {
-  font-size: 13px;
-  font-family: yuzu, serif;
+  font-family: satella, serif;
+  font-size: 17px;
+  color: ghostwhite;
 }
 
 .resistanceWins {
-  color: #04a5f9;
+  color: #367bee;
 }
 
 .spyWins {
-  color: #fc2001;
+  color: #fc0114;
 
 }
 
 .join-game-button {
   text-align: center;
-  background-color: #1e1e1e;
   padding: 15px;
-  width: 75%;
-  color: #e6e6e6;
+
   border: none;
-  font-size: 14px;
+
   margin-top: 50px;
-  box-shadow: 0.0315rem 0 0.625rem 0 ghostwhite;
-  border-radius: 10px;
   cursor: pointer;
+
+  background-color: #6583f2;
+
+  width: 100%;
+  color: ghostwhite;
+
+  border-radius: 5px;
 }
 
 .join-game-button:hover {
-  box-shadow: 0.0315rem 0 0.625rem 0 #fc2001;
-  -webkit-transition: box-shadow 500ms linear;
-  -ms-transition: box-shadow 500ms linear;
-  transition: box-shadow 500ms linear;
+  background: #367bee;
 }
+
+
+/*.login-button {
+  text-align: center;
+  background-color: #6583f2;
+  padding: 15px;
+  width: 100%;
+  color: #e6e6e6;
+  border: none;
+  border-radius: 5px;
+}
+
+.login-button:hover {
+  background: #367bee;
+
+}*/
