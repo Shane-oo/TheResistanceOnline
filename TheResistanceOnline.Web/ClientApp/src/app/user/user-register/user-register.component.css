@@ -16,7 +16,7 @@
   height: 575px;
   background-color: #1e1e1e;
   text-align: center;
-  box-shadow: 0.0315rem 0 0.625rem 0 #fc2001;
+  box-shadow: 0.0315rem 0 0.625rem 0 #fc0114;
   border-radius: 10px;
   padding: 20px;
 }
@@ -38,7 +38,7 @@
   font-family: ethnocentric, serif;
   font-size: 20px;
   font-weight: 500;
-  color: #04a5f9;
+  color: #367bee;
 }
 
 
@@ -46,25 +46,28 @@
   font-family: ethnocentric, serif;
   font-size: 16px;
   font-weight: 100;
-  color: #04a5f9;
+  color: #367bee;
 }
 
 .form-box input[type="email"] {
-  font-family: yuzu, serif;
-  font-size: 20px;
-  color: #f3f3f3;
+  font-family: satella, serif;
+  font-size: 17px;
+  color: ghostwhite;
+
 }
 
 .form-box input[type="password"] {
-  font-family: yuzu, serif;
-  font-size: 20px;
-  color: #f3f3f3;
+  font-family: satella, serif;
+  font-size: 17px;
+  color: ghostwhite;
+
 }
 
 .form-box input[type="text"] {
-  font-family: yuzu, serif;
-  font-size: 20px;
-  color: #f3f3f3;
+  font-family: satella, serif;
+  font-size: 17px;
+  color: ghostwhite;
+
 }
 
 .form-box p {
@@ -84,25 +87,12 @@
   background-color: #303338;
   border: none;
   padding: 13px;
-  color: #e6e6e6;
+  color: ghostwhite;
   font-size: 13px;
 }
 
-.forgot-pass-link {
-  font-size: 12px;
-  text-align: left;
-  color: #72767d;
-  text-decoration: none;
-}
-
-.forgot-pass-link :hover {
-
-  text-decoration: underline;
-}
-
-
 .login-link {
-  color: #04a5f9;
+  color: #6583f2;
   margin-top: 10px;
   text-decoration: none;
   font-size: 14px;
@@ -111,20 +101,21 @@
 
 .login-link:hover {
   text-decoration: underline;
+  color:#367bee ;
 }
 
 .register-button {
   text-align: center;
-  background-color: #04a5f9;
+  background-color: #6583f2;
   padding: 15px;
   width: 100%;
-  color: #e6e6e6;
+  color: ghostwhite;
   border: none;
   border-radius: 5px;
 }
 
 .register-button:hover {
-  background: #0493e0;
+  background: #367bee;
 
 }
 
@@ -179,7 +170,7 @@
 /*ToDo buy the non bold font and use here*/
 .validation {
   font-size: 10px;
-  color: #fc2001;
+  color: #fc0114;
   text-align: left;
   padding: 0;
 }

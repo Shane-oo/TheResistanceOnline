@@ -4,6 +4,7 @@
 </div>
 <!--todo change this to 1 = MissionPropose-->
 <div class="content">
+  <app-game-canvas></app-game-canvas>
   <div class="countdown-values">
     <div>
       <div>The Resistance</div>
@@ -40,9 +41,9 @@
     </div>
     <div class="grid-container lobby-box">
       <div *ngFor="let playerDetail of gameDetails.playersDetails" class="grid-item">
+        <fa-icon class="icon" *ngIf="playerDetail.playerId === missionLeaderPlayerId" [icon]="missionLeaderIcon"></fa-icon>
 
         <div class="top-row-icons">
-          <fa-icon *ngIf="playerDetail.playerId === missionLeaderPlayerId" [icon]="missionLeaderIcon"></fa-icon>
           <!--For If User is Mission Team Leader
               They Will have Selectable Mission Team Member Icons-->
           <div *ngIf="missionLeaderPlayerId === playerId">

@@ -1,8 +1,9 @@
 <div class="content grid-container">
   <div class="lobby-box">
     <div *ngFor="let playerDetail of gameDetails.playersDetails | slice:0:middle;" class="grid-item">
-      <b class="wins resistanceWins">{{playerDetail.resistanceTeamWins}}</b>
       <b class="wins spyWins">{{playerDetail.spyTeamWins}}</b>
+      <b class="wins resistanceWins">{{playerDetail.resistanceTeamWins}}</b>
+
       <h6> {{playerDetail.userName}}</h6>
       <h6 *ngIf="playerDetail.discordUserName" class="discord-name"><i class='fab fa-discord'></i> : {{playerDetail.discordUserName}}</h6>
     </div>
@@ -65,8 +66,8 @@
   </div>
   <div class="lobby-box">
     <div *ngFor="let playerDetail of gameDetails.playersDetails | slice:middle:10;" class="grid-item">
-      <b class="wins resistanceWins">{{playerDetail.resistanceTeamWins}}</b>
       <b class="wins spyWins">{{playerDetail.spyTeamWins}}</b>
+      <b class="wins resistanceWins">{{playerDetail.resistanceTeamWins}}</b>
       <h6> {{playerDetail.userName}}</h6>
       <h6 *ngIf="playerDetail.discordUserName" class="discord-name"><i class='fab fa-discord'></i> : {{playerDetail.discordUserName}}</h6>
     </div>
