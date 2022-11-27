@@ -203,9 +203,13 @@ namespace TheResistanceOnline.BusinessLogic.Games
                 //todo put this back after testing mission leader functionality
                 /*
                 gameDetails.PlayersDetails = shuffledPlayerDetails*/
-
+                //remove
                 gameDetails.PlayersDetails = shuffledPlayerDetails.OrderBy(x => x.IsBot).ToList();
+                gameDetails.PlayersDetails.First().Team = TeamModel.Spy;
+                
+                //keep
                 gameDetails.PlayersDetails.First().IsMissionLeader = true;
+
             }
 
             gameDetails.MissionTeam = new List<PlayerDetailsModel>();
