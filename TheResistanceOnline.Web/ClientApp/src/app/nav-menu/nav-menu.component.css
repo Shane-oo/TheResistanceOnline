@@ -132,23 +132,23 @@ html {
 
 .sidenav-nav-link:hover {
   background-color: #6583f2;
-  color: #000;
+  color: ghostwhite;
 }
 
 
 .active {
   background-color: #367bee;
-  color: #000000;
+  color: ghostwhite;
 }
 
 .sidenav-link-icon:active {
   background-color: ghostwhite;
-  color: black;
+  color: ghostwhite;
 }
 
 .sidenav-link-text:active {
   background-color: ghostwhite;
-  color: black;
+  color: ghostwhite;
 }
 
 .material-symbols-outlined {

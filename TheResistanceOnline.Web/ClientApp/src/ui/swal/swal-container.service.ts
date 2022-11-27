@@ -5,6 +5,7 @@ import { DiscordLoginResponseModel } from '../../app/user/user.models';
 import Swal, { SweetAlertResult } from 'sweetalert2';
 import { Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { PlayerDetails } from '../../app/the-resistance-game/the-resistance-game.models';
 
 export const enum SwalTypesModel {
   Info,
@@ -62,6 +63,42 @@ export class SwalContainerService {
           } else {
           }
         });
+  };
+
+  public fireNotifySpiesModal = (spies: PlayerDetails[]) => {
+    console.log('swal is firing for these people', spies);
+    const formattedString = spies.map(p => p.userName).join(', ');
+
+
+    //todo calculate window size and depending on the size show different text.
+    console.log(formattedString);
+    Swal.fire({
+                backdrop: false,
+                background: '#1e1e1e',
+
+                showCancelButton: false,
+                html: `<div class="SpyFont">
+                        <h4>Your Mission:</h4>
+                        <div>
+                            <div >
+                                <img alt="EvilSpyLeader" src="./assets/images/evil_goverment_lady.png" width="80%" height="5%">
+                            </div>
+                            <p>${formattedString}</p>
+                            <div class="css-typing">
+                                 <p>Together, complete your covert operation.</p>
+                                 <p> Sabotage the Resistances missions and remain unnoticed.</p>
+                                 <p>Do not fail your Government.</p>
+                            </div>
+                        </div>
+                       </div>`,
+                showConfirmButton: true,
+                confirmButtonText: 'Understood',
+                customClass: {
+                  confirmButton: 'swalConfirmButtonSpy',
+                  popup: 'swalModalSpy'
+                }
+              });
+
   };
 
   private resetSwal() {
