@@ -43,7 +43,7 @@
 
   background-color: #1e1e1e;
   width: 750px;
-  height: 750px;
+  height: 800px;
   margin-left: 5px;
   margin-top: 5px;
   margin-bottom: 5px;
@@ -108,7 +108,7 @@
 
   background-color: #1e1e1e;
   width: 750px;
-  height: 750px;
+  height: 800px;
 
   margin: 5px 5px 5px 10px;
 }
@@ -153,7 +153,6 @@
     -ms-overflow-style: none; /* Internet Explorer 10+ */
     margin-top: 10px;
     margin-left: 0;
-
 
     height: 390px;
     box-shadow: 0.0315rem 0 0.625rem 0 #fc0114;
