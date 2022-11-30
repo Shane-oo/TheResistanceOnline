@@ -13,6 +13,7 @@
   border-radius: 10px;
   background-color: #1e1e1e;
   box-shadow: 0.0315rem 0 0.625rem 0 #fc0114;
+
 }
 
 .blueText {
@@ -43,7 +44,7 @@
 
   background-color: #1e1e1e;
   width: 750px;
-  height: 800px;
+  height: 100vh;
   margin-left: 5px;
   margin-top: 5px;
   margin-bottom: 5px;
@@ -108,7 +109,7 @@
 
   background-color: #1e1e1e;
   width: 750px;
-  height: 800px;
+  height: 100vh;
 
   margin: 5px 5px 5px 10px;
 }
