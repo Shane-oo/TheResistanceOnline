@@ -33,13 +33,18 @@ app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
+/*
+ Old way, received warning to remove => dotnet 7
 app.UseEndpoints(endpoints =>
                  {
                      endpoints.MapControllers();
                      //todo map hubs dont forget
                      //endpoints.MapHub<TheResistanceHub>("/message");
                      endpoints.MapHub<TheResistanceHub>("/theresistancehub"); //// path will look like this https://localhost:44379/theresistancehub 
-                 });
+                 });*/
+
+app.MapControllers();
+app.MapHub<TheResistanceHub>("/theresistancehub");
 
 app.Run();
 

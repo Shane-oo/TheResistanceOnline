@@ -56,6 +56,12 @@ code {
   left: 2px
 }
 
+.userList{
+  font-family: satella, serif;
+  font-size: 17px;
+  color: #fc0114;
+}
+
 .swalModalSpy {
   width: 50% !important;
   color: ghostwhite !important;
@@ -69,9 +75,13 @@ code {
   cursor: pointer !important;
   background-color: #303338 !important;
   width: 100% !important;
-  color: ghostwhite !important;
   border-radius: 5px !important;
   box-shadow: 0.0315rem 0 0.625rem 0 #fc0114 !important;
+
+  font-family: ethnocentric, serif !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  color: #fc0114 !important;
 }
 
 .swalConfirmButtonSpy:hover {
