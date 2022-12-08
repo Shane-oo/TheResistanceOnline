@@ -2,6 +2,9 @@
   display: grid;
   grid-template-columns: auto auto auto;
   padding: 10px;
+
+  height: 95vh;
+
 }
 
 .grid-item {
@@ -60,7 +63,7 @@
   box-shadow: 0.0315rem 0 0.625rem 0 #fc0114;
   */
   width: 750px;
-  height: 80vh;
+  height: 95vh;
 
   margin-left: 5px;
   margin-top: 5px;

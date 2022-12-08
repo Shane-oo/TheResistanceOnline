@@ -69,21 +69,38 @@ export class SwalContainerService {
     console.log('swal is firing for these people', spies);
     const formattedString = spies.map(p => p.userName).join(', ');
 
+    if(window.innerWidth < 760) {
+      Swal.fire({
+                  backdrop: false,
+                  background: '#1e1e1e',
+                  showCancelButton: false,
+                  html: `<div class="SpyFont">
+                        <h4>Spies:</h4>
+                        <div>
+                            <p class="userList">${formattedString}</p>
+                        </div>
+                       </div>`,
+                  showConfirmButton: true,
+                  confirmButtonText: 'Understood',
+                  showCloseButton:true,
+                  customClass: {
+                    confirmButton: 'swalConfirmButtonSpy',
+                    popup: 'swalModalSpy'
+                  }
+                });
+    } else {
+      Swal.fire({
+                  backdrop: false,
+                  background: '#1e1e1e',
 
-    //todo calculate window size and depending on the size show different text.
-    console.log(formattedString);
-    Swal.fire({
-                backdrop: false,
-                background: '#1e1e1e',
-
-                showCancelButton: false,
-                html: `<div class="SpyFont">
-                        <h4>Your Mission:</h4>
+                  showCancelButton: false,
+                  html: `<div class="SpyFont">
+                        <h4>Spies:</h4>
                         <div>
                             <div >
-                                <img alt="EvilSpyLeader" src="./assets/images/evil_goverment_lady.png" width="80%" height="5%">
+                                <img alt="EvilSpyLeader" src="./assets/images/evil_goverment_lady.png" width="60%" height="5%">
                             </div>
-                            <p>${formattedString}</p>
+                            <p class="userList">${formattedString}</p>
                             <div class="css-typing">
                                  <p>Together, complete your covert operation.</p>
                                  <p> Sabotage the Resistances missions and remain unnoticed.</p>
@@ -91,14 +108,15 @@ export class SwalContainerService {
                             </div>
                         </div>
                        </div>`,
-                showConfirmButton: true,
-                confirmButtonText: 'Understood',
-                customClass: {
-                  confirmButton: 'swalConfirmButtonSpy',
-                  popup: 'swalModalSpy'
-                }
-              });
-
+                  showConfirmButton: true,
+                  confirmButtonText: 'Understood',
+                  showCloseButton:true,
+                  customClass: {
+                    confirmButton: 'swalConfirmButtonSpy',
+                    popup: 'swalModalSpy'
+                  }
+                });
+    }
   };
 
   private resetSwal() {
