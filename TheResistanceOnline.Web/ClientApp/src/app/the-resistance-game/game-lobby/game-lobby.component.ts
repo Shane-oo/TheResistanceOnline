@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { GameDetails, GameOptions, GameStage, StartGameCommand } from '../the-resistance-game.models';
+import { GameAction, GameDetails, GameOptions, GameStage, StartGameCommand } from '../the-resistance-game.models';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { TheResistanceGameService } from '../the-resistance-game.service';
+import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 
 interface TimeLimit {
   minutesString: string;
@@ -14,6 +15,7 @@ interface TimeLimit {
              styleUrls: ['./game-lobby.component.css']
            })
 export class GameLobbyComponent implements OnInit {
+  public discordIcon = faDiscord;
   @Input() gameDetails: GameDetails = {
     channelName: '',
     playersDetails: [],
@@ -23,7 +25,8 @@ export class GameLobbyComponent implements OnInit {
     missionTeam: [],
     missionSize: 0,
     gameStage: GameStage.GameStart,
-    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0}
+    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0},
+    gameAction: GameAction.None
   };
   @Input() isTheHost: boolean = false;
   public gameOptionsForm: FormGroup = new FormGroup({});

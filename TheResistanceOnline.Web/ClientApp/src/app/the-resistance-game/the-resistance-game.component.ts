@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { GameDetails, GameStage } from './the-resistance-game.models';
+import { GameAction, GameDetails, GameStage } from './the-resistance-game.models';
 import { TheResistanceGameService } from './the-resistance-game.service';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -20,7 +20,8 @@ export class TheResistanceGameComponent implements OnInit {
     missionTeam: [],
     missionSize: 0,
     gameStage: GameStage.GameStart,
-    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0}
+    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0},
+    gameAction: GameAction.None
   };
   public isTheHost: boolean = false;
   private readonly destroyed = new Subject<void>();

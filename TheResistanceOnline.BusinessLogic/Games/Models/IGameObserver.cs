@@ -5,4 +5,5 @@ public interface IGameObserver
     void Update(GameDetailsModel gameDetails);
 
     void Dispose();
+
 }

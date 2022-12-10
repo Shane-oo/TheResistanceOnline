@@ -8,6 +8,8 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
 
         public string ChannelName { get; set; }
 
+        public GameActionModel GameAction { get; set; }
+
         public GameOptionsModel GameOptions { get; set; }
 
         public GameStageModel GameStage { get; set; }

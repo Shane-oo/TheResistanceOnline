@@ -68,23 +68,50 @@ code {
   box-shadow: 0.0315rem 0 0.625rem 0 #fc0114 !important;
 }
 
+.swalModalResistance {
+  width: 50% !important;
+  color: ghostwhite !important;
+  box-shadow: 0.0315rem 0 0.625rem 0 #6583f2 !important;
+}
+
 .swalConfirmButtonSpy {
   text-align: center !important;
   padding: 15px !important;
   border: none !important;
   cursor: pointer !important;
   background-color: #303338 !important;
-  width: 100% !important;
+  width: max-content !important;
   border-radius: 5px !important;
   box-shadow: 0.0315rem 0 0.625rem 0 #fc0114 !important;
 
   font-family: ethnocentric, serif !important;
-  font-size: 20px !important;
+  font-size: 75% !important;
   font-weight: 500 !important;
   color: #fc0114 !important;
 }
 
+.swalConfirmButtonResistance{
+  text-align: center !important;
+  padding: 15px !important;
+  border: none !important;
+  cursor: pointer !important;
+  background-color: #303338 !important;
+  width: max-content !important;
+  border-radius: 5px !important;
+  box-shadow: 0.0315rem 0 0.625rem 0 #6583f2 !important;
+
+  font-family: ethnocentric, serif !important;
+  font-size: 75% !important;
+  font-weight: 500 !important;
+  color: #367bee !important;
+}
+
+
 .swalConfirmButtonSpy:hover {
+  background-color: #1e1e1e !important;
+
+}
+.swalConfirmButtonResistance:hover {
   background-color: #1e1e1e !important;
 
 }
@@ -95,6 +122,14 @@ code {
   font-weight: 500;
   color: #fc0114;
 }
+
+.ResistanceFont {
+  font-family: ethnocentric, serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #367bee;
+}
+
 
 .css-typing p {
   border-right: .15em solid #fc0114;
@@ -224,15 +259,133 @@ code {
   }
 }
 
-@keyframes blink {
-  50% {
-    border-color: #1e1e1e;
+
+/*Resistance Typing Effect*/
+.css-typing-resistance p {
+  border-right: .15em solid #6583f2;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.css-typing-resistance p:nth-child(1) {
+  width: 100%;
+  -webkit-animation: type-resistance 2s steps(40, end);
+  animation: type-resistance 2s steps(40, end);
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+
+.css-typing-resistance p:nth-child(2) {
+  width: 100%;
+  opacity: 0;
+  -webkit-animation: type2-resistance 2s steps(40, end);
+  animation: type2-resistance 2s steps(40, end);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+
+.css-typing-resistance p:nth-child(3) {
+  width: 100%;
+  opacity: 0;
+  -webkit-animation: type2-resistance 2s steps(40, end);
+  animation: type2-resistance 2s steps(40, end);
+  -webkit-animation-delay: 4s;
+  animation-delay: 4s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+
+.css-typing p:nth-child(4) {
+  width: 100%;
+  opacity: 0;
+  -webkit-animation: type3-resistance 5s steps(20, end), blink .5s step-end infinite alternate;
+  animation: type3-resistance 5s steps(20, end), blink .5s step-end infinite alternate;
+  -webkit-animation-delay: 6s;
+  animation-delay: 6s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+
+@keyframes type-resistance {
+  0% {
+    width: 0;
+  }
+  99.9% {
+    border-right: .15em solid #6583f2;
+  }
+  100% {
+    border: none;
   }
 }
 
-@-webkit-keyframes blink {
-  50% {
-    border-color: #1e1e1e;
+@-webkit-keyframes type-resistance {
+  0% {
+    width: 0;
+  }
+  99.9% {
+    border-right: .15em solid #6583f2;
+  }
+  100% {
+    border: none;
+  }
+}
+
+@keyframes type2-resistance {
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  99.9% {
+    border-right: .15em solid #6583f2;
+  }
+  100% {
+    opacity: 1;
+    border: none;
+  }
+}
+
+@-webkit-keyframes type2-resistance {
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  99.9% {
+    border-right: .15em solid #6583f2;
+  }
+  100% {
+    opacity: 1;
+    border: none;
+  }
+}
+
+@keyframes type3-resistance {
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes type3-resistance {
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
   }
 }
 

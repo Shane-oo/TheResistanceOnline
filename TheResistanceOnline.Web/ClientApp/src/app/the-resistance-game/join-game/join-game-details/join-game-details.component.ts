@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { GameDetails, GameStage, JoinGameCommand } from '../../the-resistance-game.models';
+import { GameAction, GameDetails, GameStage, JoinGameCommand } from '../../the-resistance-game.models';
 import { TheResistanceGameService } from '../../the-resistance-game.service';
+import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 
 @Component({
              selector: 'app-join-game-details',
@@ -8,6 +9,7 @@ import { TheResistanceGameService } from '../../the-resistance-game.service';
              styleUrls: ['./join-game-details.component.css']
            })
 export class JoinGameDetailsComponent implements OnInit {
+  public discordIcon = faDiscord;
 
   @Input() selectedGameDetails: GameDetails = {
     channelName: '',
@@ -18,7 +20,8 @@ export class JoinGameDetailsComponent implements OnInit {
     missionTeam: [],
     missionSize: 0,
     gameStage: GameStage.GameStart,
-    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0}
+    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0},
+    gameAction: GameAction.None
   };
 
   constructor(private gameService: TheResistanceGameService) {
