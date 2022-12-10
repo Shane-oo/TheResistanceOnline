@@ -8,20 +8,27 @@ public class BayesBotObserver: IBotObserver
     #region Fields
 
     private GameDetailsModel _gameDetails = new GameDetailsModel();
+
     #endregion
 
     #region Properties
-    
+
     public Guid PlayerId { get; set; }
+
+    #endregion
+
+    #region Private Methods
+
+    [CanBeNull]
+    private PlayerDetailsModel GetMissionLeader(GameDetailsModel gameDetails)
+    {
+        return gameDetails.PlayersDetails?.FirstOrDefault(p => p.IsMissionLeader);
+    }
 
     #endregion
 
     #region Public Methods
 
-    public void SetPlayerId(Guid playerId)
-    {
-        PlayerId = playerId;
-    }
     public void GetChoice()
     {
         Console.WriteLine("asked for choice");
@@ -33,10 +40,9 @@ public class BayesBotObserver: IBotObserver
         return true;
     }
 
-    [CanBeNull]
-    private PlayerDetailsModel GetMissionLeader(GameDetailsModel gameDetails)
+    public void SetPlayerId(Guid playerId)
     {
-        return gameDetails.PlayersDetails?.FirstOrDefault(p => p.IsMissionLeader);
+        PlayerId = playerId;
     }
 
     public void Update(GameDetailsModel gameDetails)
@@ -50,7 +56,16 @@ public class BayesBotObserver: IBotObserver
                 // do noting for now i think
                 break;
         }
+
+
+        switch(_gameDetails.GameStage)
+        {
+            case GameStageModel.VoteResults:
+                // do something with VoteResults
+                break;
+        }
     }
 
     #endregion
 }
+

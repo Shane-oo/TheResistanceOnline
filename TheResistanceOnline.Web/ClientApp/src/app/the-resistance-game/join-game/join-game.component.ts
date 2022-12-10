@@ -28,7 +28,7 @@ export class JoinGameComponent implements OnInit {
     missionTeam: [],
     missionSize: 0,
     gameStage: GameStage.GameStart,
-    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0},
+    gameOptions: {timeLimitMinutes: 0, botCount: 0},
     gameAction: GameAction.None
 
   };

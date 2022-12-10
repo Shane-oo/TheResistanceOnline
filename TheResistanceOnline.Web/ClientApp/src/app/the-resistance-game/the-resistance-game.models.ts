@@ -28,6 +28,8 @@ export interface PlayerDetails {
   selectedTeamMember: boolean;
   voted: boolean;
   approvedMissionTeam: boolean;
+
+  continue:boolean;
 }
 
 export interface GameDetailsResponse {
@@ -38,7 +40,6 @@ export interface GameDetailsResponse {
 
 export interface GameOptions {
   timeLimitMinutes: number;
-  moveTimeLimitMinutes: number;
   botCount: number;
 }
 
@@ -66,6 +67,7 @@ export enum GameAction {
   None = -1,
   SubmitMissionPropose,
   SubmitVote,
+  Continue
 }
 
 export interface GameActionCommand {

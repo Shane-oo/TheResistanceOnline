@@ -221,6 +221,14 @@
   background-color: #367bee;
 }
 
+.redIcon {
+  color: #fc0114;
+}
+
+.greenIcon {
+  color: #50d63d;
+}
+
 /*.start-button {
 text-align: center;
 padding: 15px;
@@ -237,6 +245,6 @@ border-radius: 5px;
 background: #367bee;
 }*/
 
-.canvas{
+.canvas {
   height: 325px;
 }
