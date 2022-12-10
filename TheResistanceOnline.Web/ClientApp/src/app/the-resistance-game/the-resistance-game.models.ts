@@ -11,7 +11,9 @@ export interface GameDetails {
   missionTeam: PlayerDetails[];
   missionSize: number;
   gameStage: GameStage;
-  gameOptions:GameOptions;
+  gameOptions: GameOptions;
+
+  gameAction: GameAction;
 }
 
 export interface PlayerDetails {
@@ -24,6 +26,8 @@ export interface PlayerDetails {
   playerId: string;
   team: TeamModel;
   selectedTeamMember: boolean;
+  voted: boolean;
+  approvedMissionTeam: boolean;
 }
 
 export interface GameDetailsResponse {
@@ -55,4 +59,15 @@ export enum GameStage {
   VoteResults, // Show the results from the most recent vote
   Mission, // If Vote Successful Mission Members go on mission
   MissionResults// Show the results from the most recent mission
+}
+
+
+export enum GameAction {
+  None = -1,
+  SubmitMissionPropose,
+  SubmitVote,
+}
+
+export interface GameActionCommand {
+  gameDetails: GameDetails,
 }

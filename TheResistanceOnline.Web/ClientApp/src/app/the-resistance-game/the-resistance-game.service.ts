@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { GameDetails, JoinGameCommand, StartGameCommand } from './the-resistance-game.models';
+import { GameActionCommand, GameDetails, JoinGameCommand, StartGameCommand } from './the-resistance-game.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import * as signalR from '@microsoft/signalr';
@@ -164,6 +164,14 @@ export class TheResistanceGameService {
       location.reload();
     });
   };
+
+
+  public sendGameActionCommand = (gameActionCommand: GameActionCommand) => {
+    this.connection.invoke('ReceiveGameActionCommand', gameActionCommand).then(() => {
+      console.log('then');
+    }).catch(err => console.log(err));
+  };
+
 
 
   // this will probably needed to be done somewhere

@@ -38,7 +38,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                            ChannelName = "game-1",
                                                                                                                            IsVoiceChannel = false,
                                                                                                                            IsAvailable = true,
-                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>(),
+                                                                                                                           GameStage = GameStageModel.GameStart,
+                                                                                                                           GameAction = GameActionModel.None
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -47,7 +49,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                            ChannelName = "game-2",
                                                                                                                            IsVoiceChannel = false,
                                                                                                                            IsAvailable = true,
-                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>(),
+                                                                                                                           GameStage = GameStageModel.GameStart,
+                                                                                                                           GameAction = GameActionModel.None
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -56,7 +60,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                            ChannelName = "game-3",
                                                                                                                            IsVoiceChannel = false,
                                                                                                                            IsAvailable = true,
-                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>(),
+                                                                                                                           GameStage = GameStageModel.GameStart,
+                                                                                                                           GameAction = GameActionModel.None
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -65,7 +71,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                            ChannelName = "game-4",
                                                                                                                            IsVoiceChannel = false,
                                                                                                                            IsAvailable = true,
-                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>(),
+                                                                                                                           GameStage = GameStageModel.GameStart,
+                                                                                                                           GameAction = GameActionModel.None
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -74,7 +82,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                            ChannelName = "game-5",
                                                                                                                            IsVoiceChannel = false,
                                                                                                                            IsAvailable = true,
-                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>(),
+                                                                                                                           GameStage = GameStageModel.GameStart,
+                                                                                                                           GameAction = GameActionModel.None
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -83,7 +93,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                            ChannelName = "game-6",
                                                                                                                            IsVoiceChannel = true,
                                                                                                                            IsAvailable = true,
-                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>(),
+                                                                                                                           GameStage = GameStageModel.GameStart,
+                                                                                                                           GameAction = GameActionModel.None
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -101,7 +113,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                            ChannelName = "game-8",
                                                                                                                            IsVoiceChannel = true,
                                                                                                                            IsAvailable = true,
-                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>(),
+                                                                                                                           GameStage = GameStageModel.GameStart,
+                                                                                                                           GameAction = GameActionModel.None
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -110,7 +124,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                            ChannelName = "game-9",
                                                                                                                            IsVoiceChannel = true,
                                                                                                                            IsAvailable = true,
-                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>(),
+                                                                                                                           GameStage = GameStageModel.GameStart,
+                                                                                                                           GameAction = GameActionModel.None
                                                                                                                        }
                                                                                                                },
                                                                                                                {
@@ -119,7 +135,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                            ChannelName = "game-10",
                                                                                                                            IsVoiceChannel = true,
                                                                                                                            IsAvailable = true,
-                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>()
+                                                                                                                           PlayersDetails = new List<PlayerDetailsModel>(),
+                                                                                                                           GameStage = GameStageModel.GameStart,
+                                                                                                                           GameAction = GameActionModel.None
                                                                                                                        }
                                                                                                                },
                                                                                                            };
@@ -145,6 +163,13 @@ namespace TheResistanceOnline.SocketServer.Hubs
         #endregion
 
         #region Private Methods
+
+        private async Task<bool> CheckGameIsFinishedAsync(GameDetailsModel gameDetailsModel)
+        {
+            if (!gameDetailsModel.IsFinished) return false;
+            await SendGameFinishedToGroupAsync(gameDetailsModel.ChannelName);
+            return true;
+        }
 
         private void CheckGameOver(GameDetailsModel gameDetails, string userGroupName)
         {
@@ -206,7 +231,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         // call this function when game timer is finished
         // todo when hub is receiving commands from clients perform check for IsFinished and if true call this function
-        private async void SendGameFinishedToGroupAsync(string groupName)
+        private async Task SendGameFinishedToGroupAsync(string groupName)
         {
             //todo save all details before its deletion
             // this will refresh everyone in games page => triggering onDisconnectAsync() that will check for game over
@@ -245,6 +270,11 @@ namespace TheResistanceOnline.SocketServer.Hubs
             if (!_groupNameToGameObserver.TryGetValue(groupName, out var observer)) return;
             observer.Dispose();
             _groupNameToGameObserver.Remove(groupName);
+        }
+
+        public IGameObserver? GetGameObserver(string groupName)
+        {
+            return _groupNameToGameObserver.TryGetValue(groupName, out var observer) ? observer : null;
         }
 
         // Subject Function
@@ -320,6 +350,76 @@ namespace TheResistanceOnline.SocketServer.Hubs
         }
 
         [UsedImplicitly]
+        public async void ReceiveGameActionCommand(GameActionCommand gameActionCommand)
+        {
+            // get group name and game details
+            if (!_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var groupName)) return;
+            if (groupName == null) return;
+            var gameObserver = GetGameObserver(groupName);
+            if (gameObserver == null) return;
+            if (!_groupNameToGameDetailsMappingTable.TryGetValue(groupName, out var gameDetails)) return;
+
+            if (await CheckGameIsFinishedAsync(gameDetails))
+            {
+                return;
+            }
+
+            if (!_connectionIdToPlayerDetailsMappingTable.TryGetValue(Context.ConnectionId, out var playerDetails)) return;
+
+
+            var receivedGameDetails = gameActionCommand.GameDetails;
+            var receivedGameAction = receivedGameDetails.GameAction;
+            var receivedPlayerDetails = receivedGameDetails.PlayersDetails?.FirstOrDefault(p => p.PlayerId == playerDetails.PlayerId);
+            if (receivedPlayerDetails == null) return;
+
+            switch(receivedGameAction)
+            {
+                case GameActionModel.SubmitMissionPropose:
+
+                    gameDetails.MissionTeam = receivedGameDetails.MissionTeam;
+                    gameDetails.GameStage = GameStageModel.Vote;
+                    SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
+
+                    gameObserver.Update(gameDetails);
+                    break;
+
+                case GameActionModel.SubmitVote:
+
+                    playerDetails.Voted = receivedPlayerDetails.Voted;
+                    playerDetails.ApprovedMissionTeam = receivedPlayerDetails.ApprovedMissionTeam;
+                    
+                    var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
+                    if (players != null && players.All(p => p.Voted))
+                    {
+                        var bots = gameDetails.PlayersDetails?.Where(p => p.IsBot);
+                        if (bots != null)
+                        {
+                            foreach(var bot in bots)
+                            {
+                                bot.Voted = true;
+                                bot.ApprovedMissionTeam = bot.BotObserver.GetVote();
+                            }
+                        }
+
+                        gameDetails.GameStage = GameStageModel.VoteResults;
+                    }
+
+                    SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
+                    gameObserver.Update(receivedGameDetails);
+                    break;
+            }
+            // idea:
+            //switch GameAction
+
+            //(SubmitMissionPropose)
+            // gameService.SubmitMissionPropose()
+            //SubmitVotingResult
+            // gameService.SubmitVotingResult()
+            //...
+            //  that way it is just one function that can handles all game actions
+        }
+
+        [UsedImplicitly]
         public async Task ReceiveJoinGameCommand(JoinGameCommand command)
         {
             var gameDetails = _groupNameToGameDetailsMappingTable[command.ChannelName];
@@ -372,7 +472,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                             BotObserver = botObserver,
                                             UserName = gameServiceObserver.GetRandomBotName()
                                         };
-                botObserver.PlayerId = botPlayersDetails.PlayerId;
+                botObserver.SetPlayerId(botPlayersDetails.PlayerId);
 
                 gameDetails.PlayersDetails?.Add(botPlayersDetails);
             }

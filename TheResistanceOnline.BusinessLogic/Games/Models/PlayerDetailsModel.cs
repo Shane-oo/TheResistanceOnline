@@ -3,9 +3,11 @@ using JetBrains.Annotations;
 
 namespace TheResistanceOnline.BusinessLogic.Games.Models
 {
-    public class PlayerDetailsModel
+    public class PlayerDetailsModel: PlayerVariablesModel
     {
         #region Properties
+
+        public bool ApprovedMissionTeam { get; set; }
 
         // dont send to front end
         [JsonIgnore]
@@ -35,6 +37,8 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         public TeamModel Team { get; set; }
 
         public string UserName { get; set; }
+
+        public bool Voted { get; set; }
 
         #endregion
     }

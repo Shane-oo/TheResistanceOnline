@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TheResistanceGameService } from '../the-resistance-game.service';
-import { GameDetails, GameStage } from '../the-resistance-game.models';
+import { GameAction, GameDetails, GameStage } from '../the-resistance-game.models';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DiscordServerService } from '../../shared/services/discord-server.service';
 import { CreateDiscordUserCommand } from '../../shared/models/discord-server.models';
@@ -28,7 +28,8 @@ export class JoinGameComponent implements OnInit {
     missionTeam: [],
     missionSize: 0,
     gameStage: GameStage.GameStart,
-    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0}
+    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0},
+    gameAction: GameAction.None
 
   };
 
