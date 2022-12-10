@@ -184,6 +184,47 @@ namespace TheResistanceOnline.SocketServer.Hubs
             }
         }
 
+
+        private void ReceiveSubmitMissionPropose(GameDetailsModel gameDetails, GameDetailsModel receivedGameDetails, IGameObserver gameObserver, string groupName)
+        {
+            gameDetails.MissionTeam = receivedGameDetails.MissionTeam;
+            gameDetails.GameStage = GameStageModel.Vote;
+
+            SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
+
+            gameObserver.Update(gameDetails);
+        }
+
+        private void ReceiveSubmitVote(GameDetailsModel gameDetails,
+                                       PlayerDetailsModel playerDetails,
+                                       PlayerDetailsModel receivedPlayerDetails,
+                                       IGameObserver gameObserver,
+                                       string groupName)
+        {
+            playerDetails.Voted = receivedPlayerDetails.Voted;
+            playerDetails.ApprovedMissionTeam = receivedPlayerDetails.ApprovedMissionTeam;
+
+            var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
+            if (players != null && players.All(p => p.Voted))
+            {
+                var bots = gameDetails.PlayersDetails?.Where(p => p.IsBot);
+                if (bots != null)
+                {
+                    foreach(var bot in bots)
+                    {
+                        bot.Voted = true;
+                        bot.ApprovedMissionTeam = bot.BotObserver.GetVote();
+                    }
+                }
+
+                gameDetails.GameStage = GameStageModel.VoteResults;
+            }
+
+            SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
+
+            gameObserver.Update(gameDetails);
+        }
+
         private void RemoveConnectionFromAllMaps(string connectionId)
         {
             _connectionIdToGroupNameMappingTable.Remove(connectionId);
@@ -355,8 +396,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
             // get group name and game details
             if (!_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var groupName)) return;
             if (groupName == null) return;
-            var gameObserver = GetGameObserver(groupName);
-            if (gameObserver == null) return;
             if (!_groupNameToGameDetailsMappingTable.TryGetValue(groupName, out var gameDetails)) return;
 
             if (await CheckGameIsFinishedAsync(gameDetails))
@@ -365,7 +404,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
             }
 
             if (!_connectionIdToPlayerDetailsMappingTable.TryGetValue(Context.ConnectionId, out var playerDetails)) return;
-
+            var gameObserver = GetGameObserver(groupName);
+            if (gameObserver == null) return;
 
             var receivedGameDetails = gameActionCommand.GameDetails;
             var receivedGameAction = receivedGameDetails.GameAction;
@@ -375,37 +415,15 @@ namespace TheResistanceOnline.SocketServer.Hubs
             switch(receivedGameAction)
             {
                 case GameActionModel.SubmitMissionPropose:
-
-                    gameDetails.MissionTeam = receivedGameDetails.MissionTeam;
-                    gameDetails.GameStage = GameStageModel.Vote;
-                    SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
-
-                    gameObserver.Update(gameDetails);
+                    ReceiveSubmitMissionPropose(gameDetails, receivedGameDetails, gameObserver, groupName);
                     break;
 
                 case GameActionModel.SubmitVote:
-
-                    playerDetails.Voted = receivedPlayerDetails.Voted;
-                    playerDetails.ApprovedMissionTeam = receivedPlayerDetails.ApprovedMissionTeam;
-                    
-                    var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
-                    if (players != null && players.All(p => p.Voted))
-                    {
-                        var bots = gameDetails.PlayersDetails?.Where(p => p.IsBot);
-                        if (bots != null)
-                        {
-                            foreach(var bot in bots)
-                            {
-                                bot.Voted = true;
-                                bot.ApprovedMissionTeam = bot.BotObserver.GetVote();
-                            }
-                        }
-
-                        gameDetails.GameStage = GameStageModel.VoteResults;
-                    }
-
-                    SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
-                    gameObserver.Update(receivedGameDetails);
+                    ReceiveSubmitVote(gameDetails, playerDetails, receivedPlayerDetails, gameObserver, groupName);
+                    break;
+                
+                case GameActionModel.SubmitContinue:
+                    Console.WriteLine("pls continue");
                     break;
             }
             // idea:

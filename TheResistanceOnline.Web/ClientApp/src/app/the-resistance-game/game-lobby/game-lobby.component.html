@@ -5,7 +5,9 @@
       <b class="wins resistanceWins">{{playerDetail.resistanceTeamWins}}</b>
 
       <h6> {{playerDetail.userName}}</h6>
-      <h6 *ngIf="playerDetail.discordUserName" class="discord-name"><i class='fab fa-discord'></i> : {{playerDetail.discordUserName}}</h6>
+      <h6 *ngIf="playerDetail.discordUserName" class="discord-name">
+        <fa-icon [icon]="discordIcon" class="fa-sm"></fa-icon>
+        : {{playerDetail.discordUserName}}</h6>
     </div>
   </div>
   <div class="lobby-box middle">
@@ -38,17 +40,6 @@
             <em *ngIf="validateControl('timeLimitMinutes') && hasError('timeLimitMinutes', 'required')">Timelimit is required</em>
           </div>
         </div>
-        <div>
-          <p>Voting/Decision Time Limit</p>
-          <select formControlName="moveTimeLimitMinutes" id="moveTimeLimitMinutes">
-            <option *ngFor="let opt of moveTimeLimitOptions" [ngValue]="opt.minutes">{{opt.minutesString}}</option>
-          </select>
-          <div class="validation">
-            <em *ngIf="validateControl('moveTimeLimitMinutes') && hasError('moveTimeLimitMinutes', 'required')">Move TimeLimit is
-              required</em>
-          </div>
-        </div>
-
         <!--   player count validation-->
         <div class="validation">
           <em *ngIf=" hasError('botCount', 'max')">Too Many Players</em>
