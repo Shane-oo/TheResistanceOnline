@@ -205,7 +205,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
                 gameDetails.PlayersDetails = shuffledPlayerDetails*/
                 //remove
                 gameDetails.PlayersDetails = shuffledPlayerDetails.OrderBy(x => x.IsBot).ToList();
-                gameDetails.PlayersDetails.First().Team = TeamModel.Spy;
+                gameDetails.PlayersDetails.First().Team = TeamModel.Resistance;
                 
                 //keep
                 gameDetails.PlayersDetails.First().IsMissionLeader = true;

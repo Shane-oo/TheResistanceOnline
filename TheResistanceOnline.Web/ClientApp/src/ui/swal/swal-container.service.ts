@@ -21,6 +21,7 @@ export class SwalContainerService {
 
   public discordLoginResponseChanged: Subject<DiscordLoginResponseModel> = new Subject<DiscordLoginResponseModel>();
   private container!: ComponentRef<SwalContainerComponent>;
+  private windowSizeIsSmall: boolean = false;
 
   constructor(private readonly overlayService: OverlayService) {
   }
@@ -45,6 +46,8 @@ export class SwalContainerService {
   }
 
   public fireDiscordLoginRequested = () => {
+    this.checkSize();
+
     Swal.fire({
                 title: 'Discord Social Login',
                 backdrop: false,
@@ -66,63 +69,82 @@ export class SwalContainerService {
   };
 
   public fireNotifySpiesModal = (spies: PlayerDetails[]) => {
-    console.log('swal is firing for these people', spies);
+    this.checkSize();
     const formattedString = spies.map(p => p.userName).join(', ');
-
-    if(window.innerWidth < 760) {
-      Swal.fire({
-                  backdrop: false,
-                  background: '#1e1e1e',
-                  showCancelButton: false,
-                  html: `<div class="SpyFont">
+    let htmlBody = `<div class="SpyFont">
                         <h4>Spies:</h4>
                         <div>
-                            <p class="userList">${formattedString}</p>
-                        </div>
-                       </div>`,
-                  showConfirmButton: true,
-                  confirmButtonText: 'Understood',
-                  showCloseButton:true,
-                  customClass: {
-                    confirmButton: 'swalConfirmButtonSpy',
-                    popup: 'swalModalSpy'
-                  }
-                });
-    } else {
-      Swal.fire({
-                  backdrop: false,
-                  background: '#1e1e1e',
-
-                  showCancelButton: false,
-                  html: `<div class="SpyFont">
-                        <h4>Spies:</h4>
-                        <div>
-                            <div >
-                                <img alt="EvilSpyLeader" src="./assets/images/evil_goverment_lady.png" width="60%" height="5%">
-                            </div>
-                            <p class="userList">${formattedString}</p>
-                            <div class="css-typing">
-                                 <p>Together, complete your covert operation.</p>
-                                 <p> Sabotage the Resistances missions and remain unnoticed.</p>
-                                 <p>Do not fail your Government.</p>
-                            </div>
-                        </div>
-                       </div>`,
-                  showConfirmButton: true,
-                  confirmButtonText: 'Understood',
-                  showCloseButton:true,
-                  customClass: {
-                    confirmButton: 'swalConfirmButtonSpy',
-                    popup: 'swalModalSpy'
-                  }
-                });
+                            <p class=userList> ${formattedString} </p>
+                        </div>`;
+    if(!this.windowSizeIsSmall) {
+      htmlBody += `
+                    <div>
+                        <img alt="EvilSpyLeader" src="./assets/images/evil_goverment_lady.png" width="60%" height="5%">
+                    </div>
+                    <div class="css-typing">
+                        <p>Together, complete your covert operation.</p>
+                        <p> Sabotage the Resistances missions and remain unnoticed.</p>
+                        <p>Do not fail your Government.</p>
+                    </div>`;
     }
+    htmlBody += `</div>`;
+
+    Swal.fire({
+                backdrop: false,
+                background: '#1e1e1e',
+                showCancelButton: false,
+                html: htmlBody,
+                showConfirmButton: true,
+                confirmButtonText: 'Understood',
+                showCloseButton: true,
+                customClass: {
+                  confirmButton: 'swalConfirmButtonSpy',
+                  popup: 'swalModalSpy'
+                }
+              });
+  };
+
+  public fireNotifyResistanceModal = () => {
+    this.checkSize();
+
+    let htmlBody = `<div class="ResistanceFont">
+                        <h4>Resistance!</h4>`;
+    if(!this.windowSizeIsSmall) {
+      htmlBody += `
+                    <div>
+                        <img alt="ResistanceLeader" src="./assets/images/resistance_man_cyberpunk2.png" width="60%">
+                    </div>
+                    <div class="css-typing-resistance">
+                        <p>Complete your missions</p>
+                        <p>Help Overthrow the corrupt Government</p>
+                        <p>Beware of possible spies among us</p>
+                    </div>`;
+    }
+    htmlBody += `</div>`;
+
+    Swal.fire({
+                backdrop: false,
+                background: '#1e1e1e',
+                showCancelButton: false,
+                html: htmlBody,
+                showConfirmButton: true,
+                confirmButtonText: 'Understood',
+                showCloseButton: true,
+                customClass: {
+                  confirmButton: 'swalConfirmButtonResistance',
+                  popup: 'swalModalResistance'
+                }
+              });
   };
 
   private resetSwal() {
     this.container.instance.isSwalVisible = false;
     this.container.instance.isError = false;
     this.container.instance.isSuccess = false;
+  }
+
+  private checkSize(){
+      this.windowSizeIsSmall = window.innerWidth < 760;
   }
 }
 

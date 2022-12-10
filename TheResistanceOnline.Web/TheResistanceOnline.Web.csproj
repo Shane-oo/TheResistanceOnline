@@ -37,9 +37,7 @@
         <Folder Include="ClientApp\src\app\shared\custom-validators\the-resistance-game" />
         <Folder Include="ClientApp\src\app\shared\services" />
         <Folder Include="ClientApp\src\assets\textures" />
-        <Folder Include="ClientApp\src\assets\videos" />
         <Folder Include="ClientApp\src\assets\models" />
-        <Folder Include="ClientApp\src\assets\robot" />
     </ItemGroup>
 
     <ItemGroup>

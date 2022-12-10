@@ -7,6 +7,7 @@ import { CreateDiscordUserCommand } from '../../shared/models/discord-server.mod
 import { HttpErrorResponse } from '@angular/common/http';
 import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-container.service';
 
+
 @Component({
              selector: 'app-join-game',
              templateUrl: './join-game.component.html',

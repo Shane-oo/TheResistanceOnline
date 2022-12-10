@@ -2,14 +2,14 @@
 <div class="content">
   <div class="canvas">
 
+<!--
     <app-game-canvas></app-game-canvas>
+-->
 
   </div>
-  <!--todo change this to 1 = MissionPropose-->
-  <div *ngIf="gameDetails.gameStage === 0">
+
+  <div *ngIf="gameDetails.gameStage === 1">
     <div class="game-values">
-
-
       <h6>Mission Round: <b>{{gameDetails.missionRound}}</b></h6>
       <h6 *ngIf="missionLeaderPlayerId === playerId">Mission Team:<b> {{gameDetails.missionTeam.length}}/{{gameDetails.missionSize}}</b>
       </h6>
@@ -46,7 +46,7 @@
           <i class="fa-solid fa-person-military-rifle"></i>
         </div>
         <div *ngIf="playerDetail.discordUserName">
-          <h6 class="discord-name"><i class='fab fa-discord'></i> : {{playerDetail.discordUserName}}</h6>
+          <h6 class="discord-name"><fa-icon [icon]="discordIcon" class="fa-sm"></fa-icon> : {{playerDetail.discordUserName}}</h6>
         </div>
       </div>
     </div>
