@@ -43,7 +43,7 @@ export interface StartGameCommand {
 }
 
 
-enum TeamModel {
+export enum TeamModel {
   Resistance,
   Spy
 }

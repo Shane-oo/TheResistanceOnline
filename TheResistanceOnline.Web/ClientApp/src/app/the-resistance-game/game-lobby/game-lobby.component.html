@@ -69,7 +69,9 @@
       <b class="wins spyWins">{{playerDetail.spyTeamWins}}</b>
       <b class="wins resistanceWins">{{playerDetail.resistanceTeamWins}}</b>
       <h6> {{playerDetail.userName}}</h6>
-      <h6 *ngIf="playerDetail.discordUserName" class="discord-name"><i class='fab fa-discord'></i> : {{playerDetail.discordUserName}}</h6>
+      <h6 *ngIf="playerDetail.discordUserName" class="discord-name">
+        <fa-icon [icon]="discordIcon" class="fa-sm"></fa-icon>
+        : {{playerDetail.discordUserName}}</h6>
     </div>
   </div>
 </div>
