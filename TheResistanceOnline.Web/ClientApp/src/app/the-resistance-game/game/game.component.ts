@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TheResistanceGameService } from '../the-resistance-game.service';
-import { GameDetails, GameStage, TeamModel } from '../the-resistance-game.models';
+import { GameAction, GameDetails, GameStage, TeamModel } from '../the-resistance-game.models';
 
-import { faPersonMilitaryRifle, faPersonRifle, faSquarePlus} from '@fortawesome/free-solid-svg-icons';
-import {faDiscord} from '@fortawesome/free-brands-svg-icons';
-import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-container.service';
+import { faPersonMilitaryRifle, faPersonRifle, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
+import { faDiscord } from '@fortawesome/free-brands-svg-icons';
+import { SwalContainerService } from '../../../ui/swal/swal-container.service';
 import { CountdownComponent, CountdownConfig, CountdownEvent } from 'ngx-countdown';
 
 
@@ -20,6 +20,8 @@ export class GameComponent implements OnInit {
   public discordIcon = faDiscord;
   public missionLeaderPlayerId: string = '';
 
+  public voted: boolean = false;
+
   @Input() gameDetails: GameDetails = {
     channelName: '',
     playersDetails: [],
@@ -29,7 +31,8 @@ export class GameComponent implements OnInit {
     missionTeam: [],
     missionSize: 0,
     gameStage: GameStage.GameStart,
-    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0}
+    gameOptions: {timeLimitMinutes: 0, moveTimeLimitMinutes: 0, botCount: 0},
+    gameAction: GameAction.None
   };
   @Input() playerId: string = '';
 
@@ -54,9 +57,10 @@ export class GameComponent implements OnInit {
   ngOnChanges(): void {
     this.missionLeaderPlayerId = this.gameDetails.playersDetails.find(p => p.isMissionLeader)!.playerId;
     console.log(this.gameDetails);
+    this.voted = this.gameDetails.playersDetails.find(p => p.playerId === this.playerId)!.voted;
   }
 
-  ngOnDestroy():void{
+  ngOnDestroy(): void {
 
   }
 
@@ -77,10 +81,31 @@ export class GameComponent implements OnInit {
     }
 
   };
+  playerIsOnMissionTeam = (playerId: string) => {
+
+    return this.gameDetails.missionTeam.some(p => p.playerId === playerId);
+  };
 
   submitTeam = () => {
     this.moveCountdown.restart();
-    console.log('user wants this team', this.gameDetails.missionTeam);
+    this.gameDetails.gameAction = GameAction.SubmitMissionPropose;
+    let gameActionCommand = {
+      gameDetails: this.gameDetails
+    };
+    this.gameService.sendGameActionCommand(gameActionCommand);
+  };
+
+  submitVote = (approved: boolean) => {
+    let playerDetails = this.gameDetails.playersDetails.find(p => p.playerId === this.playerId)!;
+    playerDetails.voted = true;
+    playerDetails.approvedMissionTeam = approved;
+
+    this.gameDetails.gameAction = GameAction.SubmitVote;
+    let gameActionCommand = {
+      gameDetails: this.gameDetails
+    };
+    this.gameService.sendGameActionCommand(gameActionCommand);
+
   };
 
   //moveCountdown Expired player took too long to choose

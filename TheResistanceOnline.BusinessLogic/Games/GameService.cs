@@ -66,6 +66,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
             _observers.Add(observer);
         }
 
+        //todo
         public List<IBotObserver> CreateBotObservers(int botCount)
         {
             for(var i = 0; i < botCount; i++)
@@ -206,10 +207,9 @@ namespace TheResistanceOnline.BusinessLogic.Games
                 //remove
                 gameDetails.PlayersDetails = shuffledPlayerDetails.OrderBy(x => x.IsBot).ToList();
                 gameDetails.PlayersDetails.First().Team = TeamModel.Resistance;
-                
+
                 //keep
                 gameDetails.PlayersDetails.First().IsMissionLeader = true;
-
             }
 
             gameDetails.MissionTeam = new List<PlayerDetailsModel>();

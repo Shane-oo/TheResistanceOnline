@@ -1,15 +1,15 @@
-
 <div class="content">
   <div class="canvas">
 
-<!--
-    <app-game-canvas></app-game-canvas>
--->
+    <!--
+        <app-game-canvas></app-game-canvas>
+    -->
 
   </div>
-
+  <!--GameStage.MissionPropose-->
   <div *ngIf="gameDetails.gameStage === 1">
     <div class="game-values">
+      <h5>Mission Propose</h5>
       <h6>Mission Round: <b>{{gameDetails.missionRound}}</b></h6>
       <h6 *ngIf="missionLeaderPlayerId === playerId">Mission Team:<b> {{gameDetails.missionTeam.length}}/{{gameDetails.missionSize}}</b>
       </h6>
@@ -27,42 +27,100 @@
       </div>
 
     </div>
-    <div class="grid-container lobby-box">
-      <div *ngFor="let playerDetail of gameDetails.playersDetails" class="grid-item">
-        <fa-icon *ngIf="playerDetail.playerId === missionLeaderPlayerId" [icon]="missionLeaderIcon" class="icon"></fa-icon>
 
-        <div class="top-row-icons">
-          <!--For If User is Mission Team Leader
-              They Will have Selectable Mission Team Member Icons-->
-          <div *ngIf="missionLeaderPlayerId === playerId">
-            <fa-icon (click)="teamMemberClicked(playerDetail.playerId)" [icon]="addMemberIcon" class="fa-lg icon-click"></fa-icon>
-          </div>
+  </div>
+  <!--GameStage.Vote-->
+<div *ngIf="gameDetails.gameStage === 2">
+    <div class="game-values">
+      <h5>Voting</h5>
+      <h6>Mission Round: <b>{{gameDetails.missionRound}}</b></h6>
+      <h6>Mission Size:<b> {{gameDetails.missionSize}}</b></h6>
+      <div>
+        <h6> Team Members:
+          <span *ngFor="let playerDetail of gameDetails.missionTeam">&nbsp;{{playerDetail.userName}}&nbsp;</span>
+        </h6>
 
-          <fa-icon *ngIf="gameDetails.missionTeam?.includes(playerDetail)" [icon]="missionTeamMemberIcon"></fa-icon>
+        <div *ngIf="!voted">
+          <button (click)="submitVote(false)" class="propose-team-button">
+            Decline
+          </button>
+          &nbsp;
+          <button (click)="submitVote(true)" class="propose-team-button">
+            Approve
+          </button>
+        </div>
+        <div *ngIf="voted">
+          <span>Waiting For:</span>
+          <span *ngFor="let playerDetail of gameDetails.playersDetails">
+
+              <span *ngIf="!playerDetail.voted && !playerDetail.isBot"> &nbsp;{{playerDetail.userName}}&nbsp; </span>
+            </span>
 
         </div>
-        <div>
-          <h6> {{playerDetail.userName}}</h6>
-          <i class="fa-solid fa-person-military-rifle"></i>
-        </div>
-        <div *ngIf="playerDetail.discordUserName">
-          <h6 class="discord-name"><fa-icon [icon]="discordIcon" class="fa-sm"></fa-icon> : {{playerDetail.discordUserName}}</h6>
-        </div>
+
       </div>
     </div>
+
   </div>
 
-  <div class="countdown-values">
 
-    <div>The Resistance</div>
-    <div style="float: left">
-      <span>Game Time Limit: </span>
-      <countdown #gameCountdown [config]="gameCountdownConfig" class="countdowns"></countdown>
+<!--GameStage.VoteResults-->
+<div *ngIf="gameDetails.gameStage === 3">
+  <div class="game-values">
+    <h5>Voting Results</h5>
+    <h6>Mission Round: <b>{{gameDetails.missionRound}}</b></h6>
+    <h6>Mission Size:<b> {{gameDetails.missionSize}}</b></h6>
+    <div>
+      <h6> Team Members:
+        <span *ngFor="let playerDetail of gameDetails.missionTeam">&nbsp;{{playerDetail.userName}}&nbsp;</span>
+      </h6>
+
+      <div>
+        Vote Results here
+      </div>
     </div>
-    <div style="float: right">
-      <span>Move Time Limit: </span>
-      <countdown #moveCountdown (event)="handleCountdownEvent($event)" [config]="moveCountdownConfig" class="countdowns"></countdown>
+
+  </div>
+</div>
+
+<!--Lobby Grid-->
+<div class="grid-container lobby-box">
+  <div *ngFor="let playerDetail of gameDetails.playersDetails" class="grid-item">
+    <fa-icon *ngIf="playerDetail.playerId === missionLeaderPlayerId" [icon]="missionLeaderIcon" class="icon"></fa-icon>
+    <div class="top-row-icons">
+      <!--For If User is Mission Team Leader && GameStage Is Mission Propose
+          They Will have Selectable Mission Team Member Icons-->
+      <div *ngIf="missionLeaderPlayerId === playerId && gameDetails.gameStage === 1">
+        <fa-icon (click)="teamMemberClicked(playerDetail.playerId)" [icon]="addMemberIcon" class="fa-lg icon-click"></fa-icon>
+      </div>
+
+      <fa-icon *ngIf="playerIsOnMissionTeam(playerDetail.playerId)" [icon]="missionTeamMemberIcon"></fa-icon>
+
+    </div>
+    <div>
+      <h6> {{playerDetail.userName}}</h6>
+      <i class="fa-solid fa-person-military-rifle"></i>
+    </div>
+    <div *ngIf="playerDetail.discordUserName">
+      <h6 class="discord-name">
+        <fa-icon [icon]="discordIcon" class="fa-sm"></fa-icon>
+        : {{playerDetail.discordUserName}}</h6>
     </div>
   </div>
 </div>
+
+<div class="countdown-values">
+
+  <div>The Resistance</div>
+  <div style="float: left">
+    <span>Game Time Limit: </span>
+    <countdown #gameCountdown [config]="gameCountdownConfig" class="countdowns"></countdown>
+  </div>
+  <div style="float: right">
+    <span>Move Time Limit: </span>
+    <countdown #moveCountdown (event)="handleCountdownEvent($event)" [config]="moveCountdownConfig" class="countdowns"></countdown>
+  </div>
+</div>
+
 <!---->
+</div>
