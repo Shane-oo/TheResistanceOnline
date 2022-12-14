@@ -13,6 +13,8 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         public GameOptionsModel GameOptions { get; set; }
 
         public GameStageModel GameStage { get; set; }
+        
+        public GameStageModel NextGameStage { get; set; }
 
         public bool IsAvailable { get; set; }
 

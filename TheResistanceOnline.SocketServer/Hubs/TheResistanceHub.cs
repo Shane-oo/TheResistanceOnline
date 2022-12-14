@@ -184,6 +184,79 @@ namespace TheResistanceOnline.SocketServer.Hubs
             }
         }
 
+        private static IGameObserver? GetGameObserver(string groupName)
+        {
+            return _groupNameToGameObserver.TryGetValue(groupName, out var observer) ? observer : null;
+        }
+
+        // return if new Mission leader is a bot
+        private static bool MoveMissionLeaderClockwise(GameDetailsModel gameDetails)
+        {
+            if (gameDetails.PlayersDetails != null)
+            {
+                for(var i = 0; i <= gameDetails.PlayersDetails.Count; i++)
+                {
+                    if (gameDetails.PlayersDetails[i].IsMissionLeader)
+                    {
+                        gameDetails.PlayersDetails[i].IsMissionLeader = false;
+                        if (i == gameDetails.PlayersDetails?.Count)
+                        {
+                            gameDetails.PlayersDetails[0].IsMissionLeader = true;
+                            return gameDetails.PlayersDetails[0].IsBot;
+                        }
+                        gameDetails.PlayersDetails![i + 1].IsMissionLeader = true;
+                        return gameDetails.PlayersDetails[i+1].IsBot;
+
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private void ReceiveSubmitContinue(GameDetailsModel gameDetails,
+                                           PlayerDetailsModel playerDetails,
+                                           PlayerDetailsModel receivedPlayerDetails,
+                                           IGameObserver gameObserver,
+                                           string groupName)
+        {
+            // todo gotta figure out a way of this not being called by every real person in lobby.
+            playerDetails.Continued = receivedPlayerDetails.Continued;
+
+            var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
+            if (players == null || !players.All(p => p.Continued)) return;
+            
+            
+            gameDetails.GameStage = gameDetails.NextGameStage;
+            switch(gameDetails.GameStage)
+            {
+                case GameStageModel.Mission:
+                    //todo
+                    break;
+                case GameStageModel.MissionPropose:
+                    // empty MissionTeam, Reset Voted And Continued
+                    gameDetails.MissionTeam = new List<PlayerDetailsModel>();
+                    foreach(var playerDetail in gameDetails.PlayersDetails!)
+                    {
+                        playerDetail.Voted = false;
+                        playerDetail.Continued = false;
+                    }
+                    
+                    var newMissionLeaderIsBot = MoveMissionLeaderClockwise(gameDetails);
+                    if (newMissionLeaderIsBot)
+                    {
+                        var leaderBot = gameDetails.PlayersDetails?.FirstOrDefault(p => p.IsMissionLeader);
+                        gameDetails.MissionTeam = leaderBot?.BotObserver.GetMissionProposal();
+                        // skip Mission Propose on client side as bot has decided
+                        gameDetails.GameStage = GameStageModel.Vote;
+                    }
+                    break;
+            }
+            
+            SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
+            gameObserver.Update(gameDetails);
+        }
+
 
         private void ReceiveSubmitMissionPropose(GameDetailsModel gameDetails, GameDetailsModel receivedGameDetails, IGameObserver gameObserver, string groupName)
         {
@@ -217,11 +290,23 @@ namespace TheResistanceOnline.SocketServer.Hubs
                     }
                 }
 
+                var votes = gameDetails.PlayersDetails?.Select(p => p.ApprovedMissionTeam).ToList();
+                var approvedVotes = votes?.Where(v => v).Count();
+                var rejectedVotes = votes?.Where(v => !v).Count();
+                // successful vote => move onto mission game stage
+                if (approvedVotes > rejectedVotes)
+                {
+                    gameDetails.NextGameStage = GameStageModel.Mission;
+                }
+                else
+                {
+                    gameDetails.NextGameStage = GameStageModel.MissionPropose;
+                }
+
                 gameDetails.GameStage = GameStageModel.VoteResults;
             }
 
             SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
-
             gameObserver.Update(gameDetails);
         }
 
@@ -311,11 +396,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
             if (!_groupNameToGameObserver.TryGetValue(groupName, out var observer)) return;
             observer.Dispose();
             _groupNameToGameObserver.Remove(groupName);
-        }
-
-        public IGameObserver? GetGameObserver(string groupName)
-        {
-            return _groupNameToGameObserver.TryGetValue(groupName, out var observer) ? observer : null;
         }
 
         // Subject Function
@@ -421,9 +501,10 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 case GameActionModel.SubmitVote:
                     ReceiveSubmitVote(gameDetails, playerDetails, receivedPlayerDetails, gameObserver, groupName);
                     break;
-                
+
                 case GameActionModel.SubmitContinue:
                     Console.WriteLine("pls continue");
+                    ReceiveSubmitContinue(gameDetails, playerDetails, receivedPlayerDetails, gameObserver, groupName);
                     break;
             }
             // idea:

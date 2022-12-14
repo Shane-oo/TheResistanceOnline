@@ -14,6 +14,8 @@ export interface GameDetails {
   gameOptions: GameOptions;
 
   gameAction: GameAction;
+
+  nextGameStage :GameStage;
 }
 
 export interface PlayerDetails {
@@ -29,7 +31,7 @@ export interface PlayerDetails {
   voted: boolean;
   approvedMissionTeam: boolean;
 
-  continue:boolean;
+  continued:boolean;
 }
 
 export interface GameDetailsResponse {

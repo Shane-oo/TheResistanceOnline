@@ -96,6 +96,13 @@
   color: ghostwhite;
 }
 
+.userName {
+  font-family: satella, serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: ghostwhite;
+}
+
 
 @media only screen and (max-width: 760px) {
   .content {
@@ -221,12 +228,55 @@
   background-color: #367bee;
 }
 
+.vote-button {
+  font-family: ethnocentric, sans-serif;
+  text-align: center;
+  padding: 15px;
+  border: none;
+  cursor: pointer;
+  width: fit-content;
+  color: ghostwhite;
+  border-radius: 5px;
+}
+
+.reject-button {
+  background-color: #ca0110;
+
+}
+
+.reject-button:hover {
+  background-color: #fc0114;
+
+}
+
+.approve-button {
+  background-color: #38b626;
+}
+
+.approve-button:hover {
+  background-color: #50d63d;
+
+}
+
 .redIcon {
   color: #fc0114;
 }
 
 .greenIcon {
   color: #50d63d;
+}
+
+.red-border-box{
+  box-shadow: 0.0315rem 0 0.625rem 0 #fc0114;
+
+}
+
+.green-border-box{
+  box-shadow: 0.0315rem 0 0.625rem 0 #50d63d;
+}
+
+.white-border-box{
+  border: 1px solid ghostwhite;
 }
 
 /*.start-button {

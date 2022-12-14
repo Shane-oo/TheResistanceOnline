@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TheResistanceGameService } from '../the-resistance-game.service';
 import { GameAction, GameDetails, GameStage, PlayerDetails, TeamModel } from '../the-resistance-game.models';
 
-import { faCircleCheck, faCircleXmark, faPersonMilitaryRifle, faPersonRifle, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck, faCircleXmark, faPersonMilitaryRifle, faPersonRifle, faSquarePlus} from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { SwalContainerService } from '../../../ui/swal/swal-container.service';
 import { CountdownComponent, CountdownConfig, CountdownEvent } from 'ngx-countdown';
@@ -21,6 +21,7 @@ export class GameComponent implements OnInit {
   public crossIcon = faCircleXmark;
   public tickIcon = faCircleCheck;
 
+
   public missionLeaderPlayerId: string = '';
 
   public voted: boolean = false;
@@ -34,6 +35,7 @@ export class GameComponent implements OnInit {
     missionTeam: [],
     missionSize: 0,
     gameStage: GameStage.GameStart,
+    nextGameStage: GameStage.GameStart,
     gameOptions: {timeLimitMinutes: 0, botCount: 0},
     gameAction: GameAction.None
   };
@@ -41,6 +43,8 @@ export class GameComponent implements OnInit {
 
   public gameCountdownConfig: CountdownConfig = {leftTime: 0};
   @ViewChild('gameCountdown', {static: false}) private gameCountdown!: CountdownComponent;
+  public voteResultsCountdownConfig: CountdownConfig = {leftTime: 0,format: 's'};
+  @ViewChild('voteResultsCountdown', {static: false}) private voteResultsCountdown!: CountdownComponent;
 
   constructor(private gameService: TheResistanceGameService, private swalService: SwalContainerService) {
   }
@@ -52,12 +56,17 @@ export class GameComponent implements OnInit {
     this.notifySpies();
     this.notifyResistance();
     this.gameDetails.gameStage = GameStage.MissionPropose;
+
   }
 
   ngOnChanges(): void {
     this.missionLeaderPlayerId = this.gameDetails.playersDetails.find(p => p.isMissionLeader)!.playerId;
     console.log(this.gameDetails);
     this.voted = this.gameDetails.playersDetails.find(p => p.playerId === this.playerId)!.voted;
+
+    if(this.gameDetails.gameStage === GameStage.VoteResults){
+      this.voteResultsCountdownConfig.leftTime = 15;
+    }
   }
 
   ngOnDestroy(): void {
@@ -108,7 +117,7 @@ export class GameComponent implements OnInit {
 
   submitContinue = () => {
     let playerDetails = this.getPlayerDetails();
-    playerDetails.continue = true;
+    playerDetails.continued = true;
 
     this.gameDetails.gameAction = GameAction.Continue;
     this.sendGameActionCommand();
@@ -143,5 +152,17 @@ export class GameComponent implements OnInit {
       gameDetails: this.gameDetails
     };
     this.gameService.sendGameActionCommand(gameActionCommand);
+  };
+
+
+
+  handleCountdownEvent = (e: CountdownEvent) => {
+
+    if(e.action === 'done') {
+      //  this.notify += ` - ${e.left} ms`;
+      console.log('countdown done');
+      // only host sends so that backend does not get bombarded
+      this.submitContinue();
+    }
   };
 }
