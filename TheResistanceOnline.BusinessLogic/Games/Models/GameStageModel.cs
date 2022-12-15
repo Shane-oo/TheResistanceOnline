@@ -7,5 +7,7 @@ public enum GameStageModel
     Vote, // Everyone Votes on the proposed team for mission
     VoteResults, // Show the results from the most recent vote
     Mission, // If Vote Successful Mission Members go on mission
-    MissionResults // Show the results from the most recent mission
+    MissionResults, // Show the results from the most recent mission
+    GameOverSpiesWon, // Spies Won the Game
+    GameOverResistanceWon // Resistance Won The Game
 }

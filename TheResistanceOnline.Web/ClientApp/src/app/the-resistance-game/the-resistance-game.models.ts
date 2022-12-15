@@ -14,6 +14,10 @@ export interface GameDetails {
   gameOptions: GameOptions;
 
   gameAction: GameAction;
+
+  nextGameStage :GameStage;
+
+  voteFailedCount:number;
 }
 
 export interface PlayerDetails {
@@ -29,7 +33,7 @@ export interface PlayerDetails {
   voted: boolean;
   approvedMissionTeam: boolean;
 
-  continue:boolean;
+  continued:boolean;
 }
 
 export interface GameDetailsResponse {
@@ -59,7 +63,10 @@ export enum GameStage {
   Vote, // Everyone Votes on the proposed team for mission
   VoteResults, // Show the results from the most recent vote
   Mission, // If Vote Successful Mission Members go on mission
-  MissionResults// Show the results from the most recent mission
+  MissionResults,// Show the results from the most recent mission
+  GameOverSpiesWon,
+  GameOverResistanceWon
+
 }
 
 

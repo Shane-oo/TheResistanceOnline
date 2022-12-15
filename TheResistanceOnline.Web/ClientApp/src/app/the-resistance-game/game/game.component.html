@@ -9,24 +9,32 @@
   <!--GameStage.MissionPropose-->
   <div *ngIf="gameDetails.gameStage === 1">
     <div class="game-values">
-      <h5>Mission Propose</h5>
+      <h5>Mission Propose </h5>
       <h6>Mission Round: <b>{{gameDetails.missionRound}}</b></h6>
+
       <h6 *ngIf="missionLeaderPlayerId === playerId">Mission Team: <b>{{gameDetails.missionTeam.length}}/{{gameDetails.missionSize}}</b>
       </h6>
       <h6 *ngIf="missionLeaderPlayerId !== playerId">Mission Size: <b>{{gameDetails.missionSize}}</b></h6>
-      <h6> Mission Leader: <b>{{getMissionLeaderUsername()}}</b></h6>
+      <h6> Mission Leader: <b class="userName">{{getMissionLeaderUsername()}}</b></h6>
 
       <div *ngIf="missionLeaderPlayerId === playerId">
         <h6> Team Members:
-          <span *ngFor="let playerDetail of gameDetails.missionTeam">&nbsp;{{playerDetail.userName}}&nbsp;</span>
+          <span *ngFor="let playerDetail of gameDetails.missionTeam" class="userName">&nbsp;{{playerDetail.userName}}.&nbsp;</span>
         </h6>
+
         <button (click)="submitTeam()"
                 [disabled]="gameDetails.missionTeam.length !== gameDetails.missionSize"
                 [ngClass]="gameDetails.missionTeam.length !== gameDetails.missionSize ? 'button-disabled':'propose-team-button'">
           Submit Team
         </button>
       </div>
-
+      <h6 style="float:right"> Vote Count: <span *ngFor="let i of [].constructor(gameDetails.voteFailedCount)">
+         <fa-icon [icon]="xMarkIcon" class=" fa-md redIcon"></fa-icon> &nbsp;
+        </span>
+        <span *ngFor="let i of [].constructor(5 - gameDetails.voteFailedCount)">
+         <fa-icon [icon]="xMarkIcon" class=" fa-md greyIcon"></fa-icon>  &nbsp;
+        </span>
+      </h6>
     </div>
 
   </div>
@@ -36,18 +44,17 @@
       <h5>Voting</h5>
       <h6>Mission Round: <b>{{gameDetails.missionRound}}</b></h6>
       <h6>Mission Size: <b>{{gameDetails.missionSize}}</b></h6>
-      <h6> Mission Leader: <b>{{getMissionLeaderUsername()}}</b></h6>
+      <h6> Mission Leader: <b class="userName">{{getMissionLeaderUsername()}}</b></h6>
       <div>
         <h6> Team Members:
-          <span *ngFor="let playerDetail of gameDetails.missionTeam">&nbsp;{{playerDetail.userName}}&nbsp;</span>
+          <span *ngFor="let playerDetail of gameDetails.missionTeam" class="userName">&nbsp;{{playerDetail.userName}}.&nbsp;</span>
         </h6>
-
         <div *ngIf="!voted">
-          <button (click)="submitVote(false)" class="propose-team-button">
-            Decline
+          <button (click)="submitVote(false)" class="vote-button reject-button">
+            Reject
           </button>
           &nbsp;
-          <button (click)="submitVote(true)" class="propose-team-button">
+          <button (click)="submitVote(true)" class="vote-button approve-button">
             Approve
           </button>
         </div>
@@ -55,12 +62,20 @@
           <span>Waiting For:</span>
           <span *ngFor="let playerDetail of gameDetails.playersDetails">
 
-              <span *ngIf="!playerDetail.voted && !playerDetail.isBot"> &nbsp;{{playerDetail.userName}}&nbsp; </span>
+              <span *ngIf="!playerDetail.voted && !playerDetail.isBot" class="userName"> &nbsp;{{playerDetail.userName}}.&nbsp; </span>
             </span>
 
         </div>
 
       </div>
+
+      <h6 style="float:right"> Vote Count: <span *ngFor="let i of [].constructor(gameDetails.voteFailedCount)">
+         <fa-icon [icon]="xMarkIcon" class=" fa-md redIcon"></fa-icon> &nbsp;
+        </span>
+        <span *ngFor="let i of [].constructor(5 - gameDetails.voteFailedCount)">
+         <fa-icon [icon]="xMarkIcon" class=" fa-md greyIcon"></fa-icon>  &nbsp;
+        </span>
+      </h6>
     </div>
 
   </div>
@@ -70,29 +85,54 @@
   <div *ngIf="gameDetails.gameStage === 3">
     <div class="game-values">
       <h5>Voting Results</h5>
+
       <h6>Mission Round: <b>{{gameDetails.missionRound}}</b></h6>
       <h6>Mission Size: <b>{{gameDetails.missionSize}}</b></h6>
-      <h6> Mission Leader: <b>{{getMissionLeaderUsername()}}</b></h6>
-      <div>
-        <h6> Team Members:
-          <span *ngFor="let playerDetail of gameDetails.missionTeam">&nbsp;{{playerDetail.userName}}&nbsp;</span>
-        </h6>
+      <h6> Mission Leader: <b class="userName">{{getMissionLeaderUsername()}}</b></h6>
 
+      <h6> Team Members:
+        <span *ngFor="let playerDetail of gameDetails.missionTeam" class="userName">&nbsp;{{playerDetail.userName}}.&nbsp;</span>
+      </h6>
+      <div>
         <div>
           <span *ngFor="let playerDetail of gameDetails.playersDetails">
-              {{playerDetail.userName}}
+            <b class="userName">{{playerDetail.userName}}</b>
+            &nbsp;
             <fa-icon *ngIf="!playerDetail.approvedMissionTeam" [icon]="crossIcon" class="icon redIcon"></fa-icon>
               <fa-icon *ngIf="playerDetail.approvedMissionTeam" [icon]="tickIcon" class="icon greenIcon"></fa-icon>
+            &nbsp;
           </span>
         </div>
+
       </div>
+      <span (click)="submitContinue()" *ngIf="!continued" class="icon-click continue">Continue
+        <fa-icon [icon]="nextIcon" class="fa-md"></fa-icon>
+     </span>
+      <span *ngIf="continued">Waiting For:
+        <span *ngFor="let playerDetail of gameDetails.playersDetails">
+              <span *ngIf="!playerDetail.continued && !playerDetail.isBot" class="userName"> &nbsp;{{playerDetail.userName}}.&nbsp; </span>
+        </span>
+      </span>
 
     </div>
+    <h6 style="float:right"> Vote Count: <span *ngFor="let i of [].constructor(gameDetails.voteFailedCount)">
+         <fa-icon [icon]="xMarkIcon" class=" fa-md redIcon"></fa-icon> &nbsp;
+        </span>
+      <span *ngFor="let i of [].constructor(5 - gameDetails.voteFailedCount)">
+         <fa-icon [icon]="xMarkIcon" class=" fa-md greyIcon"></fa-icon>  &nbsp;
+        </span>
+    </h6>
   </div>
 
   <!--Lobby Grid-->
   <div class="grid-container lobby-box">
-    <div *ngFor="let playerDetail of gameDetails.playersDetails" class="grid-item">
+    <div *ngFor="let playerDetail of gameDetails.playersDetails"
+         [ngClass]="{
+                      'red-border-box': gameDetails.gameStage === 3 && !playerDetail.approvedMissionTeam,
+                      'green-border-box':gameDetails.gameStage === 3 && playerDetail.approvedMissionTeam,
+                      'white-border-box':playerIsOnMissionTeam(playerDetail.playerId)
+          }"
+         class="grid-item">
       <fa-icon *ngIf="playerDetail.playerId === missionLeaderPlayerId" [icon]="missionLeaderIcon" class="icon"></fa-icon>
       <div class="top-row-icons">
         <!--For If User is Mission Team Leader && GameStage Is Mission Propose

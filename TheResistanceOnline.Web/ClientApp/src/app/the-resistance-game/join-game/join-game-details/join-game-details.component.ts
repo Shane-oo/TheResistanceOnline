@@ -20,8 +20,10 @@ export class JoinGameDetailsComponent implements OnInit {
     missionTeam: [],
     missionSize: 0,
     gameStage: GameStage.GameStart,
+    nextGameStage: GameStage.GameStart,
     gameOptions: {timeLimitMinutes: 0, botCount: 0},
-    gameAction: GameAction.None
+    gameAction: GameAction.None,
+    voteFailedCount: 0
   };
 
   constructor(private gameService: TheResistanceGameService) {

@@ -39,6 +39,8 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         public string UserName { get; set; }
 
         public bool Voted { get; set; }
+        
+        public bool Continued { get; set; }
 
         #endregion
     }
