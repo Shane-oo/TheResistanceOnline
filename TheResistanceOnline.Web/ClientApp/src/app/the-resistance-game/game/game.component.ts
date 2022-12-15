@@ -2,10 +2,18 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TheResistanceGameService } from '../the-resistance-game.service';
 import { GameAction, GameDetails, GameStage, PlayerDetails, TeamModel } from '../the-resistance-game.models';
 
-import { faCircleCheck, faCircleXmark, faPersonMilitaryRifle, faPersonRifle, faSquarePlus} from '@fortawesome/free-solid-svg-icons';
+import {
+  faCircleArrowRight,
+  faCircleCheck,
+  faCircleXmark,
+  faPersonMilitaryRifle,
+  faPersonRifle,
+  faSquarePlus,
+  faXmark
+} from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { SwalContainerService } from '../../../ui/swal/swal-container.service';
-import { CountdownComponent, CountdownConfig, CountdownEvent } from 'ngx-countdown';
+import { CountdownComponent, CountdownConfig } from 'ngx-countdown';
 
 
 @Component({
@@ -20,11 +28,13 @@ export class GameComponent implements OnInit {
   public discordIcon = faDiscord;
   public crossIcon = faCircleXmark;
   public tickIcon = faCircleCheck;
-
+  public nextIcon = faCircleArrowRight;
+  public xMarkIcon = faXmark;
 
   public missionLeaderPlayerId: string = '';
 
   public voted: boolean = false;
+  public continued: boolean = false;
 
   @Input() gameDetails: GameDetails = {
     channelName: '',
@@ -37,14 +47,13 @@ export class GameComponent implements OnInit {
     gameStage: GameStage.GameStart,
     nextGameStage: GameStage.GameStart,
     gameOptions: {timeLimitMinutes: 0, botCount: 0},
-    gameAction: GameAction.None
+    gameAction: GameAction.None,
+    voteFailedCount: 0
   };
   @Input() playerId: string = '';
 
   public gameCountdownConfig: CountdownConfig = {leftTime: 0};
   @ViewChild('gameCountdown', {static: false}) private gameCountdown!: CountdownComponent;
-  public voteResultsCountdownConfig: CountdownConfig = {leftTime: 0,format: 's'};
-  @ViewChild('voteResultsCountdown', {static: false}) private voteResultsCountdown!: CountdownComponent;
 
   constructor(private gameService: TheResistanceGameService, private swalService: SwalContainerService) {
   }
@@ -62,10 +71,13 @@ export class GameComponent implements OnInit {
   ngOnChanges(): void {
     this.missionLeaderPlayerId = this.gameDetails.playersDetails.find(p => p.isMissionLeader)!.playerId;
     console.log(this.gameDetails);
-    this.voted = this.gameDetails.playersDetails.find(p => p.playerId === this.playerId)!.voted;
+    this.voted = this.getPlayerDetails().voted;
+    this.continued = this.getPlayerDetails().continued;
 
-    if(this.gameDetails.gameStage === GameStage.VoteResults){
-      this.voteResultsCountdownConfig.leftTime = 15;
+    console.log(this.gameDetails.voteFailedCount);
+
+    if(this.gameDetails.gameStage === GameStage.GameOverSpiesWon) {
+      console.log('spies won');
     }
   }
 
@@ -155,14 +167,13 @@ export class GameComponent implements OnInit {
   };
 
 
+  /*  handleCountdownEvent = (e: CountdownEvent) => {
 
-  handleCountdownEvent = (e: CountdownEvent) => {
-
-    if(e.action === 'done') {
-      //  this.notify += ` - ${e.left} ms`;
-      console.log('countdown done');
-      // only host sends so that backend does not get bombarded
-      this.submitContinue();
-    }
-  };
+      if(e.action === 'done') {
+        //  this.notify += ` - ${e.left} ms`;
+        console.log('countdown done');
+        // only host sends so that backend does not get bombarded
+        this.submitContinue();
+      }
+    };*/
 }

@@ -16,6 +16,8 @@ export interface GameDetails {
   gameAction: GameAction;
 
   nextGameStage :GameStage;
+
+  voteFailedCount:number;
 }
 
 export interface PlayerDetails {
@@ -61,7 +63,10 @@ export enum GameStage {
   Vote, // Everyone Votes on the proposed team for mission
   VoteResults, // Show the results from the most recent vote
   Mission, // If Vote Successful Mission Members go on mission
-  MissionResults// Show the results from the most recent mission
+  MissionResults,// Show the results from the most recent mission
+  GameOverSpiesWon,
+  GameOverResistanceWon
+
 }
 
 

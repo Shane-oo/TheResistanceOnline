@@ -194,19 +194,20 @@ namespace TheResistanceOnline.SocketServer.Hubs
         {
             if (gameDetails.PlayersDetails != null)
             {
+                // todo check is <= Count is all g lol
                 for(var i = 0; i <= gameDetails.PlayersDetails.Count; i++)
                 {
                     if (gameDetails.PlayersDetails[i].IsMissionLeader)
                     {
                         gameDetails.PlayersDetails[i].IsMissionLeader = false;
-                        if (i == gameDetails.PlayersDetails?.Count)
+                        if (i == gameDetails.PlayersDetails?.Count - 1)
                         {
-                            gameDetails.PlayersDetails[0].IsMissionLeader = true;
+                            gameDetails.PlayersDetails![0].IsMissionLeader = true;
                             return gameDetails.PlayersDetails[0].IsBot;
                         }
-                        gameDetails.PlayersDetails![i + 1].IsMissionLeader = true;
-                        return gameDetails.PlayersDetails[i+1].IsBot;
 
+                        gameDetails.PlayersDetails![i + 1].IsMissionLeader = true;
+                        return gameDetails.PlayersDetails[i + 1].IsBot;
                     }
                 }
             }
@@ -224,35 +225,36 @@ namespace TheResistanceOnline.SocketServer.Hubs
             playerDetails.Continued = receivedPlayerDetails.Continued;
 
             var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
-            if (players == null || !players.All(p => p.Continued)) return;
-            
-            
-            gameDetails.GameStage = gameDetails.NextGameStage;
-            switch(gameDetails.GameStage)
+            if (players != null && players.All(p => p.Continued))
             {
-                case GameStageModel.Mission:
-                    //todo
-                    break;
-                case GameStageModel.MissionPropose:
-                    // empty MissionTeam, Reset Voted And Continued
-                    gameDetails.MissionTeam = new List<PlayerDetailsModel>();
-                    foreach(var playerDetail in gameDetails.PlayersDetails!)
-                    {
-                        playerDetail.Voted = false;
-                        playerDetail.Continued = false;
-                    }
-                    
-                    var newMissionLeaderIsBot = MoveMissionLeaderClockwise(gameDetails);
-                    if (newMissionLeaderIsBot)
-                    {
-                        var leaderBot = gameDetails.PlayersDetails?.FirstOrDefault(p => p.IsMissionLeader);
-                        gameDetails.MissionTeam = leaderBot?.BotObserver.GetMissionProposal();
-                        // skip Mission Propose on client side as bot has decided
-                        gameDetails.GameStage = GameStageModel.Vote;
-                    }
-                    break;
+                gameDetails.GameStage = gameDetails.NextGameStage;
+                switch(gameDetails.GameStage)
+                {
+                    case GameStageModel.Mission:
+                        //todo
+                        break;
+                    case GameStageModel.MissionPropose:
+                        // empty MissionTeam, Reset Voted And Continued
+                        gameDetails.MissionTeam = new List<PlayerDetailsModel>();
+                        foreach(var playerDetail in gameDetails.PlayersDetails!)
+                        {
+                            playerDetail.Voted = false;
+                            playerDetail.Continued = false;
+                        }
+
+                        var newMissionLeaderIsBot = MoveMissionLeaderClockwise(gameDetails);
+                        if (newMissionLeaderIsBot)
+                        {
+                            var leaderBot = gameDetails.PlayersDetails?.FirstOrDefault(p => p.IsMissionLeader);
+                            gameDetails.MissionTeam = leaderBot?.BotObserver.GetMissionProposal();
+                            // skip Mission Propose on client side as bot has decided
+                            gameDetails.GameStage = GameStageModel.Vote;
+                        }
+
+                        break;
+                }
             }
-            
+
             SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
             gameObserver.Update(gameDetails);
         }
@@ -296,14 +298,17 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 // successful vote => move onto mission game stage
                 if (approvedVotes > rejectedVotes)
                 {
+                    gameDetails.VoteFailedCount = 0;
                     gameDetails.NextGameStage = GameStageModel.Mission;
                 }
                 else
                 {
+                    gameDetails.VoteFailedCount++;
                     gameDetails.NextGameStage = GameStageModel.MissionPropose;
                 }
 
-                gameDetails.GameStage = GameStageModel.VoteResults;
+                // 5 consecutive failed votes => spies automatically win
+                gameDetails.GameStage = gameDetails.VoteFailedCount == 5 ? GameStageModel.GameOverSpiesWon : GameStageModel.VoteResults;
             }
 
             SendGameDetailsToChannelGroupAsync(gameDetails, groupName);

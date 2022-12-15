@@ -26,8 +26,9 @@ export class GameLobbyComponent implements OnInit {
     missionSize: 0,
     gameStage: GameStage.GameStart,
     nextGameStage: GameStage.GameStart,
-    gameOptions: {timeLimitMinutes: 0,botCount: 0},
-    gameAction: GameAction.None
+    gameOptions: {timeLimitMinutes: 0, botCount: 0},
+    gameAction: GameAction.None,
+    voteFailedCount: 0
   };
   @Input() isTheHost: boolean = false;
   public gameOptionsForm: FormGroup = new FormGroup({});
@@ -40,8 +41,6 @@ export class GameLobbyComponent implements OnInit {
   };
   public timeLimitOptions: TimeLimit[] = [{minutesString: '30 Minutes', minutes: 30}, this.defaultTimeLimit,
     {minutesString: '60 Minutes', minutes: 60}, {minutesString: '90 Minutes', minutes: 90}];
-
-
 
 
   constructor(private gameService: TheResistanceGameService) {

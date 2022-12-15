@@ -13,8 +13,6 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         public GameOptionsModel GameOptions { get; set; }
 
         public GameStageModel GameStage { get; set; }
-        
-        public GameStageModel NextGameStage { get; set; }
 
         public bool IsAvailable { get; set; }
 
@@ -29,8 +27,12 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         [CanBeNull]
         public List<PlayerDetailsModel> MissionTeam { get; set; }
 
+        public GameStageModel NextGameStage { get; set; }
+
         [CanBeNull]
         public List<PlayerDetailsModel> PlayersDetails { get; set; }
+
+        public int VoteFailedCount { get; set; }
 
         #endregion
     }

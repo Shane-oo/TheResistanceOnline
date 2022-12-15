@@ -9,8 +9,9 @@
   <!--GameStage.MissionPropose-->
   <div *ngIf="gameDetails.gameStage === 1">
     <div class="game-values">
-      <h5>Mission Propose</h5>
+      <h5>Mission Propose </h5>
       <h6>Mission Round: <b>{{gameDetails.missionRound}}</b></h6>
+
       <h6 *ngIf="missionLeaderPlayerId === playerId">Mission Team: <b>{{gameDetails.missionTeam.length}}/{{gameDetails.missionSize}}</b>
       </h6>
       <h6 *ngIf="missionLeaderPlayerId !== playerId">Mission Size: <b>{{gameDetails.missionSize}}</b></h6>
@@ -20,13 +21,20 @@
         <h6> Team Members:
           <span *ngFor="let playerDetail of gameDetails.missionTeam" class="userName">&nbsp;{{playerDetail.userName}}.&nbsp;</span>
         </h6>
+
         <button (click)="submitTeam()"
                 [disabled]="gameDetails.missionTeam.length !== gameDetails.missionSize"
                 [ngClass]="gameDetails.missionTeam.length !== gameDetails.missionSize ? 'button-disabled':'propose-team-button'">
           Submit Team
         </button>
       </div>
-
+      <h6 style="float:right"> Vote Count: <span *ngFor="let i of [].constructor(gameDetails.voteFailedCount)">
+         <fa-icon [icon]="xMarkIcon" class=" fa-md redIcon"></fa-icon> &nbsp;
+        </span>
+        <span *ngFor="let i of [].constructor(5 - gameDetails.voteFailedCount)">
+         <fa-icon [icon]="xMarkIcon" class=" fa-md greyIcon"></fa-icon>  &nbsp;
+        </span>
+      </h6>
     </div>
 
   </div>
@@ -41,7 +49,6 @@
         <h6> Team Members:
           <span *ngFor="let playerDetail of gameDetails.missionTeam" class="userName">&nbsp;{{playerDetail.userName}}.&nbsp;</span>
         </h6>
-
         <div *ngIf="!voted">
           <button (click)="submitVote(false)" class="vote-button reject-button">
             Reject
@@ -61,6 +68,14 @@
         </div>
 
       </div>
+
+      <h6 style="float:right"> Vote Count: <span *ngFor="let i of [].constructor(gameDetails.voteFailedCount)">
+         <fa-icon [icon]="xMarkIcon" class=" fa-md redIcon"></fa-icon> &nbsp;
+        </span>
+        <span *ngFor="let i of [].constructor(5 - gameDetails.voteFailedCount)">
+         <fa-icon [icon]="xMarkIcon" class=" fa-md greyIcon"></fa-icon>  &nbsp;
+        </span>
+      </h6>
     </div>
 
   </div>
@@ -70,14 +85,15 @@
   <div *ngIf="gameDetails.gameStage === 3">
     <div class="game-values">
       <h5>Voting Results</h5>
+
       <h6>Mission Round: <b>{{gameDetails.missionRound}}</b></h6>
       <h6>Mission Size: <b>{{gameDetails.missionSize}}</b></h6>
       <h6> Mission Leader: <b class="userName">{{getMissionLeaderUsername()}}</b></h6>
-      <div>
-        <h6> Team Members:
-          <span *ngFor="let playerDetail of gameDetails.missionTeam" class="userName">&nbsp;{{playerDetail.userName}}.&nbsp;</span>
-        </h6>
 
+      <h6> Team Members:
+        <span *ngFor="let playerDetail of gameDetails.missionTeam" class="userName">&nbsp;{{playerDetail.userName}}.&nbsp;</span>
+      </h6>
+      <div>
         <div>
           <span *ngFor="let playerDetail of gameDetails.playersDetails">
             <b class="userName">{{playerDetail.userName}}</b>
@@ -89,10 +105,23 @@
         </div>
 
       </div>
-     <span> Continuing to (insert next stage here) <countdown #voteResultsCountdown (event)="handleCountdownEvent($event)"  [config]="voteResultsCountdownConfig" class="countdowns"></countdown>
-
+      <span (click)="submitContinue()" *ngIf="!continued" class="icon-click continue">Continue
+        <fa-icon [icon]="nextIcon" class="fa-md"></fa-icon>
      </span>
+      <span *ngIf="continued">Waiting For:
+        <span *ngFor="let playerDetail of gameDetails.playersDetails">
+              <span *ngIf="!playerDetail.continued && !playerDetail.isBot" class="userName"> &nbsp;{{playerDetail.userName}}.&nbsp; </span>
+        </span>
+      </span>
+
     </div>
+    <h6 style="float:right"> Vote Count: <span *ngFor="let i of [].constructor(gameDetails.voteFailedCount)">
+         <fa-icon [icon]="xMarkIcon" class=" fa-md redIcon"></fa-icon> &nbsp;
+        </span>
+      <span *ngFor="let i of [].constructor(5 - gameDetails.voteFailedCount)">
+         <fa-icon [icon]="xMarkIcon" class=" fa-md greyIcon"></fa-icon>  &nbsp;
+        </span>
+    </h6>
   </div>
 
   <!--Lobby Grid-->

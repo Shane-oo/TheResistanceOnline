@@ -215,6 +215,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
             gameDetails.MissionTeam = new List<PlayerDetailsModel>();
             gameDetails.MissionRound = 1;
             gameDetails.MissionSize = GetMissionSize(gameDetails.MissionRound, gameDetails.PlayersDetails!.Count);
+            gameDetails.VoteFailedCount = 0;
             gameDetails.GameStage = GameStageModel.GameStart;
             return gameDetails;
         }
