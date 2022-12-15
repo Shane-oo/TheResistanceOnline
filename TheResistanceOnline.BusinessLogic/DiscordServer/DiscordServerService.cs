@@ -110,8 +110,11 @@ namespace TheResistanceOnline.BusinessLogic.DiscordServer
 
         private async Task ConnectBotAsync()
         {
-            await _discordSocketClient.LoginAsync(TokenType.Bot, _settings.GetAppSettings().DiscordLoginToken);
-            await _discordSocketClient.StartAsync();
+            if (_discordSocketClient.ConnectionState != ConnectionState.Connecting)
+            {
+                await _discordSocketClient.LoginAsync(TokenType.Bot, _settings.GetAppSettings().DiscordLoginToken);
+                await _discordSocketClient.StartAsync();
+            }
 
             // wait for bot to be connected
             while(_discordSocketClient.ConnectionState != ConnectionState.Connected)
