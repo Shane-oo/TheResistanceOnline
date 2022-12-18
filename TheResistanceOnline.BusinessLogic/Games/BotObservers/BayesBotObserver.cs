@@ -33,9 +33,14 @@ public class BayesBotObserver: IBotObserver
     #region Private Methods
 
     [CanBeNull]
-    private PlayerDetailsModel GetMissionLeader(GameDetailsModel gameDetails)
+    private PlayerDetailsModel GetMissionLeader()
     {
-        return gameDetails.PlayersDetails?.FirstOrDefault(p => p.IsMissionLeader);
+        return _gameDetails.PlayersDetails?.FirstOrDefault(p => p.IsMissionLeader);
+    }
+
+    private PlayerDetailsModel GetPlayerDetails()
+    {
+        return _gameDetails.PlayersDetails?.FirstOrDefault(p => p.PlayerId == PlayerId);
     }
 
     private static List<PlayerDetailsModel> GetRandomPlayers(int amount, IReadOnlyList<PlayerDetailsModel> playerList)
@@ -65,9 +70,21 @@ public class BayesBotObserver: IBotObserver
         Console.WriteLine("asked for choice");
     }
 
+    public bool GetMissionChoice()
+    {
+        // todo get mission choice on the current mission
+        var playerDetails = GetPlayerDetails();
+        if (playerDetails.Team == TeamModel.Spy)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     public List<PlayerDetailsModel> GetMissionProposal()
     {
-        var missionSize = GetMissionSize(_gameDetails.MissionRound, _gameDetails.PlayersDetails!.Count);
+        var missionSize = GetMissionSize(_gameDetails.CurrentMissionRound, _gameDetails.PlayersDetails!.Count);
         return GetRandomPlayers(missionSize, _gameDetails.PlayersDetails);
     }
 
@@ -141,7 +158,7 @@ public class BayesBotObserver: IBotObserver
     public bool GetVote()
     {
         // todo vote on the current mission team
-        return false;
+        return true;
     }
 
     public void SetPlayerId(Guid playerId)
@@ -152,7 +169,7 @@ public class BayesBotObserver: IBotObserver
     public void Update(GameDetailsModel gameDetails)
     {
         _gameDetails = gameDetails;
-        var missionLeader = GetMissionLeader(_gameDetails);
+        var missionLeader = GetMissionLeader();
         var botIsMissionLeader = missionLeader?.PlayerId == PlayerId;
         switch(_gameDetails.GameAction)
         {
@@ -172,7 +189,5 @@ public class BayesBotObserver: IBotObserver
 
     #endregion
 }
-
-
 
 

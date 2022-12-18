@@ -5,6 +5,9 @@ namespace TheResistanceOnline.BusinessLogic.Games
 {
     public interface IGameService: IGameSubject
     {
+        List<bool> ShuffleMissionOutcomes(IEnumerable<bool> missionOutcomes);
+
+        void MoveToNextRound(GameDetailsModel gameDetails);
     }
 
     public class GameService: IGameService, IGameObserver
@@ -170,6 +173,17 @@ namespace TheResistanceOnline.BusinessLogic.Games
             }
         }
 
+        public List<bool> ShuffleMissionOutcomes(IEnumerable<bool> missionOutcomes)
+        {
+            return missionOutcomes.OrderBy(mo => _random.Next()).ToList();
+        }
+
+        public void MoveToNextRound(GameDetailsModel gameDetails)
+        {
+            gameDetails.CurrentMissionRound++;
+            gameDetails.MissionSize = GetMissionSize(gameDetails.CurrentMissionRound, gameDetails.PlayersDetails!.Count);
+        }
+
 
         public GameDetailsModel SetUpNewGame(GameDetailsModel gameDetails)
         {
@@ -201,22 +215,16 @@ namespace TheResistanceOnline.BusinessLogic.Games
                 }
 
                 // denote first player as mission leader
-                //todo put this back after testing mission leader functionality
-                /*
-                gameDetails.PlayersDetails = shuffledPlayerDetails*/
-                //remove
-                gameDetails.PlayersDetails = shuffledPlayerDetails.OrderBy(x => x.IsBot).ToList();
-                gameDetails.PlayersDetails.First().Team = TeamModel.Resistance;
-
-                //keep
+                gameDetails.PlayersDetails = shuffledPlayerDetails;
                 gameDetails.PlayersDetails.First().IsMissionLeader = true;
             }
 
             gameDetails.MissionTeam = new List<PlayerDetailsModel>();
-            gameDetails.MissionRound = 1;
-            gameDetails.MissionSize = GetMissionSize(gameDetails.MissionRound, gameDetails.PlayersDetails!.Count);
+            gameDetails.CurrentMissionRound = 1;
+            gameDetails.MissionRounds = new Dictionary<int, bool>();
+            gameDetails.MissionSize = GetMissionSize(gameDetails.CurrentMissionRound, gameDetails.PlayersDetails!.Count);
             gameDetails.VoteFailedCount = 0;
-            gameDetails.GameStage = GameStageModel.GameStart;
+            gameDetails.GameStage = GameStageModel.MissionPropose;
             return gameDetails;
         }
 

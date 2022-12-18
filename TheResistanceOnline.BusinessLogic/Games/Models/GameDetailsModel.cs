@@ -20,7 +20,9 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
 
         public bool IsVoiceChannel { get; set; }
 
-        public int MissionRound { get; set; }
+        public int CurrentMissionRound { get; set; }
+
+        public Dictionary<int, bool> MissionRounds { get; set; }
 
         public int MissionSize { get; set; }
 
@@ -33,6 +35,10 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         public List<PlayerDetailsModel> PlayersDetails { get; set; }
 
         public int VoteFailedCount { get; set; }
+
+        public List<bool> MissionOutcome { get; set; }
+        
+        public bool MoveToNextRound { get; set; }
 
         #endregion
     }

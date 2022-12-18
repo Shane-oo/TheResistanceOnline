@@ -29,6 +29,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
         private static readonly Dictionary<string, PlayerDetailsModel> _connectionIdToPlayerDetailsMappingTable = new();
 
         private readonly IDiscordServerService _discordServerService;
+        private readonly IGameService _gameService;
 
         private static readonly Dictionary<string, GameDetailsModel> _groupNameToGameDetailsMappingTable = new()
                                                                                                            {
@@ -146,18 +147,18 @@ namespace TheResistanceOnline.SocketServer.Hubs
         private static readonly Dictionary<string, Timer> _groupNameToGameTimer = new();
         private readonly IMapper _mapper;
 
-
         private readonly IUserService _userService;
 
         #endregion
 
         #region Construction
 
-        public TheResistanceHub(IUserService userService, IDiscordServerService discordServerService, IMapper mapper)
+        public TheResistanceHub(IUserService userService, IDiscordServerService discordServerService, IGameService gameService, IMapper mapper)
         {
             _userService = userService;
             _discordServerService = discordServerService;
             _mapper = mapper;
+            _gameService = gameService;
         }
 
         #endregion
@@ -194,7 +195,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
         {
             if (gameDetails.PlayersDetails != null)
             {
-                // todo check is <= Count is all g lol
                 for(var i = 0; i <= gameDetails.PlayersDetails.Count; i++)
                 {
                     if (gameDetails.PlayersDetails[i].IsMissionLeader)
@@ -221,27 +221,33 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                            IGameObserver gameObserver,
                                            string groupName)
         {
-            // todo gotta figure out a way of this not being called by every real person in lobby.
             playerDetails.Continued = receivedPlayerDetails.Continued;
 
             var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
             if (players != null && players.All(p => p.Continued))
             {
+                //Reset Voted And Continued
+                foreach(var playerDetail in gameDetails.PlayersDetails!)
+                {
+                    playerDetail.Voted = false;
+                    playerDetail.Continued = false;
+                    playerDetail.Chose = false;
+                }
+
                 gameDetails.GameStage = gameDetails.NextGameStage;
                 switch(gameDetails.GameStage)
                 {
                     case GameStageModel.Mission:
-                        //todo
+                        //i dont know if need anything here
                         break;
                     case GameStageModel.MissionPropose:
-                        // empty MissionTeam, Reset Voted And Continued
-                        gameDetails.MissionTeam = new List<PlayerDetailsModel>();
-                        foreach(var playerDetail in gameDetails.PlayersDetails!)
+                        if (gameDetails.MoveToNextRound)
                         {
-                            playerDetail.Voted = false;
-                            playerDetail.Continued = false;
+                            _gameService.MoveToNextRound(gameDetails);
                         }
 
+                        // Empty Mission Team
+                        gameDetails.MissionTeam = new List<PlayerDetailsModel>();
                         var newMissionLeaderIsBot = MoveMissionLeaderClockwise(gameDetails);
                         if (newMissionLeaderIsBot)
                         {
@@ -254,9 +260,73 @@ namespace TheResistanceOnline.SocketServer.Hubs
                         break;
                 }
             }
+        }
 
-            SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
-            gameObserver.Update(gameDetails);
+        private void ReceiveSubmitMissionChoice(GameDetailsModel gameDetails,
+                                                PlayerDetailsModel playerDetails,
+                                                PlayerDetailsModel receivedPlayerDetails,
+                                                IGameObserver gameObserver,
+                                                string groupName)
+        {
+            playerDetails.Chose = receivedPlayerDetails.Chose;
+            playerDetails.SupportedMission = receivedPlayerDetails.SupportedMission;
+
+            var missionMembers = gameDetails.PlayersDetails!.Where(p2 => gameDetails.MissionTeam!.Any(p1 => p1.PlayerId == p2.PlayerId)).ToList();
+
+            var playerMissionMembers = missionMembers.Where(p => !p.IsBot).ToList();
+
+            if (playerMissionMembers.All(p => p.Chose))
+            {
+                var missionBots = missionMembers.Where(p => p.IsBot).ToList();
+
+                foreach(var bot in missionBots)
+                {
+                    bot.Chose = true;
+                    bot.SupportedMission = bot.BotObserver.GetMissionChoice();
+                }
+
+                gameDetails.MissionOutcome = _gameService.ShuffleMissionOutcomes(missionMembers.Select(p => p.SupportedMission));
+
+                //the 4th Mission in games of 7 or more players require at least two mission fail cards to be a failed mission
+                if (gameDetails.PlayersDetails!.Count > 6 && gameDetails.CurrentMissionRound == 4)
+                {
+                    gameDetails.MissionRounds.Add(gameDetails.CurrentMissionRound, gameDetails.MissionOutcome.Count(mo => !mo) <= 1);
+                }
+                else
+                {
+                    gameDetails.MissionRounds.Add(gameDetails.CurrentMissionRound, gameDetails.MissionOutcome.All(mo => mo));
+                }
+
+                // Check If a Team has Won the game by winning 3 rounds
+                var resistanceRoundWins = 0;
+                var spyRoundWins = 0;
+                foreach(var missionRound in gameDetails.MissionRounds)
+                {
+                    if (missionRound.Value == false)
+                    {
+                        spyRoundWins++;
+                    }
+                    else
+                    {
+                        resistanceRoundWins++;
+                    }
+                }
+
+                if (resistanceRoundWins == 3)
+                {
+                    gameDetails.GameStage = GameStageModel.GameOverResistanceWon;
+                }
+                else if (spyRoundWins == 3)
+                {
+                    gameDetails.GameStage = GameStageModel.GameOverSpiesWon;
+                }
+                else
+                {
+                    gameDetails.GameStage = GameStageModel.MissionResults;
+                    gameDetails.NextGameStage = GameStageModel.MissionPropose;
+                    gameDetails.MoveToNextRound = true;
+                }
+            }
         }
 
 
@@ -264,10 +334,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
         {
             gameDetails.MissionTeam = receivedGameDetails.MissionTeam;
             gameDetails.GameStage = GameStageModel.Vote;
-
-            SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
-
-            gameObserver.Update(gameDetails);
         }
 
         private void ReceiveSubmitVote(GameDetailsModel gameDetails,
@@ -300,19 +366,19 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 {
                     gameDetails.VoteFailedCount = 0;
                     gameDetails.NextGameStage = GameStageModel.Mission;
+
+                    //todo I need to do something on here about if all bots go on a mission!!!
                 }
                 else
                 {
                     gameDetails.VoteFailedCount++;
                     gameDetails.NextGameStage = GameStageModel.MissionPropose;
+                    gameDetails.MoveToNextRound = false;
                 }
 
                 // 5 consecutive failed votes => spies automatically win
                 gameDetails.GameStage = gameDetails.VoteFailedCount == 5 ? GameStageModel.GameOverSpiesWon : GameStageModel.VoteResults;
             }
-
-            SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
-            gameObserver.Update(gameDetails);
         }
 
         private void RemoveConnectionFromAllMaps(string connectionId)
@@ -508,10 +574,16 @@ namespace TheResistanceOnline.SocketServer.Hubs
                     break;
 
                 case GameActionModel.SubmitContinue:
-                    Console.WriteLine("pls continue");
                     ReceiveSubmitContinue(gameDetails, playerDetails, receivedPlayerDetails, gameObserver, groupName);
                     break;
+
+                case GameActionModel.SubmitMissionChoice:
+                    ReceiveSubmitMissionChoice(gameDetails, playerDetails, receivedPlayerDetails, gameObserver, groupName);
+                    break;
             }
+
+            SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
+            gameObserver.Update(gameDetails);
             // idea:
             //switch GameAction
 
@@ -583,9 +655,18 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
             // shuffle player order
             gameDetails = gameServiceObserver.SetUpNewGame(gameDetails);
-
-
             Notify(gameDetails, groupName);
+
+            var leader = gameDetails.PlayersDetails?.FirstOrDefault(p => p.IsMissionLeader);
+            if (leader != null && leader.IsBot)
+            {
+                gameDetails.MissionTeam = leader.BotObserver.GetMissionProposal();
+                // skip Mission Propose on client side as bot has decided
+                gameDetails.GameStage = GameStageModel.Vote;
+
+                Notify(gameDetails, groupName);
+            }
+
 
             // start game
             var gameTimer = new Timer(SetGameToFinished, groupName, command.GameOptions.TimeLimitMinutes * 60000, Timeout.Infinite);

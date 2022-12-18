@@ -5,5 +5,6 @@ public enum GameActionModel
     None = -1,
     SubmitMissionPropose,
     SubmitVote,
-    SubmitContinue
+    SubmitContinue,
+    SubmitMissionChoice
 }
