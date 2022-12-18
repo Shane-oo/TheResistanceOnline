@@ -7,7 +7,7 @@ export interface GameDetails {
   playersDetails: PlayerDetails[];
   isVoiceChannel: boolean;
   isAvailable: boolean;
-  missionRound: number;
+  currentMissionRound: number;
   missionTeam: PlayerDetails[];
   missionSize: number;
   gameStage: GameStage;
@@ -15,9 +15,13 @@ export interface GameDetails {
 
   gameAction: GameAction;
 
-  nextGameStage :GameStage;
+  nextGameStage: GameStage;
 
-  voteFailedCount:number;
+  voteFailedCount: number;
+
+  missionRounds: Map<number, boolean>;
+
+  missionOutcome: boolean[];
 }
 
 export interface PlayerDetails {
@@ -33,7 +37,10 @@ export interface PlayerDetails {
   voted: boolean;
   approvedMissionTeam: boolean;
 
-  continued:boolean;
+  continued: boolean;
+
+  supportedMission: boolean;
+  chose: boolean;
 }
 
 export interface GameDetailsResponse {
@@ -74,7 +81,8 @@ export enum GameAction {
   None = -1,
   SubmitMissionPropose,
   SubmitVote,
-  Continue
+  Continue,
+  SubmitMissionChoice
 }
 
 export interface GameActionCommand {
