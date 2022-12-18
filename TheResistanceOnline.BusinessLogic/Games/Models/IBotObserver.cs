@@ -6,6 +6,8 @@ public interface IBotObserver
 
     bool GetVote();
 
+    bool GetMissionChoice();
+
     List<PlayerDetailsModel> GetMissionProposal();
 
     void Update(GameDetailsModel gameDetails);

@@ -24,14 +24,16 @@ export class JoinGameComponent implements OnInit {
     playersDetails: [],
     isVoiceChannel: false,
     isAvailable: false,
-    missionRound: 0,
+    currentMissionRound: 0,
     missionTeam: [],
     missionSize: 0,
     gameStage: GameStage.GameStart,
     nextGameStage: GameStage.GameStart,
     gameOptions: {timeLimitMinutes: 0, botCount: 0},
     gameAction: GameAction.None,
-    voteFailedCount: 0
+    voteFailedCount: 0,
+    missionRounds: new Map<number, boolean>(),
+    missionOutcome: []
 
   };
 

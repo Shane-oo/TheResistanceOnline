@@ -35,20 +35,23 @@ export class GameComponent implements OnInit {
 
   public voted: boolean = false;
   public continued: boolean = false;
+  public chose: boolean = false;
 
   @Input() gameDetails: GameDetails = {
     channelName: '',
     playersDetails: [],
     isVoiceChannel: false,
     isAvailable: false,
-    missionRound: 0,
+    currentMissionRound: 0,
     missionTeam: [],
     missionSize: 0,
     gameStage: GameStage.GameStart,
     nextGameStage: GameStage.GameStart,
     gameOptions: {timeLimitMinutes: 0, botCount: 0},
     gameAction: GameAction.None,
-    voteFailedCount: 0
+    voteFailedCount: 0,
+    missionRounds: new Map<number, boolean>(),
+    missionOutcome: []
   };
   @Input() playerId: string = '';
 
@@ -64,7 +67,7 @@ export class GameComponent implements OnInit {
 
     this.notifySpies();
     this.notifyResistance();
-    this.gameDetails.gameStage = GameStage.MissionPropose;
+    //this.gameDetails.gameStage = GameStage.MissionPropose;
 
   }
 
@@ -73,7 +76,7 @@ export class GameComponent implements OnInit {
     console.log(this.gameDetails);
     this.voted = this.getPlayerDetails().voted;
     this.continued = this.getPlayerDetails().continued;
-
+    this.chose = this.getPlayerDetails().chose;
     console.log(this.gameDetails.voteFailedCount);
 
     if(this.gameDetails.gameStage === GameStage.GameOverSpiesWon) {
@@ -135,6 +138,14 @@ export class GameComponent implements OnInit {
     this.sendGameActionCommand();
   };
 
+  submitMissionChoice = (supported: boolean) => {
+    let playerDetails = this.getPlayerDetails();
+    playerDetails.supportedMission = supported;
+    playerDetails.chose = true;
+
+    this.gameDetails.gameAction = GameAction.SubmitMissionChoice;
+    this.sendGameActionCommand();
+  };
 
   // GameStage.GameStart
   notifySpies = () => {
