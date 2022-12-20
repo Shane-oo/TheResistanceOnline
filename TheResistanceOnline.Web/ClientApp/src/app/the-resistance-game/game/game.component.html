@@ -7,11 +7,11 @@
     <!--
    Put The Mission round and if success or fail here for now
 -->
-    <ul>
-      <li *ngFor="let mission of gameDetails.missionRounds | keyvalue">
-        {{mission.key}} --> {{mission.value}}
-      </li>
-    </ul>
+
+    <h4 *ngFor="let mission of gameDetails.missionRounds | keyvalue">
+      {{mission.key}} --> {{mission.value ? 'Resistance' : 'Spies'}}
+    </h4>
+
   </div>
   <div class="game-values">
     <div>
@@ -117,7 +117,8 @@
         <span>Waiting For:</span>
         <span *ngFor="let playerDetail of gameDetails.playersDetails">
 
-              <span *ngIf=" playerIsOnMissionTeam(playerDetail.playerId) && !playerDetail.chose && !playerDetail.isBot" class="userName">&nbsp;{{playerDetail.userName}}.&nbsp;</span>
+              <span *ngIf=" playerIsOnMissionTeam(playerDetail.playerId) && !playerDetail.chose && !playerDetail.isBot" class="userName">&nbsp;{{playerDetail.userName}}
+                .&nbsp;</span>
             </span>
       </div>
     </div>
@@ -143,7 +144,18 @@
       </span>
     </div>
 
+    <!--GameStage.GameOverSpiesWon || GameStage.GameOverResistanceWon-->
+    <div *ngIf="gameDetails.gameStage === 6 || gameDetails.gameStage === 7">
+      <h4>Game Over</h4>
+      <h4 *ngIf="gameDetails.gameStage === 6">Spies Won</h4>
+      <h4 *ngIf="gameDetails.gameStage === 7">Resistance Won</h4>
 
+      <span *ngFor="let playerDetail of gameDetails.playersDetails">
+              <span *ngIf="playerDetail.team === 1 " class="userName redIcon"> &nbsp;{{playerDetail.userName}}.&nbsp; </span>
+              <span *ngIf="playerDetail.team === 0 " class="userName blueIcon"> &nbsp;{{playerDetail.userName}}.&nbsp; </span>
+
+        </span>
+    </div>
   </div>
 
 

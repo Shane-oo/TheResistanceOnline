@@ -185,152 +185,28 @@ namespace TheResistanceOnline.SocketServer.Hubs
             }
         }
 
-        private static IGameObserver? GetGameObserver(string groupName)
-        {
-            return _groupNameToGameObserver.TryGetValue(groupName, out var observer) ? observer : null;
-        }
-
-        // return if new Mission leader is a bot
-        private static bool MoveMissionLeaderClockwise(GameDetailsModel gameDetails)
-        {
-            if (gameDetails.PlayersDetails != null)
-            {
-                for(var i = 0; i <= gameDetails.PlayersDetails.Count; i++)
-                {
-                    if (gameDetails.PlayersDetails[i].IsMissionLeader)
-                    {
-                        gameDetails.PlayersDetails[i].IsMissionLeader = false;
-                        if (i == gameDetails.PlayersDetails?.Count - 1)
-                        {
-                            gameDetails.PlayersDetails![0].IsMissionLeader = true;
-                            return gameDetails.PlayersDetails[0].IsBot;
-                        }
-
-                        gameDetails.PlayersDetails![i + 1].IsMissionLeader = true;
-                        return gameDetails.PlayersDetails[i + 1].IsBot;
-                    }
-                }
-            }
-
-            return false;
-        }
 
         private void ReceiveSubmitContinue(GameDetailsModel gameDetails,
                                            PlayerDetailsModel playerDetails,
-                                           PlayerDetailsModel receivedPlayerDetails,
-                                           IGameObserver gameObserver,
-                                           string groupName)
+                                           PlayerDetailsModel receivedPlayerDetails)
         {
             playerDetails.Continued = receivedPlayerDetails.Continued;
 
-            var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
-            if (players != null && players.All(p => p.Continued))
-            {
-                //Reset Voted And Continued
-                foreach(var playerDetail in gameDetails.PlayersDetails!)
-                {
-                    playerDetail.Voted = false;
-                    playerDetail.Continued = false;
-                    playerDetail.Chose = false;
-                }
-
-                gameDetails.GameStage = gameDetails.NextGameStage;
-                switch(gameDetails.GameStage)
-                {
-                    case GameStageModel.Mission:
-                        //i dont know if need anything here
-                        break;
-                    case GameStageModel.MissionPropose:
-                        if (gameDetails.MoveToNextRound)
-                        {
-                            _gameService.MoveToNextRound(gameDetails);
-                        }
-
-                        // Empty Mission Team
-                        gameDetails.MissionTeam = new List<PlayerDetailsModel>();
-                        var newMissionLeaderIsBot = MoveMissionLeaderClockwise(gameDetails);
-                        if (newMissionLeaderIsBot)
-                        {
-                            var leaderBot = gameDetails.PlayersDetails?.FirstOrDefault(p => p.IsMissionLeader);
-                            gameDetails.MissionTeam = leaderBot?.BotObserver.GetMissionProposal();
-                            // skip Mission Propose on client side as bot has decided
-                            gameDetails.GameStage = GameStageModel.Vote;
-                        }
-
-                        break;
-                }
-            }
+            _gameService.ProcessContinue(gameDetails);
         }
 
         private void ReceiveSubmitMissionChoice(GameDetailsModel gameDetails,
                                                 PlayerDetailsModel playerDetails,
-                                                PlayerDetailsModel receivedPlayerDetails,
-                                                IGameObserver gameObserver,
-                                                string groupName)
+                                                PlayerDetailsModel receivedPlayerDetails)
         {
             playerDetails.Chose = receivedPlayerDetails.Chose;
             playerDetails.SupportedMission = receivedPlayerDetails.SupportedMission;
 
-            var missionMembers = gameDetails.PlayersDetails!.Where(p2 => gameDetails.MissionTeam!.Any(p1 => p1.PlayerId == p2.PlayerId)).ToList();
-
-            var playerMissionMembers = missionMembers.Where(p => !p.IsBot).ToList();
-
-            if (playerMissionMembers.All(p => p.Chose))
-            {
-                var missionBots = missionMembers.Where(p => p.IsBot).ToList();
-
-                foreach(var bot in missionBots)
-                {
-                    bot.Chose = true;
-                    bot.SupportedMission = bot.BotObserver.GetMissionChoice();
-                }
-
-                gameDetails.MissionOutcome = _gameService.ShuffleMissionOutcomes(missionMembers.Select(p => p.SupportedMission));
-
-                //the 4th Mission in games of 7 or more players require at least two mission fail cards to be a failed mission
-                if (gameDetails.PlayersDetails!.Count > 6 && gameDetails.CurrentMissionRound == 4)
-                {
-                    gameDetails.MissionRounds.Add(gameDetails.CurrentMissionRound, gameDetails.MissionOutcome.Count(mo => !mo) <= 1);
-                }
-                else
-                {
-                    gameDetails.MissionRounds.Add(gameDetails.CurrentMissionRound, gameDetails.MissionOutcome.All(mo => mo));
-                }
-
-                // Check If a Team has Won the game by winning 3 rounds
-                var resistanceRoundWins = 0;
-                var spyRoundWins = 0;
-                foreach(var missionRound in gameDetails.MissionRounds)
-                {
-                    if (missionRound.Value == false)
-                    {
-                        spyRoundWins++;
-                    }
-                    else
-                    {
-                        resistanceRoundWins++;
-                    }
-                }
-
-                if (resistanceRoundWins == 3)
-                {
-                    gameDetails.GameStage = GameStageModel.GameOverResistanceWon;
-                }
-                else if (spyRoundWins == 3)
-                {
-                    gameDetails.GameStage = GameStageModel.GameOverSpiesWon;
-                }
-                else
-                {
-                    gameDetails.GameStage = GameStageModel.MissionResults;
-                    gameDetails.NextGameStage = GameStageModel.MissionPropose;
-                    gameDetails.MoveToNextRound = true;
-                }
-            }
+            _gameService.ProcessMission(gameDetails);
         }
 
 
-        private void ReceiveSubmitMissionPropose(GameDetailsModel gameDetails, GameDetailsModel receivedGameDetails, IGameObserver gameObserver, string groupName)
+        private void ReceiveSubmitMissionPropose(GameDetailsModel gameDetails, GameDetailsModel receivedGameDetails)
         {
             gameDetails.MissionTeam = receivedGameDetails.MissionTeam;
             gameDetails.GameStage = GameStageModel.Vote;
@@ -338,47 +214,12 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         private void ReceiveSubmitVote(GameDetailsModel gameDetails,
                                        PlayerDetailsModel playerDetails,
-                                       PlayerDetailsModel receivedPlayerDetails,
-                                       IGameObserver gameObserver,
-                                       string groupName)
+                                       PlayerDetailsModel receivedPlayerDetails)
         {
             playerDetails.Voted = receivedPlayerDetails.Voted;
             playerDetails.ApprovedMissionTeam = receivedPlayerDetails.ApprovedMissionTeam;
 
-            var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
-            if (players != null && players.All(p => p.Voted))
-            {
-                var bots = gameDetails.PlayersDetails?.Where(p => p.IsBot);
-                if (bots != null)
-                {
-                    foreach(var bot in bots)
-                    {
-                        bot.Voted = true;
-                        bot.ApprovedMissionTeam = bot.BotObserver.GetVote();
-                    }
-                }
-
-                var votes = gameDetails.PlayersDetails?.Select(p => p.ApprovedMissionTeam).ToList();
-                var approvedVotes = votes?.Where(v => v).Count();
-                var rejectedVotes = votes?.Where(v => !v).Count();
-                // successful vote => move onto mission game stage
-                if (approvedVotes > rejectedVotes)
-                {
-                    gameDetails.VoteFailedCount = 0;
-                    gameDetails.NextGameStage = GameStageModel.Mission;
-
-                    //todo I need to do something on here about if all bots go on a mission!!!
-                }
-                else
-                {
-                    gameDetails.VoteFailedCount++;
-                    gameDetails.NextGameStage = GameStageModel.MissionPropose;
-                    gameDetails.MoveToNextRound = false;
-                }
-
-                // 5 consecutive failed votes => spies automatically win
-                gameDetails.GameStage = gameDetails.VoteFailedCount == 5 ? GameStageModel.GameOverSpiesWon : GameStageModel.VoteResults;
-            }
+            _gameService.ProcessVote(gameDetails);
         }
 
         private void RemoveConnectionFromAllMaps(string connectionId)
@@ -555,8 +396,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
             }
 
             if (!_connectionIdToPlayerDetailsMappingTable.TryGetValue(Context.ConnectionId, out var playerDetails)) return;
-            var gameObserver = GetGameObserver(groupName);
-            if (gameObserver == null) return;
 
             var receivedGameDetails = gameActionCommand.GameDetails;
             var receivedGameAction = receivedGameDetails.GameAction;
@@ -566,33 +405,29 @@ namespace TheResistanceOnline.SocketServer.Hubs
             switch(receivedGameAction)
             {
                 case GameActionModel.SubmitMissionPropose:
-                    ReceiveSubmitMissionPropose(gameDetails, receivedGameDetails, gameObserver, groupName);
+                    ReceiveSubmitMissionPropose(gameDetails, receivedGameDetails);
                     break;
 
                 case GameActionModel.SubmitVote:
-                    ReceiveSubmitVote(gameDetails, playerDetails, receivedPlayerDetails, gameObserver, groupName);
+                    ReceiveSubmitVote(gameDetails, playerDetails, receivedPlayerDetails);
                     break;
 
                 case GameActionModel.SubmitContinue:
-                    ReceiveSubmitContinue(gameDetails, playerDetails, receivedPlayerDetails, gameObserver, groupName);
+                    ReceiveSubmitContinue(gameDetails, playerDetails, receivedPlayerDetails);
                     break;
 
                 case GameActionModel.SubmitMissionChoice:
-                    ReceiveSubmitMissionChoice(gameDetails, playerDetails, receivedPlayerDetails, gameObserver, groupName);
+                    ReceiveSubmitMissionChoice(gameDetails, playerDetails, receivedPlayerDetails);
                     break;
+                
+                case GameActionModel.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
-            gameObserver.Update(gameDetails);
-            // idea:
-            //switch GameAction
-
-            //(SubmitMissionPropose)
-            // gameService.SubmitMissionPropose()
-            //SubmitVotingResult
-            // gameService.SubmitVotingResult()
-            //...
-            //  that way it is just one function that can handles all game actions
+            Notify(gameDetails, groupName);
         }
 
         [UsedImplicitly]
@@ -631,7 +466,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             gameDetails.GameOptions = command.GameOptions;
 
             // create gameService observer
-            var gameServiceObserver = new GameService();
+            var gameServiceObserver = new GameSubjectAndObserver();
             // create bot observers and attach them to game service which is also subject to bots 
             var botObservers = gameServiceObserver.CreateBotObservers(command.GameOptions.BotCount);
 
@@ -646,19 +481,22 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                             PlayerId = Guid.NewGuid(),
                                             IsBot = true,
                                             BotObserver = botObserver,
-                                            UserName = gameServiceObserver.GetRandomBotName()
+                                            UserName = botObserver.GetName() + "-" + gameDetails.PlayersDetails?.Count
                                         };
+
                 botObserver.SetPlayerId(botPlayersDetails.PlayerId);
 
                 gameDetails.PlayersDetails?.Add(botPlayersDetails);
             }
 
-            // shuffle player order
-            gameDetails = gameServiceObserver.SetUpNewGame(gameDetails);
+
+            gameDetails = _gameService.SetUpNewGame(gameDetails);
+
             Notify(gameDetails, groupName);
 
+            // not sure what to do about this
             var leader = gameDetails.PlayersDetails?.FirstOrDefault(p => p.IsMissionLeader);
-            if (leader != null && leader.IsBot)
+            if (leader is { IsBot: true })
             {
                 gameDetails.MissionTeam = leader.BotObserver.GetMissionProposal();
                 // skip Mission Propose on client side as bot has decided
@@ -666,7 +504,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
                 Notify(gameDetails, groupName);
             }
-
 
             // start game
             var gameTimer = new Timer(SetGameToFinished, groupName, command.GameOptions.TimeLimitMinutes * 60000, Timeout.Infinite);

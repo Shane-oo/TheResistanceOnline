@@ -22,11 +22,29 @@ public class BayesBotObserver: IBotObserver
     private GameDetailsModel _gameDetails = new();
     private static readonly Random _random = new();
 
+    private readonly List<string> _randomBotNames = new()
+                                                    {
+                                                        "WALL - E", "R2D2", "K9", "Optimus Prime", "Rosie", "Bender", "C-3PO", "HAL 9000", "Data", "ASIMO", "The Terminator",
+                                                        "Micro", "EVA", "RAM", "Sputnik", "Humanoid", "Chip", "Robo", "Robocop", "Alpha", "Beta", "Gamma", "Siri",
+                                                        "Raspberry Pie", "AstroBoy", "Chappie", "Ultron", "Omega", "Hydra", "Pixels" ,"Shane","Brandon","Hamish","Chloe"
+                                                    };
+
     #endregion
 
     #region Properties
 
     public Guid PlayerId { get; set; }
+
+    private string Name { get; set; }
+
+    #endregion
+
+    #region Construction
+
+    public BayesBotObserver()
+    {
+        SetName();
+    }
 
     #endregion
 
@@ -59,6 +77,11 @@ public class BayesBotObserver: IBotObserver
         }
 
         return desiredList;
+    }
+
+    private void SetName()
+    {
+        Name = _randomBotNames.MinBy(x => Guid.NewGuid());
     }
 
     #endregion
@@ -155,6 +178,11 @@ public class BayesBotObserver: IBotObserver
         return -1;
     }
 
+    public string GetName()
+    {
+        return Name;
+    }
+
     public bool GetVote()
     {
         // todo vote on the current mission team
@@ -189,5 +217,6 @@ public class BayesBotObserver: IBotObserver
 
     #endregion
 }
+
 
 
