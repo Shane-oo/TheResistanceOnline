@@ -155,6 +155,10 @@
               <span *ngIf="playerDetail.team === 0 " class="userName blueIcon"> &nbsp;{{playerDetail.userName}}.&nbsp; </span>
 
         </span>
+      <div>
+        <countdown #gameOverCountdown (event)="handleGameOverCountdownEvent($event)" [config]="gameOverCountdownConfig"
+                   class="countdowns"></countdown>
+      </div>
     </div>
   </div>
 
