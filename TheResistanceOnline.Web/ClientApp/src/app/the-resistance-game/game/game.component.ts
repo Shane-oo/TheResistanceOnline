@@ -13,7 +13,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { SwalContainerService } from '../../../ui/swal/swal-container.service';
-import { CountdownComponent, CountdownConfig } from 'ngx-countdown';
+import { CountdownComponent, CountdownConfig, CountdownEvent } from 'ngx-countdown';
 
 
 @Component({
@@ -58,6 +58,9 @@ export class GameComponent implements OnInit {
   public gameCountdownConfig: CountdownConfig = {leftTime: 0};
   @ViewChild('gameCountdown', {static: false}) private gameCountdown!: CountdownComponent;
 
+  public gameOverCountdownConfig:CountdownConfig = {leftTime:30,format:'s'};
+  @ViewChild('gameOverCountdown', {static: false}) private gameOverCountdown!: CountdownComponent;
+
   constructor(private gameService: TheResistanceGameService, private swalService: SwalContainerService) {
   }
 
@@ -79,8 +82,8 @@ export class GameComponent implements OnInit {
     this.chose = this.getPlayerDetails().chose;
     console.log(this.gameDetails.voteFailedCount);
 
-    if(this.gameDetails.gameStage === GameStage.GameOverSpiesWon) {
-      console.log('spies won');
+    if(this.gameDetails.gameStage === GameStage.GameOverSpiesWon || this.gameDetails.gameStage === GameStage.GameOverResistanceWon) {
+
     }
   }
 
@@ -178,13 +181,13 @@ export class GameComponent implements OnInit {
   };
 
 
-  /*  handleCountdownEvent = (e: CountdownEvent) => {
+    handleGameOverCountdownEvent = (e: CountdownEvent) => {
 
       if(e.action === 'done') {
-        //  this.notify += ` - ${e.left} ms`;
         console.log('countdown done');
-        // only host sends so that backend does not get bombarded
-        this.submitContinue();
+        // kick em out
+        location.reload();
+
       }
-    };*/
+    };
 }
