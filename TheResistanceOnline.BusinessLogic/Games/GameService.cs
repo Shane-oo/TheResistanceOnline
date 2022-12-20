@@ -3,14 +3,22 @@ using TheResistanceOnline.BusinessLogic.Games.Models;
 
 namespace TheResistanceOnline.BusinessLogic.Games
 {
-    public interface IGameService: IGameSubject
+    public interface IGameService
     {
-        List<bool> ShuffleMissionOutcomes(IEnumerable<bool> missionOutcomes);
-
         void MoveToNextRound(GameDetailsModel gameDetails);
+
+        void ProcessMission(GameDetailsModel gameDetails);
+
+        void ProcessMissionPropose(GameDetailsModel gameDetails);
+
+        void ProcessVote(GameDetailsModel gameDetails);
+
+        void ProcessContinue(GameDetailsModel gameDetails);
+
+        GameDetailsModel SetUpNewGame(GameDetailsModel gameDetails);
     }
 
-    public class GameService: IGameService, IGameObserver
+    public class GameService: IGameService
     {
         #region Constants
 
@@ -26,16 +34,8 @@ namespace TheResistanceOnline.BusinessLogic.Games
 
         #region Fields
 
-        private GameDetailsModel _gameDetails = new();
-        private List<IBotObserver> _observers = new();
         private static readonly Random _random = new();
-
-        private readonly List<string> _randomBotNames = new()
-                                                        {
-                                                            "WALL - E", "R2D2", "K9", "Optimus Prime", "Rosie", "Bender", "C-3PO", "HAL 9000", "Data", "ASIMO", "The Terminator",
-                                                            "Micro", "EVA", "RAM", "Sputnik", "Humanoid", "Chip", "Robo", "Robocop", "Alpha", "Beta", "Gamma", "Siri",
-                                                            "Raspberry Pie", "AstroBoy", "Chappie", "Ultron", "Omega", "Hydra", "Pixels"
-                                                        };
+        
 
         #endregion
 
@@ -59,38 +59,38 @@ namespace TheResistanceOnline.BusinessLogic.Games
             return desiredList;
         }
 
+        private static bool MoveMissionLeaderClockwise(GameDetailsModel gameDetails)
+        {
+            if (gameDetails.PlayersDetails != null)
+            {
+                for(var i = 0; i <= gameDetails.PlayersDetails.Count; i++)
+                {
+                    if (gameDetails.PlayersDetails[i].IsMissionLeader)
+                    {
+                        gameDetails.PlayersDetails[i].IsMissionLeader = false;
+                        if (i == gameDetails.PlayersDetails?.Count - 1)
+                        {
+                            gameDetails.PlayersDetails![0].IsMissionLeader = true;
+                            return gameDetails.PlayersDetails[0].IsBot;
+                        }
+
+                        gameDetails.PlayersDetails![i + 1].IsMissionLeader = true;
+                        return gameDetails.PlayersDetails[i + 1].IsBot;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static List<bool> ShuffleMissionOutcomes(IEnumerable<bool> missionOutcomes)
+        {
+            return missionOutcomes.OrderBy(mo => _random.Next()).ToList();
+        }
+
         #endregion
 
         #region Public Methods
-
-        // Subject Function
-        public void Attach(IBotObserver observer)
-        {
-            _observers.Add(observer);
-        }
-
-        //todo
-        public List<IBotObserver> CreateBotObservers(int botCount)
-        {
-            for(var i = 0; i < botCount; i++)
-            {
-                var botObserver = new BayesBotObserver();
-                Attach(botObserver);
-            }
-
-            return _observers;
-        }
-
-        // Subject Function
-        public void Detach(IBotObserver observer)
-        {
-            _observers.Remove(observer);
-        }
-
-        public void Dispose()
-        {
-            _observers = null;
-        }
 
         public int GetMissionSize(int missionRound, int playerCount)
         {
@@ -159,29 +159,164 @@ namespace TheResistanceOnline.BusinessLogic.Games
             return -1;
         }
 
-        public string GetRandomBotName()
-        {
-            return _randomBotNames.MinBy(x => Guid.NewGuid());
-        }
 
-        // Subject Function  - notify all bot observers of game details if updated
-        public void Notify()
-        {
-            foreach(var observer in _observers)
-            {
-                observer.Update(_gameDetails);
-            }
-        }
-
-        public List<bool> ShuffleMissionOutcomes(IEnumerable<bool> missionOutcomes)
-        {
-            return missionOutcomes.OrderBy(mo => _random.Next()).ToList();
-        }
 
         public void MoveToNextRound(GameDetailsModel gameDetails)
         {
             gameDetails.CurrentMissionRound++;
             gameDetails.MissionSize = GetMissionSize(gameDetails.CurrentMissionRound, gameDetails.PlayersDetails!.Count);
+        }
+
+
+        public void ProcessMission(GameDetailsModel gameDetails)
+        {
+            var missionMembers = gameDetails.PlayersDetails!.Where(p2 => gameDetails.MissionTeam!.Any(p1 => p1.PlayerId == p2.PlayerId)).ToList();
+
+            var playerMissionMembers = missionMembers.Where(p => !p.IsBot).ToList();
+
+            if (playerMissionMembers.All(p => p.Chose))
+            {
+                var missionBots = missionMembers.Where(p => p.IsBot).ToList();
+
+                foreach(var bot in missionBots)
+                {
+                    bot.Chose = true;
+                    bot.SupportedMission = bot.BotObserver.GetMissionChoice();
+                }
+
+                gameDetails.MissionOutcome = ShuffleMissionOutcomes(missionMembers.Select(p => p.SupportedMission));
+
+                //the 4th Mission in games of 7 or more players require at least two mission fail cards to be a failed mission
+                if (gameDetails.PlayersDetails!.Count > 6 && gameDetails.CurrentMissionRound == 4)
+                {
+                    gameDetails.MissionRounds.Add(gameDetails.CurrentMissionRound, gameDetails.MissionOutcome.Count(mo => !mo) <= 1);
+                }
+                else
+                {
+                    gameDetails.MissionRounds.Add(gameDetails.CurrentMissionRound, gameDetails.MissionOutcome.All(mo => mo));
+                }
+
+                // Check If a Team has Won the game by winning 3 rounds
+                var resistanceRoundWins = 0;
+                var spyRoundWins = 0;
+                foreach(var missionRound in gameDetails.MissionRounds)
+                {
+                    if (missionRound.Value == false)
+                    {
+                        spyRoundWins++;
+                    }
+                    else
+                    {
+                        resistanceRoundWins++;
+                    }
+                }
+
+                if (resistanceRoundWins == 3)
+                {
+                    gameDetails.GameStage = GameStageModel.GameOverResistanceWon;
+                }
+                else if (spyRoundWins == 3)
+                {
+                    gameDetails.GameStage = GameStageModel.GameOverSpiesWon;
+                }
+                else
+                {
+                    gameDetails.GameStage = GameStageModel.MissionResults;
+                    gameDetails.NextGameStage = GameStageModel.MissionPropose;
+                    gameDetails.MoveToNextRound = true;
+                }
+            }
+        }
+
+        public void ProcessMissionPropose(GameDetailsModel gameDetails)
+        {
+            if (gameDetails.MoveToNextRound)
+            {
+                MoveToNextRound(gameDetails);
+            }
+
+            // Empty Mission Team
+            gameDetails.MissionTeam = new List<PlayerDetailsModel>();
+            var newMissionLeaderIsBot = MoveMissionLeaderClockwise(gameDetails);
+            if (newMissionLeaderIsBot)
+            {
+                var leaderBot = gameDetails.PlayersDetails?.FirstOrDefault(p => p.IsMissionLeader);
+                gameDetails.MissionTeam = leaderBot?.BotObserver.GetMissionProposal();
+                // skip Mission Propose on client side as bot has decided
+                gameDetails.GameStage = GameStageModel.Vote;
+            }
+        }
+
+        public void ProcessVote(GameDetailsModel gameDetails)
+        {
+            var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
+            if (players != null && players.All(p => p.Voted))
+            {
+                var bots = gameDetails.PlayersDetails?.Where(p => p.IsBot);
+                if (bots != null)
+                {
+                    foreach(var bot in bots)
+                    {
+                        bot.Voted = true;
+                        bot.ApprovedMissionTeam = bot.BotObserver.GetVote();
+                    }
+                }
+
+                var votes = gameDetails.PlayersDetails?.Select(p => p.ApprovedMissionTeam).ToList();
+                var approvedVotes = votes?.Where(v => v).Count();
+                var rejectedVotes = votes?.Where(v => !v).Count();
+                // successful vote => move onto mission game stage
+                if (approvedVotes > rejectedVotes)
+                {
+                    gameDetails.VoteFailedCount = 0;
+                    gameDetails.NextGameStage = GameStageModel.Mission;
+
+                    //todo I need to do something on here about if all bots go on a mission!!!
+                }
+                else
+                {
+                    gameDetails.VoteFailedCount++;
+                    gameDetails.NextGameStage = GameStageModel.MissionPropose;
+                    gameDetails.MoveToNextRound = false;
+                }
+
+                // 5 consecutive failed votes => spies automatically win
+                gameDetails.GameStage = gameDetails.VoteFailedCount == 5 ? GameStageModel.GameOverSpiesWon : GameStageModel.VoteResults;
+            }
+        }
+
+        public void ProcessContinue(GameDetailsModel gameDetails)
+        {
+            var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
+
+            if (players != null && players.All(p => p.Continued))
+            {
+                //Reset Voted And Continued
+                foreach(var playerDetail in gameDetails.PlayersDetails!)
+                {
+                    playerDetail.Voted = false;
+                    playerDetail.Continued = false;
+                    playerDetail.Chose = false;
+                }
+
+                gameDetails.GameStage = gameDetails.NextGameStage;
+                switch(gameDetails.GameStage)
+                {
+                    case GameStageModel.Mission:
+                        if (gameDetails.MissionTeam != null && gameDetails.MissionTeam.All(p => p.IsBot))
+                        {
+                            ProcessMission(gameDetails);
+                        }
+                        // Skip mission On client Side as bots complete mission
+
+                        break;
+                    case GameStageModel.MissionPropose:
+                        ProcessMissionPropose(gameDetails);
+
+
+                        break;
+                }
+            }
         }
 
 
@@ -225,15 +360,10 @@ namespace TheResistanceOnline.BusinessLogic.Games
             gameDetails.MissionSize = GetMissionSize(gameDetails.CurrentMissionRound, gameDetails.PlayersDetails!.Count);
             gameDetails.VoteFailedCount = 0;
             gameDetails.GameStage = GameStageModel.MissionPropose;
+            
+            
+            
             return gameDetails;
-        }
-
-
-        // Observer Function - hub calls this function when game details change
-        public void Update(GameDetailsModel gameDetails)
-        {
-            _gameDetails = gameDetails;
-            Notify();
         }
 
         #endregion

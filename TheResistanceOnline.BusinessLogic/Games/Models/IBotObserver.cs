@@ -15,4 +15,6 @@ public interface IBotObserver
     Guid PlayerId { get; set; }
 
     void SetPlayerId(Guid playerId);
+
+    string GetName();
 }
