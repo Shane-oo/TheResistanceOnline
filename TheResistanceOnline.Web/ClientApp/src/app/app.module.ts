@@ -22,6 +22,7 @@ import { AuthGuard } from './shared/guards/auth.guard';
 import { AdminComponent } from './admin/admin.component';
 import { AdminGuard } from './shared/guards/admin.guard';
 import { environment } from '../environments/environment';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 export function tokenGetter() {
   return localStorage.getItem('TheResistanceToken');
@@ -73,7 +74,8 @@ export function tokenGetter() {
                                       environment.Base_Domain + '/server'],
                                     disallowedRoutes: []
                                   }
-                                })
+                                }),
+              NgbModule
             ],
             providers: [
               {
