@@ -184,18 +184,18 @@
 
       </div>
       <div>
-        <h6 class="highlight-spy"> {{playerDetail.userName}}</h6>
-        <i class="fa-solid fa-person-military-rifle"></i>
-        <div ngbDropdown class="d-inline-block">
-          <button type="button" class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>
-            Toggle dropdown
-          </button>
-          <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-            <button ngbDropdownItem>Action - 1</button>
-            <button ngbDropdownItem>Another Action</button>
-            <button ngbDropdownItem>Something else is here</button>
+        <h6 class="highlight-spy"> {{playerDetail.userName}}
+          <div class="btn-group" placement="right" ngbDropdown>
+            <button type="button" class="btn btn-dark btn-sm btn-block" ngbDropdownToggle>
+            </button>
+            <div class="dropdown-menu" ngbDropdownMenu aria-labelledby="dropdownBasic2">
+              <button class="spy-option" ngbDropdownItem></button>
+              <button class="resistance-option" ngbDropdownItem></button>
+            </div>
           </div>
-        </div>
+        </h6>
+        <i class="fa-solid fa-person-military-rifle"></i>
+
       </div>
 
       <div *ngIf="playerDetail.discordUserName">

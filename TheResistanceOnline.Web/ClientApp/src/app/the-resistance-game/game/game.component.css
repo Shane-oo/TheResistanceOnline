@@ -315,22 +315,12 @@ background: #367bee;
 
 
 .highlight-spy {
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  transition: 1s;
-
-  /*add those for opera and mozilla support*/
-  -webkit-text-decoration-color: transparent;
-  -moz-text-decoration-color: transparent;
-  will-change:text-decoration;
+  -webkit-transition: color 1s; /* For Safari 3.0 to 6.0 */
+  transition: color 1s; /* For modern browsers */
 }
 .highlight-spy:hover {
 
-  text-decoration-color: red;
-
-  /*add those for opera and mozilla support*/
-  -webkit-text-decoration-color: red;
-  -moz-text-decoration-color: red;
+  color: #fc0114 !important;
 }
 
 .highlight-resistance{
@@ -339,4 +329,23 @@ background: #367bee;
 
 .highlight-warning{
 
+}
+
+.dropdown-menu {
+  min-width: 60px !important;
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.spy-option{
+  background: #fc0114!important;
+  height:25px !important;
+  border-radius: 5px!important;
+}
+
+
+.resistance-option{
+  background: #367bee!important;
+  height:25px !important;
+  border-radius: 5px !important;
 }
