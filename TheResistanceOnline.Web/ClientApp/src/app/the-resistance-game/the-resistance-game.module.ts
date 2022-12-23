@@ -11,6 +11,7 @@ import { GameLobbyComponent } from './game-lobby/game-lobby.component';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CountdownModule } from 'ngx-countdown';
+import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
             declarations: [
@@ -28,7 +29,11 @@ import { CountdownModule } from 'ngx-countdown';
               ReactiveFormsModule,
               FormsModule,
               FontAwesomeModule,
-              CountdownModule
+              CountdownModule,
+              NgbDropdown,
+              NgbDropdownMenu,
+              NgbDropdownItem,
+              NgbDropdownToggle
             ]
           })
 export class TheResistanceGameModule {}

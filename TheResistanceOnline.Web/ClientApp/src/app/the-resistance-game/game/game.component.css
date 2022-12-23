@@ -312,3 +312,40 @@ background: #367bee;
 .canvas {
   height: 325px;
 }
+
+
+.highlight-spy {
+  -webkit-transition: color 1s; /* For Safari 3.0 to 6.0 */
+  transition: color 1s; /* For modern browsers */
+}
+.highlight-spy:hover {
+
+  color: #fc0114 !important;
+}
+
+.highlight-resistance{
+
+}
+
+.highlight-warning{
+
+}
+
+.dropdown-menu {
+  min-width: 60px !important;
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.spy-option{
+  background: #fc0114!important;
+  height:25px !important;
+  border-radius: 5px!important;
+}
+
+
+.resistance-option{
+  background: #367bee!important;
+  height:25px !important;
+  border-radius: 5px !important;
+}
