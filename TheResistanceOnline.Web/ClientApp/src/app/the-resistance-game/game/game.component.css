@@ -312,3 +312,31 @@ background: #367bee;
 .canvas {
   height: 325px;
 }
+
+
+.highlight-spy {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: 1s;
+
+  /*add those for opera and mozilla support*/
+  -webkit-text-decoration-color: transparent;
+  -moz-text-decoration-color: transparent;
+  will-change:text-decoration;
+}
+.highlight-spy:hover {
+
+  text-decoration-color: red;
+
+  /*add those for opera and mozilla support*/
+  -webkit-text-decoration-color: red;
+  -moz-text-decoration-color: red;
+}
+
+.highlight-resistance{
+
+}
+
+.highlight-warning{
+
+}
