@@ -62,7 +62,7 @@ export function tokenGetter() {
                                        loadChildren: () => import('./the-resistance-game/the-resistance-game.module').then(m => m.TheResistanceGameModule),
                                        canActivate: [AuthGuard]
                                      }
-                                   ]),
+                                   ], { initialNavigation: 'enabled' }),
               SweetAlert2Module.forRoot(),
               JwtModule.forRoot({
                                   config: {
