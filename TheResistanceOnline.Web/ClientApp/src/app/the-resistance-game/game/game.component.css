@@ -317,18 +317,20 @@ background: #367bee;
 .highlight-spy {
   -webkit-transition: color 1s; /* For Safari 3.0 to 6.0 */
   transition: color 1s; /* For modern browsers */
-}
-.highlight-spy:hover {
-
   color: #fc0114 !important;
+
 }
 
 .highlight-resistance{
-
+  -webkit-transition: color 1s; /* For Safari 3.0 to 6.0 */
+  transition: color 1s; /* For modern browsers */
+  color: #367bee !important;
 }
 
-.highlight-warning{
+.dropdownButton{
 
+  background: none !important;
+  border:  none !important;
 }
 
 .dropdown-menu {
@@ -341,6 +343,8 @@ background: #367bee;
   background: #fc0114!important;
   height:25px !important;
   border-radius: 5px!important;
+  color:ghostwhite !important;
+  text-align: center !important;
 }
 
 
@@ -348,4 +352,16 @@ background: #367bee;
   background: #367bee!important;
   height:25px !important;
   border-radius: 5px !important;
+  color:ghostwhite !important;
+  text-align: center !important;
+
+}
+
+.eraser-option{
+  background: #1e1e1e !important;
+  height:25px !important;
+  border-radius: 5px !important;
+  color:ghostwhite !important;
+  text-align: center !important;
+
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { TheResistanceGameService } from '../the-resistance-game.service';
 import { GameAction, GameDetails, GameStage, PlayerDetails, TeamModel } from '../the-resistance-game.models';
 
@@ -9,7 +9,10 @@ import {
   faPersonMilitaryRifle,
   faPersonRifle,
   faSquarePlus,
-  faXmark
+  faXmark,
+  faEraser,
+  faUserCheck,
+  faUserSecret
 } from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { SwalContainerService } from '../../../ui/swal/swal-container.service';
@@ -30,6 +33,9 @@ export class GameComponent implements OnInit {
   public tickIcon = faCircleCheck;
   public nextIcon = faCircleArrowRight;
   public xMarkIcon = faXmark;
+  public eraserIcon = faEraser;
+  public userCheckIcon = faUserCheck;
+  public userSecretIcon = faUserSecret;
 
   public missionLeaderPlayerId: string = '';
 
@@ -58,8 +64,10 @@ export class GameComponent implements OnInit {
   public gameCountdownConfig: CountdownConfig = {leftTime: 0};
   @ViewChild('gameCountdown', {static: false}) private gameCountdown!: CountdownComponent;
 
-  public gameOverCountdownConfig:CountdownConfig = {leftTime:30,format:'s'};
+  public gameOverCountdownConfig: CountdownConfig = {leftTime: 30, format: 's'};
   @ViewChild('gameOverCountdown', {static: false}) private gameOverCountdown!: CountdownComponent;
+
+  public highlightMap: Map<string, boolean> = new Map<string, boolean>();
 
   constructor(private gameService: TheResistanceGameService, private swalService: SwalContainerService) {
   }
@@ -74,7 +82,8 @@ export class GameComponent implements OnInit {
 
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log('CHANGES', changes);
     this.missionLeaderPlayerId = this.gameDetails.playersDetails.find(p => p.isMissionLeader)!.playerId;
     console.log(this.gameDetails);
     this.voted = this.getPlayerDetails().voted;
@@ -181,13 +190,26 @@ export class GameComponent implements OnInit {
   };
 
 
-    handleGameOverCountdownEvent = (e: CountdownEvent) => {
+  handleGameOverCountdownEvent = (e: CountdownEvent) => {
 
-      if(e.action === 'done') {
-        console.log('countdown done');
-        // kick em out
-        location.reload();
+    if(e.action === 'done') {
+      console.log('countdown done');
+      // kick em out
+      location.reload();
 
-      }
-    };
+    }
+  };
+  highlight = (playerId: string, highlightSpy: boolean) => {
+    const player = this.gameDetails.playersDetails.find(p => p.playerId === playerId);
+    if(player) {
+      this.highlightMap.set(playerId, highlightSpy);
+    }
+  };
+
+  removeHighlight = (playerId: string) => {
+    const player = this.gameDetails.playersDetails.find(p => p.playerId === playerId);
+    if(player) {
+      this.highlightMap.delete(playerId);
+    }
+  };
 }
