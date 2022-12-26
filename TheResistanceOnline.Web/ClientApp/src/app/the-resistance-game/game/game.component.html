@@ -15,7 +15,7 @@
   </div>
   <div class="game-values">
     <div>
-
+      <!--todo don't show these if game is over-->
       <div>
         <h6>Mission: <b>{{gameDetails.currentMissionRound}}.</b>
           <span *ngFor="let i of [].constructor(gameDetails.voteFailedCount)" style="padding-left: 5px">
@@ -184,13 +184,24 @@
 
       </div>
       <div>
-        <h6 class="highlight-spy"> {{playerDetail.userName}}
+        <h6 [ngClass]="{
+                      'highlight-spy':highlightMap.has(playerDetail.playerId) && highlightMap.get(playerDetail.playerId),
+                      'highlight-resistance':highlightMap.has(playerDetail.playerId) && !highlightMap.get(playerDetail.playerId)
+          }"> {{playerDetail.userName}}
           <div class="btn-group" placement="right" ngbDropdown>
-            <button type="button" class="btn btn-dark btn-sm btn-block" ngbDropdownToggle>
+            <button type="button" class="btn btn-dark btn-sm dropdownButton" ngbDropdownToggle>
             </button>
-            <div class="dropdown-menu" ngbDropdownMenu aria-labelledby="dropdownBasic2">
-              <button class="spy-option" ngbDropdownItem></button>
-              <button class="resistance-option" ngbDropdownItem></button>
+            <div class="dropdown-menu" ngbDropdownMenu>
+              <button class="resistance-option" ngbDropdownItem (click)="highlight(playerDetail.playerId,false)">
+                <fa-icon [icon]="userCheckIcon" class="fa-sm"></fa-icon>
+              </button>
+              <button class="spy-option" ngbDropdownItem (click)="highlight(playerDetail.playerId,true)">
+                <fa-icon [icon]="userSecretIcon" class="fa-sm"></fa-icon>
+              </button>
+              <button class="eraser-option" ngbDropdownItem (click)="removeHighlight(playerDetail.playerId)">
+                <fa-icon [icon]="eraserIcon" class="fa-sm"></fa-icon>
+              </button>
+
             </div>
           </div>
         </h6>
