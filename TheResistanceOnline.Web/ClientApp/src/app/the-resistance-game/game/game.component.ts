@@ -82,14 +82,12 @@ export class GameComponent implements OnInit {
 
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log('CHANGES', changes);
+  ngOnChanges(): void {
     this.missionLeaderPlayerId = this.gameDetails.playersDetails.find(p => p.isMissionLeader)!.playerId;
-    console.log(this.gameDetails);
+
     this.voted = this.getPlayerDetails().voted;
     this.continued = this.getPlayerDetails().continued;
     this.chose = this.getPlayerDetails().chose;
-    console.log(this.gameDetails.voteFailedCount);
 
     if(this.gameDetails.gameStage === GameStage.GameOverSpiesWon || this.gameDetails.gameStage === GameStage.GameOverResistanceWon) {
 

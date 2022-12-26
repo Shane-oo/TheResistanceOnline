@@ -16,5 +16,9 @@ public interface IBotObserver
 
     void SetPlayerId(Guid playerId);
 
+    void SetTeam(TeamModel team);
+
+    TeamModel GetTeam();
+
     string GetName();
 }
