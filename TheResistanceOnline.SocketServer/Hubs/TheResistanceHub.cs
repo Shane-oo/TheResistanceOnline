@@ -419,7 +419,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                 case GameActionModel.SubmitMissionChoice:
                     ReceiveSubmitMissionChoice(gameDetails, playerDetails, receivedPlayerDetails);
                     break;
-                
+
                 case GameActionModel.None:
                     break;
                 default:

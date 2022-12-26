@@ -347,6 +347,10 @@ namespace TheResistanceOnline.BusinessLogic.Games
                 foreach(var player in shuffledPlayerDetails)
                 {
                     player.Team = spyPlayers.Any(p => p.PlayerId == player.PlayerId) ? TeamModel.Spy : TeamModel.Resistance;
+                    if (player.IsBot)
+                    {
+                        player.BotObserver.SetTeam(player.Team);
+                    }
                 }
 
                 // denote first player as mission leader
@@ -360,9 +364,8 @@ namespace TheResistanceOnline.BusinessLogic.Games
             gameDetails.MissionSize = GetMissionSize(gameDetails.CurrentMissionRound, gameDetails.PlayersDetails!.Count);
             gameDetails.VoteFailedCount = 0;
             gameDetails.GameStage = GameStageModel.MissionPropose;
-            
-            
-            
+
+
             return gameDetails;
         }
 
