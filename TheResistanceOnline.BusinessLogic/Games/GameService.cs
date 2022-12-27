@@ -1,5 +1,9 @@
+using TheResistanceOnline.BusinessLogic.Core.Queries;
 using TheResistanceOnline.BusinessLogic.Games.BotObservers;
 using TheResistanceOnline.BusinessLogic.Games.Models;
+using TheResistanceOnline.BusinessLogic.Users;
+using TheResistanceOnline.Data;
+using TheResistanceOnline.Data.Games;
 
 namespace TheResistanceOnline.BusinessLogic.Games
 {
@@ -7,13 +11,13 @@ namespace TheResistanceOnline.BusinessLogic.Games
     {
         void MoveToNextRound(GameDetailsModel gameDetails);
 
-        void ProcessMission(GameDetailsModel gameDetails);
+        Task ProcessMissionAsync(GameDetailsModel gameDetails);
 
         void ProcessMissionPropose(GameDetailsModel gameDetails);
 
-        void ProcessVote(GameDetailsModel gameDetails);
+        Task ProcessVoteAsync(GameDetailsModel gameDetails);
 
-        void ProcessContinue(GameDetailsModel gameDetails);
+        Task ProcessContinueAsync(GameDetailsModel gameDetails);
 
         GameDetailsModel SetUpNewGame(GameDetailsModel gameDetails);
     }
@@ -35,9 +39,16 @@ namespace TheResistanceOnline.BusinessLogic.Games
         #region Fields
 
         private static readonly Random _random = new();
-        
+        private readonly IUserService _userService;
+        private readonly IDataContext _context;
 
         #endregion
+
+        public GameService(IDataContext context,IUserService userService)
+        {
+            _context = context;
+            _userService = userService;
+        }
 
         #region Private Methods
 
@@ -160,7 +171,6 @@ namespace TheResistanceOnline.BusinessLogic.Games
         }
 
 
-
         public void MoveToNextRound(GameDetailsModel gameDetails)
         {
             gameDetails.CurrentMissionRound++;
@@ -168,7 +178,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
         }
 
 
-        public void ProcessMission(GameDetailsModel gameDetails)
+        public async Task ProcessMissionAsync(GameDetailsModel gameDetails)
         {
             var missionMembers = gameDetails.PlayersDetails!.Where(p2 => gameDetails.MissionTeam!.Any(p1 => p1.PlayerId == p2.PlayerId)).ToList();
 
@@ -214,10 +224,26 @@ namespace TheResistanceOnline.BusinessLogic.Games
                 if (resistanceRoundWins == 3)
                 {
                     gameDetails.GameStage = GameStageModel.GameOverResistanceWon;
+                    try
+                    {
+                        await CreateGameAsync(gameDetails);
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
                 }
                 else if (spyRoundWins == 3)
                 {
                     gameDetails.GameStage = GameStageModel.GameOverSpiesWon;
+                    try
+                    {
+                        await CreateGameAsync(gameDetails);
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
                 }
                 else
                 {
@@ -226,6 +252,50 @@ namespace TheResistanceOnline.BusinessLogic.Games
                     gameDetails.MoveToNextRound = true;
                 }
             }
+        }
+
+        public async Task CreateGameAsync(GameDetailsModel gameDetails)
+        {
+            var game = new Game
+                       {
+                           WinningTeam = gameDetails.GameStage == GameStageModel.GameOverResistanceWon ? (int)TeamModel.Resistance : (int)TeamModel.Spy,
+                           GamePlayerValue = CreateGamePlayerValue(gameDetails),
+                           PlayerStatistics = await CreatePlayerStatisticsAsync(gameDetails)
+                       };
+            
+            _context.Add(game);
+            
+            await _context.SaveChangesAsync(new CancellationToken());
+ 
+        }
+
+        public GamePlayerValue CreateGamePlayerValue(GameDetailsModel gameDetails)
+        {
+            var gamePlayerValue = new GamePlayerValue();
+            return gamePlayerValue;
+        }
+
+        public async Task<List<PlayerStatistic>> CreatePlayerStatisticsAsync(GameDetailsModel gameDetails)
+        {
+            var playerStatistics = new List<PlayerStatistic>();
+            foreach(var playerDetails in gameDetails.PlayersDetails!)
+            {
+                var playerStatistic = new PlayerStatistic
+                                      {
+                                          User = playerDetails.IsBot
+                                                     ? null
+                                                     : await _userService.GetUserByEmailOrNameAsync(new ByIdAndNameQuery
+                                                                                                    {
+                                                                                                        Name = playerDetails.UserName,
+                                                                                                        CancellationToken = new CancellationToken()
+                                                                                                    }),
+                                          Team = (int)playerDetails.Team,
+                                          PlayerId = playerDetails.PlayerId.ToString()
+                                      };
+                playerStatistics.Add(playerStatistic);
+            }
+
+            return playerStatistics;
         }
 
         public void ProcessMissionPropose(GameDetailsModel gameDetails)
@@ -247,7 +317,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
             }
         }
 
-        public void ProcessVote(GameDetailsModel gameDetails)
+        public async Task ProcessVoteAsync(GameDetailsModel gameDetails)
         {
             var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
             if (players != null && players.All(p => p.Voted))
@@ -282,10 +352,21 @@ namespace TheResistanceOnline.BusinessLogic.Games
 
                 // 5 consecutive failed votes => spies automatically win
                 gameDetails.GameStage = gameDetails.VoteFailedCount == 5 ? GameStageModel.GameOverSpiesWon : GameStageModel.VoteResults;
+                if (gameDetails.GameStage == GameStageModel.GameOverSpiesWon)
+                {
+                    try
+                    {
+                        await CreateGameAsync(gameDetails);
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
             }
         }
 
-        public void ProcessContinue(GameDetailsModel gameDetails)
+        public async Task ProcessContinueAsync(GameDetailsModel gameDetails)
         {
             var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
 
@@ -305,7 +386,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
                     case GameStageModel.Mission:
                         if (gameDetails.MissionTeam != null && gameDetails.MissionTeam.All(p => p.IsBot))
                         {
-                            ProcessMission(gameDetails);
+                           await ProcessMissionAsync(gameDetails);
                         }
                         // Skip mission On client Side as bots complete mission
 

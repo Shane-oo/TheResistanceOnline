@@ -32,7 +32,6 @@ namespace TheResistanceOnline.Infrastructure.Data
             {
                 throw new ArgumentNullException(nameof(entity));
             }
-
             _context.Add(entity);
         }
 

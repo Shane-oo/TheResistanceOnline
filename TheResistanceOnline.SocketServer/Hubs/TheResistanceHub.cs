@@ -186,23 +186,23 @@ namespace TheResistanceOnline.SocketServer.Hubs
         }
 
 
-        private void ReceiveSubmitContinue(GameDetailsModel gameDetails,
+        private async Task ReceiveSubmitContinueAsync(GameDetailsModel gameDetails,
                                            PlayerDetailsModel playerDetails,
                                            PlayerDetailsModel receivedPlayerDetails)
         {
             playerDetails.Continued = receivedPlayerDetails.Continued;
 
-            _gameService.ProcessContinue(gameDetails);
+            await _gameService.ProcessContinueAsync(gameDetails);
         }
 
-        private void ReceiveSubmitMissionChoice(GameDetailsModel gameDetails,
+        private async Task ReceiveSubmitMissionChoiceAsync(GameDetailsModel gameDetails,
                                                 PlayerDetailsModel playerDetails,
                                                 PlayerDetailsModel receivedPlayerDetails)
         {
             playerDetails.Chose = receivedPlayerDetails.Chose;
             playerDetails.SupportedMission = receivedPlayerDetails.SupportedMission;
 
-            _gameService.ProcessMission(gameDetails);
+            await _gameService.ProcessMissionAsync(gameDetails);
         }
 
 
@@ -212,14 +212,14 @@ namespace TheResistanceOnline.SocketServer.Hubs
             gameDetails.GameStage = GameStageModel.Vote;
         }
 
-        private void ReceiveSubmitVote(GameDetailsModel gameDetails,
+        private async Task ReceiveSubmitVoteAsync(GameDetailsModel gameDetails,
                                        PlayerDetailsModel playerDetails,
                                        PlayerDetailsModel receivedPlayerDetails)
         {
             playerDetails.Voted = receivedPlayerDetails.Voted;
             playerDetails.ApprovedMissionTeam = receivedPlayerDetails.ApprovedMissionTeam;
 
-            _gameService.ProcessVote(gameDetails);
+            await _gameService.ProcessVoteAsync(gameDetails);
         }
 
         private void RemoveConnectionFromAllMaps(string connectionId)
@@ -383,7 +383,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
         }
 
         [UsedImplicitly]
-        public async void ReceiveGameActionCommand(GameActionCommand gameActionCommand)
+        public async Task ReceiveGameActionCommand(GameActionCommand gameActionCommand)
         {
             // get group name and game details
             if (!_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var groupName)) return;
@@ -409,15 +409,15 @@ namespace TheResistanceOnline.SocketServer.Hubs
                     break;
 
                 case GameActionModel.SubmitVote:
-                    ReceiveSubmitVote(gameDetails, playerDetails, receivedPlayerDetails);
+                    await ReceiveSubmitVoteAsync(gameDetails, playerDetails, receivedPlayerDetails);
                     break;
 
                 case GameActionModel.SubmitContinue:
-                    ReceiveSubmitContinue(gameDetails, playerDetails, receivedPlayerDetails);
+                    await ReceiveSubmitContinueAsync(gameDetails, playerDetails, receivedPlayerDetails);
                     break;
 
                 case GameActionModel.SubmitMissionChoice:
-                    ReceiveSubmitMissionChoice(gameDetails, playerDetails, receivedPlayerDetails);
+                    await ReceiveSubmitMissionChoiceAsync(gameDetails, playerDetails, receivedPlayerDetails);
                     break;
 
                 case GameActionModel.None:
