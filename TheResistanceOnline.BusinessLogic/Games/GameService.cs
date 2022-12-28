@@ -1,5 +1,7 @@
+using AutoMapper;
 using TheResistanceOnline.BusinessLogic.Core.Queries;
-using TheResistanceOnline.BusinessLogic.Games.BotObservers;
+using TheResistanceOnline.BusinessLogic.Games.Commands;
+using TheResistanceOnline.BusinessLogic.Games.DbQueries;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 using TheResistanceOnline.BusinessLogic.Users;
 using TheResistanceOnline.Data;
@@ -9,7 +11,13 @@ namespace TheResistanceOnline.BusinessLogic.Games
 {
     public interface IGameService
     {
+        GamePlayerValue CreateGamePlayerValue(SaveGameCommand command);
+
+        Task<List<PlayerStatistic>> CreatePlayerStatisticsAsync(SaveGameCommand command);
+
         void MoveToNextRound(GameDetailsModel gameDetails);
+
+        Task ProcessContinueAsync(GameDetailsModel gameDetails);
 
         Task ProcessMissionAsync(GameDetailsModel gameDetails);
 
@@ -17,9 +25,11 @@ namespace TheResistanceOnline.BusinessLogic.Games
 
         Task ProcessVoteAsync(GameDetailsModel gameDetails);
 
-        Task ProcessContinueAsync(GameDetailsModel gameDetails);
+        Task SaveGameAsync(SaveGameCommand command);
 
         GameDetailsModel SetUpNewGame(GameDetailsModel gameDetails);
+
+        Task<List<GamePlayerValue>> GetGamePlayerValuesAsync(GetGamePlayerValuesCommand command);
     }
 
     public class GameService: IGameService
@@ -38,72 +48,28 @@ namespace TheResistanceOnline.BusinessLogic.Games
 
         #region Fields
 
+        private readonly IDataContext _context;
+
         private static readonly Random _random = new();
         private readonly IUserService _userService;
-        private readonly IDataContext _context;
+        private readonly IMapper _mapper;
 
         #endregion
 
-        public GameService(IDataContext context,IUserService userService)
+        #region Construction
+
+        public GameService(IDataContext context, IUserService userService, IMapper mapper)
         {
             _context = context;
             _userService = userService;
-        }
-
-        #region Private Methods
-
-        private static List<PlayerDetailsModel> GetRandomPlayers(int amount, IReadOnlyList<PlayerDetailsModel> playerList)
-        {
-            var desiredList = new List<PlayerDetailsModel>();
-            var count = 0;
-            while(count != amount)
-            {
-                var randomPlayer = playerList[_random.Next(playerList.Count)];
-
-                // check for if randomly got the same person again
-                if (desiredList.Any(p => p.PlayerId == randomPlayer.PlayerId)) continue;
-
-                desiredList.Add(randomPlayer);
-                count++;
-            }
-
-            return desiredList;
-        }
-
-        private static bool MoveMissionLeaderClockwise(GameDetailsModel gameDetails)
-        {
-            if (gameDetails.PlayersDetails != null)
-            {
-                for(var i = 0; i <= gameDetails.PlayersDetails.Count; i++)
-                {
-                    if (gameDetails.PlayersDetails[i].IsMissionLeader)
-                    {
-                        gameDetails.PlayersDetails[i].IsMissionLeader = false;
-                        if (i == gameDetails.PlayersDetails?.Count - 1)
-                        {
-                            gameDetails.PlayersDetails![0].IsMissionLeader = true;
-                            return gameDetails.PlayersDetails[0].IsBot;
-                        }
-
-                        gameDetails.PlayersDetails![i + 1].IsMissionLeader = true;
-                        return gameDetails.PlayersDetails[i + 1].IsBot;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        private static List<bool> ShuffleMissionOutcomes(IEnumerable<bool> missionOutcomes)
-        {
-            return missionOutcomes.OrderBy(mo => _random.Next()).ToList();
+            _mapper = mapper;
         }
 
         #endregion
 
-        #region Public Methods
+        #region Private Methods
 
-        public int GetMissionSize(int missionRound, int playerCount)
+        private static int GetMissionSize(int missionRound, int playerCount)
         {
             switch(playerCount)
             {
@@ -170,11 +136,143 @@ namespace TheResistanceOnline.BusinessLogic.Games
             return -1;
         }
 
+        private static List<PlayerDetailsModel> GetRandomPlayers(int amount, IReadOnlyList<PlayerDetailsModel> playerList)
+        {
+            var desiredList = new List<PlayerDetailsModel>();
+            var count = 0;
+            while(count != amount)
+            {
+                var randomPlayer = playerList[_random.Next(playerList.Count)];
+
+                // check for if randomly got the same person again
+                if (desiredList.Any(p => p.PlayerId == randomPlayer.PlayerId)) continue;
+
+                desiredList.Add(randomPlayer);
+                count++;
+            }
+
+            return desiredList;
+        }
+
+        private static bool MoveMissionLeaderClockwise(GameDetailsModel gameDetails)
+        {
+            if (gameDetails.PlayersDetails != null)
+            {
+                for(var i = 0; i <= gameDetails.PlayersDetails.Count; i++)
+                {
+                    if (!gameDetails.PlayersDetails[i].IsMissionLeader) continue;
+
+                    gameDetails.PlayersDetails[i].IsMissionLeader = false;
+                    if (i == gameDetails.PlayersDetails?.Count - 1)
+                    {
+                        gameDetails.PlayersDetails![0].IsMissionLeader = true;
+                        return gameDetails.PlayersDetails[0].IsBot;
+                    }
+
+                    gameDetails.PlayersDetails![i + 1].IsMissionLeader = true;
+                    return gameDetails.PlayersDetails[i + 1].IsBot;
+                }
+            }
+
+            return false;
+        }
+
+        private static List<bool> ShuffleMissionOutcomes(IEnumerable<bool> missionOutcomes)
+        {
+            return missionOutcomes.OrderBy(_ => _random.Next()).ToList();
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public GamePlayerValue CreateGamePlayerValue(SaveGameCommand command)
+        {
+            var gamePlayerValue = new GamePlayerValue
+                                  {
+                                      PlayerValues = new List<PlayerValue>()
+                                  };
+            // Save a bots recording of a real players
+            var bot = command.GameDetails.PlayersDetails!.FirstOrDefault(p => p.IsBot && p.Team == TeamModel.Resistance);
+
+            foreach(var playerVariable in bot.BotObserver.GetPlayerVariables())
+            {
+                var realPlayerDetails = command.GameDetails.PlayersDetails.FirstOrDefault(p => p.PlayerId == playerVariable.Key);
+                if (realPlayerDetails!.IsBot) continue;
+
+                playerVariable.Value.Team = realPlayerDetails.Team;
+
+                var playerValue = _mapper.Map<PlayerValue>(playerVariable.Value);
+
+                gamePlayerValue.PlayerValues.Add(playerValue);
+            }
+
+
+            return gamePlayerValue;
+        }
+
+        public async Task<List<PlayerStatistic>> CreatePlayerStatisticsAsync(SaveGameCommand command)
+        {
+            var playerStatistics = new List<PlayerStatistic>();
+            foreach(var playerDetails in command.GameDetails.PlayersDetails!)
+            {
+                var playerStatistic = new PlayerStatistic
+                                      {
+                                          User = playerDetails.IsBot
+                                                     ? null
+                                                     : await _userService.GetUserByEmailOrNameAsync(new ByIdAndNameQuery
+                                                                                                    {
+                                                                                                        Name = playerDetails.UserName,
+                                                                                                        CancellationToken = command.CancellationToken
+                                                                                                    }),
+                                          Team = (int)playerDetails.Team,
+                                          PlayerId = playerDetails.PlayerId.ToString()
+                                      };
+                playerStatistics.Add(playerStatistic);
+            }
+
+            return playerStatistics;
+        }
+
 
         public void MoveToNextRound(GameDetailsModel gameDetails)
         {
             gameDetails.CurrentMissionRound++;
             gameDetails.MissionSize = GetMissionSize(gameDetails.CurrentMissionRound, gameDetails.PlayersDetails!.Count);
+        }
+
+        public async Task ProcessContinueAsync(GameDetailsModel gameDetails)
+        {
+            var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
+
+            if (players != null && players.All(p => p.Continued))
+            {
+                //Reset Voted And Continued
+                foreach(var playerDetail in gameDetails.PlayersDetails!)
+                {
+                    playerDetail.Voted = false;
+                    playerDetail.Continued = false;
+                    playerDetail.Chose = false;
+                }
+
+                gameDetails.GameStage = gameDetails.NextGameStage;
+                switch(gameDetails.GameStage)
+                {
+                    case GameStageModel.Mission:
+                        if (gameDetails.MissionTeam != null && gameDetails.MissionTeam.All(p => p.IsBot))
+                        {
+                            await ProcessMissionAsync(gameDetails);
+                        }
+                        // Skip mission On client Side as bots complete mission
+
+                        break;
+                    case GameStageModel.MissionPropose:
+                        ProcessMissionPropose(gameDetails);
+
+
+                        break;
+                }
+            }
         }
 
 
@@ -221,29 +319,14 @@ namespace TheResistanceOnline.BusinessLogic.Games
                     }
                 }
 
-                if (resistanceRoundWins == 3)
+                if (resistanceRoundWins == 3 || spyRoundWins == 3)
                 {
-                    gameDetails.GameStage = GameStageModel.GameOverResistanceWon;
-                    try
-                    {
-                        await CreateGameAsync(gameDetails);
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-                }
-                else if (spyRoundWins == 3)
-                {
-                    gameDetails.GameStage = GameStageModel.GameOverSpiesWon;
-                    try
-                    {
-                        await CreateGameAsync(gameDetails);
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
+                    gameDetails.GameStage = resistanceRoundWins == 3 ? GameStageModel.GameOverResistanceWon : GameStageModel.GameOverSpiesWon;
+
+                    await SaveGameAsync(new SaveGameCommand
+                                        {
+                                            GameDetails = gameDetails
+                                        });
                 }
                 else
                 {
@@ -252,50 +335,6 @@ namespace TheResistanceOnline.BusinessLogic.Games
                     gameDetails.MoveToNextRound = true;
                 }
             }
-        }
-
-        public async Task CreateGameAsync(GameDetailsModel gameDetails)
-        {
-            var game = new Game
-                       {
-                           WinningTeam = gameDetails.GameStage == GameStageModel.GameOverResistanceWon ? (int)TeamModel.Resistance : (int)TeamModel.Spy,
-                           GamePlayerValue = CreateGamePlayerValue(gameDetails),
-                           PlayerStatistics = await CreatePlayerStatisticsAsync(gameDetails)
-                       };
-            
-            _context.Add(game);
-            
-            await _context.SaveChangesAsync(new CancellationToken());
- 
-        }
-
-        public GamePlayerValue CreateGamePlayerValue(GameDetailsModel gameDetails)
-        {
-            var gamePlayerValue = new GamePlayerValue();
-            return gamePlayerValue;
-        }
-
-        public async Task<List<PlayerStatistic>> CreatePlayerStatisticsAsync(GameDetailsModel gameDetails)
-        {
-            var playerStatistics = new List<PlayerStatistic>();
-            foreach(var playerDetails in gameDetails.PlayersDetails!)
-            {
-                var playerStatistic = new PlayerStatistic
-                                      {
-                                          User = playerDetails.IsBot
-                                                     ? null
-                                                     : await _userService.GetUserByEmailOrNameAsync(new ByIdAndNameQuery
-                                                                                                    {
-                                                                                                        Name = playerDetails.UserName,
-                                                                                                        CancellationToken = new CancellationToken()
-                                                                                                    }),
-                                          Team = (int)playerDetails.Team,
-                                          PlayerId = playerDetails.PlayerId.ToString()
-                                      };
-                playerStatistics.Add(playerStatistic);
-            }
-
-            return playerStatistics;
         }
 
         public void ProcessMissionPropose(GameDetailsModel gameDetails)
@@ -354,50 +393,25 @@ namespace TheResistanceOnline.BusinessLogic.Games
                 gameDetails.GameStage = gameDetails.VoteFailedCount == 5 ? GameStageModel.GameOverSpiesWon : GameStageModel.VoteResults;
                 if (gameDetails.GameStage == GameStageModel.GameOverSpiesWon)
                 {
-                    try
-                    {
-                        await CreateGameAsync(gameDetails);
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
+                    await SaveGameAsync(new SaveGameCommand
+                                        {
+                                            GameDetails = gameDetails
+                                        });
                 }
             }
         }
 
-        public async Task ProcessContinueAsync(GameDetailsModel gameDetails)
+        public async Task SaveGameAsync(SaveGameCommand command)
         {
-            var players = gameDetails.PlayersDetails?.Where(p => !p.IsBot);
+            var game = new Game
+                       {
+                           WinningTeam = command.GameDetails.GameStage == GameStageModel.GameOverResistanceWon ? (int)TeamModel.Resistance : (int)TeamModel.Spy,
+                           GamePlayerValue = CreateGamePlayerValue(command),
+                           PlayerStatistics = await CreatePlayerStatisticsAsync(command)
+                       };
 
-            if (players != null && players.All(p => p.Continued))
-            {
-                //Reset Voted And Continued
-                foreach(var playerDetail in gameDetails.PlayersDetails!)
-                {
-                    playerDetail.Voted = false;
-                    playerDetail.Continued = false;
-                    playerDetail.Chose = false;
-                }
-
-                gameDetails.GameStage = gameDetails.NextGameStage;
-                switch(gameDetails.GameStage)
-                {
-                    case GameStageModel.Mission:
-                        if (gameDetails.MissionTeam != null && gameDetails.MissionTeam.All(p => p.IsBot))
-                        {
-                           await ProcessMissionAsync(gameDetails);
-                        }
-                        // Skip mission On client Side as bots complete mission
-
-                        break;
-                    case GameStageModel.MissionPropose:
-                        ProcessMissionPropose(gameDetails);
-
-
-                        break;
-                }
-            }
+            _context.Add(game);
+            await _context.SaveChangesAsync(command.CancellationToken);
         }
 
 
@@ -405,7 +419,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
         {
             if (gameDetails.PlayersDetails != null)
             {
-                var shuffledPlayerDetails = gameDetails.PlayersDetails.OrderBy(p => _random.Next()).ToList();
+                var shuffledPlayerDetails = gameDetails.PlayersDetails.OrderBy(_ => _random.Next()).ToList();
 
                 var spyPlayers = new List<PlayerDetailsModel>();
                 switch(shuffledPlayerDetails.Count)
@@ -448,6 +462,12 @@ namespace TheResistanceOnline.BusinessLogic.Games
 
 
             return gameDetails;
+        }
+
+        public async Task<List<GamePlayerValue>> GetGamePlayerValuesAsync(GetGamePlayerValuesCommand command)
+        {
+            var gamePlayerValues = await _context.Query<IAllGamePlayerValuesDbQuery>().ExecuteAsync(command.CancellationToken);
+            return gamePlayerValues;
         }
 
         #endregion

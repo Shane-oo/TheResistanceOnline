@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.BusinessLogic.Core.Queries;
 using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Games;
+using TheResistanceOnline.BusinessLogic.Games.BotObservers.BayesAgent;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 using TheResistanceOnline.BusinessLogic.Users;
@@ -30,7 +31,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         private readonly IDiscordServerService _discordServerService;
         private readonly IGameService _gameService;
-
+        private readonly INaiveBayesClassifierService _bayesClassifierService;
         private static readonly Dictionary<string, GameDetailsModel> _groupNameToGameDetailsMappingTable = new()
                                                                                                            {
                                                                                                                {
@@ -153,12 +154,13 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         #region Construction
 
-        public TheResistanceHub(IUserService userService, IDiscordServerService discordServerService, IGameService gameService, IMapper mapper)
+        public TheResistanceHub(IUserService userService, IDiscordServerService discordServerService, IGameService gameService, IMapper mapper,INaiveBayesClassifierService bayesClassifierServiceService)
         {
             _userService = userService;
             _discordServerService = discordServerService;
             _mapper = mapper;
             _gameService = gameService;
+            _bayesClassifierService = bayesClassifierServiceService;
         }
 
         #endregion
@@ -466,7 +468,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             gameDetails.GameOptions = command.GameOptions;
 
             // create gameService observer
-            var gameServiceObserver = new GameSubjectAndObserver();
+            var gameServiceObserver = new GameSubjectAndObserver(_bayesClassifierService);
             // create bot observers and attach them to game service which is also subject to bots 
             var botObservers = gameServiceObserver.CreateBotObservers(command.GameOptions.BotCount);
 

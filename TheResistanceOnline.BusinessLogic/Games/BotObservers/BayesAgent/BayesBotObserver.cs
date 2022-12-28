@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 
-namespace TheResistanceOnline.BusinessLogic.Games.BotObservers;
+namespace TheResistanceOnline.BusinessLogic.Games.BotObservers.BayesAgent;
 
 public class BayesBotObserver: IBotObserver
 {
@@ -19,10 +19,13 @@ public class BayesBotObserver: IBotObserver
 
     #region Fields
 
-    private GameDetailsModel _gameDetails = new();
-    private static readonly Random _random = new();
-    private Dictionary<Guid, PlayerVariablesModel> _playerIdToGameData;
+    private readonly INaiveBayesClassifierService _bayesClassifierService;
     private bool _beginningOfGame = true;
+
+    private GameDetailsModel _gameDetails = new();
+    private readonly List<Guid> _outedSpies = new();
+    private Dictionary<Guid, PlayerVariablesModel> _playerIdToGameData;
+    private static readonly Random _random = new();
 
     private readonly List<string> _randomBotNames = new()
                                                     {
@@ -46,9 +49,10 @@ public class BayesBotObserver: IBotObserver
 
     #region Construction
 
-    public BayesBotObserver()
+    public BayesBotObserver(INaiveBayesClassifierService bayesClassifierService)
     {
         SetName();
+        _bayesClassifierService = bayesClassifierService;
     }
 
     #endregion
@@ -64,6 +68,12 @@ public class BayesBotObserver: IBotObserver
     private PlayerDetailsModel GetPlayerDetails()
     {
         return _gameDetails.PlayersDetails?.FirstOrDefault(p => p.PlayerId == PlayerId);
+    }
+
+    private PlayerVariablesModel GetPlayerVariables(Guid playerId)
+    {
+        _playerIdToGameData.TryGetValue(playerId, out var playerVariables);
+        return playerVariables;
     }
 
     private List<PlayerDetailsModel> GetRandomPlayers(int amount)
@@ -96,7 +106,7 @@ public class BayesBotObserver: IBotObserver
         while(count != amount)
         {
             var randomPlayer = _gameDetails.PlayersDetails![_random.Next(_gameDetails.PlayersDetails.Count)];
-
+                                                                     
             // check for if randomly got the same person again
             // check for if random player is spy => resistance members only
             if (desiredList.Any(p => p.PlayerId == randomPlayer.PlayerId)
@@ -227,13 +237,44 @@ public class BayesBotObserver: IBotObserver
         }
     }
 
+    // Check for spies that have completely outed themselves on failed missions
+    private void OutedSpiesCheck(PlayerDetailsModel missionPlayer, int betrayals)
+    {
+        // spy outed themself on mission with me
+        if (_gameDetails.MissionTeam!.Any(p => p.PlayerId == PlayerId))
+        {
+            switch(_gameDetails.MissionSize)
+            {
+                case 2 when betrayals == 1:
+                case 3 when betrayals == 2:
+                case 4 when betrayals == 3:
+                case 5 when betrayals == 4:
+                    _outedSpies.Add(missionPlayer.PlayerId);
+                    break;
+            }
+        }
+        // Spies Outed Eachother
+        else
+        {
+            switch(_gameDetails.MissionSize)
+            {
+                case 2 when betrayals == 2:
+                case 3 when betrayals == 3:
+                case 4 when betrayals == 4:
+                case 5 when betrayals == 5:
+                    _outedSpies.Add(missionPlayer.PlayerId);
+                    break;
+            }
+        }
+    }
+
     private void RecordMissionData()
     {
         if (Team == TeamModel.Resistance)
         {
             if (_gameDetails.MissionRounds.TryGetValue(_gameDetails.CurrentMissionRound, out var missionSuccessful)) // true if resistance win
             {
-                foreach(var missionPlayer in _gameDetails.MissionTeam!.Where(p=>p.PlayerId != PlayerId))
+                foreach(var missionPlayer in _gameDetails.MissionTeam!.Where(p => p.PlayerId != PlayerId))
                 {
                     var playerVariables = GetPlayerVariables(missionPlayer.PlayerId);
                     if (missionSuccessful)
@@ -243,10 +284,12 @@ public class BayesBotObserver: IBotObserver
                     else
                     {
                         var betrayals = _gameDetails.MissionOutcome.Count(mo => !mo);
-                        OutedSpiesCheck(playerVariables, betrayals);
+                        OutedSpiesCheck(missionPlayer, betrayals);
 
-                        playerVariables.WentOnFailedMission += playerVariables.WentOnFailedMission * _gameDetails.CurrentMissionRound *
-                                                               betrayals / _gameDetails.MissionSize;
+                        playerVariables.WentOnFailedMission += playerVariables.WentOnFailedMission > 0
+                                                                   ? playerVariables.WentOnFailedMission
+                                                                   : 1 * _gameDetails.CurrentMissionRound *
+                                                                     _gameDetails.MissionSize / betrayals;
                         //remove agents from wentOnSuccessfulMissions if exist in wentOnFailedMissions
                         // as they are now untrustworthy
                         if (playerVariables.WentOnSuccessfulMission > 0)
@@ -332,7 +375,7 @@ public class BayesBotObserver: IBotObserver
                 {
                     // If they vote yes for a mission that contains members that prevousily failed missions its suss
                     var failedPriorMissionsMembers = _gameDetails.MissionTeam!.Count(missionMember => GetPlayerVariables(missionLeader.PlayerId).WentOnFailedMission > 0);
-                    playerVariables.VotedForTeamHasUnsuccessfulMembers += 4 * _gameDetails.CurrentMissionRound * failedPriorMissionsMembers;
+                    playerVariables.VotedForTeamHasUnsuccessfulMembers += 4 * _gameDetails.CurrentMissionRound * failedPriorMissionsMembers > 0 ? failedPriorMissionsMembers : 1;
 
                     // Voted For A mission they are not on
                     if (_gameDetails.MissionTeam.All(p => p.PlayerId != player.PlayerId))
@@ -500,6 +543,11 @@ public class BayesBotObserver: IBotObserver
         return Name;
     }
 
+    public Dictionary<Guid, PlayerVariablesModel> GetPlayerVariables()
+    {
+        return _playerIdToGameData;
+    }
+
     public TeamModel GetTeam()
     {
         return Team;
@@ -553,47 +601,10 @@ public class BayesBotObserver: IBotObserver
                 break;
             case GameStageModel.GameOverSpiesWon:
             case GameStageModel.GameOverResistanceWon:
-                Console.WriteLine("game Over");
                 break;
-        }
-    }
-
-    private PlayerVariablesModel GetPlayerVariables(Guid playerId)
-    {
-        _playerIdToGameData.TryGetValue(playerId, out var playerVariables);
-        return playerVariables;
-    }
-
-    // Check for spies that have completely outed themselves on failed missions
-    private void OutedSpiesCheck(PlayerVariablesModel playerVariables, int betrayals)
-    {
-        // spy outed themself on mission with me
-        if (_gameDetails.MissionTeam!.Any(p => p.PlayerId == PlayerId))
-        {
-            switch(_gameDetails.MissionSize)
-            {
-                case 2 when betrayals == 1:
-                case 3 when betrayals == 2:
-                case 4 when betrayals == 3:
-                case 5 when betrayals == 4:
-                    playerVariables.OutedSpy = true;
-                    break;
-            }
-        }
-        // Spies Outed Eachother
-        else
-        {
-            switch(_gameDetails.MissionSize)
-            {
-                case 2 when betrayals == 2:
-                case 3 when betrayals == 3:
-                case 4 when betrayals == 4:
-                case 5 when betrayals == 5:
-                    playerVariables.OutedSpy = true;
-                    break;
-            }
         }
     }
 
     #endregion
 }
+

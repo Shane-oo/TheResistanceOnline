@@ -11,5 +11,6 @@ public class GamePlayerValueEntityConfiguration: IEntityTypeConfiguration<GamePl
         builder.HasKey(us => us.Id)
                .HasName("PK_GamePlayerValues");
         builder.Property(gpv => gpv.GameId).IsRequired();
+        builder.OwnsMany(gpv => gpv.PlayerValues, ownedNavigationBuilder => { ownedNavigationBuilder.ToJson(); });
     }
 }

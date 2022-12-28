@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Games;
+using TheResistanceOnline.BusinessLogic.Games.BotObservers.BayesAgent;
+using TheResistanceOnline.BusinessLogic.Games.DbQueries;
 using TheResistanceOnline.BusinessLogic.Settings;
 using TheResistanceOnline.BusinessLogic.Settings.Models;
 using TheResistanceOnline.BusinessLogic.Timers;
@@ -22,6 +24,7 @@ using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Infrastructure.Data;
 using TheResistanceOnline.Infrastructure.Data.Interceptors.CoreInterceptors;
+using TheResistanceOnline.Infrastructure.Data.Queries.Games;
 using TheResistanceOnline.Infrastructure.Data.Queries.Users;
 
 namespace TheResistanceOnline.SocketServer.DI
@@ -140,13 +143,14 @@ namespace TheResistanceOnline.SocketServer.DI
             services.AddScoped<IDiscordServerService, DiscordServerService>();
             services.AddScoped<IUserSettingsService, UserSettingsService>();
             services.AddScoped<IGameService, GameService>();
-            
+            services.AddScoped<INaiveBayesClassifierService, NaiveBayesClassifierService>();
             //ToDo probs not needed
             services.AddScoped<ITimerService, TimerService>();
 
             // Queries
             services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
             services.AddTransient<IUserDbQuery, UserDbQuery>();
+            services.AddTransient<IAllGamePlayerValuesDbQuery, AllGamePlayerValuesDbQuery>();
 
             // Interceptors
             services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
@@ -154,6 +158,7 @@ namespace TheResistanceOnline.SocketServer.DI
             // Mapping Profiles
             services.AddAutoMapper(typeof(UserMappingProfile));
             services.AddAutoMapper(typeof(DiscordServerMappingProfile));
+            services.AddAutoMapper(typeof(GameMappingProfile));
 
             // Identities
             services.AddIdentity<User, IdentityRole>(options =>

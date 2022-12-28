@@ -31,9 +31,6 @@ public class PlayerVariablesModel
 
     public int ProposedTeamThatHaventBeenOnMissions { get; set; }
 
-    // stupid spy
-    public bool OutedSpy { get; set; }
-
     // Final Variables
     public TeamModel Team { get; set; }
 }
