@@ -443,8 +443,6 @@ public class BayesBotObserver: IBotObserver
 
     private List<PlayerDetailsModel> ResistanceProposal(int missionSize, List<PlayerDetailsModel> proposedMissionTeam)
     {
-
-
         // For the First Mission as Resistance
         // Pick at Random
         if (_gameDetails.CurrentMissionRound == 1)
@@ -486,7 +484,7 @@ public class BayesBotObserver: IBotObserver
         var trustedMembers =
             _gameDetails.PlayersDetails!.Where(p => _playerIdToGameData.Any(sp => sp.Key == p.PlayerId && sp.Value.WentOnSuccessfulMission >= sp.Value.WentOnFailedMission))
                         .Where(p => _outedSpies.All(os => os != p.PlayerId))
-                        .Where(p => p.PlayerId != PlayerId)
+                        .Where(p => p.PlayerId != PlayerId && proposedMissionTeam.All(pmt => pmt.PlayerId != p.PlayerId))
                         .ToList();
         if (trustedMembers.Count >= missionSize)
         {
@@ -499,14 +497,13 @@ public class BayesBotObserver: IBotObserver
             proposedMissionTeam.AddRange(trustedMembers);
             missionSize -= trustedMembers.Count;
         }
-        // semi trusted members, havent been on failed missions
 
         // last resort add random members but as long as they are not outed Spies
         //proposedMissionTeam.AddRange(GetRandomPlayers(missionSize));
-        proposedMissionTeam.AddRange(GetRandomPlayers(_gameDetails.PlayersDetails.Count - 1)
-                                     .Where(p => _outedSpies.All(os => os != p.PlayerId))
-                                     .Where(p => p.PlayerId != PlayerId)
-                                     .Take(missionSize));
+        proposedMissionTeam.AddRange(_gameDetails.PlayersDetails
+                                                 .Where(p => _outedSpies.All(os => os != p.PlayerId))
+                                                 .Where(p => p.PlayerId != PlayerId && proposedMissionTeam.All(pmt => pmt.PlayerId != p.PlayerId))
+                                                 .Take(missionSize));
 
 
         return proposedMissionTeam;
