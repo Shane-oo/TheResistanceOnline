@@ -25,6 +25,10 @@ namespace TheResistanceOnline.Infrastructure.Data.Configurations.UsersConfigurat
             builder.HasOne(u => u.ProfilePicture)
                    .WithOne(pp => pp.User)
                    .HasForeignKey<ProfilePicture>(pp => pp.UserId);
+
+            builder.HasMany(u => u.PlayerStatistics)
+                   .WithOne()
+                   .HasForeignKey(ps => ps.UserId);
         }
 
         #endregion

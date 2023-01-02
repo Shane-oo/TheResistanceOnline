@@ -1,4 +1,5 @@
 using TheResistanceOnline.BusinessLogic.Games.BotObservers;
+using TheResistanceOnline.BusinessLogic.Games.BotObservers.BayesAgent;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 
 namespace TheResistanceOnline.BusinessLogic.Games;
@@ -9,6 +10,11 @@ public class GameSubjectAndObserver: IGameSubject, IGameObserver
 
     private List<IBotObserver> _observers = new();
 
+    private readonly INaiveBayesClassifierService _naiveBayesClassifier;
+    public GameSubjectAndObserver(INaiveBayesClassifierService naiveBayesClassifierService)
+    {
+        _naiveBayesClassifier = naiveBayesClassifierService;
+    }
     // Subject Function
     public void Attach(IBotObserver observer)
     {
@@ -48,7 +54,8 @@ public class GameSubjectAndObserver: IGameSubject, IGameObserver
     {
         for(var i = 0; i < botCount; i++)
         {
-            var botObserver = new BayesBotObserver();
+            var botObserver = new BayesBotObserver(_naiveBayesClassifier);
+
             Attach(botObserver);
         }
 

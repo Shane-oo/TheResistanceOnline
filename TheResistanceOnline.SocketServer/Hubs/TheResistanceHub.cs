@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.BusinessLogic.Core.Queries;
 using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Games;
+using TheResistanceOnline.BusinessLogic.Games.BotObservers.BayesAgent;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 using TheResistanceOnline.BusinessLogic.Users;
@@ -30,7 +31,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         private readonly IDiscordServerService _discordServerService;
         private readonly IGameService _gameService;
-
+        private readonly INaiveBayesClassifierService _bayesClassifierService;
         private static readonly Dictionary<string, GameDetailsModel> _groupNameToGameDetailsMappingTable = new()
                                                                                                            {
                                                                                                                {
@@ -153,12 +154,13 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         #region Construction
 
-        public TheResistanceHub(IUserService userService, IDiscordServerService discordServerService, IGameService gameService, IMapper mapper)
+        public TheResistanceHub(IUserService userService, IDiscordServerService discordServerService, IGameService gameService, IMapper mapper,INaiveBayesClassifierService bayesClassifierServiceService)
         {
             _userService = userService;
             _discordServerService = discordServerService;
             _mapper = mapper;
             _gameService = gameService;
+            _bayesClassifierService = bayesClassifierServiceService;
         }
 
         #endregion
@@ -186,23 +188,23 @@ namespace TheResistanceOnline.SocketServer.Hubs
         }
 
 
-        private void ReceiveSubmitContinue(GameDetailsModel gameDetails,
+        private async Task ReceiveSubmitContinueAsync(GameDetailsModel gameDetails,
                                            PlayerDetailsModel playerDetails,
                                            PlayerDetailsModel receivedPlayerDetails)
         {
             playerDetails.Continued = receivedPlayerDetails.Continued;
 
-            _gameService.ProcessContinue(gameDetails);
+            await _gameService.ProcessContinueAsync(gameDetails);
         }
 
-        private void ReceiveSubmitMissionChoice(GameDetailsModel gameDetails,
+        private async Task ReceiveSubmitMissionChoiceAsync(GameDetailsModel gameDetails,
                                                 PlayerDetailsModel playerDetails,
                                                 PlayerDetailsModel receivedPlayerDetails)
         {
             playerDetails.Chose = receivedPlayerDetails.Chose;
             playerDetails.SupportedMission = receivedPlayerDetails.SupportedMission;
 
-            _gameService.ProcessMission(gameDetails);
+            await _gameService.ProcessMissionAsync(gameDetails);
         }
 
 
@@ -212,14 +214,14 @@ namespace TheResistanceOnline.SocketServer.Hubs
             gameDetails.GameStage = GameStageModel.Vote;
         }
 
-        private void ReceiveSubmitVote(GameDetailsModel gameDetails,
+        private async Task ReceiveSubmitVoteAsync(GameDetailsModel gameDetails,
                                        PlayerDetailsModel playerDetails,
                                        PlayerDetailsModel receivedPlayerDetails)
         {
             playerDetails.Voted = receivedPlayerDetails.Voted;
             playerDetails.ApprovedMissionTeam = receivedPlayerDetails.ApprovedMissionTeam;
 
-            _gameService.ProcessVote(gameDetails);
+            await _gameService.ProcessVoteAsync(gameDetails);
         }
 
         private void RemoveConnectionFromAllMaps(string connectionId)
@@ -383,7 +385,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
         }
 
         [UsedImplicitly]
-        public async void ReceiveGameActionCommand(GameActionCommand gameActionCommand)
+        public async Task ReceiveGameActionCommand(GameActionCommand gameActionCommand)
         {
             // get group name and game details
             if (!_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var groupName)) return;
@@ -409,15 +411,16 @@ namespace TheResistanceOnline.SocketServer.Hubs
                     break;
 
                 case GameActionModel.SubmitVote:
-                    ReceiveSubmitVote(gameDetails, playerDetails, receivedPlayerDetails);
+                    await ReceiveSubmitVoteAsync(gameDetails, playerDetails, receivedPlayerDetails);
                     break;
 
                 case GameActionModel.SubmitContinue:
-                    ReceiveSubmitContinue(gameDetails, playerDetails, receivedPlayerDetails);
+                    //await _bayesClassifierService.GetTrainingDataAsync();
+                    await ReceiveSubmitContinueAsync(gameDetails, playerDetails, receivedPlayerDetails);
                     break;
 
                 case GameActionModel.SubmitMissionChoice:
-                    ReceiveSubmitMissionChoice(gameDetails, playerDetails, receivedPlayerDetails);
+                    await ReceiveSubmitMissionChoiceAsync(gameDetails, playerDetails, receivedPlayerDetails);
                     break;
 
                 case GameActionModel.None:
@@ -456,7 +459,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
         }
 
         [UsedImplicitly]
-        public void ReceiveStartGameCommand(StartGameCommand command)
+        public async Task ReceiveStartGameCommand(StartGameCommand command)
         {
             // get group name and game details
             if (!_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var groupName)) return;
@@ -464,9 +467,10 @@ namespace TheResistanceOnline.SocketServer.Hubs
             if (!_groupNameToGameDetailsMappingTable.TryGetValue(groupName, out var gameDetails)) return;
 
             gameDetails.GameOptions = command.GameOptions;
-
+            
             // create gameService observer
-            var gameServiceObserver = new GameSubjectAndObserver();
+            await _bayesClassifierService.GetTrainingDataAsync();
+            var gameServiceObserver = new GameSubjectAndObserver(_bayesClassifierService);
             // create bot observers and attach them to game service which is also subject to bots 
             var botObservers = gameServiceObserver.CreateBotObservers(command.GameOptions.BotCount);
 
