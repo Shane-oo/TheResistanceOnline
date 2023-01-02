@@ -415,6 +415,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                     break;
 
                 case GameActionModel.SubmitContinue:
+                    //await _bayesClassifierService.GetTrainingDataAsync();
                     await ReceiveSubmitContinueAsync(gameDetails, playerDetails, receivedPlayerDetails);
                     break;
 
@@ -458,7 +459,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
         }
 
         [UsedImplicitly]
-        public void ReceiveStartGameCommand(StartGameCommand command)
+        public async Task ReceiveStartGameCommand(StartGameCommand command)
         {
             // get group name and game details
             if (!_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var groupName)) return;
@@ -466,8 +467,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
             if (!_groupNameToGameDetailsMappingTable.TryGetValue(groupName, out var gameDetails)) return;
 
             gameDetails.GameOptions = command.GameOptions;
-
+            
             // create gameService observer
+            await _bayesClassifierService.GetTrainingDataAsync();
             var gameServiceObserver = new GameSubjectAndObserver(_bayesClassifierService);
             // create bot observers and attach them to game service which is also subject to bots 
             var botObservers = gameServiceObserver.CreateBotObservers(command.GameOptions.BotCount);
