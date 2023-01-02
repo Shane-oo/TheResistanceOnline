@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TheResistanceOnline.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using TheResistanceOnline.Infrastructure.Data;
 namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20221227064738_AddGameEntities")]
+    partial class AddGameEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -681,64 +684,7 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("TheResistanceOnline.Data.Games.PlayerValue", "PlayerValues", b1 =>
-                        {
-                            b1.Property<int>("GamePlayerValueId")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            b1.Property<int>("ProposedTeamFailedMission")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("ProposedTeamHasUnsuccessfulMembers")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("ProposedTeamThatHaventBeenOnMissions")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("RejectedTeamSuccessfulMission")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("Team")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("VotedAgainstTeamProposal")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("VotedForFailedMission")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("VotedForMissionNotOn")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("VotedForTeamHasUnsuccessfulMembers")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("VotedNoTeamHasSuccessfulMembers")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("WentOnFailedMission")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("WentOnSuccessfulMission")
-                                .HasColumnType("int");
-
-                            b1.HasKey("GamePlayerValueId", "Id");
-
-                            b1.ToTable("GamePlayerValues");
-
-                            b1.ToJson("PlayerValues");
-
-                            b1.WithOwner()
-                                .HasForeignKey("GamePlayerValueId");
-                        });
-
                     b.Navigation("Game");
-
-                    b.Navigation("PlayerValues");
                 });
 
             modelBuilder.Entity("TheResistanceOnline.Data.Games.PlayerStatistic", b =>

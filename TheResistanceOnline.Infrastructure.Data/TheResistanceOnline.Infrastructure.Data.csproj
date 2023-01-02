@@ -27,4 +27,8 @@
         <ProjectReference Include="..\TheResistanceOnline.Data\TheResistanceOnline.Data.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Queries\Core" />
+    </ItemGroup>
+
 </Project>

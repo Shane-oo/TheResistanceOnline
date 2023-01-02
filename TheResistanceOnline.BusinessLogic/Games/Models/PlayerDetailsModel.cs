@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 
 namespace TheResistanceOnline.BusinessLogic.Games.Models
 {
-    public class PlayerDetailsModel: PlayerVariablesModel
+    public class PlayerDetailsModel
     {
         #region Properties
 

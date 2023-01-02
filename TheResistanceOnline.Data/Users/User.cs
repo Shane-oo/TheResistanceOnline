@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity;
 using TheResistanceOnline.Data.DiscordServer;
 using TheResistanceOnline.Data.Entities;
+using TheResistanceOnline.Data.Games;
 using TheResistanceOnline.Data.ProfilePictures;
 using TheResistanceOnline.Data.UserSettings;
 
@@ -23,6 +24,8 @@ public class User: IdentityUser, IAuditableEntity
 
     [NotNull]
     public UserSetting UserSetting { get; set; }
+
+    public List<PlayerStatistic> PlayerStatistics { get; set; }
 
     #endregion
 }

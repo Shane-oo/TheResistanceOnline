@@ -21,4 +21,6 @@ public interface IBotObserver
     TeamModel GetTeam();
 
     string GetName();
+
+    Dictionary<Guid, PlayerVariablesModel> GetPlayerVariables();
 }
