@@ -443,11 +443,7 @@ public class BayesBotObserver: IBotObserver
 
     private List<PlayerDetailsModel> ResistanceProposal(int missionSize, List<PlayerDetailsModel> proposedMissionTeam)
     {
-        if (_gameDetails.CurrentMissionRound == 5)
-        {
-            // Mission size should be 3 but only 2 are coming through
-            Console.WriteLine("Sometings going wriong");
-        }
+
 
         // For the First Mission as Resistance
         // Pick at Random
@@ -501,7 +497,7 @@ public class BayesBotObserver: IBotObserver
         if (trustedMembers.Count > 0)
         {
             proposedMissionTeam.AddRange(trustedMembers);
-            missionSize -= proposedMissionTeam.Count;
+            missionSize -= trustedMembers.Count;
         }
         // semi trusted members, havent been on failed missions
 
