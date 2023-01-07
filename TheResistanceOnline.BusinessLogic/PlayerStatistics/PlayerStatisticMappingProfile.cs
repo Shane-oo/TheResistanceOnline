@@ -11,8 +11,8 @@ public class PlayerStatisticMappingProfile: Profile
     public PlayerStatisticMappingProfile()
     {
         CreateMap<IEnumerable<PlayerStatistic>, PlayerStatisticDetailsModel>()
-            .ForMember(dest => dest.ResistanceWins, opt => opt.MapFrom(playerStatistics => playerStatistics.Count(ps => ps.Won)))
-            .ForMember(dest => dest.SpyWins, opt => opt.MapFrom(playerStatistics => playerStatistics.Count(ps => !ps.Won)));
+            .ForMember(dest => dest.ResistanceWins, opt => opt.MapFrom(playerStatistics => playerStatistics.Count(ps => ps.Won && ps.Team == 0)))
+            .ForMember(dest => dest.SpyWins, opt => opt.MapFrom(playerStatistics => playerStatistics.Count(ps => ps.Won && ps.Team == 1)));
     }
 
     #endregion
