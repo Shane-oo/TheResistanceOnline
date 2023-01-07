@@ -1,9 +1,8 @@
 using AutoMapper;
-using TheResistanceOnline.BusinessLogic.Core.Queries;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
 using TheResistanceOnline.BusinessLogic.Games.DbQueries;
 using TheResistanceOnline.BusinessLogic.Games.Models;
-using TheResistanceOnline.BusinessLogic.Users;
+using TheResistanceOnline.BusinessLogic.PlayerStatistics;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Games;
 
@@ -13,7 +12,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
     {
         GamePlayerValue CreateGamePlayerValue(SaveGameCommand command);
 
-        Task<List<PlayerStatistic>> CreatePlayerStatisticsAsync(SaveGameCommand command);
+        Task<List<GamePlayerValue>> GetGamePlayerValuesAsync(GetGamePlayerValuesCommand command);
 
         void MoveToNextRound(GameDetailsModel gameDetails);
 
@@ -28,8 +27,6 @@ namespace TheResistanceOnline.BusinessLogic.Games
         Task SaveGameAsync(SaveGameCommand command);
 
         GameDetailsModel SetUpNewGame(GameDetailsModel gameDetails);
-
-        Task<List<GamePlayerValue>> GetGamePlayerValuesAsync(GetGamePlayerValuesCommand command);
     }
 
     public class GameService: IGameService
@@ -49,20 +46,19 @@ namespace TheResistanceOnline.BusinessLogic.Games
         #region Fields
 
         private readonly IDataContext _context;
-
-        private static readonly Random _random = new();
-        private readonly IUserService _userService;
         private readonly IMapper _mapper;
+        private readonly IPlayerStatisticService _playerStatisticService;
+        private static readonly Random _random = new();
 
         #endregion
 
         #region Construction
 
-        public GameService(IDataContext context, IUserService userService, IMapper mapper)
+        public GameService(IDataContext context, IMapper mapper, IPlayerStatisticService playerStatisticService)
         {
             _context = context;
-            _userService = userService;
             _mapper = mapper;
+            _playerStatisticService = playerStatisticService;
         }
 
         #endregion
@@ -193,6 +189,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
                                       PlayerValues = new List<PlayerValue>()
                                   };
             // Save a bots recording of a real players
+            // todo Watcher -> could put the watcher in the game Observer??
             var bot = command.GameDetails.PlayersDetails!.FirstOrDefault(p => p.IsBot && p.Team == TeamModel.Resistance);
 
             foreach(var playerVariable in bot.BotObserver.GetPlayerVariables())
@@ -207,31 +204,14 @@ namespace TheResistanceOnline.BusinessLogic.Games
                 gamePlayerValue.PlayerValues.Add(playerValue);
             }
 
-
             return gamePlayerValue;
         }
 
-        public async Task<List<PlayerStatistic>> CreatePlayerStatisticsAsync(SaveGameCommand command)
-        {
-            var playerStatistics = new List<PlayerStatistic>();
-            foreach(var playerDetails in command.GameDetails.PlayersDetails!)
-            {
-                var playerStatistic = new PlayerStatistic
-                                      {
-                                          User = playerDetails.IsBot
-                                                     ? null
-                                                     : await _userService.GetUserByEmailOrNameAsync(new ByIdAndNameQuery
-                                                                                                    {
-                                                                                                        Name = playerDetails.UserName,
-                                                                                                        CancellationToken = command.CancellationToken
-                                                                                                    }),
-                                          Team = (int)playerDetails.Team,
-                                          PlayerId = playerDetails.PlayerId.ToString()
-                                      };
-                playerStatistics.Add(playerStatistic);
-            }
 
-            return playerStatistics;
+        public async Task<List<GamePlayerValue>> GetGamePlayerValuesAsync(GetGamePlayerValuesCommand command)
+        {
+            var gamePlayerValues = await _context.Query<IAllGamePlayerValuesDbQuery>().ExecuteAsync(command.CancellationToken);
+            return gamePlayerValues;
         }
 
 
@@ -259,17 +239,15 @@ namespace TheResistanceOnline.BusinessLogic.Games
                 switch(gameDetails.GameStage)
                 {
                     case GameStageModel.Mission:
+                        // Skip mission On client Side as bots complete mission
                         if (gameDetails.MissionTeam != null && gameDetails.MissionTeam.All(p => p.IsBot))
                         {
                             await ProcessMissionAsync(gameDetails);
                         }
-                        // Skip mission On client Side as bots complete mission
 
                         break;
                     case GameStageModel.MissionPropose:
                         ProcessMissionPropose(gameDetails);
-
-
                         break;
                 }
             }
@@ -403,11 +381,12 @@ namespace TheResistanceOnline.BusinessLogic.Games
 
         public async Task SaveGameAsync(SaveGameCommand command)
         {
+            var winningTeam = command.GameDetails.GameStage == GameStageModel.GameOverResistanceWon ? (int)TeamModel.Resistance : (int)TeamModel.Spy;
             var game = new Game
                        {
-                           WinningTeam = command.GameDetails.GameStage == GameStageModel.GameOverResistanceWon ? (int)TeamModel.Resistance : (int)TeamModel.Spy,
+                           WinningTeam = winningTeam,
                            GamePlayerValue = CreateGamePlayerValue(command),
-                           PlayerStatistics = await CreatePlayerStatisticsAsync(command)
+                           PlayerStatistics = _playerStatisticService.CreatePlayerStatistics(command, winningTeam)
                        };
 
             _context.Add(game);
@@ -462,12 +441,6 @@ namespace TheResistanceOnline.BusinessLogic.Games
 
 
             return gameDetails;
-        }
-
-        public async Task<List<GamePlayerValue>> GetGamePlayerValuesAsync(GetGamePlayerValuesCommand command)
-        {
-            var gamePlayerValues = await _context.Query<IAllGamePlayerValuesDbQuery>().ExecuteAsync(command.CancellationToken);
-            return gamePlayerValues;
         }
 
         #endregion

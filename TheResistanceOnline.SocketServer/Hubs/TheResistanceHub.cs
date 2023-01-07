@@ -2,15 +2,19 @@ using AutoMapper;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using TheResistanceOnline.BusinessLogic.Core.Queries;
 using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.BusinessLogic.Games.BotObservers.BayesAgent;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
 using TheResistanceOnline.BusinessLogic.Games.Models;
-using TheResistanceOnline.BusinessLogic.Users;
+using TheResistanceOnline.BusinessLogic.PlayerStatistics.Models;
+using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.BusinessLogic.Users.Models;
+using TheResistanceOnline.Data;
+using TheResistanceOnline.Data.DiscordServer;
+using TheResistanceOnline.Data.Games;
 using TheResistanceOnline.Data.Users;
+using TheResistanceOnline.Data.UserSettings;
 
 namespace TheResistanceOnline.SocketServer.Hubs
 {
@@ -26,12 +30,16 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         #region Fields
 
+        private readonly INaiveBayesClassifierService _bayesClassifierService;
+
         private static readonly Dictionary<string, string?> _connectionIdToGroupNameMappingTable = new();
         private static readonly Dictionary<string, PlayerDetailsModel> _connectionIdToPlayerDetailsMappingTable = new();
 
+        private readonly IDataContext _context;
+
         private readonly IDiscordServerService _discordServerService;
         private readonly IGameService _gameService;
-        private readonly INaiveBayesClassifierService _bayesClassifierService;
+
         private static readonly Dictionary<string, GameDetailsModel> _groupNameToGameDetailsMappingTable = new()
                                                                                                            {
                                                                                                                {
@@ -148,15 +156,17 @@ namespace TheResistanceOnline.SocketServer.Hubs
         private static readonly Dictionary<string, Timer> _groupNameToGameTimer = new();
         private readonly IMapper _mapper;
 
-        private readonly IUserService _userService;
-
         #endregion
 
         #region Construction
 
-        public TheResistanceHub(IUserService userService, IDiscordServerService discordServerService, IGameService gameService, IMapper mapper,INaiveBayesClassifierService bayesClassifierServiceService)
+        public TheResistanceHub(IDataContext context,
+                                IDiscordServerService discordServerService,
+                                IGameService gameService,
+                                IMapper mapper,
+                                INaiveBayesClassifierService bayesClassifierServiceService)
         {
-            _userService = userService;
+            _context = context;
             _discordServerService = discordServerService;
             _mapper = mapper;
             _gameService = gameService;
@@ -187,10 +197,9 @@ namespace TheResistanceOnline.SocketServer.Hubs
             }
         }
 
-
         private async Task ReceiveSubmitContinueAsync(GameDetailsModel gameDetails,
-                                           PlayerDetailsModel playerDetails,
-                                           PlayerDetailsModel receivedPlayerDetails)
+                                                      PlayerDetailsModel playerDetails,
+                                                      PlayerDetailsModel receivedPlayerDetails)
         {
             playerDetails.Continued = receivedPlayerDetails.Continued;
 
@@ -198,8 +207,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
         }
 
         private async Task ReceiveSubmitMissionChoiceAsync(GameDetailsModel gameDetails,
-                                                PlayerDetailsModel playerDetails,
-                                                PlayerDetailsModel receivedPlayerDetails)
+                                                           PlayerDetailsModel playerDetails,
+                                                           PlayerDetailsModel receivedPlayerDetails)
         {
             playerDetails.Chose = receivedPlayerDetails.Chose;
             playerDetails.SupportedMission = receivedPlayerDetails.SupportedMission;
@@ -215,8 +224,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
         }
 
         private async Task ReceiveSubmitVoteAsync(GameDetailsModel gameDetails,
-                                       PlayerDetailsModel playerDetails,
-                                       PlayerDetailsModel receivedPlayerDetails)
+                                                  PlayerDetailsModel playerDetails,
+                                                  PlayerDetailsModel receivedPlayerDetails)
         {
             playerDetails.Voted = receivedPlayerDetails.Voted;
             playerDetails.ApprovedMissionTeam = receivedPlayerDetails.ApprovedMissionTeam;
@@ -321,22 +330,27 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            var user = await _userService.GetUserByEmailOrNameAsync(new ByIdAndNameQuery
-                                                                    {
-                                                                        Name = Context.User?.Identity?.Name
-                                                                    });
-
-            var userDetails = _mapper.Map<UserDetailsModel>(user);
-            //todo add resistance wins and spy wins eventually
+            var user = await _context.Query<IUserByNameOrEmailDbQuery>()
+                                     .WithParams(Context.User?.Identity?.Name)
+                                     .Include(new[]
+                                              {
+                                                  nameof(DiscordUser),
+                                                  nameof(UserSetting),
+                                                  nameof(User.PlayerStatistics)
+                                              })
+                                     .AsNoTracking()
+                                     .ExecuteAsync(new CancellationToken());
+            var playerStatisticDetails = _mapper.Map<PlayerStatisticDetailsModel>(user.PlayerStatistics);
+            
             var playerDetails = new PlayerDetailsModel
                                 {
                                     ConnectionId = Context.ConnectionId,
-                                    PlayerId = Guid.NewGuid(),
-                                    UserName = userDetails.UserName,
-                                    DiscordUserName = userDetails.DiscordUser?.Name,
-                                    DiscordTag = userDetails.DiscordUser?.DiscordTag,
-                                    ResistanceTeamWins = 420,
-                                    SpyTeamWins = 69
+                                    PlayerId = Guid.Parse(user.Id),
+                                    UserName = user.UserName,
+                                    DiscordUserName = user.DiscordUser?.Name,
+                                    DiscordTag = user.DiscordUser?.DiscordTag,
+                                    ResistanceTeamWins = playerStatisticDetails.ResistanceWins,
+                                    SpyTeamWins = playerStatisticDetails.SpyWins
                                 };
 
             _connectionIdToPlayerDetailsMappingTable.Add(Context.ConnectionId, playerDetails);
@@ -467,7 +481,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             if (!_groupNameToGameDetailsMappingTable.TryGetValue(groupName, out var gameDetails)) return;
 
             gameDetails.GameOptions = command.GameOptions;
-            
+
             // create gameService observer
             await _bayesClassifierService.GetTrainingDataAsync();
             var gameServiceObserver = new GameSubjectAndObserver(_bayesClassifierService);
