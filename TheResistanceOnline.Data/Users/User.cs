@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using TheResistanceOnline.Data.DiscordServer;
 using TheResistanceOnline.Data.Entities;
 using TheResistanceOnline.Data.Games;
+using TheResistanceOnline.Data.PlayerStatistics;
 using TheResistanceOnline.Data.ProfilePictures;
 using TheResistanceOnline.Data.UserSettings;
 

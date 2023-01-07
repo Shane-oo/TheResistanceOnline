@@ -8,8 +8,10 @@ using TheResistanceOnline.BusinessLogic.Users.Commands;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.BusinessLogic.Users.Models;
 using TheResistanceOnline.Data;
+using TheResistanceOnline.Data.DiscordServer;
 using TheResistanceOnline.Data.Exceptions;
 using TheResistanceOnline.Data.Users;
+using TheResistanceOnline.Data.UserSettings;
 
 namespace TheResistanceOnline.BusinessLogic.Users
 {
@@ -19,7 +21,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         Task CreateUserAsync([NotNull] UserRegisterCommand command);
 
-        Task<User> GetUserByEmailOrNameAsync([NotNull] ByIdAndNameQuery query);
+        Task<User> GetUserByEmailOrNameAsync(ByIdAndNameQuery query, string[] include = null);
 
         Task<UserDetailsModel> GetUserByUserIdAsync([NotNull] ByIdQuery query);
 
@@ -63,22 +65,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
         #endregion
 
         #region Private Methods
-
-        private async Task<User> FindUserByEmailAsync(string email)
-        {
-            var userQuery = new ByIdAndNameQuery
-                            {
-                                Name = email
-                            };
-            var user = await GetUserByEmailOrNameAsync(userQuery);
-            if (user == null)
-            {
-                throw new DomainException(typeof(User), "Email Not Found");
-            }
-
-            return user;
-        }
-
+        
         #endregion
 
         #region Public Methods
@@ -90,7 +77,9 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 throw new ArgumentNullException(nameof(command));
             }
 
-            var user = await FindUserByEmailAsync(command.Email);
+            var user = await _context.Query<IUserByNameOrEmailDbQuery>()
+                                 .WithParams(command.Email)
+                                 .ExecuteAsync(command.CancellationToken);
 
             await _identityManager.ConfirmUsersEmailAsync(user, command.Token);
         }
@@ -125,15 +114,22 @@ namespace TheResistanceOnline.BusinessLogic.Users
             _emailService.SendEmailAsync(sendEmailCommand);
         }
 
-        public async Task<User> GetUserByEmailOrNameAsync(ByIdAndNameQuery query)
+        public async Task<User> GetUserByEmailOrNameAsync(ByIdAndNameQuery query, string[] include = null)
         {
             if (query == null || string.IsNullOrEmpty(query.Name))
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            return await _context.Query<IUserByNameOrEmailDbQuery>().WithParams(query.Name).ExecuteAsync(query.CancellationToken);
+            return await _context.Query<IUserByNameOrEmailDbQuery>()
+                                 .WithParams(query.Name)
+                                 .Include(include)
+                                 .ExecuteAsync(query.CancellationToken);
         }
+        // new[]
+        // {
+        //     nameof(DiscordUser),
+        //     nameof(UserSetting)
 
         public async Task<UserDetailsModel> GetUserByUserIdAsync(ByIdQuery query)
         {
@@ -154,7 +150,9 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 throw new ArgumentNullException(nameof(command));
             }
 
-            var user = await FindUserByEmailAsync(command.Email);
+            var user = await _context.Query<IUserByNameOrEmailDbQuery>()
+                                     .WithParams(command.Email)
+                                     .ExecuteAsync(command.CancellationToken);
 
             try
             {
@@ -183,8 +181,11 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 throw new ArgumentNullException(nameof(command));
             }
 
-            var user = await FindUserByEmailAsync(command.Email);
-
+            var user = await _context.Query<IUserByNameOrEmailDbQuery>()
+                                     .WithParams(command.Email)
+                                     .Include(new []{nameof(UserSetting)})
+                                     .ExecuteAsync(command.CancellationToken);
+            
             await _identityManager.ResetPasswordAsync(user, command.Token, command.Password);
 
             user.UserSetting.ResetPasswordLinkSent = false;
@@ -199,7 +200,10 @@ namespace TheResistanceOnline.BusinessLogic.Users
                 throw new ArgumentNullException(nameof(command));
             }
 
-            var user = await FindUserByEmailAsync(command.Email);
+            var user = await _context.Query<IUserByNameOrEmailDbQuery>()
+                                     .WithParams(command.Email)
+                                     .Include(new[] { nameof(UserSetting) })
+                                     .ExecuteAsync(command.CancellationToken);
 
             // Stop spamming of reset password email
             if (user.UserSetting.ResetPasswordLinkSent && user.UserSetting.ResetPasswordLinkSentRecord.HasValue)

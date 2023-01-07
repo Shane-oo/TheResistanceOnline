@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using JetBrains.Annotations;
 using TheResistanceOnline.Data.Entities;
+using TheResistanceOnline.Data.PlayerStatistics;
 
 namespace TheResistanceOnline.Data.Games;
 
