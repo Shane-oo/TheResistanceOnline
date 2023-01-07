@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TheResistanceOnline.Data.DiscordServer;
 using TheResistanceOnline.Data.Games;
+using TheResistanceOnline.Data.PlayerStatistics;
 using TheResistanceOnline.Data.ProfilePictures;
 using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Infrastructure.Data.Configurations.DiscordServerConfigurations;
 using TheResistanceOnline.Infrastructure.Data.Configurations.GamesConfigurations;
+using TheResistanceOnline.Infrastructure.Data.Configurations.PlayerStatisticsConfigurations;
 using TheResistanceOnline.Infrastructure.Data.Configurations.ProfilePicturesConfigurations;
 
 namespace TheResistanceOnline.Infrastructure.Data;
