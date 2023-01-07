@@ -1,32 +1,17 @@
+using System.Reflection;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using Microsoft.EntityFrameworkCore.Migrations.Operations.Builders;
 
 namespace TheResistanceOnline.Infrastructure.Data.Migrations;
 
 public static class MigrationExtensions
 {
-    #region Public Methods
-
-    public static OperationBuilder<SqlOperation> SqlResource(this MigrationBuilder migrationBuilder, string scriptName)
+    public static void RunSqlScript(this MigrationBuilder migrationBuilder, string script)
     {
-        var assembly = typeof(MigrationExtensions).Assembly;
-        var resourceName = assembly.GetManifestResourceNames().First(s => s.EndsWith(scriptName, StringComparison.CurrentCultureIgnoreCase));
-
-        string sql;
-        using(var stream = assembly.GetManifestResourceStream(resourceName))
-        {
-            if (stream == null)
-            {
-                throw new InvalidOperationException("Could not load resource stream");
-            }
-
-            using var reader = new StreamReader(stream);
-            sql = reader.ReadToEnd();
-        }
-
-        return migrationBuilder.Sql(sql);
+        var assembly = Assembly.GetExecutingAssembly();
+        var resourceName = assembly.GetManifestResourceNames().FirstOrDefault(x => x.EndsWith($"{script}.sql"));
+        using var stream = assembly.GetManifestResourceStream(resourceName ?? throw new InvalidOperationException($"Cannot Find Sql Script {script}"));
+        using var reader = new StreamReader(stream ?? throw new InvalidOperationException());
+        var sqlResult = reader.ReadToEnd();
+        migrationBuilder.Sql(sqlResult);
     }
-
-    #endregion
 }

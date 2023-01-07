@@ -14,6 +14,7 @@ using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.BusinessLogic.Games.BotObservers.BayesAgent;
 using TheResistanceOnline.BusinessLogic.Games.DbQueries;
+using TheResistanceOnline.BusinessLogic.PlayerStatistics;
 using TheResistanceOnline.BusinessLogic.Settings;
 using TheResistanceOnline.BusinessLogic.Settings.Models;
 using TheResistanceOnline.BusinessLogic.Timers;
@@ -101,7 +102,7 @@ namespace TheResistanceOnline.SocketServer.DI
                                                                     };
                                       x.Events = new JwtBearerEvents
                                                  {
-                                                     // So on every message the server recieves get the token from the this.options
+                                                     // So on every message the server receives get the token from the this.options
                                                      // which has the token
                                                      OnMessageReceived = context =>
                                                                          {
@@ -144,6 +145,7 @@ namespace TheResistanceOnline.SocketServer.DI
             services.AddScoped<IUserSettingsService, UserSettingsService>();
             services.AddScoped<IGameService, GameService>();
             services.AddScoped<INaiveBayesClassifierService, NaiveBayesClassifierService>();
+            services.AddScoped<IPlayerStatisticService, PlayerStatisticService>();
             //ToDo probs not needed
             services.AddScoped<ITimerService, TimerService>();
 
@@ -159,7 +161,7 @@ namespace TheResistanceOnline.SocketServer.DI
             services.AddAutoMapper(typeof(UserMappingProfile));
             services.AddAutoMapper(typeof(DiscordServerMappingProfile));
             services.AddAutoMapper(typeof(GameMappingProfile));
-
+            services.AddAutoMapper(typeof(PlayerStatisticMappingProfile));
             // Identities
             services.AddIdentity<User, IdentityRole>(options =>
                                                      {

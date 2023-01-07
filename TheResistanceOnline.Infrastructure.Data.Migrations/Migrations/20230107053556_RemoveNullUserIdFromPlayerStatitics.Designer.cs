@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TheResistanceOnline.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using TheResistanceOnline.Infrastructure.Data;
 namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20230107053556_RemoveNullUserIdFromPlayerStatitics")]
+    partial class RemoveNullUserIdFromPlayerStatitics
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -414,9 +417,6 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .IsRequired()
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("Won")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id")
                         .HasName("PK_PlayerStatistics");

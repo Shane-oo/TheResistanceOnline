@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TheResistanceOnline.Data.Games;
+using TheResistanceOnline.Data.PlayerStatistics;
 
-namespace TheResistanceOnline.Infrastructure.Data.Configurations.GamesConfigurations;
+namespace TheResistanceOnline.Infrastructure.Data.Configurations.PlayerStatisticsConfigurations;
 
 public class PlayerStatisticEntityConfiguration: IEntityTypeConfiguration<PlayerStatistic>
 {
@@ -14,8 +14,8 @@ public class PlayerStatisticEntityConfiguration: IEntityTypeConfiguration<Player
         builder.HasOne(ps => ps.Game)
                .WithMany(g => g.PlayerStatistics);
 
-        builder.Property(ps => ps.UserId).IsRequired(false).HasMaxLength(450);
-        builder.Property(ps => ps.PlayerId).IsRequired().HasMaxLength(450);
+        builder.Property(ps => ps.UserId).IsRequired().HasMaxLength(450);
         builder.Property(ps => ps.Team).IsRequired();
+        builder.Property(ps => ps.Won).IsRequired();
     }
 }
