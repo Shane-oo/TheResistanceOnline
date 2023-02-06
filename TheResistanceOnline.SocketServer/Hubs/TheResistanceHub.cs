@@ -9,10 +9,8 @@ using TheResistanceOnline.BusinessLogic.Games.Commands;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 using TheResistanceOnline.BusinessLogic.PlayerStatistics.Models;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
-using TheResistanceOnline.BusinessLogic.Users.Models;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.DiscordServer;
-using TheResistanceOnline.Data.Games;
 using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Data.UserSettings;
 
@@ -341,7 +339,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                      .AsNoTracking()
                                      .ExecuteAsync(new CancellationToken());
             var playerStatisticDetails = _mapper.Map<PlayerStatisticDetailsModel>(user.PlayerStatistics);
-            
+
             var playerDetails = new PlayerDetailsModel
                                 {
                                     ConnectionId = Context.ConnectionId,
@@ -482,27 +480,29 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
             gameDetails.GameOptions = command.GameOptions;
 
-            // create gameService observer
+            // create gameService observer - with this implementation _bayesClassifierService always has to be passed
             await _bayesClassifierService.GetTrainingDataAsync();
             var gameServiceObserver = new GameSubjectAndObserver(_bayesClassifierService);
             // create bot observers and attach them to game service which is also subject to bots 
-            var botObservers = gameServiceObserver.CreateBotObservers(command.GameOptions.BotCount);
+            // Always Create Spectator Bot
+            var playerValuesSpectator = gameServiceObserver.CreatePlayerValuesSpectatorBotObserver();
+            gameDetails.PlayerValuesSpectator = playerValuesSpectator;
 
-            // attach gameService observer to hub subject
-            Attach(gameServiceObserver, groupName);
+            var gamePlayingBotObservers = gameServiceObserver.CreateGamePlayingBotObservers(command.GameOptions.BotCount);
+
 
             // add bots to game details
-            foreach(var botObserver in botObservers)
+            foreach(var gamePlayingBotObserver in gamePlayingBotObservers)
             {
                 var botPlayersDetails = new PlayerDetailsModel
                                         {
                                             PlayerId = Guid.NewGuid(),
                                             IsBot = true,
-                                            BotObserver = botObserver,
-                                            UserName = botObserver.GetName() + "-" + gameDetails.PlayersDetails?.Count
+                                            BotObserver = gamePlayingBotObserver,
+                                            UserName = gamePlayingBotObserver.GetName() + "-" + gameDetails.PlayersDetails?.Count
                                         };
 
-                botObserver.SetPlayerId(botPlayersDetails.PlayerId);
+                gamePlayingBotObserver.SetPlayerId(botPlayersDetails.PlayerId);
 
                 gameDetails.PlayersDetails?.Add(botPlayersDetails);
             }
@@ -510,6 +510,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
             gameDetails = _gameService.SetUpNewGame(gameDetails);
 
+            // attach gameService observer to hub subject
+            Attach(gameServiceObserver, groupName);
             Notify(gameDetails, groupName);
 
             // not sure what to do about this
