@@ -26,7 +26,7 @@ export default class Resources extends EventEmitter {
     // Setup
     this.items = {};
 
-    // obvs has fucked up somewhere
+    // obvs has fucked up somewhere         ?????
     this.toLoad = this.sources[0].length;
     console.log(this.toLoad);
     this.loaded = 0;

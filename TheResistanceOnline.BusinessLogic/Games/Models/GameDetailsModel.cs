@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 
 namespace TheResistanceOnline.BusinessLogic.Games.Models
@@ -7,6 +8,8 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         #region Properties
 
         public string ChannelName { get; set; }
+
+        public int CurrentMissionRound { get; set; }
 
         public GameActionModel GameAction { get; set; }
 
@@ -20,7 +23,7 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
 
         public bool IsVoiceChannel { get; set; }
 
-        public int CurrentMissionRound { get; set; }
+        public List<bool> MissionOutcome { get; set; }
 
         public Dictionary<int, bool> MissionRounds { get; set; }
 
@@ -29,16 +32,17 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         [CanBeNull]
         public List<PlayerDetailsModel> MissionTeam { get; set; }
 
+        public bool MoveToNextRound { get; set; }
+
         public GameStageModel NextGameStage { get; set; }
 
         [CanBeNull]
         public List<PlayerDetailsModel> PlayersDetails { get; set; }
 
-        public int VoteFailedCount { get; set; }
+        [JsonIgnore]
+        public ISpectatorBotObserver PlayerValuesSpectator { get; set; }
 
-        public List<bool> MissionOutcome { get; set; }
-        
-        public bool MoveToNextRound { get; set; }
+        public int VoteFailedCount { get; set; }
 
         #endregion
     }

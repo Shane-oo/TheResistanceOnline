@@ -167,9 +167,7 @@ export class TheResistanceGameService {
 
 
   public sendGameActionCommand = (gameActionCommand: GameActionCommand) => {
-    this.connection.invoke('ReceiveGameActionCommand', gameActionCommand).then(() => {
-      console.log('then');
-    }).catch(err => console.log(err));
+    this.connection.invoke('ReceiveGameActionCommand', gameActionCommand).catch(err => console.log(err));
   };
 
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TheResistanceGameService } from '../the-resistance-game.service';
 import { GameAction, GameDetails, GameStage, PlayerDetails, TeamModel } from '../the-resistance-game.models';
 
@@ -6,13 +6,14 @@ import {
   faCircleArrowRight,
   faCircleCheck,
   faCircleXmark,
+  faEraser,
   faPersonMilitaryRifle,
   faPersonRifle,
   faSquarePlus,
-  faXmark,
-  faEraser,
+  faSquareMinus,
   faUserCheck,
-  faUserSecret
+  faUserSecret,
+  faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { SwalContainerService } from '../../../ui/swal/swal-container.service';
@@ -28,6 +29,7 @@ export class GameComponent implements OnInit {
   public missionTeamMemberIcon = faPersonRifle;
   public missionLeaderIcon = faPersonMilitaryRifle;
   public addMemberIcon = faSquarePlus;
+  public removeMemberIcon = faSquareMinus;
   public discordIcon = faDiscord;
   public crossIcon = faCircleXmark;
   public tickIcon = faCircleCheck;
@@ -62,12 +64,10 @@ export class GameComponent implements OnInit {
   @Input() playerId: string = '';
 
   public gameCountdownConfig: CountdownConfig = {leftTime: 0};
-  @ViewChild('gameCountdown', {static: false}) private gameCountdown!: CountdownComponent;
-
   public gameOverCountdownConfig: CountdownConfig = {leftTime: 30, format: 's'};
-  @ViewChild('gameOverCountdown', {static: false}) private gameOverCountdown!: CountdownComponent;
-
   public highlightMap: Map<string, boolean> = new Map<string, boolean>();
+  @ViewChild('gameCountdown', {static: false}) private gameCountdown!: CountdownComponent;
+  @ViewChild('gameOverCountdown', {static: false}) private gameOverCountdown!: CountdownComponent;
 
   constructor(private gameService: TheResistanceGameService, private swalService: SwalContainerService) {
   }
@@ -107,12 +107,13 @@ export class GameComponent implements OnInit {
       selectedPlayerDetails.selectedTeamMember = !selectedPlayerDetails.selectedTeamMember;
       if(selectedPlayerDetails.selectedTeamMember) {
         if(this.gameDetails.missionTeam.length < this.gameDetails.missionSize) {
+          // add member
           this.gameDetails.missionTeam.push(selectedPlayerDetails);
         } else {
-          //this.swalService.showSwal('Mission Team Full', SwalTypesModel.Error);
-          // not sure if should do anything here
+          // mission team full
         }
       } else {
+        // remove member
         this.gameDetails.missionTeam = this.gameDetails.missionTeam.filter(p => p !== selectedPlayerDetails);
       }
     }
@@ -180,23 +181,15 @@ export class GameComponent implements OnInit {
     return '';
   };
 
-  private sendGameActionCommand = () => {
-    let gameActionCommand = {
-      gameDetails: this.gameDetails
-    };
-    this.gameService.sendGameActionCommand(gameActionCommand);
-  };
-
-
   handleGameOverCountdownEvent = (e: CountdownEvent) => {
 
     if(e.action === 'done') {
-      console.log('countdown done');
       // kick em out
       location.reload();
 
     }
   };
+
   highlight = (playerId: string, highlightSpy: boolean) => {
     const player = this.gameDetails.playersDetails.find(p => p.playerId === playerId);
     if(player) {
@@ -209,5 +202,12 @@ export class GameComponent implements OnInit {
     if(player) {
       this.highlightMap.delete(playerId);
     }
+  };
+
+  private sendGameActionCommand = () => {
+    let gameActionCommand = {
+      gameDetails: this.gameDetails
+    };
+    this.gameService.sendGameActionCommand(gameActionCommand);
   };
 }
