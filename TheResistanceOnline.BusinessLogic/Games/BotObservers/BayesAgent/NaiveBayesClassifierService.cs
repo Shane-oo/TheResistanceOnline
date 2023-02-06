@@ -1,5 +1,4 @@
 using System.Reflection;
-using AutoMapper;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 using TheResistanceOnline.Data.Games;
@@ -18,7 +17,6 @@ public class NaiveBayesClassifierService: INaiveBayesClassifierService
     #region Fields
 
     private readonly IGameService _gameService;
-    private readonly IMapper _mapper;
 
     private int _resistanceRows;
 
@@ -34,12 +32,11 @@ public class NaiveBayesClassifierService: INaiveBayesClassifierService
     #region Construction
 
     // public List<> TrainingData;
-    public NaiveBayesClassifierService(IGameService gameService, IMapper mapper)
+    public NaiveBayesClassifierService(IGameService gameService)
     {
         // Get Training Data
         //TrainingData = GetTrainingData();
         _gameService = gameService;
-        _mapper = mapper;
     }
 
     #endregion

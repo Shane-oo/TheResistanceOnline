@@ -101,8 +101,8 @@
       <h4>Mission</h4>
       <div *ngIf="playerIsOnMissionTeam(playerId)">
         <div *ngIf="!chose">
-          <button (click)="submitMissionChoice(false)" class="vote-button" [disabled]="getPlayerDetails().team === 0"
-                  [ngClass]="getPlayerDetails().team === 0 ? 'button-disabled':'reject-button'"
+          <button (click)="submitMissionChoice(false)" [disabled]="getPlayerDetails().team === 0" [ngClass]="getPlayerDetails().team === 0 ? 'button-disabled':'reject-button'"
+                  class="vote-button"
           >
             Sabotage
           </button>
@@ -177,28 +177,29 @@
         <!--For If User is Mission Team Leader && GameStage Is Mission Propose
             They Will have Selectable Mission Team Member Icons-->
         <div *ngIf="missionLeaderPlayerId === playerId && gameDetails.gameStage === 1">
-          <fa-icon (click)="teamMemberClicked(playerDetail.playerId)" [icon]="addMemberIcon" class="fa-lg icon-click"></fa-icon>
+          <fa-icon (click)="teamMemberClicked(playerDetail.playerId)"
+                   [icon]="playerIsOnMissionTeam(playerDetail.playerId) ? removeMemberIcon :addMemberIcon"
+                   class="fa-lg icon-click"
+          ></fa-icon>
         </div>
-
         <fa-icon *ngIf="playerIsOnMissionTeam(playerDetail.playerId)" [icon]="missionTeamMemberIcon"></fa-icon>
-
       </div>
       <div>
         <h6 [ngClass]="{
                       'highlight-spy':highlightMap.has(playerDetail.playerId) && highlightMap.get(playerDetail.playerId),
                       'highlight-resistance':highlightMap.has(playerDetail.playerId) && !highlightMap.get(playerDetail.playerId)
           }"> {{playerDetail.userName}}
-          <div class="btn-group" placement="right" ngbDropdown>
-            <button type="button" class="btn btn-dark btn-sm dropdownButton" ngbDropdownToggle>
+          <div class="btn-group" ngbDropdown placement="right">
+            <button class="btn btn-dark btn-sm dropdownButton" ngbDropdownToggle type="button">
             </button>
             <div class="dropdown-menu" ngbDropdownMenu>
-              <button class="resistance-option" ngbDropdownItem (click)="highlight(playerDetail.playerId,false)">
+              <button (click)="highlight(playerDetail.playerId,false)" class="resistance-option" ngbDropdownItem>
                 <fa-icon [icon]="userCheckIcon" class="fa-sm"></fa-icon>
               </button>
-              <button class="spy-option" ngbDropdownItem (click)="highlight(playerDetail.playerId,true)">
+              <button (click)="highlight(playerDetail.playerId,true)" class="spy-option" ngbDropdownItem>
                 <fa-icon [icon]="userSecretIcon" class="fa-sm"></fa-icon>
               </button>
-              <button class="eraser-option" ngbDropdownItem (click)="removeHighlight(playerDetail.playerId)">
+              <button (click)="removeHighlight(playerDetail.playerId)" class="eraser-option" ngbDropdownItem>
                 <fa-icon [icon]="eraserIcon" class="fa-sm"></fa-icon>
               </button>
 
