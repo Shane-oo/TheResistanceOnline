@@ -449,12 +449,12 @@ namespace TheResistanceOnline.SocketServer.Hubs
         public async Task ReceiveJoinGameCommand(JoinGameCommand command)
         {
             var gameDetails = _groupNameToGameDetailsMappingTable[command.ChannelName];
-            if (gameDetails.PlayersDetails is { Count: < MAX_GAME_COUNT })
+            var newPlayerDetails = _connectionIdToPlayerDetailsMappingTable[Context.ConnectionId];
+
+            if (gameDetails.PlayersDetails is { Count: < MAX_GAME_COUNT } && gameDetails.PlayersDetails.All(p => p.PlayerId != newPlayerDetails.PlayerId))
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, command.ChannelName);
                 _connectionIdToGroupNameMappingTable.Add(Context.ConnectionId, command.ChannelName);
-
-                var newPlayerDetails = _connectionIdToPlayerDetailsMappingTable[Context.ConnectionId];
 
                 gameDetails.PlayersDetails.Add(newPlayerDetails);
                 _groupNameToGameDetailsMappingTable[command.ChannelName] = gameDetails;
