@@ -17,7 +17,6 @@ export class UserSettingsService {
 
   public updateUserSettings = (body: UserSettingsUpdateCommand) => {
     body.userId = this.authService.getUserId();
-    console.log('user id got:',body.userId)
     return this.http.post(`${environment.API_URL}${this.userSettingsEndpoint}/UpdateUserSettings`, body);
   };
 }

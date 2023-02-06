@@ -184,7 +184,6 @@ export class GameComponent implements OnInit {
   handleGameOverCountdownEvent = (e: CountdownEvent) => {
 
     if(e.action === 'done') {
-      console.log('countdown done');
       // kick em out
       location.reload();
 
