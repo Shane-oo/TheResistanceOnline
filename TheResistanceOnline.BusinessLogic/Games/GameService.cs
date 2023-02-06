@@ -188,13 +188,13 @@ namespace TheResistanceOnline.BusinessLogic.Games
                                   {
                                       PlayerValues = new List<PlayerValue>()
                                   };
-            // Save a bots recording of a real players
-            // todo Watcher -> could put the watcher in the game Observer??
-            var bot = command.GameDetails.PlayersDetails!.FirstOrDefault(p => p.IsBot && p.Team == TeamModel.Resistance);
+            var playerValueSpectator = command.GameDetails.PlayerValuesSpectator;
+            // Save a spectators recording of a real players
+            var playerValuesSpectator = command.GameDetails.PlayerValuesSpectator;
 
-            foreach(var playerVariable in bot.BotObserver.GetPlayerVariables())
+            foreach(var playerVariable in playerValuesSpectator.GetPlayerVariablesDictionary())
             {
-                var realPlayerDetails = command.GameDetails.PlayersDetails.FirstOrDefault(p => p.PlayerId == playerVariable.Key);
+                var realPlayerDetails = command.GameDetails.PlayersDetails!.FirstOrDefault(p => p.PlayerId == playerVariable.Key);
                 if (realPlayerDetails!.IsBot) continue;
 
                 playerVariable.Value.Team = realPlayerDetails.Team;

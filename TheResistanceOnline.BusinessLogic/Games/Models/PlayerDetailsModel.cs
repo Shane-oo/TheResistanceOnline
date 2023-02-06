@@ -11,9 +11,13 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
 
         // dont send to front end
         [JsonIgnore]
-        public IBotObserver BotObserver { get; set; }
+        public IGamePlayingBotObserver BotObserver { get; set; }
+
+        public bool Chose { get; set; }
 
         public string ConnectionId { get; set; }
+
+        public bool Continued { get; set; }
 
         public string DiscordTag { get; set; }
 
@@ -34,17 +38,13 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
 
         public int SpyTeamWins { get; set; }
 
+        public bool SupportedMission { get; set; }
+
         public TeamModel Team { get; set; }
 
         public string UserName { get; set; }
 
         public bool Voted { get; set; }
-        
-        public bool Continued { get; set; }
-        
-        public bool SupportedMission { get; set; }
-        
-        public bool Chose { get; set; }
 
         #endregion
     }

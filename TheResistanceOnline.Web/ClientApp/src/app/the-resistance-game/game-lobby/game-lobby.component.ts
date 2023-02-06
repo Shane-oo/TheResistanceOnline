@@ -88,7 +88,6 @@ export class GameLobbyComponent implements OnInit {
 
   public startGame = (gameOptionsFormValue: GameOptions) => {
     const formValues = {...gameOptionsFormValue};
-    console.log(formValues);
     const startGameCommand: StartGameCommand = {
       gameOptions: {
         timeLimitMinutes: formValues.timeLimitMinutes,

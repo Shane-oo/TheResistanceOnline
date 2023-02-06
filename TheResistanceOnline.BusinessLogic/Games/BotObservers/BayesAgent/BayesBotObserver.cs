@@ -3,7 +3,7 @@ using TheResistanceOnline.BusinessLogic.Games.Models;
 
 namespace TheResistanceOnline.BusinessLogic.Games.BotObservers.BayesAgent;
 
-public class BayesBotObserver: IBotObserver
+public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
 {
     #region Constants
 
@@ -443,6 +443,8 @@ public class BayesBotObserver: IBotObserver
 
     private List<PlayerDetailsModel> ResistanceProposal(int missionSize, List<PlayerDetailsModel> proposedMissionTeam)
     {
+        // TODO CLEAN THIS UP CREATE ONE LIST AND FILTER ON THE ONE LIST INSTEAD OF 
+        // TODO HEAPS OF WHERES CLAUSES ON THE ONE LIST GROSS SHANE
         // For the First Mission as Resistance
         // Pick at Random
         if (_gameDetails.CurrentMissionRound == 1)
@@ -646,11 +648,6 @@ public class BayesBotObserver: IBotObserver
     public string GetName()
     {
         return Name;
-    }
-
-    public Dictionary<Guid, PlayerVariablesModel> GetPlayerVariables()
-    {
-        return _playerIdToGameData;
     }
 
     public TeamModel GetTeam()
