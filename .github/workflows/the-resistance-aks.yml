@@ -39,7 +39,7 @@ env:
   CONTAINER_NAME: "theresistanceonlineweb"
   RESOURCE_GROUP: "rsg-theresistance"
   CLUSTER_NAME: "theresistancecluster"
-  DEPLOYMENT_MANIFEST_PATH: "TheResistanceOnline.Web/Dockerfile"
+  DEPLOYMENT_MANIFEST_PATH: "./TheResistanceOnline.Web/Dockerfile"
 
 jobs:
   buildImage:
