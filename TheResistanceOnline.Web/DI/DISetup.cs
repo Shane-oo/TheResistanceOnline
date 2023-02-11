@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using TheResistanceOnline.BusinessLogic.DiscordServer;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Settings;
 using TheResistanceOnline.BusinessLogic.Settings.Models;
@@ -115,7 +114,6 @@ public static class DISetup
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserIdentityManager, UserIdentityManager>();
         services.AddScoped<IEmailService, EmailService>();
-        services.AddScoped<IDiscordServerService, DiscordServerService>();
         services.AddScoped<IUserSettingsService, UserSettingsService>();
 
         // Queries
@@ -145,7 +143,6 @@ public static class DISetup
 
         // Mapping Profiles
         services.AddAutoMapper(typeof(UserMappingProfile));
-        services.AddAutoMapper(typeof(DiscordServerMappingProfile));
 
         // Discord Services
         services.AddSingleton(new DiscordSocketConfig

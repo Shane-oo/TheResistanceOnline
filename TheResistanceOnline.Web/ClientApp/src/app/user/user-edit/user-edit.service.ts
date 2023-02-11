@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { UserDetailsModel } from './user-edit.models';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { GetUserCommandModel } from '../user.models';
 
 
 @Injectable({

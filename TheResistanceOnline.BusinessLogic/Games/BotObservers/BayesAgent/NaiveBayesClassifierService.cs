@@ -31,11 +31,8 @@ public class NaiveBayesClassifierService: INaiveBayesClassifierService
 
     #region Construction
 
-    // public List<> TrainingData;
     public NaiveBayesClassifierService(IGameService gameService)
     {
-        // Get Training Data
-        //TrainingData = GetTrainingData();
         _gameService = gameService;
     }
 
@@ -64,7 +61,6 @@ public class NaiveBayesClassifierService: INaiveBayesClassifierService
                         break;
                     }
 
-                    Console.WriteLine(property.GetValue(playerVariables));
                     var stat = stats.Value[index];
 
                     probability *= GaussianProbability((int)property.GetValue(playerVariables)! + 1, stat.Mean, stat.StandardDeviation);
@@ -138,11 +134,10 @@ public class NaiveBayesClassifierService: INaiveBayesClassifierService
 
     public async Task GetTrainingDataAsync()
     {
-        //            return await _context.Query<IUserByNameOrEmailDbQuery>().WithParams(query.Name).ExecuteAsync(query.CancellationToken);
         var getGamePlayerValuesCommand = new GetGamePlayerValuesCommand();
         var gamePlayerValues = await _gameService.GetGamePlayerValuesAsync(getGamePlayerValuesCommand);
         // _mapper.Map<PlayerValue>(playerVariable.Value);
-        //Seperate By Resistance and Spy values
+        // Separate By Resistance and Spy values
         var spyValues = new List<PlayerValue>();
         var resistanceValues = new List<PlayerValue>();
         foreach(var playerValue in gamePlayerValues.SelectMany(gamePlayerValue => gamePlayerValue.PlayerValues))

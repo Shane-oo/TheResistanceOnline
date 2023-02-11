@@ -195,36 +195,8 @@
     display: none;
 
   }
-
-  .discord-widget-large {
-    display: none;
-  }
-
-  .discord-widget-small {
-    display: none;
-  }
 }
 
-
-.discord-widget-large {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  max-width: 100%;
-  height: calc(100vh - 600px);
-  width: 350px;
-  max-height: 100%;
-}
-
-.discord-widget-small {
-  display: none;
-  /*position: fixed;*/
-  /*right: 0;*/
-  /*bottom: 0;*/
-  /*width: 350px;*/
-  /*max-width: 100%;*/
-  /*clip: rect(114px, 20000px, 20000px, 0px);*/
-}
 
 
 .iframe {

@@ -19,11 +19,7 @@ namespace TheResistanceOnline.Data.UserSettings
         public bool ResetPasswordLinkSent { get; set; }
 
         public DateTimeOffset? ResetPasswordLinkSentRecord { get; set; }
-
-        public bool UserWantsToUseDiscord { get; set; }
-
-        public DateTimeOffset? UserWantsToUseDiscordRecord { get; set; }
-
+        
         #endregion
     }
 }

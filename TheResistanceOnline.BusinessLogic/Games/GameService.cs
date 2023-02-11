@@ -188,7 +188,6 @@ namespace TheResistanceOnline.BusinessLogic.Games
                                   {
                                       PlayerValues = new List<PlayerValue>()
                                   };
-            var playerValueSpectator = command.GameDetails.PlayerValuesSpectator;
             // Save a spectators recording of a real players
             var playerValuesSpectator = command.GameDetails.PlayerValuesSpectator;
 

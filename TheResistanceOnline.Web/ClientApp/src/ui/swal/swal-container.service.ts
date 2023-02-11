@@ -1,7 +1,6 @@
 import { ComponentRef, Injectable } from '@angular/core';
 import { SwalContainerComponent } from './swal-container.component';
 import { OverlayService } from '../overlay/overlay.service';
-import { DiscordLoginResponseModel } from '../../app/user/user.models';
 import Swal, { SweetAlertResult } from 'sweetalert2';
 import { Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -19,7 +18,6 @@ export const enum SwalTypesModel {
 export class SwalContainerService {
 
 
-  public discordLoginResponseChanged: Subject<DiscordLoginResponseModel> = new Subject<DiscordLoginResponseModel>();
   private container!: ComponentRef<SwalContainerComponent>;
   private windowSizeIsSmall: boolean = false;
 
@@ -44,29 +42,6 @@ export class SwalContainerService {
     }
     this.container.instance.isSwalVisible = true;
   }
-
-  public fireDiscordLoginRequested = () => {
-    this.checkSize();
-
-    Swal.fire({
-                title: 'Discord Social Login',
-                backdrop: false,
-                showCancelButton: true,
-                cancelButtonText: 'I Don\'t Want To Use Discord',
-                html: `<h6>Chat or talk with your friends throughout the game via our Discord Server Channels!</h6>
-                       <a href=${environment.Discord_Generated_URL} class="discord-button">
-                       <i class='fab fa-discord'></i> Login With Discord
-                       </a>`,
-                showConfirmButton: false
-              })
-        .then((result: SweetAlertResult) => {
-          if(result.isDenied || result.isDismissed) {
-            let response: DiscordLoginResponseModel = {declinedLogin: true};
-            this.discordLoginResponseChanged.next(response);
-          } else {
-          }
-        });
-  };
 
   public fireNotifySpiesModal = (spies: PlayerDetails[]) => {
     this.checkSize();

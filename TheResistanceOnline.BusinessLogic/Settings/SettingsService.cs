@@ -30,7 +30,6 @@ public class SettingsService: ISettingsService
     {
         return new Models.Settings
                {
-                   DiscordLoginToken = _settings.DiscordLoginToken,
                    JWTExpiryInMinutes = _settings.JWTExpiryInMinutes,
                    JWTValidIssuer = _settings.JWTValidIssuer,
                    JWTValidAudience = _settings.JWTValidAudience,
