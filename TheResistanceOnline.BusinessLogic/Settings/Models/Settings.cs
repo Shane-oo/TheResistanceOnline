@@ -3,9 +3,7 @@ namespace TheResistanceOnline.BusinessLogic.Settings.Models;
 public class Settings
 {
     #region Properties
-
-    public string DiscordLoginToken { get; set; }
-
+    
     public string JWTExpiryInMinutes { get; set; }
 
     public string JWTSecurityKey { get; set; }

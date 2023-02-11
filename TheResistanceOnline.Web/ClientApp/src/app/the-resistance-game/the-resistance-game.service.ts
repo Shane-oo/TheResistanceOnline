@@ -7,8 +7,7 @@ import { IHttpConnectionOptions } from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { SwalContainerService, SwalTypesModel } from '../../ui/swal/swal-container.service';
 import { UserSettingsService } from '../user/user-settings.service';
-import { UserSettingsUpdateCommand } from '../user/user-settings.models';
-import { DiscordLoginResponseModel } from '../user/user.models';
+
 
 @Injectable({
               providedIn: 'root'
@@ -99,41 +98,6 @@ export class TheResistanceGameService {
     }).catch(err => console.log(err));
   };
 
-  public addDiscordNotFoundListener = () => {
-    this.connection.on('ReceiveDiscordNotFound', () => {
-      this.swalService.fireDiscordLoginRequested();
-
-      this.swalService.discordLoginResponseChanged.subscribe((value: DiscordLoginResponseModel) => {
-        if(value.declinedLogin) {
-          let userSettingsUpdateCommand: UserSettingsUpdateCommand = {
-            updateUserWantsToUseDiscord: true,
-            userWantsToUseDiscord: false
-          };
-
-          this.userSettingsService.updateUserSettings(userSettingsUpdateCommand).subscribe({
-                                                                                             next: (_) => {
-                                                                                               this.swalService.showSwal(
-                                                                                                 'Successfully declined Discord',
-                                                                                                 SwalTypesModel.Success);
-                                                                                             }
-                                                                                           });
-        }
-      });
-    });
-  };
-  public removeDiscordNotFoundListener = () => {
-    this.connection.off('ReceiveDiscordNotFound');
-  };
-
-  public addReceiveDiscordUserNotInDiscordServerListener = () => {
-    this.connection.on('ReceiveDiscordUserNotInDiscordServer', () => {
-    });
-  };
-
-  public removeReceiveDiscordUserNotInDiscordServerListener = () => {
-    this.connection.off('ReceiveDiscordUserNotInDiscordServer');
-  };
-
   // lobby listeners
   public addReceiveGameDetailsListener = () => {
     this.connection.on('ReceiveGameDetails', (gameDetails: GameDetails) => {
@@ -169,7 +133,6 @@ export class TheResistanceGameService {
   public sendGameActionCommand = (gameActionCommand: GameActionCommand) => {
     this.connection.invoke('ReceiveGameActionCommand', gameActionCommand).catch(err => console.log(err));
   };
-
 
 
   // this will probably needed to be done somewhere

@@ -87,10 +87,14 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
         while(count != amount)
         {
             var randomPlayer = _gameDetails.PlayersDetails![_random.Next(_gameDetails.PlayersDetails.Count)];
+            if (randomPlayer.PlayerId == PlayerId)
+            {
+                continue;
+            }
 
             // check for if randomly got the same person again
-            if (desiredList.Any(p => p.PlayerId == randomPlayer.PlayerId)
-                || randomPlayer.PlayerId == PlayerId)
+            // And Not Yourself
+            if (desiredList.Any(p => p.PlayerId == randomPlayer.PlayerId))
             {
                 continue;
             }
@@ -110,6 +114,10 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
         while(count != amount)
         {
             var randomPlayer = _gameDetails.PlayersDetails![_random.Next(_gameDetails.PlayersDetails.Count)];
+            if (randomPlayer.PlayerId == PlayerId)
+            {
+                continue;
+            }
 
             // check for if randomly got the same person again
             // check for if random player is spy => resistance members only
@@ -134,6 +142,10 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
         while(count != amount)
         {
             var randomPlayer = _gameDetails.PlayersDetails![_random.Next(_gameDetails.PlayersDetails.Count)];
+            if (randomPlayer.PlayerId == PlayerId)
+            {
+                continue;
+            }
 
             // check for if randomly got the same person again
             // check for if random player is resistance => spy members only
@@ -152,15 +164,11 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
 
     private bool GetResistanceVote(PlayerDetailsModel missionLeader)
     {
-        if (_gameDetails.VoteFailedCount == 4)
+        // Avoid Failing Game
+        // Mission 1 always Yes
+        if (_gameDetails.VoteFailedCount == 4 || _gameDetails.CurrentMissionRound == 1)
         {
             return true;
-        }
-
-        // If part of mission team for mission 1 vote yes otherwise no
-        if (_gameDetails.CurrentMissionRound == 1)
-        {
-            return _gameDetails.MissionTeam!.Any(p => p.PlayerId == PlayerId);
         }
 
         var containsOutedSpy = _gameDetails.MissionTeam!.Any(p => _outedSpies.Any(os => os == p.PlayerId));
@@ -172,9 +180,7 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
         // Use Predictions to decide vote, if it is not null and a spy prediction has been calculated
         if (_playerIdToSpyPredictions != null && _playerIdToSpyPredictions.ContainsValue(true))
         {
-            Console.WriteLine(_playerIdToSpyPredictions);
             var containsPredictedSpies = _gameDetails.MissionTeam!.Any(p => _playerIdToSpyPredictions.Any(sp => sp.Key == p.PlayerId && sp.Value));
-            Console.WriteLine("Mission Team Contains Predicted Spy");
             return !containsPredictedSpies;
         }
 
@@ -369,11 +375,6 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
             // Run Predictions
             if (_gameDetails.MissionRounds.ContainsValue(false) || _gameDetails.CurrentMissionRound > 2)
             {
-                if (_gameDetails.CurrentMissionRound == 5)
-                {
-                    Console.WriteLine("wtf");
-                }
-
                 _playerIdToSpyPredictions = _bayesClassifierService.GetPredictions(_playerIdToGameData);
             }
         }
@@ -443,8 +444,6 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
 
     private List<PlayerDetailsModel> ResistanceProposal(int missionSize, List<PlayerDetailsModel> proposedMissionTeam)
     {
-        // TODO CLEAN THIS UP CREATE ONE LIST AND FILTER ON THE ONE LIST INSTEAD OF 
-        // TODO HEAPS OF WHERES CLAUSES ON THE ONE LIST GROSS SHANE
         // For the First Mission as Resistance
         // Pick at Random
         if (_gameDetails.CurrentMissionRound == 1)
@@ -453,26 +452,28 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
             return proposedMissionTeam;
         }
 
+        var pool = _gameDetails.PlayersDetails!.Where(p => p.PlayerId != PlayerId).ToList();
+
+        // Filter All Outed Spies Out
+        pool = pool.Where(p => _outedSpies.All(os => os != p.PlayerId)).ToList();
+
         // Pick agents that are predicted not to be spies
         if (_playerIdToSpyPredictions != null && _playerIdToSpyPredictions.ContainsValue(true))
         {
-            // predictedResistancePlayers and also not outedSpies just incase
-            var predictedResistancePlayers = _gameDetails.PlayersDetails!.Where(p => _playerIdToSpyPredictions.Any(sp => sp.Key == p.PlayerId && !sp.Value))
-                                                         .Where(p => _outedSpies.All(os => os != p.PlayerId))
-                                                         .Where(p => p.PlayerId != PlayerId)
-                                                         .ToList();
+            // Filter Predicted Spies
+            pool = pool.Where(p => _playerIdToSpyPredictions.Any(sp => sp.Key == p.PlayerId && !sp.Value)).ToList();
 
 
-            if (predictedResistancePlayers.Count >= missionSize)
+            if (pool.Count >= missionSize)
             {
-                proposedMissionTeam.AddRange(predictedResistancePlayers.Take(missionSize));
+                proposedMissionTeam.AddRange(pool.Take(missionSize));
                 return proposedMissionTeam;
             }
 
-            if (predictedResistancePlayers.Count > 0)
+            if (pool.Count > 0)
             {
-                proposedMissionTeam.AddRange(predictedResistancePlayers);
-                missionSize -= predictedResistancePlayers.Count;
+                proposedMissionTeam.AddRange(pool);
+                missionSize -= pool.Count;
                 if (missionSize == 0)
                 {
                     return proposedMissionTeam;
@@ -483,21 +484,19 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
         // If still need more members
         // Pick Members that are that are the most trusting 
 
-        var trustedMembers =
-            _gameDetails.PlayersDetails!.Where(p => _playerIdToGameData.Any(sp => sp.Key == p.PlayerId && sp.Value.WentOnSuccessfulMission >= sp.Value.WentOnFailedMission))
-                        .Where(p => _outedSpies.All(os => os != p.PlayerId))
-                        .Where(p => p.PlayerId != PlayerId && proposedMissionTeam.All(pmt => pmt.PlayerId != p.PlayerId))
-                        .ToList();
-        if (trustedMembers.Count >= missionSize)
+        pool = pool.Where(p => _playerIdToGameData.Any(sp => sp.Key == p.PlayerId && sp.Value.WentOnSuccessfulMission >= sp.Value.WentOnFailedMission))
+                   .Where(p => proposedMissionTeam.All(pmt => pmt.PlayerId != p.PlayerId))
+                   .ToList();
+        if (pool.Count >= missionSize)
         {
-            proposedMissionTeam.AddRange(trustedMembers.Take(missionSize));
+            proposedMissionTeam.AddRange(pool.Take(missionSize));
             return proposedMissionTeam;
         }
 
-        if (trustedMembers.Count > 0)
+        if (pool.Count > 0)
         {
-            proposedMissionTeam.AddRange(trustedMembers);
-            missionSize -= trustedMembers.Count;
+            proposedMissionTeam.AddRange(pool);
+            missionSize -= pool.Count;
         }
 
         // last resort add random members but as long as they are not outed Spies

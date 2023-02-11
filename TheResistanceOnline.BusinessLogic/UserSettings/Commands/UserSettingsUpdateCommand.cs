@@ -6,10 +6,6 @@ namespace TheResistanceOnline.BusinessLogic.UserSettings.Commands
     {
         #region Properties
 
-        public bool UpdateUserWantsToUseDiscord { get; set; }
-        public bool UserWantsToUseDiscord { get; set; }
-
-        
         #endregion
     }
 }
