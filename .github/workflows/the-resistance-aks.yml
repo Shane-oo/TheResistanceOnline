@@ -14,7 +14,7 @@ env:
   THERESISTANCEONLINE_SOCKETSERVER_CONTAINER_NAME: "theresistanceonlinesocketserver"
   RESOURCE_GROUP: "rsg-theresistance"
   CLUSTER_NAME: "theresistancecluster"
-  DEPLOYMENT_MANIFEST_PATH: "theresistance--webapp.yaml"
+  DEPLOYMENT_MANIFEST_PATH: "/etc/kubernetes/manifests/theresistance--webapp.yaml"
 
 jobs:
   deploy:
