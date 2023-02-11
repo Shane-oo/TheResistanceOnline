@@ -14,7 +14,9 @@ env:
   THERESISTANCEONLINE_SOCKETSERVER_CONTAINER_NAME: "theresistanceonlinesocketserver"
   RESOURCE_GROUP: "rsg-theresistance"
   CLUSTER_NAME: "theresistancecluster"
-  DEPLOYMENT_MANIFEST_PATH: "scripts/theresistanceonline-app.yaml"
+  DEPLOYMENT_MANIFEST_PATH_WEB_APP: "scripts/theresistanceonline-app.yaml"
+  DEPLOYMENT_MANIFEST_PATH_SOCKET_SERVER: "scripts/theresistanceonline-socketServer.yaml"
+
 
 jobs:
   deploy:
@@ -52,13 +54,20 @@ jobs:
           use-kubelogin: 'true'
 
       # Deploys application based on given manifest file
-      - name: Deploys application
+      - name: Deploys Web App
         uses: Azure/k8s-deploy@v4
         with:
           action: deploy
-          manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}
+          manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH_WEB_APP }}
           images: |
             ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_WEB_CONTAINER_NAME }}:latest
-
+      # Deploys application based on given manifest file
+      - name: Deploys Socket Server
+        uses: Azure/k8s-deploy@v4
+        with:
+          action: deploy
+          manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH_SOCKET_SERVER }}
+          images: |
+            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_SOCKETSERVER_CONTAINER_NAME }}:latest
 
 
