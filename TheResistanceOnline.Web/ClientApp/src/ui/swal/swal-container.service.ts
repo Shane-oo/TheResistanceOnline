@@ -79,7 +79,7 @@ export class SwalContainerService {
     if(!this.windowSizeIsSmall) {
       htmlBody += `
                     <div>
-                        <img alt="EvilSpyLeader" src="./assets/images/evil_goverment_lady.png" width="60%" height="5%">
+                        <img class="leaderImage" alt="EvilSpyLeader" src="./assets/images/evil_goverment_lady.png">
                     </div>
                     <div class="css-typing">
                         <p>Together, complete your covert operation.</p>
@@ -112,7 +112,7 @@ export class SwalContainerService {
     if(!this.windowSizeIsSmall) {
       htmlBody += `
                     <div>
-                        <img alt="ResistanceLeader" src="./assets/images/resistance_man_cyberpunk2.png" width="60%">
+                        <img class="leaderImage"  alt="ResistanceLeader" src="./assets/images/resistance_man_cyberpunk2.png">
                     </div>
                     <div class="css-typing-resistance">
                         <p>Complete your missions</p>
