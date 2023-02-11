@@ -53,10 +53,12 @@ jobs:
         id: install-kubectl
         uses: azure/setup-kubectl@v3
       - name: Restart theresistance-webapp to use newest image
+        uses: Azure/k8s-deploy@v4
         with:
           namespace: 'ingress-basic'
-          args: rollout restart deployment theresistance-webapp
+          args: get pods
       - name: Restart socket-server to use newest image
+        uses: Azure/k8s-deploy@v4
         with:
           namespace: 'ingress-basic'
           args: rollout restart deployment socket-server
