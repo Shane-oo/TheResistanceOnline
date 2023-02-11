@@ -34,11 +34,11 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Build the TheResistanceOnline.Web image and Push to theresistanceonlineweb container repo
-        id: build-TheResistanceOnline.Web & Push
+        id: build-TheResistanceOnline.Web-And-Push
         run: |
           az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE.WEB_CONTAINER_NAME }}:latest --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} --file TheResistanceOnline.Web/Dockerfile .
           
       - name: Build the TheResistanceOnline.SocketServer image and Push to theresistanceonlinesocketserver container repo
-        id: build-TheResistanceOnline.SocketServer & Push
+        id: build-TheResistanceOnline.SocketServer-And-Push
         run: |
           az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE.SOCKETSERVER_CONTAINER_NAME }}:latest --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} --file TheResistanceOnline.SocketServer/Dockerfile .
