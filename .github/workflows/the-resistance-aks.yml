@@ -40,12 +40,12 @@ jobs:
       - name: Build the TheResistanceOnline.Web image and Push to theresistanceonlineweb container repo
         id: build-TheResistanceOnline_Web-And-Push
         run: |
-          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_WEB_CONTAINER_NAME }}:latest --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} --file TheResistanceOnline.Web/Dockerfile .
+          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_WEB_CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} --file TheResistanceOnline.Web/Dockerfile .
       # Build And Push Socket Server    
       - name: Build the TheResistanceOnline.SocketServer image and Push to theresistanceonlinesocketserver container repo
         id: build-TheResistanceOnline_SocketServer-And-Push
         run: |
-          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_SOCKETSERVER_CONTAINER_NAME }}:latest --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} --file TheResistanceOnline.SocketServer/Dockerfile .
+          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_SOCKETSERVER_CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} --file TheResistanceOnline.SocketServer/Dockerfile .
           
           
   deploy:
@@ -90,7 +90,7 @@ jobs:
           action: deploy
           manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH_WEB_APP }}
           images: |
-            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_WEB_CONTAINER_NAME }}:latest
+            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_WEB_CONTAINER_NAME }}:${{ github.sha }}
       # Deploys application based on given manifest file
       - name: Deploys Socket Server
         uses: Azure/k8s-deploy@v4
@@ -99,6 +99,6 @@ jobs:
           action: deploy
           manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH_SOCKET_SERVER }}
           images: |
-            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_SOCKETSERVER_CONTAINER_NAME }}:latest
+            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_SOCKETSERVER_CONTAINER_NAME }}:${{ github.sha }}
 
 
