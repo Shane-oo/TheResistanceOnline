@@ -57,6 +57,7 @@ jobs:
       - name: Deploys Web App
         uses: Azure/k8s-deploy@v4
         with:
+          namespace: 'ingress-basic'
           action: deploy
           manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH_WEB_APP }}
           images: |
@@ -65,6 +66,7 @@ jobs:
       - name: Deploys Socket Server
         uses: Azure/k8s-deploy@v4
         with:
+          namespace: 'ingress-basic'
           action: deploy
           manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH_SOCKET_SERVER }}
           images: |
