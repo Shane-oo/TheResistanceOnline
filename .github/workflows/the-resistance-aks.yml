@@ -3,9 +3,9 @@ name: Build and Push Container Images to Container Registry, Restart Kubernetes 
 
 on:
   push:
-    branches: ["develop"]
+    branches: ["main"]
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 env:
