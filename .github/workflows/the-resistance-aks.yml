@@ -14,13 +14,16 @@ env:
   THERESISTANCEONLINE_SOCKETSERVER_CONTAINER_NAME: "theresistanceonlinesocketserver"
   RESOURCE_GROUP: "rsg-theresistance"
   CLUSTER_NAME: "theresistancecluster"
+  DEPLOYMENT_MANIFEST_PATH: "theresistance--webapp.yaml"
 
 jobs:
-  buildImage:
+  deploy:
     permissions:
+      actions: read
       contents: read
       id-token: write
     runs-on: ubuntu-latest
+    #needs: [buildImage] put back when re put the one before TTTTTOOOOODOOOOOOOO
     steps:
       # Checks out the repository this file is in
       - uses: actions/checkout@v3
@@ -32,23 +35,30 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      # Set Azure Kubernetes Cluster
-      - name: Set AKS context
-        id: set-context
+
+      # Use kubelogin to configure your kubeconfig for Azure auth
+      - name: Set up kubelogin for non-interactive login
+        uses: azure/use-kubelogin@v1
+        with:
+          kubelogin-version: 'v0.0.25'
+
+      # Retrieves your Azure Kubernetes Service cluster's kubeconfig file
+      - name: Get K8s context
         uses: azure/aks-set-context@v3
         with:
-          resource-group: '${{ env.RESOURCE_GROUP }}'
-          cluster-name: '${{ env.CLUSTER_NAME }}'
-      - name: Setup kubectl
-        id: install-kubectl
-        uses: azure/setup-kubectl@v3
-      - name: Restart theresistance-webapp to use newest image
-        uses: azure/aks-set-context@v3
+          resource-group: ${{ env.RESOURCE_GROUP }}
+          cluster-name: ${{ env.CLUSTER_NAME }}
+          admin: 'false'
+          use-kubelogin: 'true'
+
+      # Deploys application based on given manifest file
+      - name: Deploys application
+        uses: Azure/k8s-deploy@v4
         with:
-          namespace: 'ingress-basic'
-          args: get pods
-      - name: Restart socket-server to use newest image
-        uses: azure/aks-set-context@v3
-        with:
-          namespace: 'ingress-basic'
-          args: rollout restart deployment socket-server
+          action: deploy
+          manifests: ${{ env.DEPLOYMENT_MANIFEST_PATH }}
+          images: |
+            ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_WEB_CONTAINER_NAME }}:latest
+
+
+
