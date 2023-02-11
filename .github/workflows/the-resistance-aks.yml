@@ -32,13 +32,31 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
+      # Build And Push Web
       - name: Build the TheResistanceOnline.Web image and Push to theresistanceonlineweb container repo
         id: build-TheResistanceOnline_Web-And-Push
         run: |
           az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_WEB_CONTAINER_NAME }}:latest --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} --file TheResistanceOnline.Web/Dockerfile .
-          
+      # Build And Push Socket Server    
       - name: Build the TheResistanceOnline.SocketServer image and Push to theresistanceonlinesocketserver container repo
         id: build-TheResistanceOnline_SocketServer-And-Push
         run: |
           az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_SOCKETSERVER_CONTAINER_NAME }}:latest --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} --file TheResistanceOnline.SocketServer/Dockerfile .
+      # Set Azure Kubernetes Cluster
+      - name: Set AKS context
+        id: set-context
+        uses: azure/aks-set-context@v3
+        with:
+          resource-group: '${{ env.RESOURCE_GROUP }}'
+          cluster-name: '${{ env.CLUSTER_NAME }}'
+      - name: Setup kubectl
+        id: install-kubectl
+        uses: azure/setup-kubectl@v3
+      - name: Restart theresistance-webapp to use newest image
+        with:
+          namespace: 'ingress-basic'
+          args: rollout restart deployment theresistance-webapp
+      - name: Restart socket-server to use newest image
+        with:
+          namespace: 'ingress-basic'
+          args: rollout restart deployment socket-server
