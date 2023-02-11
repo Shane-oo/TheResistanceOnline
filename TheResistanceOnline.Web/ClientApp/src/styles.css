@@ -56,9 +56,9 @@ code {
   left: 2px
 }
 
-.userList{
+.userList {
   font-family: satella, serif;
-  font-size: 17px;
+  font-size: 28px;
   color: #fc0114;
 }
 
@@ -66,12 +66,16 @@ code {
   width: 50% !important;
   color: ghostwhite !important;
   box-shadow: 0.0315rem 0 0.625rem 0 #fc0114 !important;
+  position: fixed;
+  top: 0;
 }
 
 .swalModalResistance {
   width: 50% !important;
   color: ghostwhite !important;
   box-shadow: 0.0315rem 0 0.625rem 0 #6583f2 !important;
+  position: fixed;
+  top: 0;
 }
 
 .swalConfirmButtonSpy {
@@ -90,7 +94,7 @@ code {
   color: #fc0114 !important;
 }
 
-.swalConfirmButtonResistance{
+.swalConfirmButtonResistance {
   text-align: center !important;
   padding: 15px !important;
   border: none !important;
@@ -111,6 +115,7 @@ code {
   background-color: #1e1e1e !important;
 
 }
+
 .swalConfirmButtonResistance:hover {
   background-color: #1e1e1e !important;
 
@@ -130,7 +135,10 @@ code {
   color: #367bee;
 }
 
-
+ .leaderImage{
+   width:60%;
+   padding: 10px;
+ }
 .css-typing p {
   border-right: .15em solid #fc0114;
   font-size: 10px;
