@@ -7,19 +7,16 @@
       class="host-header">{{selectedGameDetails.playersDetails[0].userName}}</span></h6>
     <div class="playerDetails-table">
       <table style="width: 100%;">
-        <col style="width:32.5%">
-        <col style="width:32.5%">
-        <col style="width:17.5%">
-        <col style="width:17.5%">
+        <col style="width:50%">
+        <col style="width:25%">
+        <col style="width:25%">
         <tr>
           <th scope="col">UserName</th>
-          <th scope="col">Discord <fa-icon [icon]="discordIcon" class="fa-md"></fa-icon></th>
           <th scope="col">Resistance Wins</th>
           <th scope="col">Spy Wins</th>
         </tr>
         <tr *ngFor="let playerDetails of selectedGameDetails.playersDetails ; let i = index">
           <td class="name">{{playerDetails.userName}}</td>
-          <td class="name">{{playerDetails?.discordUserName}}</td>
           <td class="resistanceWins">{{playerDetails.resistanceTeamWins}}</td>
           <td class="spyWins">{{playerDetails.spyTeamWins}}</td>
         </tr>

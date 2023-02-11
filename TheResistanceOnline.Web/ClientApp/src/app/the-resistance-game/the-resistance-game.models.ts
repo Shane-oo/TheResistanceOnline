@@ -25,7 +25,6 @@ export interface GameDetails {
 }
 
 export interface PlayerDetails {
-  discordUserName?: string;
   userName?: string;
   resistanceTeamWins: number;
   spyTeamWins: number;

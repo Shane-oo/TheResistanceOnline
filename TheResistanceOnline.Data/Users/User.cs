@@ -1,8 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity;
-using TheResistanceOnline.Data.DiscordServer;
 using TheResistanceOnline.Data.Entities;
-using TheResistanceOnline.Data.Games;
 using TheResistanceOnline.Data.PlayerStatistics;
 using TheResistanceOnline.Data.ProfilePictures;
 using TheResistanceOnline.Data.UserSettings;
@@ -16,9 +14,6 @@ public class User: IdentityUser, IAuditableEntity
     public DateTime CreatedOn { get; set; }
 
     public DateTime? ModifiedOn { get; set; }
-
-    [CanBeNull]
-    public DiscordUser DiscordUser { get; set; }
 
     [CanBeNull]
     public ProfilePicture ProfilePicture { get; set; }

@@ -30,7 +30,6 @@ export class GameComponent implements OnInit {
   public missionLeaderIcon = faPersonMilitaryRifle;
   public addMemberIcon = faSquarePlus;
   public removeMemberIcon = faSquareMinus;
-  public discordIcon = faDiscord;
   public crossIcon = faCircleXmark;
   public tickIcon = faCircleCheck;
   public nextIcon = faCircleArrowRight;

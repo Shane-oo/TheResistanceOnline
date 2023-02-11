@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using JetBrains.Annotations;
 
 namespace TheResistanceOnline.BusinessLogic.Games.Models
 {
@@ -18,11 +17,6 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         public string ConnectionId { get; set; }
 
         public bool Continued { get; set; }
-
-        public string DiscordTag { get; set; }
-
-        [CanBeNull]
-        public string DiscordUserName { get; set; }
 
         public bool IsBot { get; set; }
 

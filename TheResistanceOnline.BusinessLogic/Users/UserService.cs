@@ -8,7 +8,6 @@ using TheResistanceOnline.BusinessLogic.Users.Commands;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.BusinessLogic.Users.Models;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.DiscordServer;
 using TheResistanceOnline.Data.Exceptions;
 using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Data.UserSettings;
@@ -20,8 +19,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
         Task ConfirmUserEmailAsync([NotNull] UserConfirmEmailCommand command);
 
         Task CreateUserAsync([NotNull] UserRegisterCommand command);
-
-        Task<User> GetUserByEmailOrNameAsync(ByIdAndNameQuery query, string[] include = null);
 
         Task<UserDetailsModel> GetUserByUserIdAsync([NotNull] ByIdQuery query);
 
@@ -64,10 +61,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         #endregion
 
-        #region Private Methods
-        
-        #endregion
-
         #region Public Methods
 
         public async Task ConfirmUserEmailAsync(UserConfirmEmailCommand command)
@@ -78,8 +71,8 @@ namespace TheResistanceOnline.BusinessLogic.Users
             }
 
             var user = await _context.Query<IUserByNameOrEmailDbQuery>()
-                                 .WithParams(command.Email)
-                                 .ExecuteAsync(command.CancellationToken);
+                                     .WithParams(command.Email)
+                                     .ExecuteAsync(command.CancellationToken);
 
             await _identityManager.ConfirmUsersEmailAsync(user, command.Token);
         }
@@ -114,22 +107,6 @@ namespace TheResistanceOnline.BusinessLogic.Users
             _emailService.SendEmailAsync(sendEmailCommand);
         }
 
-        public async Task<User> GetUserByEmailOrNameAsync(ByIdAndNameQuery query, string[] include = null)
-        {
-            if (query == null || string.IsNullOrEmpty(query.Name))
-            {
-                throw new ArgumentNullException(nameof(query));
-            }
-
-            return await _context.Query<IUserByNameOrEmailDbQuery>()
-                                 .WithParams(query.Name)
-                                 .Include(include)
-                                 .ExecuteAsync(query.CancellationToken);
-        }
-        // new[]
-        // {
-        //     nameof(DiscordUser),
-        //     nameof(UserSetting)
 
         public async Task<UserDetailsModel> GetUserByUserIdAsync(ByIdQuery query)
         {
@@ -183,9 +160,9 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
             var user = await _context.Query<IUserByNameOrEmailDbQuery>()
                                      .WithParams(command.Email)
-                                     .Include(new []{nameof(UserSetting)})
+                                     .Include(new[] { nameof(UserSetting) })
                                      .ExecuteAsync(command.CancellationToken);
-            
+
             await _identityManager.ResetPasswordAsync(user, command.Token, command.Password);
 
             user.UserSetting.ResetPasswordLinkSent = false;

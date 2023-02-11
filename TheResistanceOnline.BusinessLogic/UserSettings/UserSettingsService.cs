@@ -41,11 +41,12 @@ namespace TheResistanceOnline.BusinessLogic.UserSettings
             }
 
             //if(command.updateSetting){do}
-            if (command.UpdateUserWantsToUseDiscord)
-            {
-                user.UserSetting.UserWantsToUseDiscord = command.UserWantsToUseDiscord;
-                user.UserSetting.UserWantsToUseDiscordRecord = DateTimeOffset.Now;
-            }
+            // Old example
+            // if (command.UpdateUserWantsToUseDiscord)
+            // {
+            //     user.UserSetting.UserWantsToUseDiscord = command.UserWantsToUseDiscord;
+            //     user.UserSetting.UserWantsToUseDiscordRecord = DateTimeOffset.Now;
+            // }
 
             await _context.SaveChangesAsync(command.CancellationToken);
         }

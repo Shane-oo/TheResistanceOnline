@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using TheResistanceOnline.BusinessLogic.DiscordServer.Models;
 using TheResistanceOnline.BusinessLogic.PlayerStatistics.Models;
 
 namespace TheResistanceOnline.BusinessLogic.Users.Models
@@ -8,11 +7,10 @@ namespace TheResistanceOnline.BusinessLogic.Users.Models
     {
         #region Properties
 
-        [CanBeNull]
-        public DiscordUserDetailsModel DiscordUser { get; set; }
-
         [NotNull]
         public string Email { get; set; }
+
+        public PlayerStatisticDetailsModel PlayerStatistic { get; set; }
 
         //[CanBeNull]
         //public ProfilePicture ProfilePicture { get; set; }
@@ -22,8 +20,6 @@ namespace TheResistanceOnline.BusinessLogic.Users.Models
 
         [NotNull]
         public string UserName { get; set; }
-
-        public PlayerStatisticDetailsModel PlayerStatistic { get; set; }
 
         #endregion
     }
