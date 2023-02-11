@@ -4,6 +4,12 @@ on:
     branches: [ "develop" ]
   pull_request:
     branches: [ "develop" ]
+env:
+  AZURE_CONTAINER_REGISTRY: "theresistancecontainer"
+  CONTAINER_NAME: "theresistanceonlineweb"
+  RESOURCE_GROUP: "rsg-theresistance"
+  CLUSTER_NAME: "theresistancecluster"
+  
 jobs:
   build:
     name: Build TheResistanceOnline.Web
