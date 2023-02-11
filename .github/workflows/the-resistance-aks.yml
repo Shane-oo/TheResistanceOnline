@@ -10,8 +10,8 @@ on:
 
 env:
   AZURE_CONTAINER_REGISTRY: "theresistancecontainer"
-  THERESISTANCEONLINE.WEB_CONTAINER_NAME: "theresistanceonlineweb"
-  THERESISTANCEONLINE.SOCKETSERVER_CONTAINER_NAME: "theresistanceonlinesocketserver"
+  THERESISTANCEONLINE_WEB_CONTAINER_NAME: "theresistanceonlineweb"
+  THERESISTANCEONLINE_SOCKETSERVER_CONTAINER_NAME: "theresistanceonlinesocketserver"
   RESOURCE_GROUP: "rsg-theresistance"
   CLUSTER_NAME: "theresistancecluster"
 
@@ -36,9 +36,9 @@ jobs:
       - name: Build the TheResistanceOnline.Web image and Push to theresistanceonlineweb container repo
         id: build-TheResistanceOnline_Web-And-Push
         run: |
-          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE.WEB_CONTAINER_NAME }}:latest --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} --file TheResistanceOnline.Web/Dockerfile .
+          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_WEB_CONTAINER_NAME }}:latest --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} --file TheResistanceOnline.Web/Dockerfile .
           
       - name: Build the TheResistanceOnline.SocketServer image and Push to theresistanceonlinesocketserver container repo
         id: build-TheResistanceOnline_SocketServer-And-Push
         run: |
-          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE.SOCKETSERVER_CONTAINER_NAME }}:latest --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} --file TheResistanceOnline.SocketServer/Dockerfile .
+          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.THERESISTANCEONLINE_SOCKETSERVER_CONTAINER_NAME }}:latest --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} --file TheResistanceOnline.SocketServer/Dockerfile .
