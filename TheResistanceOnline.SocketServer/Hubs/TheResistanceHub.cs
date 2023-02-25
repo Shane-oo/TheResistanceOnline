@@ -41,7 +41,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                    "game-1", new GameDetailsModel
                                                                                                                        {
                                                                                                                            ChannelName = "game-1",
-                                                                                                                           IsVoiceChannel = false,
                                                                                                                            IsAvailable = true,
                                                                                                                            PlayersDetails = new List<PlayerDetailsModel>(),
                                                                                                                            GameStage = GameStageModel.GameStart,
@@ -52,7 +51,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                    "game-2", new GameDetailsModel
                                                                                                                        {
                                                                                                                            ChannelName = "game-2",
-                                                                                                                           IsVoiceChannel = false,
                                                                                                                            IsAvailable = true,
                                                                                                                            PlayersDetails = new List<PlayerDetailsModel>(),
                                                                                                                            GameStage = GameStageModel.GameStart,
@@ -63,7 +61,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                    "game-3", new GameDetailsModel
                                                                                                                        {
                                                                                                                            ChannelName = "game-3",
-                                                                                                                           IsVoiceChannel = false,
                                                                                                                            IsAvailable = true,
                                                                                                                            PlayersDetails = new List<PlayerDetailsModel>(),
                                                                                                                            GameStage = GameStageModel.GameStart,
@@ -74,7 +71,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                    "game-4", new GameDetailsModel
                                                                                                                        {
                                                                                                                            ChannelName = "game-4",
-                                                                                                                           IsVoiceChannel = false,
                                                                                                                            IsAvailable = true,
                                                                                                                            PlayersDetails = new List<PlayerDetailsModel>(),
                                                                                                                            GameStage = GameStageModel.GameStart,
@@ -85,7 +81,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                    "game-5", new GameDetailsModel
                                                                                                                        {
                                                                                                                            ChannelName = "game-5",
-                                                                                                                           IsVoiceChannel = false,
                                                                                                                            IsAvailable = true,
                                                                                                                            PlayersDetails = new List<PlayerDetailsModel>(),
                                                                                                                            GameStage = GameStageModel.GameStart,
@@ -96,7 +91,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                    "game-6", new GameDetailsModel
                                                                                                                        {
                                                                                                                            ChannelName = "game-6",
-                                                                                                                           IsVoiceChannel = true,
                                                                                                                            IsAvailable = true,
                                                                                                                            PlayersDetails = new List<PlayerDetailsModel>(),
                                                                                                                            GameStage = GameStageModel.GameStart,
@@ -107,7 +101,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                    "game-7", new GameDetailsModel
                                                                                                                        {
                                                                                                                            ChannelName = "game-7",
-                                                                                                                           IsVoiceChannel = true,
                                                                                                                            IsAvailable = true,
                                                                                                                            PlayersDetails = new List<PlayerDetailsModel>()
                                                                                                                        }
@@ -116,7 +109,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                    "game-8", new GameDetailsModel
                                                                                                                        {
                                                                                                                            ChannelName = "game-8",
-                                                                                                                           IsVoiceChannel = true,
                                                                                                                            IsAvailable = true,
                                                                                                                            PlayersDetails = new List<PlayerDetailsModel>(),
                                                                                                                            GameStage = GameStageModel.GameStart,
@@ -127,7 +119,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                    "game-9", new GameDetailsModel
                                                                                                                        {
                                                                                                                            ChannelName = "game-9",
-                                                                                                                           IsVoiceChannel = true,
                                                                                                                            IsAvailable = true,
                                                                                                                            PlayersDetails = new List<PlayerDetailsModel>(),
                                                                                                                            GameStage = GameStageModel.GameStart,
@@ -138,7 +129,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                                                                                                    "game-10", new GameDetailsModel
                                                                                                                        {
                                                                                                                            ChannelName = "game-10",
-                                                                                                                           IsVoiceChannel = true,
                                                                                                                            IsAvailable = true,
                                                                                                                            PlayersDetails = new List<PlayerDetailsModel>(),
                                                                                                                            GameStage = GameStageModel.GameStart,

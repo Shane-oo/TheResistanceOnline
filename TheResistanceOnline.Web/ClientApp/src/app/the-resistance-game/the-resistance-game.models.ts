@@ -5,7 +5,6 @@ export interface JoinGameCommand {
 export interface GameDetails {
   channelName: string;
   playersDetails: PlayerDetails[];
-  isVoiceChannel: boolean;
   isAvailable: boolean;
   currentMissionRound: number;
   missionTeam: PlayerDetails[];

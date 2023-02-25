@@ -14,7 +14,6 @@ export class TheResistanceGameComponent implements OnInit {
   public gameDetails: GameDetails = {
     channelName: '',
     playersDetails: [],
-    isVoiceChannel: false,
     isAvailable: false,
     currentMissionRound: 0,
     missionTeam: [],
