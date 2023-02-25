@@ -2,8 +2,9 @@ using AutoMapper;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using TheResistanceOnline.BusinessLogic.BotObservers;
+using TheResistanceOnline.BusinessLogic.BotObservers.BayesAgent;
 using TheResistanceOnline.BusinessLogic.Games;
-using TheResistanceOnline.BusinessLogic.Games.BotObservers.BayesAgent;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 using TheResistanceOnline.BusinessLogic.PlayerStatistics.Models;
@@ -433,8 +434,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
             gameDetails.GameOptions = command.GameOptions;
 
             // create gameService observer - with this implementation _bayesClassifierService always has to be passed
-            await _bayesClassifierService.GetTrainingDataAsync();
-            var gameServiceObserver = new GameSubjectAndObserver(_bayesClassifierService);
+            var trainingData = await _bayesClassifierService.GetTrainingDataAsync();
+            var gameServiceObserver = new GameSubjectAndObserver(trainingData);
             // create bot observers and attach them to game service which is also subject to bots 
             // Always Create Spectator Bot
             var playerValuesSpectator = gameServiceObserver.CreatePlayerValuesSpectatorBotObserver();

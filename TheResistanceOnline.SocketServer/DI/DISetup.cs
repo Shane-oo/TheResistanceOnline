@@ -1,7 +1,5 @@
 using System.Text;
 using Azure.Identity;
-using Discord;
-using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,9 +7,9 @@ using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using TheResistanceOnline.BusinessLogic.BotObservers;
 using TheResistanceOnline.BusinessLogic.Emails;
 using TheResistanceOnline.BusinessLogic.Games;
-using TheResistanceOnline.BusinessLogic.Games.BotObservers.BayesAgent;
 using TheResistanceOnline.BusinessLogic.Games.DbQueries;
 using TheResistanceOnline.BusinessLogic.PlayerStatistics;
 using TheResistanceOnline.BusinessLogic.Settings;
@@ -172,14 +170,6 @@ public static class DISetup
                                                  })
                 .AddEntityFrameworkStores<Context>()
                 .AddDefaultTokenProviders();
-        // Discord Services
-
-        services.AddSingleton(new DiscordSocketConfig
-                              {
-                                  AlwaysDownloadUsers = true,
-                                  GatewayIntents = GatewayIntents.All
-                              });
-        services.AddSingleton<DiscordSocketClient>();
     }
 
     #endregion

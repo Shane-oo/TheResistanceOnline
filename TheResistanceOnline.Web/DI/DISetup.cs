@@ -1,7 +1,5 @@
 using System.Text;
 using Azure.Identity;
-using Discord;
-using Discord.WebSocket;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -143,14 +141,6 @@ public static class DISetup
 
         // Mapping Profiles
         services.AddAutoMapper(typeof(UserMappingProfile));
-
-        // Discord Services
-        services.AddSingleton(new DiscordSocketConfig
-                              {
-                                  AlwaysDownloadUsers = true,
-                                  GatewayIntents = GatewayIntents.All
-                              });
-        services.AddSingleton<DiscordSocketClient>();
     }
 
     #endregion
