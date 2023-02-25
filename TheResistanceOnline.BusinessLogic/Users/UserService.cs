@@ -61,28 +61,34 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         #endregion
 
+        #region Private Methods
+
+        private static void CheckUserExists([CanBeNull] User user)
+        {
+            if (user == null)
+            {
+                throw new DomainException(typeof(User), "User Does Not Exist");
+            }
+        }
+
+        #endregion
+
         #region Public Methods
 
         public async Task ConfirmUserEmailAsync(UserConfirmEmailCommand command)
         {
-            if (command == null)
-            {
-                throw new ArgumentNullException(nameof(command));
-            }
+            ArgumentNullException.ThrowIfNull(command);
 
             var user = await _context.Query<IUserByNameOrEmailDbQuery>()
                                      .WithParams(command.Email)
                                      .ExecuteAsync(command.CancellationToken);
-
+            CheckUserExists(user);
             await _identityManager.ConfirmUsersEmailAsync(user, command.Token);
         }
 
         public async Task CreateUserAsync(UserRegisterCommand command)
         {
-            if (command == null)
-            {
-                throw new ArgumentNullException(nameof(command));
-            }
+            ArgumentNullException.ThrowIfNull(command);
 
             var user = new User
                        {
@@ -110,26 +116,25 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         public async Task<UserDetailsModel> GetUserByUserIdAsync(ByIdQuery query)
         {
-            if (query == null || string.IsNullOrEmpty(query.UserId))
-            {
-                throw new ArgumentNullException(nameof(query));
-            }
+            ArgumentNullException.ThrowIfNull(query);
+            ArgumentException.ThrowIfNullOrEmpty(query.UserId);
 
-            return _mapper.Map<UserDetailsModel>(await _context.Query<IUserDbQuery>().WithParams(query.UserId)
-                                                               .ExecuteAsync(query.CancellationToken));
+            var user = await _context.Query<IUserDbQuery>().WithParams(query.UserId)
+                                     .ExecuteAsync(query.CancellationToken);
+            CheckUserExists(user);
+
+            return _mapper.Map<UserDetailsModel>(user);
         }
 
 
         public async Task<UserLoginResponse> LoginUserAsync(UserLoginCommand command)
         {
-            if (command == null)
-            {
-                throw new ArgumentNullException(nameof(command));
-            }
+            ArgumentNullException.ThrowIfNull(command);
 
             var user = await _context.Query<IUserByNameOrEmailDbQuery>()
                                      .WithParams(command.Email)
                                      .ExecuteAsync(command.CancellationToken);
+            CheckUserExists(user);
 
             try
             {
@@ -146,23 +151,19 @@ namespace TheResistanceOnline.BusinessLogic.Users
                                                  Email = command.Email
                                              });
 
-                throw new DomainException(typeof(User), user.Email,
-                                          "account is Now locked. instructions have been sent to your email address with a link to reset your password");
+                throw new DomainException(typeof(User), "Account is Now Locked. Follow Instructions Sent To Email Address");
             }
         }
 
         public async Task ResetUserPasswordAsync(UserResetPasswordCommand command)
         {
-            if (command == null)
-            {
-                throw new ArgumentNullException(nameof(command));
-            }
+            ArgumentNullException.ThrowIfNull(command);
 
             var user = await _context.Query<IUserByNameOrEmailDbQuery>()
                                      .WithParams(command.Email)
                                      .Include(new[] { nameof(UserSetting) })
                                      .ExecuteAsync(command.CancellationToken);
-
+            CheckUserExists(user);
             await _identityManager.ResetPasswordAsync(user, command.Token, command.Password);
 
             user.UserSetting.ResetPasswordLinkSent = false;
@@ -172,15 +173,13 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         public async Task SendResetPasswordAsync(UserForgotPasswordCommand command)
         {
-            if (command == null)
-            {
-                throw new ArgumentNullException(nameof(command));
-            }
+            ArgumentNullException.ThrowIfNull(command);
 
             var user = await _context.Query<IUserByNameOrEmailDbQuery>()
                                      .WithParams(command.Email)
                                      .Include(new[] { nameof(UserSetting) })
                                      .ExecuteAsync(command.CancellationToken);
+            CheckUserExists(user);
 
             // Stop spamming of reset password email
             if (user.UserSetting.ResetPasswordLinkSent && user.UserSetting.ResetPasswordLinkSentRecord.HasValue)
