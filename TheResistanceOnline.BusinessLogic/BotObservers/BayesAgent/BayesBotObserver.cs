@@ -1,7 +1,8 @@
 using JetBrains.Annotations;
+using TheResistanceOnline.BusinessLogic.BotObservers.BayesAgent.Models;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 
-namespace TheResistanceOnline.BusinessLogic.Games.BotObservers.BayesAgent;
+namespace TheResistanceOnline.BusinessLogic.BotObservers.BayesAgent;
 
 public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
 {
@@ -19,7 +20,6 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
 
     #region Fields
 
-    private readonly INaiveBayesClassifierService _bayesClassifierService;
     private bool _beginningOfGame = true;
 
     private GameDetailsModel _gameDetails = new();
@@ -38,6 +38,8 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
                                                         "Raspberry Pie", "AstroBoy", "Chappie", "Ultron", "Omega", "Hydra", "Pixels", "Shane", "Brandon", "Hamish", "Chloe"
                                                     };
 
+    private readonly BayesTrainingDataModel _trainingData;
+
     #endregion
 
     #region Properties
@@ -53,10 +55,10 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
 
     #region Construction
 
-    public BayesBotObserver(INaiveBayesClassifierService bayesClassifierService)
+    public BayesBotObserver(BayesTrainingDataModel trainingData)
     {
+        _trainingData = trainingData;
         SetName();
-        _bayesClassifierService = bayesClassifierService;
     }
 
     #endregion
@@ -67,6 +69,73 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
     private PlayerDetailsModel GetMissionLeader()
     {
         return _gameDetails.PlayersDetails?.FirstOrDefault(p => p.IsMissionLeader);
+    }
+
+    private static int GetMissionSize(int missionRound, int playerCount)
+    {
+        switch(playerCount)
+        {
+            case FIVE_MAN_GAME:
+                switch(missionRound)
+                {
+                    case 1:
+                    case 3:
+                        return 2;
+                    case 2:
+                    case 4:
+                    case 5:
+                        return 3;
+                }
+
+                break;
+            case SIX_MAN_GAME:
+                switch(missionRound)
+                {
+                    case 1:
+                        return 2;
+                    case 2:
+                    case 4:
+                        return 3;
+                    case 3:
+                    case 5:
+                        return 4;
+                }
+
+                break;
+            case SEVEN_MAN_GAME:
+                switch(missionRound)
+                {
+                    case 1:
+                        return 2;
+                    case 2:
+                    case 3:
+                        return 3;
+                    case 4:
+                    case 5:
+                        return 4;
+                }
+
+                break;
+            case EIGHT_MAN_GAME:
+            case NINE_MAN_GAME:
+            case TEN_MAN_GAME:
+                // 8,9,10 man teams are the same
+                switch(missionRound)
+                {
+                    case 1:
+                        return 3;
+                    case 2:
+                    case 3:
+                        return 4;
+                    case 4:
+                    case 5:
+                        return 5;
+                }
+
+                break;
+        }
+
+        return -1;
     }
 
     private PlayerDetailsModel GetPlayerDetails()
@@ -375,7 +444,7 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
             // Run Predictions
             if (_gameDetails.MissionRounds.ContainsValue(false) || _gameDetails.CurrentMissionRound > 2)
             {
-                _playerIdToSpyPredictions = _bayesClassifierService.GetPredictions(_playerIdToGameData);
+                _playerIdToSpyPredictions = NaiveBayesClassifierService.GetPredictions(_playerIdToGameData, _trainingData);
             }
         }
     }
@@ -437,7 +506,7 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
             // Run predictions after significant data is collected
             if (_gameDetails.MissionRounds.ContainsValue(false) || _gameDetails.CurrentMissionRound > 2 || _gameDetails.VoteFailedCount > 2)
             {
-                _playerIdToSpyPredictions = _bayesClassifierService.GetPredictions(_playerIdToGameData);
+                _playerIdToSpyPredictions = NaiveBayesClassifierService.GetPredictions(_playerIdToGameData, _trainingData);
             }
         }
     }
@@ -575,73 +644,6 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
         missionSize--;
 
         return Team == TeamModel.Resistance ? ResistanceProposal(missionSize, proposedMissionTeam) : SpyProposal(missionSize, proposedMissionTeam);
-    }
-
-    public int GetMissionSize(int missionRound, int playerCount)
-    {
-        switch(playerCount)
-        {
-            case FIVE_MAN_GAME:
-                switch(missionRound)
-                {
-                    case 1:
-                    case 3:
-                        return 2;
-                    case 2:
-                    case 4:
-                    case 5:
-                        return 3;
-                }
-
-                break;
-            case SIX_MAN_GAME:
-                switch(missionRound)
-                {
-                    case 1:
-                        return 2;
-                    case 2:
-                    case 4:
-                        return 3;
-                    case 3:
-                    case 5:
-                        return 4;
-                }
-
-                break;
-            case SEVEN_MAN_GAME:
-                switch(missionRound)
-                {
-                    case 1:
-                        return 2;
-                    case 2:
-                    case 3:
-                        return 3;
-                    case 4:
-                    case 5:
-                        return 4;
-                }
-
-                break;
-            case EIGHT_MAN_GAME:
-            case NINE_MAN_GAME:
-            case TEN_MAN_GAME:
-                // 8,9,10 man teams are the same
-                switch(missionRound)
-                {
-                    case 1:
-                        return 3;
-                    case 2:
-                    case 3:
-                        return 4;
-                    case 4:
-                    case 5:
-                        return 5;
-                }
-
-                break;
-        }
-
-        return -1;
     }
 
     public string GetName()
