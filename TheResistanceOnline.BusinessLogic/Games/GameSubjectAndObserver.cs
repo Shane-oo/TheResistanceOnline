@@ -1,6 +1,6 @@
-using JetBrains.Annotations;
-using TheResistanceOnline.BusinessLogic.Games.BotObservers.BayesAgent;
-using TheResistanceOnline.BusinessLogic.Games.BotObservers.SpectatorAgent;
+using TheResistanceOnline.BusinessLogic.BotObservers.BayesAgent;
+using TheResistanceOnline.BusinessLogic.BotObservers.BayesAgent.Models;
+using TheResistanceOnline.BusinessLogic.BotObservers.SpectatorAgent;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 
 namespace TheResistanceOnline.BusinessLogic.Games;
@@ -11,17 +11,17 @@ public class GameSubjectAndObserver: IGameSubject, IGameObserver
 
     private GameDetailsModel _gameDetails = new();
 
-    private readonly INaiveBayesClassifierService _naiveBayesClassifier;
 
     private List<IBotObserver> _observers = new();
+    private readonly BayesTrainingDataModel _trainingData;
 
     #endregion
 
     #region Construction
 
-    public GameSubjectAndObserver([CanBeNull] INaiveBayesClassifierService naiveBayesClassifierService)
+    public GameSubjectAndObserver(BayesTrainingDataModel trainingData)
     {
-        _naiveBayesClassifier = naiveBayesClassifierService;
+        _trainingData = trainingData;
     }
 
     #endregion
@@ -40,7 +40,7 @@ public class GameSubjectAndObserver: IGameSubject, IGameObserver
         var gamePlayingBotObservers = new List<IGamePlayingBotObserver>();
         for(var i = 0; i < botCount; i++)
         {
-            var botObserver = new BayesBotObserver(_naiveBayesClassifier);
+            var botObserver = new BayesBotObserver(_trainingData);
 
             Attach(botObserver);
             gamePlayingBotObservers.Add(botObserver);
