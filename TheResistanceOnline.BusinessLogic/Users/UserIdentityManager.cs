@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using TheResistanceOnline.BusinessLogic.Settings;
@@ -14,17 +13,17 @@ namespace TheResistanceOnline.BusinessLogic.Users
 {
     public interface IUserIdentityManager
     {
-        Task ConfirmUsersEmailAsync([NotNull] User user, [NotNull] string token);
+        Task ConfirmUsersEmailAsync(User user, string token);
 
-        Task<string> CreateIdentityAsync([NotNull] User user, [NotNull] string password);
+        Task<string> CreateIdentityAsync(User user, string password);
 
-        Task CreateUserRoleAsync([NotNull] User user, [NotNull] string role);
+        Task CreateUserRoleAsync(User user, string role);
 
-        Task<string> GetPasswordResetTokenAsync([NotNull] User user);
+        Task<string> GetPasswordResetTokenAsync(User user);
 
-        Task<UserLoginResponse> LoginUserByEmailAsync([NotNull] User user, [NotNull] string password);
+        Task<UserLoginResponse> LoginUserByEmailAsync(User user, string password);
 
-        Task ResetPasswordAsync([NotNull] User user, [NotNull] string token, [NotNull] string newPassword);
+        Task ResetPasswordAsync(User user, string token, string newPassword);
     }
 
     public class UserIdentityManager: IUserIdentityManager
@@ -63,7 +62,7 @@ namespace TheResistanceOnline.BusinessLogic.Users
             var claims = new List<Claim>
                          {
                              new(ClaimTypes.Name, user.Email),
-                             new(ClaimTypes.UserData,user.Id)
+                             new(ClaimTypes.UserData, user.Id)
                          };
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -86,6 +85,9 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         public async Task ConfirmUsersEmailAsync(User user, string token)
         {
+            ArgumentNullException.ThrowIfNull(user);
+            ArgumentException.ThrowIfNullOrEmpty(token);
+
             var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
             if (!confirmResult.Succeeded)
             {
@@ -96,6 +98,9 @@ namespace TheResistanceOnline.BusinessLogic.Users
         // returns email token confirmation
         public async Task<string> CreateIdentityAsync(User user, string password)
         {
+            ArgumentNullException.ThrowIfNull(user);
+            ArgumentException.ThrowIfNullOrEmpty(password);
+
             var userSetting = new UserSetting();
             user.UserSetting = userSetting;
 
@@ -117,16 +122,23 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         public async Task CreateUserRoleAsync(User user, string role)
         {
+            ArgumentNullException.ThrowIfNull(user);
+            ArgumentException.ThrowIfNullOrEmpty(role);
+
             await _userManager.AddToRoleAsync(user, role);
         }
 
         public async Task<string> GetPasswordResetTokenAsync(User user)
         {
+            ArgumentNullException.ThrowIfNull(user);
             return await _userManager.GeneratePasswordResetTokenAsync(user);
         }
 
         public async Task<UserLoginResponse> LoginUserByEmailAsync(User user, string password)
         {
+            ArgumentNullException.ThrowIfNull(user);
+            ArgumentException.ThrowIfNullOrEmpty(password);
+
             var confirmedEmail = await _userManager.IsEmailConfirmedAsync(user);
             if (!confirmedEmail)
             {
@@ -165,6 +177,10 @@ namespace TheResistanceOnline.BusinessLogic.Users
 
         public async Task ResetPasswordAsync(User user, string token, string newPassword)
         {
+            ArgumentNullException.ThrowIfNull(user);
+            ArgumentException.ThrowIfNullOrEmpty(token);
+            ArgumentException.ThrowIfNullOrEmpty(newPassword);
+
             // Use this for if user is locked out and expiry is not over yet
             await _userManager.SetLockoutEndDateAsync(user, null);
             var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
