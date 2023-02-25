@@ -1,6 +1,6 @@
 using TheResistanceOnline.BusinessLogic.Games.Models;
 
-namespace TheResistanceOnline.BusinessLogic.Games.BotObservers.SpectatorAgent;
+namespace TheResistanceOnline.BusinessLogic.BotObservers.SpectatorAgent;
 
 public class PlayerValuesSpectatorBotObserver: IBotObserver, ISpectatorBotObserver
 {
