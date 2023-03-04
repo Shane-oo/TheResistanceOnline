@@ -8,6 +8,7 @@ import { JoinGameComponent } from './join-game/join-game.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { JoinGameDetailsComponent } from './join-game/join-game-details/join-game-details.component';
 import { GameLobbyComponent } from './game-lobby/game-lobby.component';
+import { GameChatBoxComponent } from './game/game-chat-box/game-chat-box.component';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CountdownModule } from 'ngx-countdown';
@@ -20,7 +21,8 @@ import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from
               GameCanvasComponent,
               JoinGameComponent,
               JoinGameDetailsComponent,
-              GameLobbyComponent
+              GameLobbyComponent,
+              GameChatBoxComponent
             ],
             imports: [
               CommonModule,

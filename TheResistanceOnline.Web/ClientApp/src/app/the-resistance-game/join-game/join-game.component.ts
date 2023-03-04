@@ -18,7 +18,6 @@ export class JoinGameComponent implements OnInit {
   public selectedGameDetails: GameDetails = {
     channelName: '',
     playersDetails: [],
-    isVoiceChannel: false,
     isAvailable: false,
     currentMissionRound: 0,
     missionTeam: [],

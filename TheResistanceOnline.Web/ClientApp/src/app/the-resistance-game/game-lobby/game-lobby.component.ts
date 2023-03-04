@@ -17,7 +17,6 @@ export class GameLobbyComponent implements OnInit {
   @Input() gameDetails: GameDetails = {
     channelName: '',
     playersDetails: [],
-    isVoiceChannel: false,
     isAvailable: false,
     currentMissionRound: 0,
     missionTeam: [],

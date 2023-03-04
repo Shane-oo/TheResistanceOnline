@@ -8,10 +8,6 @@
         <span class="gamePlayerNumber">
         <b>({{groupNameToGameDetails.value.playersDetails.length}}/10)</b>
         </span>
-        <!--Chat Channel-->
-        <span *ngIf="!groupNameToGameDetails.value.isVoiceChannel" class="channelIcon material-symbols-outlined">headset_off chat</span>
-        <!--Voice Channel-->
-        <span *ngIf="groupNameToGameDetails.value.isVoiceChannel" class="channelIcon material-symbols-outlined">headset_mic chat</span>
       </div>
     </div>
   </div>
