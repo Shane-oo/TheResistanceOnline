@@ -277,8 +277,8 @@
   color: #50d63d;
 }
 
-.blueIcon{
-   color:#367bee;
+.blueIcon {
+  color: #367bee;
 }
 
 .red-border-box {
@@ -321,16 +321,16 @@ background: #367bee;
 
 }
 
-.highlight-resistance{
+.highlight-resistance {
   -webkit-transition: color 1s; /* For Safari 3.0 to 6.0 */
   transition: color 1s; /* For modern browsers */
   color: #367bee !important;
 }
 
-.dropdownButton{
+.dropdownButton {
 
   background: none !important;
-  border:  none !important;
+  border: none !important;
 }
 
 .dropdown-menu {
@@ -339,29 +339,112 @@ background: #367bee;
   border: none !important;
 }
 
-.spy-option{
-  background: #fc0114!important;
-  height:25px !important;
-  border-radius: 5px!important;
-  color:ghostwhite !important;
-  text-align: center !important;
-}
-
-
-.resistance-option{
-  background: #367bee!important;
-  height:25px !important;
+.spy-option {
+  background: #fc0114 !important;
+  height: 25px !important;
   border-radius: 5px !important;
-  color:ghostwhite !important;
+  color: ghostwhite !important;
+  text-align: center !important;
+}
+
+
+.resistance-option {
+  background: #367bee !important;
+  height: 25px !important;
+  border-radius: 5px !important;
+  color: ghostwhite !important;
   text-align: center !important;
 
 }
 
-.eraser-option{
+.eraser-option {
   background: #1e1e1e !important;
-  height:25px !important;
+  height: 25px !important;
   border-radius: 5px !important;
-  color:ghostwhite !important;
+  color: ghostwhite !important;
   text-align: center !important;
+
+}
+
+.chat-box {
+  position: fixed;
+  bottom: 5px;
+  right: 5px;
+  width: 275px;
+  height: 20vh;
+  background-size: cover;
+  justify-content: center;
+  text-align: center;
+  font-family: ethnocentric, sans-serif;
+  font-size: 13px;
+  color: ghostwhite;
+  border-radius: 10px;
+  background-color: #1e1e1e;
+  box-shadow: 0.0315rem 0 0.625rem 0 black;
+}
+
+.chat-box.centered {
+  top: 50%;
+  left: 55%;
+  transform: translate(-50%, -55%);
+  width: 55%;
+  height: 75vh;
+}
+
+.chat-box.translucent {
+  opacity: 0.7; /* Change opacity to the level you want */
+}
+
+.chat-box-btn {
+  position: absolute;
+  border: none;
+  outline: none;
+  color: ghostwhite;
+  background-color: #1e1e1e;
+  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.chat-box-btn.top-btn {
+  top: 5px;
+  left: 5px;
+}
+
+.chat-box-btn.bottom-btn {
+  bottom: 5px;
+  right: 5px;
+}
+
+
+.hide-chat-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  border: none;
+  outline: none;
+  color: ghostwhite;
+  background-color: #1e1e1e;
+  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.show-chat-btn {
+  position: fixed;
+  bottom: 5px;
+  right: 5px;
+  border: none;
+  outline: none;
+  color: ghostwhite;
+  background-color: #1e1e1e;
+  font-family: ethnocentric, sans-serif;
+  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  opacity: 0.7;
 
 }

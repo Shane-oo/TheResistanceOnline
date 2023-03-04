@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.BusinessLogic.BotObservers;
-using TheResistanceOnline.BusinessLogic.BotObservers.BayesAgent;
 using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
 using TheResistanceOnline.BusinessLogic.Games.Models;
@@ -237,7 +236,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             }
         }
 
-        private async void SendGameDetailsToChannelGroupAsync(GameDetailsModel gameDetails, string groupName)
+        private async void SendGameDetailsToGroupAsync(GameDetailsModel gameDetails, string groupName)
         {
             await Clients.Group(groupName).SendAsync("ReceiveGameDetails", gameDetails);
 
@@ -251,6 +250,11 @@ namespace TheResistanceOnline.SocketServer.Hubs
         private async Task SendGameFinishedToGroupAsync(string groupName)
         {
             await Clients.Group(groupName).SendAsync("ReceiveGameFinished");
+        }
+
+        private async void SendNewMessageToGroupAsync(MessageModel message, string groupName)
+        {
+            await Clients.Group(groupName).SendAsync("ReceiveMessage", message);
         }
 
         private async void SendPlayerIdToClientAsync(Guid playerId)
@@ -343,7 +347,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
                 RemoveConnectionFromAllMaps(Context.ConnectionId);
 
-                SendGameDetailsToChannelGroupAsync(gameDetails, userGroupName);
+                SendGameDetailsToGroupAsync(gameDetails, userGroupName);
                 SendAllGameDetailsToPlayersNotInGameAsync();
             }
             else
@@ -399,8 +403,23 @@ namespace TheResistanceOnline.SocketServer.Hubs
                     throw new ArgumentOutOfRangeException();
             }
 
-            SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
+            SendGameDetailsToGroupAsync(gameDetails, groupName);
             Notify(gameDetails, groupName);
+            // little fun with spy predictions and messages
+
+            if (gameDetails.GameStage == GameStageModel.MissionResults && gameDetails.CurrentMissionRound >= 3)
+            {
+                foreach(var bot in gameDetails.PlayersDetails!.Where(p => p.IsBot))
+                {
+                    var message = new MessageModel
+                                  {
+                                      Name = bot.UserName,
+                                      Text = bot.BotObserver.GetSpyPredictions()
+                                  };
+                    SendNewMessageToGroupAsync(message, groupName);
+                } 
+            }
+
         }
 
         [UsedImplicitly]
@@ -419,7 +438,26 @@ namespace TheResistanceOnline.SocketServer.Hubs
 
                 SendPlayerIdToClientAsync(newPlayerDetails.PlayerId);
                 SendAllGameDetailsToPlayersNotInGameAsync();
-                SendGameDetailsToChannelGroupAsync(gameDetails, command.ChannelName);
+                SendGameDetailsToGroupAsync(gameDetails, command.ChannelName);
+            }
+        }
+
+        [UsedImplicitly]
+        public async Task ReceiveMessageCommand(string text)
+        {
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                // get group name and game details
+                if (!_connectionIdToGroupNameMappingTable.TryGetValue(Context.ConnectionId, out var groupName)) return;
+                if (groupName == null) return;
+                if (!_connectionIdToPlayerDetailsMappingTable.TryGetValue(Context.ConnectionId, out var playerDetails)) return;
+
+                var message = new MessageModel
+                              {
+                                  Name = playerDetails.UserName,
+                                  Text = text
+                              };
+                SendNewMessageToGroupAsync(message, groupName);
             }
         }
 
@@ -483,7 +521,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             _groupNameToGameTimer.Add(groupName, gameTimer);
 
             gameDetails.IsAvailable = false;
-            SendGameDetailsToChannelGroupAsync(gameDetails, groupName);
+            SendGameDetailsToGroupAsync(gameDetails, groupName);
             SendAllGameDetailsToPlayersNotInGameAsync();
         }
 

@@ -86,3 +86,8 @@ export enum GameAction {
 export interface GameActionCommand {
   gameDetails: GameDetails,
 }
+
+export interface Message {
+  name: string,
+  text: string,
+}

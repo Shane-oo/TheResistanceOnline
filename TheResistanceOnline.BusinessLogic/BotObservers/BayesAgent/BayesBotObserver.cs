@@ -46,6 +46,7 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
 
     public Guid PlayerId { get; set; }
 
+
     private string Name { get; set; }
 
 
@@ -64,6 +65,30 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
     #endregion
 
     #region Private Methods
+
+    private int GetHowManySpiesInGame()
+    {
+        var spies = 0;
+        switch(_gameDetails.PlayersDetails!.Count)
+        {
+            case FIVE_MAN_GAME:
+            case SIX_MAN_GAME:
+                spies = 2;
+                break;
+            case SEVEN_MAN_GAME:
+            case EIGHT_MAN_GAME:
+            case NINE_MAN_GAME:
+                spies = 3;
+                break;
+
+            case TEN_MAN_GAME:
+                spies = 4;
+                break;
+                ;
+        }
+
+        return spies;
+    }
 
     [CanBeNull]
     private PlayerDetailsModel GetMissionLeader()
@@ -649,6 +674,60 @@ public class BayesBotObserver: IBotObserver, IGamePlayingBotObserver
     public string GetName()
     {
         return Name;
+    }
+
+    public string GetSpyPredictions()
+    {
+        var spyPrediction = "";
+        if (Team == TeamModel.Resistance)
+        {
+            if (_playerIdToSpyPredictions.Values.All(isSpy => isSpy == false) && _outedSpies.Count == 0)
+            {
+                return "I don't know who the spies are yet";
+            }
+
+            if (_playerIdToSpyPredictions.Values.Any(isSpy => isSpy))
+            {
+                spyPrediction += "I Think ";
+                foreach(var playerIdToSpyPrediction in _playerIdToSpyPredictions)
+                {
+                    // Predicted to be a spy
+                    if (!playerIdToSpyPrediction.Value) continue;
+                    var player = _gameDetails.PlayersDetails!.FirstOrDefault(p => p.PlayerId == playerIdToSpyPrediction.Key);
+                    spyPrediction += player!.UserName + " ";
+                }
+
+                spyPrediction += "Are Spies. ";
+            }
+
+
+            if (_outedSpies.Count > 0)
+            {
+                spyPrediction += "I am Certain ";
+                foreach(var outedSpyPlayerId in _outedSpies)
+                {
+                    var player = _gameDetails.PlayersDetails!.FirstOrDefault(p => p.PlayerId == outedSpyPlayerId);
+
+                    spyPrediction += player!.UserName + " ";
+                }
+
+                spyPrediction += "Are Spies. ";
+            }
+        }
+        // else if spy choose random resistance players
+        else
+        {
+            spyPrediction += "I Think ";
+            var randomPlayers = GetRandomResistanceTeamPlayers(GetHowManySpiesInGame());
+            foreach(var randomPlayer in randomPlayers)
+            {
+                spyPrediction += randomPlayer!.UserName + " ";
+            }
+
+            spyPrediction += "Are Spies. ";
+        }
+
+        return spyPrediction;
     }
 
     public TeamModel GetTeam()

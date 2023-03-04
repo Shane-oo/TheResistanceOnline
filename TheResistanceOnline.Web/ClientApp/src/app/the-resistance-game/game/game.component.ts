@@ -9,13 +9,14 @@ import {
   faEraser,
   faPersonMilitaryRifle,
   faPersonRifle,
-  faSquarePlus,
   faSquareMinus,
+  faSquarePlus,
   faUserCheck,
   faUserSecret,
-  faXmark
+  faXmark,
+  faCompress,
+  faExpand
 } from '@fortawesome/free-solid-svg-icons';
-import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { SwalContainerService } from '../../../ui/swal/swal-container.service';
 import { CountdownComponent, CountdownConfig, CountdownEvent } from 'ngx-countdown';
 
@@ -37,7 +38,8 @@ export class GameComponent implements OnInit {
   public eraserIcon = faEraser;
   public userCheckIcon = faUserCheck;
   public userSecretIcon = faUserSecret;
-
+  public compressIcon = faCompress;
+  public expandIcon = faExpand;
   public missionLeaderPlayerId: string = '';
 
   public voted: boolean = false;
@@ -60,10 +62,14 @@ export class GameComponent implements OnInit {
     missionOutcome: []
   };
   @Input() playerId: string = '';
+  // chat box
+  public isCentered = false;
+  public isHidden = false;
 
   public gameCountdownConfig: CountdownConfig = {leftTime: 0};
   public gameOverCountdownConfig: CountdownConfig = {leftTime: 30, format: 's'};
   public highlightMap: Map<string, boolean> = new Map<string, boolean>();
+
   @ViewChild('gameCountdown', {static: false}) private gameCountdown!: CountdownComponent;
   @ViewChild('gameOverCountdown', {static: false}) private gameOverCountdown!: CountdownComponent;
 
@@ -99,6 +105,7 @@ export class GameComponent implements OnInit {
   getPlayerDetails = (): PlayerDetails => {
     return this.gameDetails.playersDetails.find(p => p.playerId === this.playerId)!;
   };
+
   teamMemberClicked = (selectedPlayerId: string) => {
     let selectedPlayerDetails = this.gameDetails.playersDetails.find(p => p.playerId === selectedPlayerId);
     if(selectedPlayerDetails) {
@@ -117,6 +124,7 @@ export class GameComponent implements OnInit {
     }
 
   };
+
   playerIsOnMissionTeam = (playerId: string) => {
 
     return this.gameDetails.missionTeam.some(p => p.playerId === playerId);
@@ -202,10 +210,23 @@ export class GameComponent implements OnInit {
     }
   };
 
+  togglePosition = () => {
+    this.isCentered = !this.isCentered;
+  };
+
+  hideChat = () => {
+    this.isHidden = true;
+  };
+
+  showChat = () => {
+    this.isHidden = false;
+  };
+
   private sendGameActionCommand = () => {
     let gameActionCommand = {
       gameDetails: this.gameDetails
     };
     this.gameService.sendGameActionCommand(gameActionCommand);
   };
+
 }
