@@ -5,7 +5,6 @@ export interface JoinGameCommand {
 export interface GameDetails {
   channelName: string;
   playersDetails: PlayerDetails[];
-  isVoiceChannel: boolean;
   isAvailable: boolean;
   currentMissionRound: number;
   missionTeam: PlayerDetails[];
@@ -86,4 +85,9 @@ export enum GameAction {
 
 export interface GameActionCommand {
   gameDetails: GameDetails,
+}
+
+export interface Message {
+  name: string,
+  text: string,
 }

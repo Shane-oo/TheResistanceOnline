@@ -19,4 +19,6 @@ public interface IGamePlayingBotObserver
     void SetTeam(TeamModel team);
 
     Guid PlayerId { get; set; }
+
+    string GetSpyPredictions();
 }

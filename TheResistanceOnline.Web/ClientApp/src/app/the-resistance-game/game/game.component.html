@@ -1,81 +1,86 @@
 <div class="content">
+
   <div class="canvas">
 
-    <!--
-        <app-game-canvas></app-game-canvas>
-    -->
+    <app-game-canvas></app-game-canvas>
     <!--
    Put The Mission round and if success or fail here for now
 -->
 
-    <h4 *ngFor="let mission of gameDetails.missionRounds | keyvalue">
-      {{mission.key}} --> {{mission.value ? 'Resistance' : 'Spies'}}
-    </h4>
+    <!--    <h4 *ngFor="let mission of gameDetails.missionRounds | keyvalue">-->
+    <!--      {{mission.key}} &ndash;&gt; {{mission.value ? 'Resistance' : 'Spies'}}-->
+    <!--    </h4>-->
 
   </div>
   <div class="game-values">
-    <div>
-      <!--todo don't show these if game is over-->
+    <!--    <app-game-chat-box class="game-values-left"></app-game-chat-box>-->
+    <!--    <app-game-chat-box class="game-values-right">-->
+    <!--    </app-game-chat-box>-->
+
+
+    <div class="game-values-middle">
       <div>
-        <h6>Mission: <b>{{gameDetails.currentMissionRound}}.</b>
-          <span *ngFor="let i of [].constructor(gameDetails.voteFailedCount)" style="padding-left: 5px">
-         <fa-icon [icon]="xMarkIcon" class=" fa-sm redIcon"></fa-icon>
+        <!--todo don't show these if game is over-->
+        <div>
+          <h6>Mission: <b>{{gameDetails.currentMissionRound}}.</b>
+            <span *ngFor="let i of [].constructor(gameDetails.voteFailedCount)" style="padding-left: 5px">
+         <fa-icon [icon]="xMarkIcon" class="fa-sm redIcon"></fa-icon>
         </span>
-          <span *ngFor="let i of [].constructor(5 - gameDetails.voteFailedCount)" style="padding-left: 5px">
-         <fa-icon [icon]="xMarkIcon" class=" fa-sm greyIcon"></fa-icon>
+            <span *ngFor="let i of [].constructor(5 - gameDetails.voteFailedCount)" style="padding-left: 5px">
+         <fa-icon [icon]="xMarkIcon" class="fa-sm greyIcon"></fa-icon>
         </span>
-        </h6>
+          </h6>
 
-        <h6>Mission Size: <b>{{gameDetails.missionSize}}</b></h6>
-        <h6>Mission Leader: <b class="userName">{{getMissionLeaderUsername()}}</b></h6>
+          <h6>Mission Size: <b>{{gameDetails.missionSize}}</b></h6>
+          <h6>Mission Leader: <b class="userName">{{getMissionLeaderUsername()}}</b></h6>
 
-        <h6>Team Members:
-          <span *ngFor="let playerDetail of gameDetails.missionTeam" class="userName">&nbsp;{{playerDetail.userName}}.&nbsp;</span>
-        </h6>
+          <h6>Team Members:
+            <span *ngFor="let playerDetail of gameDetails.missionTeam" class="userName">&nbsp;{{playerDetail.userName}}.&nbsp;</span>
+          </h6>
+        </div>
       </div>
-    </div>
 
-    <!--GameStage.MissionPropose-->
-    <div *ngIf="gameDetails.gameStage === 1">
-      <h4>Mission Propose </h4>
-      <div *ngIf="missionLeaderPlayerId === playerId">
-        <button (click)="submitTeam()"
-                [disabled]="gameDetails.missionTeam.length !== gameDetails.missionSize"
-                [ngClass]="gameDetails.missionTeam.length !== gameDetails.missionSize ? 'button-disabled':'propose-team-button'">
-          Submit Team
-        </button>
+      <!--GameStage.MissionPropose-->
+      <div *ngIf="gameDetails.gameStage === 1">
+        <h4>Mission Propose </h4>
+        <div *ngIf="missionLeaderPlayerId === playerId">
+          <button (click)="submitTeam()"
+                  [disabled]="gameDetails.missionTeam.length !== gameDetails.missionSize"
+                  [ngClass]="gameDetails.missionTeam.length !== gameDetails.missionSize ? 'button-disabled':'propose-team-button'">
+            Submit Team
+          </button>
+        </div>
       </div>
-    </div>
 
-    <!--GameStage.Vote-->
-    <div *ngIf="gameDetails.gameStage === 2">
-      <h4>Voting</h4>
-      <div *ngIf="!voted">
+      <!--GameStage.Vote-->
+      <div *ngIf="gameDetails.gameStage === 2">
+        <h4>Voting</h4>
+        <div *ngIf="!voted">
 
-        <button (click)="submitVote(false)" class="vote-button reject-button">
-          Reject
-        </button>
-        &nbsp;
-        <button (click)="submitVote(true)" class="vote-button approve-button">
-          Approve
-        </button>
+          <button (click)="submitVote(false)" class="vote-button reject-button">
+            Reject
+          </button>
+          &nbsp;
+          <button (click)="submitVote(true)" class="vote-button approve-button">
+            Approve
+          </button>
 
-      </div>
-      <div *ngIf="voted">
-        <span>Waiting For:</span>
-        <span *ngFor="let playerDetail of gameDetails.playersDetails">
+        </div>
+        <div *ngIf="voted">
+          <span>Waiting For:</span>
+          <span *ngFor="let playerDetail of gameDetails.playersDetails">
 
               <span *ngIf="!playerDetail.voted && !playerDetail.isBot" class="userName"> &nbsp;{{playerDetail.userName}}.&nbsp; </span>
             </span>
+        </div>
       </div>
-    </div>
 
 
-    <!--GameStage.VoteResults-->
-    <div *ngIf="gameDetails.gameStage === 3">
-      <h4>Voting Results</h4>
+      <!--GameStage.VoteResults-->
+      <div *ngIf="gameDetails.gameStage === 3">
+        <h4>Voting Results</h4>
 
-      <div>
+        <div>
           <span *ngFor="let playerDetail of gameDetails.playersDetails">
             <b class="userName">{{playerDetail.userName}}</b>
             &nbsp;
@@ -83,83 +88,87 @@
               <fa-icon *ngIf="playerDetail.approvedMissionTeam" [icon]="tickIcon" class="icon greenIcon"></fa-icon>
             &nbsp;
           </span>
-      </div>
+        </div>
 
-      <span (click)="submitContinue()" *ngIf="!continued" class="icon-click continue">Continue
+        <span (click)="submitContinue()" *ngIf="!continued" class="icon-click continue">Continue
         <fa-icon [icon]="nextIcon" class="fa-md"></fa-icon>
      </span>
-      <span *ngIf="continued">Waiting For:
+        <span *ngIf="continued">Waiting For:
         <span *ngFor="let playerDetail of gameDetails.playersDetails">
               <span *ngIf="!playerDetail.continued && !playerDetail.isBot" class="userName"> &nbsp;{{playerDetail.userName}}.&nbsp; </span>
         </span>
       </span>
-    </div>
-
-
-    <!--GameStage.Mission-->
-    <div *ngIf="gameDetails.gameStage === 4">
-      <h4>Mission</h4>
-      <div *ngIf="playerIsOnMissionTeam(playerId)">
-        <div *ngIf="!chose">
-          <button (click)="submitMissionChoice(false)" [disabled]="getPlayerDetails().team === 0" [ngClass]="getPlayerDetails().team === 0 ? 'button-disabled':'reject-button'"
-                  class="vote-button"
-          >
-            Sabotage
-          </button>
-          &nbsp;
-          <button (click)="submitMissionChoice(true)" class="vote-button approve-button"
-          >
-            Support
-          </button>
-        </div>
       </div>
-      <div *ngIf="chose || !playerIsOnMissionTeam(playerId)">
-        <span>Waiting For:</span>
-        <span *ngFor="let playerDetail of gameDetails.playersDetails">
+
+
+      <!--GameStage.Mission-->
+      <div *ngIf="gameDetails.gameStage === 4">
+        <h4>Mission</h4>
+        <div *ngIf="playerIsOnMissionTeam(playerId)">
+          <div *ngIf="!chose">
+            <button (click)="submitMissionChoice(false)" [disabled]="getPlayerDetails().team === 0"
+                    [ngClass]="getPlayerDetails().team === 0 ? 'button-disabled':'reject-button'"
+                    class="vote-button"
+            >
+              Sabotage
+            </button>
+            &nbsp;
+            <button (click)="submitMissionChoice(true)" class="vote-button approve-button"
+            >
+              Support
+            </button>
+          </div>
+        </div>
+        <div *ngIf="chose || !playerIsOnMissionTeam(playerId)">
+          <span>Waiting For:</span>
+          <span *ngFor="let playerDetail of gameDetails.playersDetails">
 
               <span *ngIf=" playerIsOnMissionTeam(playerDetail.playerId) && !playerDetail.chose && !playerDetail.isBot" class="userName">&nbsp;{{playerDetail.userName}}
                 .&nbsp;</span>
             </span>
+        </div>
       </div>
-    </div>
 
 
-    <!--GameStage.MissionResults-->
-    <div *ngIf="gameDetails.gameStage === 5">
-      <h4>Mission Results</h4>
-      <div>
+      <!--GameStage.MissionResults-->
+      <div *ngIf="gameDetails.gameStage === 5">
+        <h4>Mission Results</h4>
+        <div>
       <span *ngFor="let missionOutcome of gameDetails.missionOutcome">
             <fa-icon *ngIf="!missionOutcome" [icon]="crossIcon" class="icon redIcon"></fa-icon>
             <fa-icon *ngIf="missionOutcome" [icon]="tickIcon" class="icon greenIcon"></fa-icon>
             &nbsp;
           </span>
-      </div>
-      <span (click)="submitContinue()" *ngIf="!continued" class="icon-click continue">Continue
+        </div>
+        <span (click)="submitContinue()" *ngIf="!continued" class="icon-click continue">Continue
         <fa-icon [icon]="nextIcon" class="fa-md"></fa-icon>
      </span>
-      <span *ngIf="continued">Waiting For:
+        <span *ngIf="continued">Waiting For:
         <span *ngFor="let playerDetail of gameDetails.playersDetails">
               <span *ngIf="!playerDetail.continued && !playerDetail.isBot" class="userName"> &nbsp;{{playerDetail.userName}}.&nbsp; </span>
         </span>
       </span>
-    </div>
+      </div>
 
-    <!--GameStage.GameOverSpiesWon || GameStage.GameOverResistanceWon-->
-    <div *ngIf="gameDetails.gameStage === 6 || gameDetails.gameStage === 7">
-      <h4>Game Over</h4>
-      <h4 *ngIf="gameDetails.gameStage === 6">Spies Won</h4>
-      <h4 *ngIf="gameDetails.gameStage === 7">Resistance Won</h4>
+      <!--GameStage.GameOverSpiesWon || GameStage.GameOverResistanceWon-->
+      <div *ngIf="gameDetails.gameStage === 6 || gameDetails.gameStage === 7">
+        <h4>Game Over</h4>
+        <h4 *ngIf="gameDetails.gameStage === 6">Spies Won</h4>
+        <h4 *ngIf="gameDetails.gameStage === 7">Resistance Won</h4>
 
-      <span *ngFor="let playerDetail of gameDetails.playersDetails">
+        <span *ngFor="let playerDetail of gameDetails.playersDetails">
               <span *ngIf="playerDetail.team === 1 " class="userName redIcon"> &nbsp;{{playerDetail.userName}}.&nbsp; </span>
               <span *ngIf="playerDetail.team === 0 " class="userName blueIcon"> &nbsp;{{playerDetail.userName}}.&nbsp; </span>
 
         </span>
-      <div>
-        <countdown #gameOverCountdown (event)="handleGameOverCountdownEvent($event)" [config]="gameOverCountdownConfig"
-                   class="countdowns"></countdown>
+        <div>
+          <countdown #gameOverCountdown (event)="handleGameOverCountdownEvent($event)" [config]="gameOverCountdownConfig"
+                     class="countdowns"></countdown>
+        </div>
       </div>
     </div>
+
+
   </div>
 
 
@@ -224,4 +233,13 @@
 
   <!---->
 </div>
+<div [hidden]="isHidden" [ngClass]="{'centered': isCentered, 'translucent': !isCentered}" class="chat-box">
+  <fa-icon [icon]="isCentered ? compressIcon : expandIcon" (click)="togglePosition()" [ngClass]="{'bottom-btn': isCentered, 'top-btn': !isCentered}" class="chat-box-btn fa-sm greyIcon">
+  </fa-icon>
 
+  <fa-icon [icon]="xMarkIcon" (click)="hideChat()" class="hide-chat-btn greyIcon"></fa-icon>
+  <app-game-chat-box></app-game-chat-box>
+</div>
+
+
+<button (click)="showChat()" *ngIf="isHidden" class="show-chat-btn">Show Chat</button>

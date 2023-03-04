@@ -9,15 +9,15 @@ export default class Sizes extends EventEmitter {
 
     super();
 
-    this.width = window.innerWidth ;
-    this.height = window.innerHeight / 2.28;
+    this.width = window.innerWidth / 1.75 ;   // magic number to stop if from extending width outside canvas div
+    this.height = 325;// window.innerHeight / 2.28;
     console.log(this.height)
     this.pixelRatio = Math.min(window.devicePixelRatio, 2);
 
     // Resize event
     window.addEventListener('resize', () => {
-      this.width = window.innerWidth ;
-      this.height = window.innerHeight / 2.28;
+      this.width = window.innerWidth / 1.75 ;
+      this.height = 325;
       this.pixelRatio = Math.min(window.devicePixelRatio, 2);
 
       this.trigger('resize');

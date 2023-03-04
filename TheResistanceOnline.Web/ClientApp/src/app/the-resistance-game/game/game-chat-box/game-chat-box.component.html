@@ -1,0 +1,23 @@
+<div class="chat-box-container">
+
+
+  <!-- all messages will be here!-->
+  <div class="chat-box-messages" #containerElement [scrollTop]="containerElement.scrollHeight">
+    <div *ngFor="let message of messages">
+      <p [style.color]="nameToColorMap.get(message.name)"><b>{{message.name}}: </b>{{message.text}}</p>
+    </div>
+  </div>
+
+  <div class="chat-box-footer">
+    <form (ngSubmit)="sendMessage(messageForm.value)" [formGroup]="messageForm" class="form-box" novalidate>
+
+      <input autocapitalize="off" class="chat-box-input" formControlName="message" id="message" type="text">
+      <button [disabled]="!messageForm.valid" [style.background]="!messageForm.valid? '#72767d':''" class="chat-box-submit"
+              type="submit">
+        <fa-icon [icon]="messageIcon"></fa-icon>
+      </button>
+    </form>
+  </div>
+</div>
+
+

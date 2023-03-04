@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { GameActionCommand, GameDetails, JoinGameCommand, StartGameCommand } from './the-resistance-game.models';
+import { GameActionCommand, GameDetails, JoinGameCommand, Message, StartGameCommand } from './the-resistance-game.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import * as signalR from '@microsoft/signalr';
@@ -17,9 +17,9 @@ export class TheResistanceGameService {
   public gameDetailsChanged: Subject<GameDetails> = new Subject<GameDetails>();
   public playerIdChanged: Subject<string> = new Subject<string>();
   public hostChanged: Subject<boolean> = new Subject<boolean>();
-
-  //public allGameDetails
   public groupNameToGameDetailsMapChanged: Subject<Map<string, GameDetails>> = new Subject<Map<string, GameDetails>>();
+
+  public messageReceived: Subject<Message> = new Subject<Message>();
 
 
   private readonly gamesEndpoint = '/api/Games';
@@ -104,8 +104,23 @@ export class TheResistanceGameService {
       this.gameDetailsChanged.next(gameDetails);
     });
   };
+
+  public sendMessage = (body: string) => {
+    this.connection.invoke('ReceiveMessageCommand', body).then(() => {
+    }).catch(err => console.log(err));
+  };
   public removeReceiveGameListener = () => {
     this.connection.off('ReceiveGameDetails');
+  };
+
+  public addReceiveMessageListener = () => {
+    this.connection.on('ReceiveMessage', (message: Message) => {
+      this.messageReceived.next(message);
+    });
+  };
+
+  public removeReceiveMessageListener = () => {
+    this.connection.off('ReceiveMessage');
   };
 
   public addReceiveGameHostListener = () => {

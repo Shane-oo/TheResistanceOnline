@@ -20,9 +20,7 @@ namespace TheResistanceOnline.BusinessLogic.Games.Models
         public bool IsAvailable { get; set; }
 
         public bool IsFinished { get; set; }
-
-        public bool IsVoiceChannel { get; set; }
-
+        
         public List<bool> MissionOutcome { get; set; }
 
         public Dictionary<int, bool> MissionRounds { get; set; }

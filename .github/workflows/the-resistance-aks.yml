@@ -1,5 +1,5 @@
 
-name: Build and Push Container Images to Container Registry, Restart Kubernetes Cluster
+name: Build and Push Container Images to Container Registry, Deploy To Kubernetes Cluster
 
 on:
   push:
