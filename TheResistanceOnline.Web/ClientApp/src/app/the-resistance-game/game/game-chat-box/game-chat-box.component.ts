@@ -46,6 +46,7 @@ export class GameChatBoxComponent {
   ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
+    this.gameService.removeReceiveMessageListener();
   }
 
 
