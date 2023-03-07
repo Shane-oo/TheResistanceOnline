@@ -29,6 +29,7 @@ builder.Services.Configure<StaticFileOptions>(options =>
                                                                                         [".bin"] = "application/octet-stream"
                                                                                     }
                                                                                 };
+                                                  options.ServeUnknownFileTypes = true; // enable serving of unknown file types
                                               });
 builder.Services.AddServices();
 builder.Services.AddAuthenticationServices();

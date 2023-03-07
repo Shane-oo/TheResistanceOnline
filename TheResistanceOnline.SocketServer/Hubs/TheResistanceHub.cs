@@ -220,7 +220,6 @@ namespace TheResistanceOnline.SocketServer.Hubs
         {
             _connectionIdToGroupNameMappingTable.Remove(connectionId);
             _connectionIdToPlayerDetailsMappingTable.Remove(Context.ConnectionId);
-            _connectionIdToPlayerDetailsMappingTable.Remove(Context.ConnectionId);
         }
 
         private async void SendAllGameDetailsToPlayersNotInGameAsync()
@@ -320,6 +319,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                     SpyTeamWins = playerStatisticDetails.SpyWins
                                 };
 
+
             _connectionIdToPlayerDetailsMappingTable.Add(Context.ConnectionId, playerDetails);
 
             SendAllGameDetailsToPlayersNotInGameAsync();
@@ -417,9 +417,8 @@ namespace TheResistanceOnline.SocketServer.Hubs
                                       Text = bot.BotObserver.GetSpyPredictions()
                                   };
                     SendNewMessageToGroupAsync(message, groupName);
-                } 
+                }
             }
-
         }
 
         [UsedImplicitly]
@@ -443,7 +442,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
         }
 
         [UsedImplicitly]
-        public async Task ReceiveMessageCommand(string text)
+        public void ReceiveMessageCommand(string text)
         {
             if (!string.IsNullOrWhiteSpace(text))
             {
