@@ -2,14 +2,14 @@
 
   <div class="canvas">
 
-    <app-game-canvas></app-game-canvas>
+<!--    <app-game-canvas></app-game-canvas>-->
     <!--
    Put The Mission round and if success or fail here for now
 -->
 
-    <!--    <h4 *ngFor="let mission of gameDetails.missionRounds | keyvalue">-->
-    <!--      {{mission.key}} &ndash;&gt; {{mission.value ? 'Resistance' : 'Spies'}}-->
-    <!--    </h4>-->
+        <h4 *ngFor="let mission of gameDetails.missionRounds | keyvalue">
+          {{mission.key}} --> {{mission.value ? 'Resistance' : 'Spies'}}
+        </h4>
 
   </div>
   <div class="game-values">
