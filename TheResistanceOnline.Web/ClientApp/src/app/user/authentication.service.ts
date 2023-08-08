@@ -10,7 +10,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Subject } from 'rxjs';
-import { JwtHelperService } from '@auth0/angular-jwt';
+
 import { Router } from '@angular/router';
 import { UserDetailsModel } from './user-edit/user-edit.models';
 
@@ -25,7 +25,7 @@ export class AuthenticationService {
   public authChanged = this.authChangeSub.asObservable();
 
   // environment.API_URL
-  constructor(private http: HttpClient, private jwtHelper: JwtHelperService, private router: Router) {
+  constructor(private http: HttpClient, private router: Router) {
   }
 
   public registerUser = (body: UserRegisterModel) => {
@@ -49,9 +49,9 @@ export class AuthenticationService {
     const token = localStorage.getItem('TheResistanceToken');
     let isUserAuthenticated = false;
     if(token) {
-      if(!this.jwtHelper.isTokenExpired(token)) {
-        isUserAuthenticated = true;
-      }
+      // if(!this.jwtHelper.isTokenExpired(token)) {
+      //   isUserAuthenticated = true;
+      // }
     }
     return isUserAuthenticated;
   };
@@ -60,8 +60,8 @@ export class AuthenticationService {
     const token = localStorage.getItem('TheResistanceToken');
     let role = '';
     if(token) {
-      const decodedToken = this.jwtHelper.decodeToken(token);
-      role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+      // const decodedToken = this.jwtHelper.decodeToken(token);
+      // role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
     }
     return (role === 'Administrator');
   };
@@ -70,8 +70,8 @@ export class AuthenticationService {
     const token = localStorage.getItem('TheResistanceToken');
     let userId = '';
     if(token) {
-      const decodedToken = this.jwtHelper.decodeToken(token);
-      userId = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata'];
+      // const decodedToken = this.jwtHelper.decodeToken(token);
+      // userId = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata'];
     }
     if(userId.length === 0) {
       //user is not logged in

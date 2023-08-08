@@ -17,3 +17,4 @@ TheResistanceOnline.Web/appsettings.Development.json
 TheResistanceOnline.SocketServer/appsettings.Development.json
 TheResistanceOnline.Infrastructure.Data.Migrations/local.settings.json
 
+.idea/.idea.TheResistanceOnline/.idea/jsLibraryMappings.xml

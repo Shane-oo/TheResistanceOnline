@@ -17,11 +17,10 @@ import { SwalContainerComponent } from '../ui/swal/swal-container.component';
 import { SwalContainerService } from '../ui/swal/swal-container.service';
 import { OverlayComponent } from '../ui/overlay/overlay.component';
 import { OverlayService } from '../ui/overlay/overlay.service';
-import { JwtModule } from '@auth0/angular-jwt';
-import { AuthGuard } from './shared/guards/auth.guard';
+
+import {authorizationGuard} from './shared/guards/auth.guard';
 import { AdminComponent } from './admin/admin.component';
-import { AdminGuard } from './shared/guards/admin.guard';
-import { environment } from '../environments/environment';
+import {adminGuard} from './shared/guards/admin.guard';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 export function tokenGetter() {
@@ -40,41 +39,31 @@ export function tokenGetter() {
               AdminComponent
             ],
             imports: [
-              BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
+              BrowserModule,
               BrowserAnimationsModule,
               HttpClientModule,
               FormsModule,
               RouterModule.forRoot([
                                      {path: '', component: HomeComponent, pathMatch: 'full'},
                                      {path: 'counter', component: CounterComponent},
-                                     {path: 'fetch-data', component: FetchDataComponent, canActivate: [AuthGuard]},
+                                     {path: 'fetch-data', component: FetchDataComponent, canActivate: [authorizationGuard]},
                                      {
                                        path: 'user',
                                        loadChildren: () => import('./user/authentication.module').then(m => m.AuthenticationModule)
                                      },
-                                     {path: 'admin', component: AdminComponent, canActivate: [AuthGuard, AdminGuard]},
+                                     {path: 'admin', component: AdminComponent, canActivate: [authorizationGuard, adminGuard]},
                                      {
                                        path: 'user/user-edit',
                                        loadChildren: () => import('./user/user-edit/user-edit.module').then(m => m.UserEditModule),
-                                       canActivate: [AuthGuard]
+                                       canActivate: [authorizationGuard]
                                      },
                                      {
                                        path: 'the-resistance-game',
                                        loadChildren: () => import('./the-resistance-game/the-resistance-game.module').then(m => m.TheResistanceGameModule),
-                                       canActivate: [AuthGuard]
+                                       canActivate: [authorizationGuard]
                                      }
                                    ], { initialNavigation: 'enabledBlocking' }),
               SweetAlert2Module.forRoot(),
-              JwtModule.forRoot({
-                                  config: {
-                                    tokenGetter: tokenGetter,
-                                    allowedDomains: [environment.API_Domain,
-                                      environment.Socket_Domain,
-                                      environment.Base_Domain,
-                                      environment.Base_Domain + '/server'],
-                                    disallowedRoutes: []
-                                  }
-                                }),
               NgbModule
             ],
             providers: [

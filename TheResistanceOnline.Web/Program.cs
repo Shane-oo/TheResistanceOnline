@@ -55,11 +55,11 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-// dont touch
+// must for angular spa
 app.MapControllerRoute(
                        "default",
                        "{controller}/{action=Index}/{id?}");
-// dont touch maybe
+// must for angular spa
 app.MapFallbackToFile("index.html");
 
 app.Run();
