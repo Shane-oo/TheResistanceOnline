@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TheResistanceOnline.Data.Configurations.AuthorizationConfigurations;
 using TheResistanceOnline.Data.Configurations.GameConfigurations;
 using TheResistanceOnline.Data.Configurations.PlayerStatisticConfigurations;
+using TheResistanceOnline.Data.Configurations.UserConfigurations;
 using TheResistanceOnline.Data.Entities.AuthorizationEntities;
 using TheResistanceOnline.Data.Entities.GameEntities;
 using TheResistanceOnline.Data.Entities.UserEntities;
@@ -10,7 +11,7 @@ using TheResistanceOnline.Data.PlayerStatistics;
 
 namespace TheResistanceOnline.Data;
 
-public class Context: IdentityDbContext<User>
+public class Context: IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
 {
     #region Properties
 
@@ -44,6 +45,14 @@ public class Context: IdentityDbContext<User>
     {
         base.OnModelCreating(modelBuilder);
 
+        // Users
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new RoleConfiguration());
+        modelBuilder.ApplyConfiguration(new RoleClaimConfiguration());
+        modelBuilder.ApplyConfiguration(new UserClaimConfiguration());
+        modelBuilder.ApplyConfiguration(new UserLoginConfiguration());
+        modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
+        modelBuilder.ApplyConfiguration(new UserTokenConfiguration());
         // Games
         modelBuilder.ApplyConfiguration(new GameConfiguration());
         modelBuilder.ApplyConfiguration(new GamePlayerValueConfiguration());

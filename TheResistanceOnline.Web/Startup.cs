@@ -1,9 +1,13 @@
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
 using TheResistanceOnline.Common.ValidationHelpers;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities.AuthorizationEntities;
+using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Data.Queries.UserQueries;
 
@@ -28,6 +32,20 @@ public class Startup
     }
 
     #endregion
+
+    #region Private Methods
+
+    private static X509Certificate2 LoadCertificate(string thumbprint)
+    {
+        // path to private ssl certificates in a Linux os Azure App Service
+        var bytes = File.ReadAllBytes($"/var/ssl/private/{thumbprint}.p12");
+        var certificate = new X509Certificate2(bytes);
+        return certificate;
+    }
+
+    #endregion
+
+    #region Public Methods
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
@@ -130,8 +148,8 @@ public class Startup
                                }
                                else
                                {
-                                   o.AddEncryptionCertificate(appSettings.AuthServer.EncryptionCertificateThumbprint)
-                                    .AddSigningCertificate(appSettings.AuthServer.SigningCertificateThumbprint);
+                                   o.AddEncryptionCertificate(LoadCertificate(appSettings.AuthServer.EncryptionCertificateThumbprint))
+                                    .AddSigningCertificate(LoadCertificate(appSettings.AuthServer.SigningCertificateThumbprint));
                                }
 
                                o.UseAspNetCore()
@@ -144,7 +162,15 @@ public class Startup
                                    o.UseAspNetCore();
                                });
 
-        //todo AddIdentity
+        services.AddIdentity<User, Role>(o =>
+                                         {
+                                             o.ClaimsIdentity.UserNameClaimType = OpenIddictConstants.Claims.Name;
+                                             o.ClaimsIdentity.UserIdClaimType = OpenIddictConstants.Claims.Subject;
+                                             o.ClaimsIdentity.RoleClaimType = OpenIddictConstants.Claims.Role;
+                                             o.User.RequireUniqueEmail = false; // disables user needs email to create
+                                         })
+                .AddEntityFrameworkStores<Context>()
+                .AddDefaultTokenProviders();
 
         services.AddAuthentication(o =>
                                    {
@@ -170,4 +196,6 @@ public class Startup
         // TheResistanceOnline.Authentications
         // todo
     }
+
+    #endregion
 }
