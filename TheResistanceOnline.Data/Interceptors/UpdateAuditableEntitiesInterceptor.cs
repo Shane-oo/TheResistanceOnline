@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using TheResistanceOnline.Data.Core;
 using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Infrastructure.Data.Interceptors.CoreInterceptors;
+namespace TheResistanceOnline.Data.Interceptors;
 
 public sealed class UpdateAuditableEntitiesInterceptor: SaveChangesInterceptor
 {
@@ -31,7 +30,7 @@ public sealed class UpdateAuditableEntitiesInterceptor: SaveChangesInterceptor
 
             if (entityEntry.State == EntityState.Modified)
             {
-                entityEntry.Property(a=>a.ModifiedOn).CurrentValue = DateTime.UtcNow;
+                entityEntry.Property(a => a.ModifiedOn).CurrentValue = DateTime.UtcNow;
             }
         }
 

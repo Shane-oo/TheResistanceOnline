@@ -9,5 +9,24 @@ public class AppSettings
     [Required]
     public string ClientUrl { get; set; }
 
+    public AuthServer AuthServer { get; set; }
+
+    #endregion
+}
+
+public class AuthServer
+{
+    #region Properties
+
+#if RELEASE
+    [Required]
+#endif
+    public string EncryptionCertificateThumbprint { get; set; }
+
+#if RELEASE
+    [Required]
+#endif
+    public string SigningCertificateThumbprint { get; set; }
+
     #endregion
 }

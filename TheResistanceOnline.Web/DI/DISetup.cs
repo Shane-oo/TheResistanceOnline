@@ -13,9 +13,9 @@ using TheResistanceOnline.BusinessLogic.Users;
 using TheResistanceOnline.BusinessLogic.UserSettings;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Data.Queries.UserQueries;
 using TheResistanceOnline.Infrastructure.Data;
-using TheResistanceOnline.Infrastructure.Data.Interceptors.CoreInterceptors;
 
 namespace TheResistanceOnline.Web.DI;
 

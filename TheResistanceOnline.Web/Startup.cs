@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using OpenIddict.Validation.AspNetCore;
 using TheResistanceOnline.Common.ValidationHelpers;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Infrastructure.Data.Interceptors.CoreInterceptors;
+using TheResistanceOnline.Data.Entities.AuthorizationEntities;
+using TheResistanceOnline.Data.Interceptors;
+using TheResistanceOnline.Data.Queries.UserQueries;
 
 namespace TheResistanceOnline.Web;
 
@@ -56,7 +59,7 @@ public class Startup
         var appSettingsSection = Configuration.GetSection(nameof(AppSettings));
         var appSettings = appSettingsSection.Get<AppSettings>();
         // Validate app settings
-        ValidateObjectPropertiesHelper.ValidateAllObjectProperties(appSettings);
+        ValidateObjectPropertiesHelper.ValidateAllObjectProperties(appSettings, appSettings.AuthServer);
         services.Configure<AppSettings>(appSettingsSection);
 
         services.AddCors(o =>
@@ -97,7 +100,74 @@ public class Startup
                                             .AddInterceptors(auditableInterceptor
                                                              ?? throw new InvalidOperationException("auditableInterceptor cannot be null"));
 
-                                           //o.UseOpenIddict<todo>();
+                                           o.UseOpenIddict<Application, Authorization, Scope, Token, int>();
                                        });
+
+        services.AddOpenIddict()
+                .AddCore(o =>
+                         {
+                             o.UseEntityFrameworkCore()
+                              .UseDbContext<Context>()
+                              .ReplaceDefaultEntities<Application, Authorization, Scope, Token, int>();
+                         })
+                //todo .AddClient()
+                .AddServer(o =>
+                           {
+                               o.SetAccessTokenLifetime(TimeSpan.FromHours(1))
+                                .SetRefreshTokenLifetime(TimeSpan.FromDays(14))
+                                .SetIdentityTokenLifetime(TimeSpan.FromHours(1));
+
+                               o.AllowAuthorizationCodeFlow()
+                                .AllowRefreshTokenFlow();
+
+                               o.SetTokenEndpointUris("/token")
+                                .SetAuthorizationEndpointUris("/authorize");
+
+                               if (Environment.IsDevelopment())
+                               {
+                                   o.AddDevelopmentEncryptionCertificate()
+                                    .AddDevelopmentSigningCertificate();
+                               }
+                               else
+                               {
+                                   o.AddEncryptionCertificate(appSettings.AuthServer.EncryptionCertificateThumbprint)
+                                    .AddSigningCertificate(appSettings.AuthServer.SigningCertificateThumbprint);
+                               }
+
+                               o.UseAspNetCore()
+                                .EnableTokenEndpointPassthrough()
+                                .EnableAuthorizationEndpointPassthrough();
+                           })
+                .AddValidation(o =>
+                               {
+                                   o.UseLocalServer();
+                                   o.UseAspNetCore();
+                               });
+
+        //todo AddIdentity
+
+        services.AddAuthentication(o =>
+                                   {
+                                       o.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                                       o.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                                       o.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                                   })
+                .AddCookie(o =>
+                           {
+                               o.Cookie.Name = "TODO";
+                               o.SlidingExpiration = false;
+                           });
+
+        // Dependency Injection
+        // Data Context
+        services.AddScoped<IDataContext, DataContext>();
+
+        // Db Queries
+        services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
+        services.AddTransient<IUserDbQuery, UserDbQuery>();
+
+        // MediatR
+        // TheResistanceOnline.Authentications
+        // todo
     }
 }

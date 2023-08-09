@@ -21,6 +21,9 @@
         <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.10" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.10" />
+        <PackageReference Include="OpenIddict.AspNetCore" Version="4.6.0" />
+        <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="4.6.0" />
+        <PackageReference Include="OpenIddict.EntityFrameworkCore.Models" Version="4.6.0" />
     </ItemGroup>
 
     <ItemGroup>
