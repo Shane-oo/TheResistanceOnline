@@ -9,7 +9,7 @@ using TheResistanceOnline.BusinessLogic.Games.Models;
 using TheResistanceOnline.BusinessLogic.PlayerStatistics.Models;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Users;
+using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.Data.UserSettings;
 
 namespace TheResistanceOnline.SocketServer.Hubs

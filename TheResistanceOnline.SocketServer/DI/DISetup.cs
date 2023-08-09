@@ -19,11 +19,11 @@ using TheResistanceOnline.BusinessLogic.Users;
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.BusinessLogic.UserSettings;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Users;
+using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Queries.Games;
+using TheResistanceOnline.Data.Queries.UserQueries;
 using TheResistanceOnline.Infrastructure.Data;
 using TheResistanceOnline.Infrastructure.Data.Interceptors.CoreInterceptors;
-using TheResistanceOnline.Infrastructure.Data.Queries.Games;
-using TheResistanceOnline.Infrastructure.Data.Queries.Users;
 
 namespace TheResistanceOnline.SocketServer.DI;
 

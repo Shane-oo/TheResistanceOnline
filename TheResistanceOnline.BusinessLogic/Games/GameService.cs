@@ -4,7 +4,7 @@ using TheResistanceOnline.BusinessLogic.Games.DbQueries;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 using TheResistanceOnline.BusinessLogic.PlayerStatistics;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Games;
+using TheResistanceOnline.Data.Entities.GameEntities;
 
 namespace TheResistanceOnline.BusinessLogic.Games
 {

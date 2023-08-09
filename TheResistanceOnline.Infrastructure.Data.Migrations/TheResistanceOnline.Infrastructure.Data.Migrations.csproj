@@ -27,10 +27,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TheResistanceOnline.Infrastructure.Data\TheResistanceOnline.Infrastructure.Data.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
         <Reference Include="Microsoft.Extensions.Configuration">
             <HintPath>..\..\..\..\..\..\..\usr\local\share\dotnet\shared\Microsoft.AspNetCore.App\6.0.4\Microsoft.Extensions.Configuration.dll</HintPath>
         </Reference>
@@ -38,5 +34,9 @@
 
     <ItemGroup>
         <EmbeddedResource Include="./Migrations/*.sql"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TheResistanceOnline.Data\TheResistanceOnline.Data.csproj" />
     </ItemGroup>
 </Project>

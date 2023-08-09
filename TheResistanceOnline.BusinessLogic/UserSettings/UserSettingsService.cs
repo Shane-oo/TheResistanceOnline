@@ -1,8 +1,8 @@
 using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.BusinessLogic.UserSettings.Commands;
 using TheResistanceOnline.Data;
+using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.Data.Exceptions;
-using TheResistanceOnline.Data.Users;
 
 namespace TheResistanceOnline.BusinessLogic.UserSettings
 {

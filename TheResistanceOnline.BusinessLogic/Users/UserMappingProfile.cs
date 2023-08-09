@@ -1,6 +1,6 @@
 using AutoMapper;
 using TheResistanceOnline.BusinessLogic.Users.Models;
-using TheResistanceOnline.Data.Users;
+using TheResistanceOnline.Data.Entities.UserEntities;
 
 namespace TheResistanceOnline.BusinessLogic.Users
 {

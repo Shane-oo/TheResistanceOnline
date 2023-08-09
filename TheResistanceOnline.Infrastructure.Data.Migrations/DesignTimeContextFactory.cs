@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using TheResistanceOnline.Data;
 
 namespace TheResistanceOnline.Infrastructure.Data.Migrations
 {
@@ -12,11 +13,12 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations
 
         public Context CreateDbContext(string[] args)
         {
-            var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("local.settings.json", true, true)
+            var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+                                                          .AddJsonFile("local.settings.json", true, true)
                                                           .AddEnvironmentVariables()
                                                           .Build();
 
-            var connectionString = configuration.GetConnectionString("ResistanceDbDev");
+            var connectionString = configuration.GetConnectionString("ResistanceDb");
 
             if (string.IsNullOrEmpty(connectionString))
             {

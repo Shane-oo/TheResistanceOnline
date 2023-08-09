@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using TheResistanceOnline.BusinessLogic.Settings;
 using TheResistanceOnline.BusinessLogic.Users.Models;
+using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.Data.Exceptions;
-using TheResistanceOnline.Data.Users;
 using TheResistanceOnline.Data.UserSettings;
 
 namespace TheResistanceOnline.BusinessLogic.Users
