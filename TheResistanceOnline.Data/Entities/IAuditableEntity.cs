@@ -2,7 +2,7 @@ namespace TheResistanceOnline.Data.Entities;
 
 public interface IAuditableEntity
 {
-    DateTime CreatedOn { get; set; }
+    DateTimeOffset CreatedOn { get; set; }
 
-    DateTime? ModifiedOn { get; set; }
+    DateTimeOffset? ModifiedOn { get; set; }
 }

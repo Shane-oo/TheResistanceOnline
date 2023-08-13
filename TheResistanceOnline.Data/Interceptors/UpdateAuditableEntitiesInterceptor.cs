@@ -10,7 +10,7 @@ public sealed class UpdateAuditableEntitiesInterceptor: SaveChangesInterceptor
 
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData,
                                                                           InterceptionResult<int> result,
-                                                                          CancellationToken cancellationToken = new CancellationToken())
+                                                                          CancellationToken cancellationToken = new())
     {
         var dbContext = eventData.Context;
         if (dbContext == null)
@@ -25,12 +25,12 @@ public sealed class UpdateAuditableEntitiesInterceptor: SaveChangesInterceptor
         {
             if (entityEntry.State == EntityState.Added)
             {
-                entityEntry.Property(a => a.CreatedOn).CurrentValue = DateTime.UtcNow;
+                entityEntry.Property(a => a.CreatedOn).CurrentValue = DateTimeOffset.UtcNow;
             }
 
             if (entityEntry.State == EntityState.Modified)
             {
-                entityEntry.Property(a => a.ModifiedOn).CurrentValue = DateTime.UtcNow;
+                entityEntry.Property(a => a.ModifiedOn).CurrentValue = DateTimeOffset.UtcNow;
             }
         }
 

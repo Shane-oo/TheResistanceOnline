@@ -53,6 +53,7 @@ public class Context: IdentityDbContext<User, Role, Guid, UserClaim, UserRole, U
         modelBuilder.ApplyConfiguration(new UserLoginConfiguration());
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
         modelBuilder.ApplyConfiguration(new UserTokenConfiguration());
+        modelBuilder.ApplyConfiguration(new UserSettingConfiguration());
         // Games
         modelBuilder.ApplyConfiguration(new GameConfiguration());
         modelBuilder.ApplyConfiguration(new GamePlayerValueConfiguration());

@@ -1,25 +1,14 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using JetBrains.Annotations;
-using TheResistanceOnline.Data.Entities.UserEntities;
+namespace TheResistanceOnline.Data.Entities.UserEntities;
 
-namespace TheResistanceOnline.Data.UserSettings
+public class UserSetting
 {
-    [UsedImplicitly]
-    [Table("UserSettings")]
-    public class UserSetting
-    {
-        #region Properties
+    #region Properties
 
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public string UserId { get; set; }
+    public Guid UserId { get; set; }
 
-        public User User { get; set; }
+    public User User { get; set; }
 
-        public bool ResetPasswordLinkSent { get; set; }
-
-        public DateTimeOffset? ResetPasswordLinkSentRecord { get; set; }
-        
-        #endregion
-    }
+    #endregion
 }

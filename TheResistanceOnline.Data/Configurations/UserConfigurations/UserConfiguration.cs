@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
 using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.UserSettings;
+
 
 namespace TheResistanceOnline.Data.Configurations.UserConfigurations;
 
@@ -31,19 +32,26 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
                .HasForeignKey(ut => ut.UserId)
                .IsRequired();
 
-        // Each User can have many entries in the UserRole join table
-        builder.HasMany(e => e.UserRoles)
+        // Each User has one UserRole  //todo check if this allowed
+        builder.HasOne(e => e.UserRole)
                .WithOne(e => e.User)
-               .HasForeignKey(ur => ur.UserId)
+               .HasForeignKey<UserRole>(ur => ur.UserId)
                .IsRequired();
 
         builder.HasOne(u => u.UserSetting)
                .WithOne(us => us.User)
-               .HasForeignKey<UserSetting>(us => us.UserId);
+               .HasForeignKey<UserSetting>(us => us.UserId)
+               .IsRequired();
 
         builder.HasMany(u => u.PlayerStatistics)
                .WithOne()
-               .HasForeignKey(ps => ps.UserId);
+               .HasForeignKey(ps => ps.UserId)
+               .IsRequired();
+
+        builder.HasOne(e => e.MicrosoftUser)
+               .WithOne(m => m.User)
+               .HasForeignKey<MicrosoftUser>(m => m.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
     }
 
     #endregion

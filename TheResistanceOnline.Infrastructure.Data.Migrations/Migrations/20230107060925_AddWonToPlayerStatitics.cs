@@ -16,7 +16,7 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
-          migrationBuilder.RunSqlScript("20230107060925_AddWonToPlayerStatitics");
+          migrationBuilder.RunSqlScript("20230107060925_AddWonToPlayerStatitics.sql");
         }
 
         /// <inheritdoc />
