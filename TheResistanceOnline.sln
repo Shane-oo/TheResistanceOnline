@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Common"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Core", "TheResistanceOnline.Core\TheResistanceOnline.Core.csproj", "{1DFA2AB2-C25A-42A9-9268-783FB75557CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Authentications", "TheResistanceOnline.Authentications\TheResistanceOnline.Authentications.csproj", "{65753107-FE40-45F9-8092-D218AA8D68CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{1DFA2AB2-C25A-42A9-9268-783FB75557CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DFA2AB2-C25A-42A9-9268-783FB75557CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DFA2AB2-C25A-42A9-9268-783FB75557CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65753107-FE40-45F9-8092-D218AA8D68CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65753107-FE40-45F9-8092-D218AA8D68CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65753107-FE40-45F9-8092-D218AA8D68CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65753107-FE40-45F9-8092-D218AA8D68CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

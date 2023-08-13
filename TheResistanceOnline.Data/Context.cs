@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TheResistanceOnline.Data.Configurations.AuthorizationConfigurations;
+using TheResistanceOnline.Data.Configurations.ExternalIdentitiesConfigurations;
 using TheResistanceOnline.Data.Configurations.GameConfigurations;
 using TheResistanceOnline.Data.Configurations.PlayerStatisticConfigurations;
 using TheResistanceOnline.Data.Configurations.UserConfigurations;
 using TheResistanceOnline.Data.Entities.AuthorizationEntities;
+using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
 using TheResistanceOnline.Data.Entities.GameEntities;
 using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.Data.PlayerStatistics;
@@ -22,6 +24,8 @@ public class Context: IdentityDbContext<User, Role, Guid, UserClaim, UserRole, U
     public DbSet<GamePlayerValue> GamePlayerValues { get; set; }
 
     public DbSet<Game> Games { get; set; }
+
+    public DbSet<MicrosoftUser> MicrosoftUsers { get; set; }
 
     public DbSet<PlayerStatistic> PlayerStatistics { get; set; }
 
@@ -54,6 +58,8 @@ public class Context: IdentityDbContext<User, Role, Guid, UserClaim, UserRole, U
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
         modelBuilder.ApplyConfiguration(new UserTokenConfiguration());
         modelBuilder.ApplyConfiguration(new UserSettingConfiguration());
+        // External Identities
+        modelBuilder.ApplyConfiguration(new MicrosoftUserConfiguration());
         // Games
         modelBuilder.ApplyConfiguration(new GameConfiguration());
         modelBuilder.ApplyConfiguration(new GamePlayerValueConfiguration());

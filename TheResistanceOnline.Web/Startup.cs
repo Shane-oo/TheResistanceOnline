@@ -4,12 +4,15 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
+using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
 using TheResistanceOnline.Common.ValidationHelpers;
+using TheResistanceOnline.Core;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities.AuthorizationEntities;
 using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Data.Queries.UserQueries;
+using TheResistanceOnline.Web.Controllers;
 
 namespace TheResistanceOnline.Web;
 
@@ -77,7 +80,9 @@ public class Startup
         var appSettingsSection = Configuration.GetSection(nameof(AppSettings));
         var appSettings = appSettingsSection.Get<AppSettings>();
         // Validate app settings
-        ValidateObjectPropertiesHelper.ValidateAllObjectProperties(appSettings, appSettings.AuthServer);
+        ValidateObjectPropertiesHelper.ValidateAllObjectProperties(appSettings,
+                                                                   appSettings.AuthServerSettings,
+                                                                   appSettings.AuthServerSettings.MicrosoftSettings);
         services.Configure<AppSettings>(appSettingsSection);
 
         services.AddCors(o =>
@@ -128,7 +133,37 @@ public class Startup
                               .UseDbContext<Context>()
                               .ReplaceDefaultEntities<Application, Authorization, Scope, Token, int>();
                          })
-                //todo .AddClient()
+                .AddClient(o =>
+                           {
+                               o.AllowAuthorizationCodeFlow();
+
+                               if (Environment.IsDevelopment())
+                               {
+                                   o.AddDevelopmentEncryptionCertificate()
+                                    .AddDevelopmentSigningCertificate();
+                               }
+                               else
+                               {
+                                   o.AddEncryptionCertificate(LoadCertificate(appSettings.AuthServerSettings.EncryptionCertificateThumbprint))
+                                    .AddSigningCertificate(LoadCertificate(appSettings.AuthServerSettings.SigningCertificateThumbprint));
+                               }
+
+                               o.UseAspNetCore()
+                                .EnableRedirectionEndpointPassthrough();
+
+                               o.UseSystemNetHttp()
+                                .SetProductInformation(typeof(Program).Assembly);
+
+                               o.UseWebProviders()
+                                .AddMicrosoft(m =>
+                                              {
+                                                  var microsoftSettings = appSettings.AuthServerSettings.MicrosoftSettings;
+                                                  m.SetClientId(microsoftSettings.ClientId)
+                                                   .SetClientSecret(microsoftSettings.ClientSecret)
+                                                   .SetRedirectUri(microsoftSettings.RedirectUri)
+                                                   .AddScopes("profile"); // must have "profile" to get objectId 
+                                              });
+                           })
                 .AddServer(o =>
                            {
                                o.SetAccessTokenLifetime(TimeSpan.FromHours(1))
@@ -148,8 +183,8 @@ public class Startup
                                }
                                else
                                {
-                                   o.AddEncryptionCertificate(LoadCertificate(appSettings.AuthServer.EncryptionCertificateThumbprint))
-                                    .AddSigningCertificate(LoadCertificate(appSettings.AuthServer.SigningCertificateThumbprint));
+                                   o.AddEncryptionCertificate(LoadCertificate(appSettings.AuthServerSettings.EncryptionCertificateThumbprint))
+                                    .AddSigningCertificate(LoadCertificate(appSettings.AuthServerSettings.SigningCertificateThumbprint));
                                }
 
                                o.UseAspNetCore()
@@ -180,7 +215,7 @@ public class Startup
                                    })
                 .AddCookie(o =>
                            {
-                               o.Cookie.Name = "TODO";
+                               o.Cookie.Name = AuthorizationsController.COOKIE_NAME;
                                o.SlidingExpiration = false;
                            });
 
@@ -189,12 +224,15 @@ public class Startup
         services.AddScoped<IDataContext, DataContext>();
 
         // Db Queries
+        // TheResistanceOnline.Data
         services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
-        services.AddTransient<IUserDbQuery, UserDbQuery>();
+        services.AddTransient<IUserByUserIdDbQuery, UserByUserIdDbQuery>();
+        // TheResistanceOnline.Authentications
+        services.AddTransient<IMicrosoftUserByObjectIdDbQuery, MicrosoftUserByObjectIdDbQuery>();
 
         // MediatR
         // TheResistanceOnline.Authentications
-        // todo
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(AuthenticateUserWithMicrosoftHandler).Assembly));
     }
 
     #endregion
