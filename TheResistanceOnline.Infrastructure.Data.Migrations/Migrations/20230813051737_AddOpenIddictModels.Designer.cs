@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TheResistanceOnline.Data;
 
@@ -11,9 +12,11 @@ using TheResistanceOnline.Data;
 namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20230813051737_AddOpenIddictModels")]
+    partial class AddOpenIddictModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -542,6 +545,7 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid>("UserId")
+                        .HasMaxLength(450)
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("UserId1")

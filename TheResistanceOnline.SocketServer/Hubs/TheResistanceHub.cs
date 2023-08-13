@@ -7,10 +7,9 @@ using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
 using TheResistanceOnline.BusinessLogic.Games.Models;
 using TheResistanceOnline.BusinessLogic.PlayerStatistics.Models;
-using TheResistanceOnline.BusinessLogic.Users.DbQueries;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.UserSettings;
+using TheResistanceOnline.Data.Queries.UserQueries;
 
 namespace TheResistanceOnline.SocketServer.Hubs
 {
@@ -313,7 +312,7 @@ namespace TheResistanceOnline.SocketServer.Hubs
             var playerDetails = new PlayerDetailsModel
                                 {
                                     ConnectionId = Context.ConnectionId,
-                                    PlayerId = Guid.Parse(user.Id),
+                                    PlayerId = user.Id,
                                     UserName = user.UserName,
                                     ResistanceTeamWins = playerStatisticDetails.ResistanceWins,
                                     SpyTeamWins = playerStatisticDetails.SpyWins
