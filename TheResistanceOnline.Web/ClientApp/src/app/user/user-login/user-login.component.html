@@ -2,44 +2,44 @@
   <div class="login-box">
     <div class="login-io-box">
       <div class="sol-box">
-        <h2>Welcome back!</h2>
-        <div>
-          <form (ngSubmit)="loginUser(loginForm.value)" [formGroup]="loginForm" class="form-box" novalidate>
-            <div>
-              <p>Email</p>
-              <input autocomplete="username" formControlName="email" id="email" type="email" >
-              <div class="validation">
-                <em *ngIf="validateControl('email') && hasError('email', 'email')">Please provide a valid email</em>
-                <em *ngIf="validateControl('email') && hasError('email', 'required')">Email is required</em>
-              </div>
-            </div>
-            <div>
-              <p>Password</p>
-              <input autocapitalize="off" autocomplete="current-password" formControlName="password" id="password" type="password">
-              <div class="validation">
-                <em *ngIf="validateControl('password') && hasError('password', 'required')">Password is required</em>
-              </div>
-            </div>
-            <div>
-              <a class="forgot-pass-link" routerLink="/user/forgot-password">
-                <div>Forgot your password?</div>
-              </a>
-            </div>
-            <div>
-              <button [disabled]="!loginForm.valid" [style.background]="!loginForm.valid? '#72767d':''" class="login-button" type="submit">
-                Log In
-              </button>
-            </div>
-            <div>
-              <span class="iht">Need an account?<a class="register-link" routerLink="/user/register">Register</a></span>
-            </div>
-          </form>
-        </div>
-      </div>
-      <div class="sag-box">
-        <img alt="" class="logo" src="./assets/images/cyberpunk_man.png"/>
-        <h4>The Resistance Online</h4>
-      </div>
+<!--        <h2>Welcome back!</h2>-->
+<!--        <div>-->
+<!--          <form (ngSubmit)="loginUser(loginForm.value)" [formGroup]="loginForm" class="form-box" novalidate>-->
+<!--            <div>-->
+<!--              <p>Email</p>-->
+<!--              <input autocomplete="username" formControlName="email" id="email" type="email" >-->
+<!--              <div class="validation">-->
+<!--                <em *ngIf="validateControl('email') && hasError('email', 'email')">Please provide a valid email</em>-->
+<!--                <em *ngIf="validateControl('email') && hasError('email', 'required')">Email is required</em>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <div>-->
+<!--              <p>Password</p>-->
+<!--              <input autocapitalize="off" autocomplete="current-password" formControlName="password" id="password" type="password">-->
+<!--              <div class="validation">-->
+<!--                <em *ngIf="validateControl('password') && hasError('password', 'required')">Password is required</em>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <div>-->
+<!--              <a class="forgot-pass-link" routerLink="/user/forgot-password">-->
+<!--                <div>Forgot your password?</div>-->
+<!--              </a>-->
+<!--            </div>-->
+<!--            <div>-->
+<!--              <button [disabled]="!loginForm.valid" [style.background]="!loginForm.valid? '#72767d':''" class="login-button" type="submit">-->
+<!--                Log In-->
+<!--              </button>-->
+<!--            </div>-->
+<!--            <div>-->
+<!--              <span class="iht">Need an account?<a class="register-link" routerLink="/user/register">Register</a></span>-->
+<!--            </div>-->
+<!--          </form>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="sag-box">-->
+<!--        <img alt="" class="logo" src="./assets/images/cyberpunk_man.png"/>-->
+<!--        <h4>The Resistance Online</h4>-->
+<!--      </div>-->
     </div>
   </div>
 </div>

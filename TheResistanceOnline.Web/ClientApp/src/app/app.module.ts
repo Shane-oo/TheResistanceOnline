@@ -7,7 +7,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { ErrorHandlerService } from './shared/services/error-handler.service';
@@ -22,6 +21,7 @@ import {authorizationGuard} from './shared/guards/auth.guard';
 import { AdminComponent } from './admin/admin.component';
 import {adminGuard} from './shared/guards/admin.guard';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { HomeComponent } from './home/home.component';
 
 export function tokenGetter() {
   return localStorage.getItem('TheResistanceToken');
@@ -31,12 +31,12 @@ export function tokenGetter() {
             declarations: [
               AppComponent,
               NavMenuComponent,
-              HomeComponent,
               CounterComponent,
               FetchDataComponent,
               SwalContainerComponent,
               OverlayComponent,
-              AdminComponent
+              AdminComponent,
+              HomeComponent
             ],
             imports: [
               BrowserModule,
