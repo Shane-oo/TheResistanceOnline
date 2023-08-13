@@ -26,11 +26,8 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\TheResistanceOnline.Core\TheResistanceOnline.Core.csproj" />
         <ProjectReference Include="..\TheResistanceOnline.Data\TheResistanceOnline.Data.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Emails\Models" />
     </ItemGroup>
 
     <ItemGroup>

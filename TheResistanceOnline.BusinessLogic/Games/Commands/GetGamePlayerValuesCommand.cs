@@ -1,4 +1,4 @@
-using TheResistanceOnline.BusinessLogic.Core.Commands;
+using TheResistanceOnline.Core.Commands;
 
 namespace TheResistanceOnline.BusinessLogic.Games.Commands;
 
