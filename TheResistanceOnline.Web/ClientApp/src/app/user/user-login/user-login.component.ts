@@ -1,63 +1,94 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthenticationService } from '../authentication.service';
-import { SwalContainerService } from '../../../ui/swal/swal-container.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { LoginResponseModel, UserLoginModel } from '../user.models';
-import { HttpErrorResponse } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import {Component, Inject, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {HttpErrorResponse} from '@angular/common/http';
+import {DOCUMENT} from "@angular/common";
+import {Subject, takeUntil} from "rxjs";
+import jwt_decode from "jwt-decode";
+import {AuthenticationService} from "../../shared/services/authentication/authentication.service";
+import {AuthenticationModel} from "../../shared/models/authentication.models";
+import {StateService} from "../../shared/services/state/state.service";
 
 @Component({
-             selector: 'app-user-login',
-             templateUrl: './user-login.component.html',
-             styleUrls: ['./user-login.component.css']
-           })
+    selector: 'app-user-login',
+    templateUrl: './user-login.component.html',
+    styleUrls: ['./user-login.component.css']
+})
 export class UserLoginComponent implements OnInit {
-  public loginForm: FormGroup = new FormGroup({});
-  private returnUrl: string = '';
+    private readonly destroyed = new Subject<void>();
+    private isLoggingIn: boolean = false;
+    private window: WindowProxy;
 
-  constructor(private authService: AuthenticationService, private swalService: SwalContainerService, private router: Router, private route: ActivatedRoute) {
-  }
+    constructor(@Inject(DOCUMENT) private document: Document,
+                private authService: AuthenticationService,
+                private stateService: StateService,
+                private _router: Router,
+                private _activatedRoute: ActivatedRoute) {
+        this.window = document.defaultView!;
 
-  ngOnInit(): void {
-    this.loginForm = new FormGroup({
-                                     email: new FormControl('', [Validators.required, Validators.email]),
-                                     password: new FormControl('', [Validators.required])
+    }
 
-                                   });
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-  }
+    ngOnInit(): void {
 
-  validateControl = (controlName: string) => {
-    return this.loginForm.get(controlName)?.invalid && this.loginForm.get(controlName)?.touched;
-  };
+        this._activatedRoute.queryParams.pipe(takeUntil(this.destroyed))
+            .subscribe((params) => {
+                if (params.code) {
+                    this.logInWithAuthorizationCode(params.code)
 
-  hasError = (controlName: string, errorName: string) => {
-    return this.loginForm.get(controlName)?.hasError(errorName);
-  };
+                }
+                if (params.error_description) {
+                    // todo something with error
+                    console.log(params.error_description);
+                    this.reload();
+                }
+            })
+    }
 
-  loginUser = (loginFormValue: UserLoginModel) => {
-    const login = {...loginFormValue};
+    ngOnDestroy() {
+        this.destroyed.next();
+        this.destroyed.complete();
+    }
 
-    const user: UserLoginModel = {
-      email: login.email,
-      password: login.password,
-      clientUri: `${environment.Base_URL}/user/reset-password`
-    };
 
-    this.authService.loginUser(user).subscribe({
-                                                 next: (response: LoginResponseModel) => {
-                                                   localStorage.setItem('TheResistanceToken', response.token);
-                                                   this.authService.sendAuthStateChange(true);
+    authorize(provider: string) {
+        const redirectUri = this.getRedirectUrl();
+        this.authService.authorize(redirectUri, provider);
+    }
 
-                                                   // Route to redirect url or homepage
-                                                   this.router.navigate([this.returnUrl]).then(r => {
-                                                   });
-                                                 },
-                                                 error: (err: HttpErrorResponse) => {
-                                                   console.log(err);
-                                                 }
-                                               });
-  };
+    private logInWithAuthorizationCode(code: string) {
+        if (this.isLoggingIn) {
+            this.isLoggingIn = true;
+
+            const redirectUri = this.getRedirectUrl();
+
+            this.authService.logInWithAuthorizationCode(code, redirectUri).subscribe({
+                next: (response: AuthenticationModel) => {
+                    const idTokenDecoded = jwt_decode<AuthenticationModel>(response.id_token);
+                    response.role = idTokenDecoded.role;
+
+                    this.authService.authenticationData = response;
+                    this.stateService.userName = idTokenDecoded.name;
+
+                    this.authService.sendAuthStateChangeNotification(true);
+
+                    this._router.navigate([this.stateService.returnUrl]).then(r => {
+                        this.stateService.returnUrl = "/";
+                    })
+                },
+                error: (err: HttpErrorResponse) => {
+                    this.isLoggingIn = false;
+                    this.reload();
+                }
+            })
+        }
+    }
+
+    private reload() {
+        // remove error from queryParams
+        this._router.navigate(['./']);
+    }
+
+    private getRedirectUrl(): string {
+        return this.window.location.origin + this.window.location.pathname;
+    }
 
 }

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthenticationService} from '../user/authentication.service';
 import {Router} from '@angular/router';
 import {navbarDataLoggedIn, navbarDataNotLoggedIn} from './nav-data';
+import {AuthenticationService} from "../shared/services/authentication/authentication.service";
 
 @Component({
     selector: 'app-nav-menu',
@@ -15,8 +15,8 @@ export class NavMenuComponent implements OnInit {
     navDataLoggedIn = navbarDataLoggedIn;
     navDataNotLoggedIn = navbarDataNotLoggedIn;
 
-    constructor(private authService: AuthenticationService, private router: Router) {
-        this.authService.authChanged.subscribe(res => {
+    constructor(private authService: AuthenticationService, private _router: Router) {
+        this.authService.authChangedObservable.subscribe((res: boolean) => {
             this.isUserAuthenticated = res;
             this.isUserAdmin = this.authService.isUserAdmin();
         });
@@ -28,8 +28,7 @@ export class NavMenuComponent implements OnInit {
 
 
     logout() {
-        this.authService.logout();
-        this.router.navigate(['/user/login']).then(r => {
-        });
+        this.authService.logOut();
+        this._router.navigate(['/']);
     }
 }

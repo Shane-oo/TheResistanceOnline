@@ -1,6 +1,6 @@
 import {CanActivateFn, Router} from '@angular/router';
 import {inject} from "@angular/core";
-import {AuthenticationService} from "../../user/authentication.service";
+import {AuthenticationService} from "../services/authentication/authentication.service";
 
 export const adminGuard: CanActivateFn = (route, state) => {
     const authService = inject(AuthenticationService);
@@ -9,6 +9,6 @@ export const adminGuard: CanActivateFn = (route, state) => {
         return true;
     }
     // If they are not admin return them home
-    router.navigate(['/'])
+    router.navigate(['/']);
     return false;
 };

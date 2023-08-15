@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { AuthenticationService } from './authentication.service';
 import { UserSettingsUpdateCommand } from './user-settings.models';
 
 @Injectable({
@@ -12,11 +11,11 @@ export class UserSettingsService {
   private readonly userSettingsEndpoint = '/api/UserSettings';
 
   // environment.API_URL
-  constructor(private http: HttpClient, private router: Router, private authService: AuthenticationService) {
+  constructor(private http: HttpClient, private router: Router) {
   }
 
   public updateUserSettings = (body: UserSettingsUpdateCommand) => {
-    body.userId = this.authService.getUserId();
+    //body.userId = this.authService.getUserId();
     return this.http.post(`${environment.API_URL}${this.userSettingsEndpoint}/UpdateUserSettings`, body);
   };
 }

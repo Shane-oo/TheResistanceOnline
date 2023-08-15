@@ -62,7 +62,7 @@
 
 .active {
     color: #fefcf9;
-    text-decoration: underline;
+    text-decoration: #d48325 underline;
 }
 
 .logout:hover {
