@@ -28,12 +28,10 @@ export class UserLoginComponent implements OnInit {
     }
 
     ngOnInit(): void {
-
         this._activatedRoute.queryParams.pipe(takeUntil(this.destroyed))
             .subscribe((params) => {
                 if (params.code) {
                     this.logInWithAuthorizationCode(params.code)
-
                 }
                 if (params.error_description) {
                     // todo something with error
@@ -55,7 +53,7 @@ export class UserLoginComponent implements OnInit {
     }
 
     private logInWithAuthorizationCode(code: string) {
-        if (this.isLoggingIn) {
+        if (!this.isLoggingIn) {
             this.isLoggingIn = true;
 
             const redirectUri = this.getRedirectUrl();

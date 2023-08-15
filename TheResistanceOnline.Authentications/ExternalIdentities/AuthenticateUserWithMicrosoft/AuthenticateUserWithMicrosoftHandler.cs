@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using TheResistanceOnline.Common.Extensions;
 using TheResistanceOnline.Core;
 using TheResistanceOnline.Data;
@@ -27,12 +28,12 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
     public AuthenticateUserWithMicrosoftHandler(IDataContext dataContext,
                                                 UserManager<User> userManager,
                                                 RoleManager<Role> roleManager, //todo delete
-                                                AppSettings appSettings)
+                                                IOptions<AppSettings> appSettings)
     {
         _dataContext = dataContext;
         _userManager = userManager;
         _roleManager = roleManager; //todo delete
-        _appSettings = appSettings;
+        _appSettings = appSettings.Value;
     }
 
     #endregion
@@ -87,7 +88,7 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
         }
         //
 
-        await _userManager.AddToRoleAsync(user, Roles.User.ToString());
+        await _userManager.AddToRoleAsync(user, Roles.Admin.ToString());   //todo change back to just user
 
         return AuthenticationResult<Guid>.Accept(user.Id);
     }

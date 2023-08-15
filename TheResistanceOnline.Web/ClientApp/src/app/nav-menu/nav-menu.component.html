@@ -1,29 +1,37 @@
 <div class="navbar">
-    <div>
-        <span class="logo text-color">The Resistance.Online</span>
-    </div>
-    <ul *ngIf="isUserAuthenticated" class="navbar-nav">
-        <li *ngFor="let data of navDataLoggedIn" class="navbar-nav-item">
-            <a [routerLinkActiveOptions]="{exact:true}" [routerLink]="[data.routeLink]"
-               class="navbar-nav-link"
-               routerLinkActive="active">
-                <span class="navbar-link-text">{{data.label}}</span>
-            </a>
-        </li>
-        <li class="navbar-nav-item logout">
-            <a (click)="logout()" class="navbar-nav-link">
-                <span class="navbar-link-text">Logout</span>
-            </a>
-        </li>
-    </ul>
-    <ul *ngIf="!isUserAuthenticated" class="navbar-nav">
-        <li *ngFor="let data of navDataNotLoggedIn" class="navbar-nav-item">
-            <a [routerLinkActiveOptions]="{exact:true}" [routerLink]="[data.routeLink]"
-               class="navbar-nav-link"
-               routerLinkActive="active">
-                <span class="navbar-link-text">{{data.label}}</span>
-            </a>
-        </li>
-    </ul>
-    <!--To Do Admin Component-->
+  <div>
+    <span class="logo text-color">The Resistance.Online</span>
+  </div>
+  <ul *ngIf="isUserAuthenticated" class="navbar-nav">
+    <li *ngFor="let data of navDataLoggedIn" class="navbar-nav-item">
+      <a [routerLinkActiveOptions]="{exact:true}" [routerLink]="[data.routeLink]"
+         class="navbar-nav-link"
+         routerLinkActive="active">
+        <span class="navbar-link-text">{{data.label}}</span>
+      </a>
+    </li>
+    <li *ngIf="isUserAdmin" class="navbar-nav-item">
+      <a [routerLinkActiveOptions]="{exact:true}" [routerLink]="['/']"
+         class="navbar-nav-link"
+         routerLinkActive="active">
+        <span class="navbar-link-text">Admin</span>
+      </a>
+    </li>
+    <li class="navbar-nav-item logout">
+      <a (click)="logout()" class="navbar-nav-link">
+        <span class="navbar-link-text">Logout</span>
+      </a>
+    </li>
+
+  </ul>
+  <ul *ngIf="!isUserAuthenticated" class="navbar-nav">
+    <li *ngFor="let data of navDataNotLoggedIn" class="navbar-nav-item">
+      <a [routerLinkActiveOptions]="{exact:true}" [routerLink]="[data.routeLink]"
+         class="navbar-nav-link"
+         routerLinkActive="active">
+        <span class="navbar-link-text">{{data.label}}</span>
+      </a>
+    </li>
+
+  </ul>
 </div>
