@@ -5,6 +5,7 @@ namespace TheResistanceOnline.Web.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class WeatherForecastController: ApiControllerBase
 {
     #region Fields

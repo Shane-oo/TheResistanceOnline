@@ -1,4 +1,4 @@
-using TheResistanceOnline.Core.Commands;
+using TheResistanceOnline.Core.Requests.Commands;
 
 namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
 

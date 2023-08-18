@@ -2,7 +2,7 @@
   "profiles": {
     "TheResistanceOnline.Web": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "applicationUrl": "https://localhost:7158",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",

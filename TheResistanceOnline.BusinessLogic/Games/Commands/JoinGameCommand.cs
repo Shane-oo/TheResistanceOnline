@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using JetBrains.Annotations;
-using TheResistanceOnline.Core.Commands;
+using TheResistanceOnline.Core.Requests.Commands;
 
 namespace TheResistanceOnline.BusinessLogic.Games.Commands
 {

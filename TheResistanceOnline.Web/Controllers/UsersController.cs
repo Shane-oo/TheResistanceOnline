@@ -1,5 +1,8 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TheResistanceOnline.Core.Exceptions;
+using TheResistanceOnline.Users.Users.GetUser;
 
 namespace TheResistanceOnline.Web.Controllers;
 
@@ -8,38 +11,39 @@ namespace TheResistanceOnline.Web.Controllers;
 [Authorize]
 public class UsersController: ApiControllerBase
 {
-    // #region Fields
-    //
-    // private readonly IUserService _userService;
-    //
-    // #endregion
-    //
-    // #region Construction
-    //
-    // public UsersController(IUserService userService)
-    // {
-    //     _userService = userService;
-    // }
-    //
-    // #endregion
-    //
-    // #region Public Methods
-    //
-    // [HttpGet("{userId}")]
-    // public async Task<ActionResult<UserDetailsModel>> GetUser([FromRoute] ByIdQuery query)
-    // {
-    //     try
-    //     {
-    //         var userDetails = await _userService.GetUserByUserIdAsync(query);
-    //         return Ok(userDetails);
-    //     }
-    //     catch(Exception ex)
-    //     {
-    //         return BadRequest(ex.Message);
-    //     }
-    // }
-    //
-    // #endregion
+    #region Fields
+
+    private readonly IMediator _mediator;
+
+    #endregion
+
+    #region Construction
+
+    public UsersController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    #endregion
+
+    #region Public Methods
+
+    //[AuthorizeRoles(Roles.Admin)] 
+    [HttpGet]
+    public async Task<ActionResult<UserDetailsModel>> GetUser([FromRoute] GetUserQuery query, CancellationToken cancellationToken)
+    {
+        SetRequest(query);
+
+      
+            var userDetails = await _mediator.Send(query, cancellationToken);
+            return Ok(userDetails);
+       
+      
+      
+      
+    }
+
+    #endregion
 
 
     // [Route("Roles")]

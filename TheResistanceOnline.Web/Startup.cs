@@ -7,12 +7,15 @@ using OpenIddict.Validation.AspNetCore;
 using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
 using TheResistanceOnline.Common.ValidationHelpers;
 using TheResistanceOnline.Core;
+using TheResistanceOnline.Core.Security;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities.AuthorizationEntities;
 using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Data.Queries.UserQueries;
+using TheResistanceOnline.Users.Users.GetUser;
 using TheResistanceOnline.Web.Controllers;
+using TheResistanceOnline.Web.Middlewares;
 
 namespace TheResistanceOnline.Web;
 
@@ -166,9 +169,9 @@ public class Startup
                            })
                 .AddServer(o =>
                            {
-                               o.SetAccessTokenLifetime(TimeSpan.FromHours(1))
-                                .SetRefreshTokenLifetime(TimeSpan.FromDays(14))
-                                .SetIdentityTokenLifetime(TimeSpan.FromHours(1));
+                               o.SetAccessTokenLifetime(TimeSpan.FromMinutes(90))
+                                .SetRefreshTokenLifetime(TimeSpan.FromDays(31))
+                                .SetIdentityTokenLifetime(TimeSpan.FromMinutes(90));
 
                                o.AllowAuthorizationCodeFlow()
                                 .AllowRefreshTokenFlow();
@@ -222,6 +225,7 @@ public class Startup
         // Dependency Injection
         // Data Context
         services.AddScoped<IDataContext, DataContext>();
+        // Services
 
         // Db Queries
         // TheResistanceOnline.Data
@@ -230,9 +234,18 @@ public class Startup
         // TheResistanceOnline.Authentications
         services.AddTransient<IMicrosoftUserByObjectIdDbQuery, MicrosoftUserByObjectIdDbQuery>();
 
+        var assemblies = new[]
+                         {
+                             // TheResistanceOnline.Authentications
+                             typeof(AuthenticateUserWithMicrosoftHandler).Assembly,
+                             // TheResistanceOnline.Users
+                             typeof(GetUserHandler).Assembly
+                         };
         // MediatR
-        // TheResistanceOnline.Authentications
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(AuthenticateUserWithMicrosoftHandler).Assembly));
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
+
+        // AutoMapper
+        services.AddAutoMapper(assemblies);
     }
 
     #endregion

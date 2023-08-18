@@ -49,6 +49,7 @@
         <ProjectReference Include="..\TheResistanceOnline.BusinessLogic\TheResistanceOnline.BusinessLogic.csproj" />
         <ProjectReference Include="..\TheResistanceOnline.Common\TheResistanceOnline.Common.csproj" />
         <ProjectReference Include="..\TheResistanceOnline.Data\TheResistanceOnline.Data.csproj" />
+        <ProjectReference Include="..\TheResistanceOnline.Users\TheResistanceOnline.Users.csproj" />
     </ItemGroup>
 
     <ItemGroup>

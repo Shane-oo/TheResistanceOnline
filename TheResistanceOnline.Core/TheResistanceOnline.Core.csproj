@@ -3,15 +3,21 @@
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
     </PropertyGroup>
-
-    <ItemGroup>
-      <Folder Include="Queries\" />
-    </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="MediatR" Version="12.1.1" />
     </ItemGroup>
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\TheResistanceOnline.Common\TheResistanceOnline.Common.csproj" />
+      <ProjectReference Include="..\TheResistanceOnline.Data\TheResistanceOnline.Data.csproj" />
+    </ItemGroup>
+
+
+
+
 
 </Project>

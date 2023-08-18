@@ -22,55 +22,62 @@ import {authorizationGuard} from './shared/guards/auth.guard';
 import {AdminComponent} from './admin/admin.component';
 import {adminGuard} from './shared/guards/admin.guard';
 import {HomeComponent} from './home/home.component';
+import {AuthenticationInterceptor} from "./shared/services/authentication/authentication.interceptor";
 
 export function tokenGetter() {
-    return localStorage.getItem('TheResistanceToken');
+  return localStorage.getItem('TheResistanceToken');
 }
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        NavMenuComponent,
-        CounterComponent,
-        FetchDataComponent,
-        SwalContainerComponent,
-        OverlayComponent,
-        AdminComponent,
-        HomeComponent
-    ],
-    imports: [
-        BrowserModule,
-        BrowserAnimationsModule,
-        HttpClientModule,
-        FormsModule,
-        RouterModule.forRoot([
-            {path: '', component: HomeComponent, pathMatch: 'full'},
-            {path: 'counter', component: CounterComponent},
-            {path: 'fetch-data', component: FetchDataComponent, canActivate: [authorizationGuard]},
-            {
-                path: 'user',
-                loadChildren: () => import('./user/user.module').then(m => m.UserModule)
-            },
-            {path: 'admin', component: AdminComponent, canActivate: [authorizationGuard, adminGuard]},
-            {
-                path: 'the-resistance-game',
-                loadChildren: () => import('./the-resistance-game/the-resistance-game.module').then(m => m.TheResistanceGameModule),
-                canActivate: [authorizationGuard]
-            }
-        ], {initialNavigation: 'enabledBlocking'}),
-        SweetAlert2Module.forRoot(),
-        NgbModule
-    ],
-    providers: [
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: ErrorHandlerService,
-            multi: true
-        },
-        SwalContainerService,
-        OverlayService],
-    exports: [],
-    bootstrap: [AppComponent]
+  declarations: [
+    AppComponent,
+    NavMenuComponent,
+    CounterComponent,
+    FetchDataComponent,
+    SwalContainerComponent,
+    OverlayComponent,
+    AdminComponent,
+    HomeComponent
+  ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    FormsModule,
+    RouterModule.forRoot([
+      {path: '', component: HomeComponent, pathMatch: 'full'},
+      {path: 'counter', component: CounterComponent},
+      {path: 'fetch-data', component: FetchDataComponent, canActivate: [authorizationGuard]},
+      {
+        path: 'user',
+        loadChildren: () => import('./user/user.module').then(m => m.UserModule)
+      },
+      {path: 'admin', component: AdminComponent, canActivate: [authorizationGuard, adminGuard]},
+      {
+        path: 'the-resistance-game',
+        loadChildren: () => import('./the-resistance-game/the-resistance-game.module').then(m => m.TheResistanceGameModule),
+        canActivate: [authorizationGuard]
+      }
+    ], {initialNavigation: 'enabledBlocking'}),
+    SweetAlert2Module.forRoot(),
+    NgbModule
+  ],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorHandlerService,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthenticationInterceptor,
+      multi: true
+    },
+
+    SwalContainerService,
+    OverlayService],
+  exports: [],
+  bootstrap: [AppComponent]
 })
 export class AppModule {
 }

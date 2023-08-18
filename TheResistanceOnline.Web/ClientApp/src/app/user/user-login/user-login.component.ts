@@ -58,7 +58,9 @@ export class UserLoginComponent implements OnInit {
 
             const redirectUri = this.getRedirectUrl();
 
-            this.authService.logInWithAuthorizationCode(code, redirectUri).subscribe({
+            this.authService.logInWithAuthorizationCode(code, redirectUri)
+              .pipe(takeUntil(this.destroyed))
+              .subscribe({
                 next: (response: AuthenticationModel) => {
                     const idTokenDecoded = jwt_decode<AuthenticationModel>(response.id_token);
                     response.role = idTokenDecoded.role;
