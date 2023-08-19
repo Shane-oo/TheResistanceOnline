@@ -5,8 +5,7 @@ import { environment } from '../../environments/environment';
 import * as signalR from '@microsoft/signalr';
 import { IHttpConnectionOptions } from '@microsoft/signalr';
 import { Subject } from 'rxjs';
-import { SwalContainerService, SwalTypesModel } from '../../ui/swal/swal-container.service';
-import { UserSettingsService } from '../user/user-settings.service';
+import { SwalContainerService, SwalTypes } from '../../ui/swal/swal-container.service';
 
 
 @Injectable({
@@ -44,7 +43,7 @@ export class TheResistanceGameService {
     .configureLogging(signalR.LogLevel.Error)
     .build();
 
-  constructor(private http: HttpClient, private swalService: SwalContainerService, private userSettingsService: UserSettingsService) {
+  constructor(private http: HttpClient, private swalService: SwalContainerService) {
   }
 
   // start the connection
@@ -52,10 +51,10 @@ export class TheResistanceGameService {
     try {
       console.log('trying to connect');
       await this.connection.start();
-      this.swalService.showSwal('Connected To Server', SwalTypesModel.Success);
+      this.swalService.showSwal('Connected To Server', SwalTypes.Success);
     } catch(err) {
       console.log(err);
-      this.swalService.showSwal('Error Connecting To Server', SwalTypesModel.Error);
+      this.swalService.showSwal('Error Connecting To Server', SwalTypes.Error);
       setTimeout(() => this.start(), 30000);
     }
   }

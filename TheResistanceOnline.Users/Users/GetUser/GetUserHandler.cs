@@ -19,7 +19,7 @@ public class GetUserHandler: IRequestHandler<GetUserQuery, UserDetailsModel>
 
     #region Construction
 
-    public GetUserHandler(IDataContext context,  IMapper mapper)
+    public GetUserHandler(IDataContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
@@ -41,8 +41,6 @@ public class GetUserHandler: IRequestHandler<GetUserQuery, UserDetailsModel>
 
         NotFoundException.ThrowIfNull(user);
 
-        throw new Exception("OH NOOOOO");
-        
         return _mapper.Map<UserDetailsModel>(user);
     }
 

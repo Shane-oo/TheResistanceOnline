@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { PlayerDetails } from '../../app/the-resistance-game/the-resistance-game.models';
 
-export const enum SwalTypesModel {
+export const enum SwalTypes {
   Info,
   Success,
   Warning,
@@ -24,7 +24,7 @@ export class SwalContainerService {
   constructor(private readonly overlayService: OverlayService) {
   }
 
-  public showSwal(message: string, type: SwalTypesModel) {
+  public showSwal(message: string, type: SwalTypes) {
     if(!this.container) {
       this.container = this.overlayService.addComponent(SwalContainerComponent);
     }
@@ -33,10 +33,10 @@ export class SwalContainerService {
     this.container.instance.message = message;
 
     switch(type) {
-      case SwalTypesModel.Error:
+      case SwalTypes.Error:
         this.container.instance.isError = true;
         break;
-      case SwalTypesModel.Success:
+      case SwalTypes.Success:
         this.container.instance.isSuccess = true;
         break;
     }
@@ -122,14 +122,3 @@ export class SwalContainerService {
       this.windowSizeIsSmall = window.innerWidth < 760;
   }
 }
-
-//  public showDiscordLoginRequested = () => {
-//
-//     // this.gameService.gameDetailsChanged.subscribe((value: GameDetails) => {
-//     //   this.gameDetails = value;
-//     //   this.userInGame = true;
-//     // });
-//     this.container.instance.discordLoginResponseChanged.subscribe((value: DiscordLoginResponseModel) => {
-//       return value;
-//     });
-//   };

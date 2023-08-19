@@ -7,7 +7,6 @@ using OpenIddict.Validation.AspNetCore;
 using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
 using TheResistanceOnline.Common.ValidationHelpers;
 using TheResistanceOnline.Core;
-using TheResistanceOnline.Core.Security;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities.AuthorizationEntities;
 using TheResistanceOnline.Data.Entities.UserEntities;
@@ -15,7 +14,6 @@ using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Data.Queries.UserQueries;
 using TheResistanceOnline.Users.Users.GetUser;
 using TheResistanceOnline.Web.Controllers;
-using TheResistanceOnline.Web.Middlewares;
 
 namespace TheResistanceOnline.Web;
 

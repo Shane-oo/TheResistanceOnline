@@ -424,13 +424,7 @@ code {
 }*/
 
 
-.swal {
-    font-family: ethnocentric, sans-serif;
-    font-size: 15px;
-    color: whitesmoke;
-    text-align: left;
 
-}
 
 /*Home Page*/
 
@@ -500,4 +494,17 @@ body {
 }
 
 
-/* Nav Menu */
+/* Swal */
+
+.swal-text {
+  font-family: inconsolata, serif;
+  font-size: 15px;
+  color: #f8e9d8;
+  text-align: left;
+  text-transform: capitalize;
+}
+.swal2-popup {
+  margin-top: 70px;
+  border: solid 1px #d48325 !important;
+  border-radius: 1px !important;
+}

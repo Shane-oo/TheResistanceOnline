@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {catchError, Observable, throwError} from 'rxjs';
-import {Router} from '@angular/router';
-import {SwalContainerService, SwalTypesModel} from '../../../ui/swal/swal-container.service';
+import {SwalContainerService, SwalTypes} from '../../../ui/swal/swal-container.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,43 +9,46 @@ import {SwalContainerService, SwalTypesModel} from '../../../ui/swal/swal-contai
 
 export class ErrorHandlerService implements HttpInterceptor {
 
-  constructor(private router: Router, private swalService: SwalContainerService) {
+  constructor(private swalService: SwalContainerService) {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req)
       .pipe(
         catchError((error: HttpErrorResponse) => {
-          this.handleError(error);
-          return throwError(() => new Error(""));
+          const errorMessage = this.handleError(error);
+          return throwError(() => new Error(errorMessage));
         })
       );
   }
 
-  private handleError = (error: HttpErrorResponse): void => {
+  private handleError = (error: HttpErrorResponse): string => {
     if (error.status === 404) {
-      this.handleNotFound(error);
+      return this.handleNotFound(error);
     } else if (error.status === 400) {
-      this.handleBadRequest(error);
+      return this.handleBadRequest(error);
     } else if (error.status === 500) {
-      this.handleBadRequest(error);
+      return this.handleInternalServerError(error);
     }
 
-
+    return "";
   };
 
   private handleNotFound = (error: HttpErrorResponse): string => {
-    // Id rather send them to home page and display a swal error
-    console.log('handle not found', error);
-    //this.router.navigate(['/404']);
-    return error.message;
+    const errorMessage = error.error;
+    this.swalService.showSwal(errorMessage, SwalTypes.Error);
+    return errorMessage;
   };
 
-  private handleBadRequest = (error: HttpErrorResponse) => {
-    console.log(error.error);
-    console.log(error.message);
-    this.swalService.showSwal(error.message, SwalTypesModel.Error);
-    return;
+  private handleBadRequest = (error: HttpErrorResponse): string => {
+    const errorMessage = error.error;
+    this.swalService.showSwal(errorMessage, SwalTypes.Error);
+    return errorMessage;
   };
 
+  private handleInternalServerError = (error: HttpErrorResponse): string => {
+    const errorMessage = error.error.detail;
+    this.swalService.showSwal(errorMessage, SwalTypes.Error);
+    return errorMessage;
+  }
 }
