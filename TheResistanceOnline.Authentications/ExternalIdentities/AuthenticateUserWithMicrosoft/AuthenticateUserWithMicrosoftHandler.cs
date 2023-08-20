@@ -44,7 +44,7 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
     {
         var user = new User
                    {
-                       UserName = "User-" + Ulid.NewUlid(),
+                       UserName = "User" + Ulid.NewUlid(),
                        MicrosoftUser = new MicrosoftUser
                                        {
                                            ObjectId = command.ObjectId

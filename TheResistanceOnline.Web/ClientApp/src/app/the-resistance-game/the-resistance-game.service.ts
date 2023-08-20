@@ -51,10 +51,10 @@ export class TheResistanceGameService {
     try {
       console.log('trying to connect');
       await this.connection.start();
-      this.swalService.showSwal('Connected To Server', SwalTypes.Success);
+      this.swalService.showSwal( SwalTypes.Success,'Connected To Server');
     } catch(err) {
       console.log(err);
-      this.swalService.showSwal('Error Connecting To Server', SwalTypes.Error);
+      this.swalService.showSwal( SwalTypes.Error,'Error Connecting To Server');
       setTimeout(() => this.start(), 30000);
     }
   }

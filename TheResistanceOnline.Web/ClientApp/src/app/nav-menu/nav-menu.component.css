@@ -6,6 +6,7 @@
     height: auto;
     box-shadow: 0 0 0.275rem 0 #d48325;
     top: 0;
+
 }
 
 
@@ -32,6 +33,14 @@
     flex-direction: row; /* Change to a horizontal layout */
     justify-content: flex-start; /* Align items at the top */
     height: auto; /* Allow content to expand */
+    overflow-x: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+/* Hide horizontal scroll bar*/
+.navbar-nav::-webkit-scrollbar { /* WebKit */
+  width: 0;
+  height: 0;
 }
 
 .navbar-nav-item {

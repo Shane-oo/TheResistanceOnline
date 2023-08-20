@@ -1,4 +1,5 @@
 using System.Security.Cryptography.X509Certificates;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -244,6 +245,13 @@ public class Startup
 
         // AutoMapper
         services.AddAutoMapper(assemblies);
+
+        // FluentValidation
+        foreach(var assembly in assemblies)
+        {
+            services.AddValidatorsFromAssembly(assembly);
+        }
+        
     }
 
     #endregion

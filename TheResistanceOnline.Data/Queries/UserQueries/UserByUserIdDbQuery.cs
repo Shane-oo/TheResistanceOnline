@@ -7,12 +7,16 @@ public interface IUserByUserIdDbQuery: IDbQuery<User>
 {
     IUserByUserIdDbQuery Include(params string[] include);
 
+    IUserByUserIdDbQuery WithNoTracking();
+
     IUserByUserIdDbQuery WithParams(Guid userId);
 }
 
 public class UserByUserIdDbQuery: IUserByUserIdDbQuery
 {
     #region Fields
+
+    private bool _asNoTracking;
 
     private readonly Context _context;
     private string[] _include;
@@ -40,12 +44,23 @@ public class UserByUserIdDbQuery: IUserByUserIdDbQuery
             query = _include.Aggregate(query, (current, expression) => current.Include(expression));
         }
 
+        if (_asNoTracking)
+        {
+            query = query.AsNoTracking();
+        }
+
         return await query.FirstOrDefaultAsync(cancellationToken);
     }
 
     public IUserByUserIdDbQuery Include(params string[] include)
     {
         _include = include;
+        return this;
+    }
+
+    public IUserByUserIdDbQuery WithNoTracking()
+    {
+        _asNoTracking = true;
         return this;
     }
 

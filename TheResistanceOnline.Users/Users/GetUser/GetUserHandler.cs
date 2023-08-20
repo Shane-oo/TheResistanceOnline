@@ -37,6 +37,7 @@ public class GetUserHandler: IRequestHandler<GetUserQuery, UserDetailsModel>
 
         var user = await _context.Query<IUserByUserIdDbQuery>()
                                  .WithParams(query.UserId)
+                                 .WithNoTracking()
                                  .ExecuteAsync(cancellationToken);
 
         NotFoundException.ThrowIfNull(user);

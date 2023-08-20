@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.Users.Users.GetUser;
+using TheResistanceOnline.Users.Users.UpdateUser;
 
 namespace TheResistanceOnline.Web.Controllers;
 
@@ -55,7 +56,7 @@ public class UsersController: ApiControllerBase
         {
             return Forbid();
         }
-        catch(TaskCanceledException)
+        catch(OperationCanceledException)
         {
             return NoContent();
         }
@@ -64,6 +65,39 @@ public class UsersController: ApiControllerBase
             _logger.LogError("{ExMessage}. {InnerExceptionMessage}", ex.Message, ex.InnerException?.Message);
             return Problem(_environment.IsDevelopment() ? ex.Message : "Something Went Wrong");
         }
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<UserDetailsModel>> UpdateUser(UpdateUserCommand command, CancellationToken cancellationToken)
+    {
+        SetRequest(command);
+        try
+        {
+            await _mediator.Send(command, cancellationToken);
+        }
+        catch(DomainException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch(NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch(UnauthorizedException)
+        {
+            return Forbid();
+        }
+        catch(OperationCanceledException)
+        {
+            return NoContent();
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError("{ExMessage}. {InnerExceptionMessage}", ex.Message, ex.InnerException?.Message);
+            return Problem(_environment.IsDevelopment() ? ex.Message : "Something Went Wrong");
+        }
+
+        return await GetUser(new GetUserQuery(command.UserId, command.UserRole), cancellationToken);
     }
 
     #endregion

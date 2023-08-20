@@ -5,7 +5,6 @@ namespace TheResistanceOnline.Core.Requests.Commands;
 
 public interface ICommand<out TResponse>: IRequest<TResponse>, IRequestBase
 {
-    public Guid CommandId { get; set; }
 }
 
 public class CommandBase<TResponse>: ICommand<TResponse>
@@ -22,12 +21,12 @@ public class CommandBase<TResponse>: ICommand<TResponse>
 
     #region Construction
 
-    protected CommandBase()
+    public CommandBase()
     {
         CommandId = Guid.NewGuid();
     }
 
-    protected CommandBase(Guid userId, Roles userRole)
+    public CommandBase(Guid userId, Roles userRole)
     {
         UserId = userId;
         UserRole = userRole;
@@ -44,11 +43,7 @@ public class CommandBase: CommandBase<Unit> // for commands that return default 
     {
     }
 
-    #endregion
-
-    #region Construction
-
-    protected CommandBase()
+    public CommandBase()
     {
     }
 

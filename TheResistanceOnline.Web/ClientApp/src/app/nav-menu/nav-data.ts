@@ -12,12 +12,6 @@ export const navbarDataLoggedIn = [
         icon: 'videogame_asset',
         label: 'Game'
     },
-    //Account Component
-    {
-        routeLink: 'user/user-edit',
-        icon: 'manage_accounts',
-        label: 'Account'
-    }
 ];
 
 export const navbarDataNotLoggedIn = [

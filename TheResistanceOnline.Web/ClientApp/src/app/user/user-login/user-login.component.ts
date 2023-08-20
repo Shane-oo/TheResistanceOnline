@@ -36,7 +36,7 @@ export class UserLoginComponent implements OnInit {
           this.logInWithAuthorizationCode(params.code)
         }
         if (params.error_description) {
-          this.swalService.showSwal(params.error_description, SwalTypes.Error);
+          this.swalService.showSwal(SwalTypes.Error, params.error_description);
           this.reload();
         }
       })

@@ -14,6 +14,12 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
     {
         builder.ToTable("Users");
 
+        builder.Property(u => u.UserName)
+               .HasMaxLength(31);
+
+        builder.Property(u => u.NormalizedUserName)
+               .HasMaxLength(31);
+
         // Each User can have many UserClaims
         builder.HasMany(e => e.UserClaims)
                .WithOne(e => e.User)

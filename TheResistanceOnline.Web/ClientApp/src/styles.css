@@ -2,26 +2,26 @@
 
 /* Provide sufficient contrast against white background */
 a {
-    color: #0366d6;
+  color: #0366d6;
 }
 
 code {
-    color: #e01a76;
+  color: #e01a76;
 }
 
 .btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
 }
 
 /* Style the video: 100% width and height to cover the entire window */
 #Image {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    min-width: 100%;
-    min-height: 100%;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
 }
 
 
@@ -35,371 +35,371 @@ code {
  font
 */
 @font-face {
-    font-family: "ethnocentric";
-    src: url("./assets/fonts/ethnocentric_bd-webfont.ttf") format("truetype");
+  font-family: "ethnocentric";
+  src: url("./assets/fonts/ethnocentric_bd-webfont.ttf") format("truetype");
 }
 
 @font-face {
-    font-family: "yuzu";
-    src: url("./assets/fonts/Yuzu.ttf") format("truetype");
+  font-family: "yuzu";
+  src: url("./assets/fonts/Yuzu.ttf") format("truetype");
 }
 
 @font-face {
-    font-family: "satella";
-    src: url("./assets/fonts/SatellaRegular-ZVVaz.ttf") format("truetype");
+  font-family: "satella";
+  src: url("./assets/fonts/SatellaRegular-ZVVaz.ttf") format("truetype");
 }
 
 @font-face {
-    font-family: "inconsolata";
-    src: url("./assets/fonts/Inconsolata-VariableFont_wdth,wght.ttf") format("truetype");
+  font-family: "inconsolata";
+  src: url("./assets/fonts/Inconsolata-VariableFont_wdth,wght.ttf") format("truetype");
 }
 
 #gui {
-    position: absolute;
-    top: 25px;
-    left: 2px
+  position: absolute;
+  top: 25px;
+  left: 2px
 }
 
 .userList {
-    font-family: satella, serif;
-    font-size: 28px;
-    color: #fc0114;
+  font-family: satella, serif;
+  font-size: 28px;
+  color: #fc0114;
 }
 
 .swalModalSpy {
-    width: 50% !important;
-    color: ghostwhite !important;
-    box-shadow: 0.0315rem 0 0.625rem 0 #fc0114 !important;
-    position: fixed;
-    top: 0;
+  width: 50% !important;
+  color: ghostwhite !important;
+  box-shadow: 0.0315rem 0 0.625rem 0 #fc0114 !important;
+  position: fixed;
+  top: 0;
 }
 
 .swalModalResistance {
-    width: 50% !important;
-    color: ghostwhite !important;
-    box-shadow: 0.0315rem 0 0.625rem 0 #6583f2 !important;
-    position: fixed;
-    top: 0;
+  width: 50% !important;
+  color: ghostwhite !important;
+  box-shadow: 0.0315rem 0 0.625rem 0 #6583f2 !important;
+  position: fixed;
+  top: 0;
 }
 
 .swalConfirmButtonSpy {
-    text-align: center !important;
-    padding: 15px !important;
-    border: none !important;
-    cursor: pointer !important;
-    background-color: #303338 !important;
-    width: max-content !important;
-    border-radius: 5px !important;
-    box-shadow: 0.0315rem 0 0.625rem 0 #fc0114 !important;
+  text-align: center !important;
+  padding: 15px !important;
+  border: none !important;
+  cursor: pointer !important;
+  background-color: #303338 !important;
+  width: max-content !important;
+  border-radius: 5px !important;
+  box-shadow: 0.0315rem 0 0.625rem 0 #fc0114 !important;
 
-    font-family: ethnocentric, serif !important;
-    font-size: 75% !important;
-    font-weight: 500 !important;
-    color: #fc0114 !important;
+  font-family: ethnocentric, serif !important;
+  font-size: 75% !important;
+  font-weight: 500 !important;
+  color: #fc0114 !important;
 }
 
 .swalConfirmButtonResistance {
-    text-align: center !important;
-    padding: 15px !important;
-    border: none !important;
-    cursor: pointer !important;
-    background-color: #303338 !important;
-    width: max-content !important;
-    border-radius: 5px !important;
-    box-shadow: 0.0315rem 0 0.625rem 0 #6583f2 !important;
+  text-align: center !important;
+  padding: 15px !important;
+  border: none !important;
+  cursor: pointer !important;
+  background-color: #303338 !important;
+  width: max-content !important;
+  border-radius: 5px !important;
+  box-shadow: 0.0315rem 0 0.625rem 0 #6583f2 !important;
 
-    font-family: ethnocentric, serif !important;
-    font-size: 75% !important;
-    font-weight: 500 !important;
-    color: #367bee !important;
+  font-family: ethnocentric, serif !important;
+  font-size: 75% !important;
+  font-weight: 500 !important;
+  color: #367bee !important;
 }
 
 
 .swalConfirmButtonSpy:hover {
-    background-color: #1e1e1e !important;
+  background-color: #1e1e1e !important;
 
 }
 
 .swalConfirmButtonResistance:hover {
-    background-color: #1e1e1e !important;
+  background-color: #1e1e1e !important;
 
 }
 
 .SpyFont {
-    font-family: ethnocentric, serif;
-    font-size: 20px;
-    font-weight: 500;
-    color: #fc0114;
+  font-family: ethnocentric, serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #fc0114;
 }
 
 .ResistanceFont {
-    font-family: ethnocentric, serif;
-    font-size: 20px;
-    font-weight: 500;
-    color: #367bee;
+  font-family: ethnocentric, serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #367bee;
 }
 
 .leaderImage {
-    width: 60%;
-    padding: 10px;
+  width: 60%;
+  padding: 10px;
 }
 
 .css-typing p {
-    border-right: .15em solid #fc0114;
-    font-size: 10px;
-    white-space: nowrap;
-    overflow: hidden;
+  border-right: .15em solid #fc0114;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .css-typing p:nth-child(1) {
-    width: 100%;
-    -webkit-animation: type 2s steps(40, end);
-    animation: type 2s steps(40, end);
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
+  width: 100%;
+  -webkit-animation: type 2s steps(40, end);
+  animation: type 2s steps(40, end);
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 }
 
 .css-typing p:nth-child(2) {
-    width: 100%;
-    opacity: 0;
-    -webkit-animation: type2 2s steps(40, end);
-    animation: type2 2s steps(40, end);
-    -webkit-animation-delay: 2s;
-    animation-delay: 2s;
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
+  width: 100%;
+  opacity: 0;
+  -webkit-animation: type2 2s steps(40, end);
+  animation: type2 2s steps(40, end);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 }
 
 .css-typing p:nth-child(3) {
-    width: 100%;
-    opacity: 0;
-    -webkit-animation: type2 2s steps(40, end);
-    animation: type2 2s steps(40, end);
-    -webkit-animation-delay: 4s;
-    animation-delay: 4s;
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
+  width: 100%;
+  opacity: 0;
+  -webkit-animation: type2 2s steps(40, end);
+  animation: type2 2s steps(40, end);
+  -webkit-animation-delay: 4s;
+  animation-delay: 4s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 }
 
 .css-typing p:nth-child(4) {
-    width: 100%;
-    opacity: 0;
-    -webkit-animation: type3 5s steps(20, end), blink .5s step-end infinite alternate;
-    animation: type3 5s steps(20, end), blink .5s step-end infinite alternate;
-    -webkit-animation-delay: 6s;
-    animation-delay: 6s;
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
+  width: 100%;
+  opacity: 0;
+  -webkit-animation: type3 5s steps(20, end), blink .5s step-end infinite alternate;
+  animation: type3 5s steps(20, end), blink .5s step-end infinite alternate;
+  -webkit-animation-delay: 6s;
+  animation-delay: 6s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 }
 
 @keyframes type {
-    0% {
-        width: 0;
-    }
-    99.9% {
-        border-right: .15em solid #fc0114;
-    }
-    100% {
-        border: none;
-    }
+  0% {
+    width: 0;
+  }
+  99.9% {
+    border-right: .15em solid #fc0114;
+  }
+  100% {
+    border: none;
+  }
 }
 
 @-webkit-keyframes type {
-    0% {
-        width: 0;
-    }
-    99.9% {
-        border-right: .15em solid #fc0114;
-    }
-    100% {
-        border: none;
-    }
+  0% {
+    width: 0;
+  }
+  99.9% {
+    border-right: .15em solid #fc0114;
+  }
+  100% {
+    border: none;
+  }
 }
 
 @keyframes type2 {
-    0% {
-        width: 0;
-    }
-    1% {
-        opacity: 1;
-    }
-    99.9% {
-        border-right: .15em solid #fc0114;
-    }
-    100% {
-        opacity: 1;
-        border: none;
-    }
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  99.9% {
+    border-right: .15em solid #fc0114;
+  }
+  100% {
+    opacity: 1;
+    border: none;
+  }
 }
 
 @-webkit-keyframes type2 {
-    0% {
-        width: 0;
-    }
-    1% {
-        opacity: 1;
-    }
-    99.9% {
-        border-right: .15em solid #fc0114;
-    }
-    100% {
-        opacity: 1;
-        border: none;
-    }
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  99.9% {
+    border-right: .15em solid #fc0114;
+  }
+  100% {
+    opacity: 1;
+    border: none;
+  }
 }
 
 @keyframes type3 {
-    0% {
-        width: 0;
-    }
-    1% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 1;
-    }
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @-webkit-keyframes type3 {
-    0% {
-        width: 0;
-    }
-    1% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 1;
-    }
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 
 /*Resistance Typing Effect*/
 .css-typing-resistance p {
-    border-right: .15em solid #6583f2;
-    font-size: 10px;
-    white-space: nowrap;
-    overflow: hidden;
+  border-right: .15em solid #6583f2;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .css-typing-resistance p:nth-child(1) {
-    width: 100%;
-    -webkit-animation: type-resistance 2s steps(40, end);
-    animation: type-resistance 2s steps(40, end);
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
+  width: 100%;
+  -webkit-animation: type-resistance 2s steps(40, end);
+  animation: type-resistance 2s steps(40, end);
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 }
 
 .css-typing-resistance p:nth-child(2) {
-    width: 100%;
-    opacity: 0;
-    -webkit-animation: type2-resistance 2s steps(40, end);
-    animation: type2-resistance 2s steps(40, end);
-    -webkit-animation-delay: 2s;
-    animation-delay: 2s;
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
+  width: 100%;
+  opacity: 0;
+  -webkit-animation: type2-resistance 2s steps(40, end);
+  animation: type2-resistance 2s steps(40, end);
+  -webkit-animation-delay: 2s;
+  animation-delay: 2s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 }
 
 .css-typing-resistance p:nth-child(3) {
-    width: 100%;
-    opacity: 0;
-    -webkit-animation: type2-resistance 2s steps(40, end);
-    animation: type2-resistance 2s steps(40, end);
-    -webkit-animation-delay: 4s;
-    animation-delay: 4s;
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
+  width: 100%;
+  opacity: 0;
+  -webkit-animation: type2-resistance 2s steps(40, end);
+  animation: type2-resistance 2s steps(40, end);
+  -webkit-animation-delay: 4s;
+  animation-delay: 4s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 }
 
 .css-typing p:nth-child(4) {
-    width: 100%;
-    opacity: 0;
-    -webkit-animation: type3-resistance 5s steps(20, end), blink .5s step-end infinite alternate;
-    animation: type3-resistance 5s steps(20, end), blink .5s step-end infinite alternate;
-    -webkit-animation-delay: 6s;
-    animation-delay: 6s;
-    -webkit-animation-fill-mode: forwards;
-    animation-fill-mode: forwards;
+  width: 100%;
+  opacity: 0;
+  -webkit-animation: type3-resistance 5s steps(20, end), blink .5s step-end infinite alternate;
+  animation: type3-resistance 5s steps(20, end), blink .5s step-end infinite alternate;
+  -webkit-animation-delay: 6s;
+  animation-delay: 6s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 }
 
 @keyframes type-resistance {
-    0% {
-        width: 0;
-    }
-    99.9% {
-        border-right: .15em solid #6583f2;
-    }
-    100% {
-        border: none;
-    }
+  0% {
+    width: 0;
+  }
+  99.9% {
+    border-right: .15em solid #6583f2;
+  }
+  100% {
+    border: none;
+  }
 }
 
 @-webkit-keyframes type-resistance {
-    0% {
-        width: 0;
-    }
-    99.9% {
-        border-right: .15em solid #6583f2;
-    }
-    100% {
-        border: none;
-    }
+  0% {
+    width: 0;
+  }
+  99.9% {
+    border-right: .15em solid #6583f2;
+  }
+  100% {
+    border: none;
+  }
 }
 
 @keyframes type2-resistance {
-    0% {
-        width: 0;
-    }
-    1% {
-        opacity: 1;
-    }
-    99.9% {
-        border-right: .15em solid #6583f2;
-    }
-    100% {
-        opacity: 1;
-        border: none;
-    }
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  99.9% {
+    border-right: .15em solid #6583f2;
+  }
+  100% {
+    opacity: 1;
+    border: none;
+  }
 }
 
 @-webkit-keyframes type2-resistance {
-    0% {
-        width: 0;
-    }
-    1% {
-        opacity: 1;
-    }
-    99.9% {
-        border-right: .15em solid #6583f2;
-    }
-    100% {
-        opacity: 1;
-        border: none;
-    }
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  99.9% {
+    border-right: .15em solid #6583f2;
+  }
+  100% {
+    opacity: 1;
+    border: none;
+  }
 }
 
 @keyframes type3-resistance {
-    0% {
-        width: 0;
-    }
-    1% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 1;
-    }
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @-webkit-keyframes type3-resistance {
-    0% {
-        width: 0;
-    }
-    1% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 1;
-    }
+  0% {
+    width: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /*.join-game-button {
@@ -424,8 +424,6 @@ code {
 }*/
 
 
-
-
 /*Home Page*/
 
 
@@ -441,34 +439,40 @@ code {
 
 /*Accent = #d48325*/
 .text-color {
-    color: #f8e9d8;
+  color: #f8e9d8;
 }
 
 .background {
-    background-size: cover;
+  background-size: cover;
 
-    min-height: 100vh;
+  min-height: 100vh;
 }
-.main-background-color {
-    background-color: #180d02;
 
+.main-background-color {
+  background-color: #180d02;
+
+}
+
+.backup-background-color {
+  background-color: #1f1608;
 }
 
 .primary-background-color {
-    background-color: #57350f;
+  background-color: #57350f;
 }
 
 .secondary-background-color {
-    background-color: #271807;
+  background-color: #271807;
 }
 
 .accent-background-color {
-    background-color: #d48325;
+  background-color: #d48325;
 }
 
 .accent-text-color {
-    color: #d48325
+  color: #d48325
 }
+
 
 /* App */
 body {
@@ -479,18 +483,18 @@ body {
 
 /* width */
 ::-webkit-scrollbar {
-    width: 10px;
+  width: 10px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-    background: #180d02;
+  background: #180d02;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #f8e9d8;
-    border-radius: 1px;
+  background: #f8e9d8;
+  border-radius: 1px;
 }
 
 
@@ -503,8 +507,34 @@ body {
   text-align: left;
   text-transform: capitalize;
 }
+
 .swal2-popup {
-  margin-top: 70px;
+  margin-top: 100px;
   border: solid 1px #d48325 !important;
   border-radius: 1px !important;
 }
+
+
+/*Buttons*/
+.primary-button {
+  text-align: center;
+  background-color: #57350f;
+  border: none;
+  color: #f8e9d8;
+  width: 100%;
+  margin: 10px;
+  padding: 1em 2em;
+  border-radius: 6px;
+  transition: transform ease 0.2s, box-shadow ease 0.2s;
+  display: inline-block;
+  z-index: 2;
+  white-space: nowrap;
+  height: 100%;
+}
+
+
+.primary-button:hover {
+  transform: translate(0, -3px);
+  box-shadow: 0 2px 10px -1px #57350f;
+}
+

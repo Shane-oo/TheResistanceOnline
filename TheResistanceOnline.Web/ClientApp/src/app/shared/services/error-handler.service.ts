@@ -36,19 +36,19 @@ export class ErrorHandlerService implements HttpInterceptor {
 
   private handleNotFound = (error: HttpErrorResponse): string => {
     const errorMessage = error.error;
-    this.swalService.showSwal(errorMessage, SwalTypes.Error);
+    this.swalService.showSwal(SwalTypes.Error, errorMessage);
     return errorMessage;
   };
 
   private handleBadRequest = (error: HttpErrorResponse): string => {
     const errorMessage = error.error;
-    this.swalService.showSwal(errorMessage, SwalTypes.Error);
+    this.swalService.showSwal(SwalTypes.Error, errorMessage);
     return errorMessage;
   };
 
   private handleInternalServerError = (error: HttpErrorResponse): string => {
     const errorMessage = error.error.detail;
-    this.swalService.showSwal(errorMessage, SwalTypes.Error);
+    this.swalService.showSwal(SwalTypes.Error, errorMessage);
     return errorMessage;
   }
 }
