@@ -1,0 +1,40 @@
+name: production - build and deploy pipeline
+on:
+  push:
+    branches: ["184-refactor-and-bring-back-from-the-dead"] # todo change to main
+  pull_request:
+    branches: ["184-refactor-and-bring-back-from-the-dead"] # todo change to main
+  workflow_dispatch:
+
+env:
+  AZURE_CONTAINER_REGISTRY: "theresistanceonlinecontainer"
+  THERESTISTANCEONLINE_WEB_CONTAINER_NAME: "theresistanceonlineweb"
+  THERESTISTANCEONLINE_WEB_APP_NAME: "todo"
+  RESOURCE_GROUP: "rsg-the-resistance-online"
+  DOTNET_VERSION: 7.0.x
+
+jobs:
+  build-and-push-the-resistance-online-web-to-container:
+    runs-on: ubuntu-latest
+    steps:
+    #checkout the repo
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@main
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: 'Build and Push image'
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    - run: |
+        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_WEB_CONTAINER_NAME }}.${{ github.sha }} --file TheResistanceOnline.Web/Dockerfile .
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_WEB_CONTAINER_NAME }}:${{ github.sha }}
+  
+        
+  
