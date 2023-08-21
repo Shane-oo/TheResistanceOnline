@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Client.AspNetCore;
 using OpenIddict.Server.AspNetCore;
+using TheResistanceOnline.Authentications;
+using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithGoogle;
 using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
 using TheResistanceOnline.Authentications.OpenIds;
 using TheResistanceOnline.Authentications.OpenIds.AuthenticateUserWithCodeGrant;
@@ -81,6 +83,18 @@ public class AuthorizationsController: Controller
         return !authResult.IsAuthenticated ? Forbid(OpenIddictErrors.InvalidGrant, authResult.Reason) : SignInUser(request, authResult.Payload);
     }
 
+    private async Task<IActionResult> ProcessGoogleAuthorization(ClaimsIdentity claimsIdentity)
+    {
+        //authenticate User With Google 
+        var command = new AuthenticateUserWithGoogleCommand(claimsIdentity.GetClaim(CustomClaims.GoogleClaims.AUDIENCE),
+                                                            Guid.TryParse(claimsIdentity.GetClaim(CustomClaims.GoogleClaims.SUBJECT), out var subject)
+                                                                ? subject
+                                                                : Guid.Empty);
+        var authResult = await _mediator.Send(command);
+
+        return SignInExternalAuthorization(authResult);
+    }
+
     private async Task<IActionResult> ProcessMicrosoftAuthorization(ClaimsIdentity claimsIdentity)
     {
         //authenticate User With Microsoft 
@@ -90,6 +104,11 @@ public class AuthorizationsController: Controller
                                                                    : Guid.Empty);
         var authResult = await _mediator.Send(command);
 
+        return SignInExternalAuthorization(authResult);
+    }
+
+    private IActionResult SignInExternalAuthorization(AuthenticationResult<Guid> authResult)
+    {
         if (!authResult.IsAuthenticated)
         {
             HttpContext.Response.Cookies.Delete(COOKIE_NAME);
@@ -174,6 +193,11 @@ public class AuthorizationsController: Controller
             return await ProcessMicrosoftAuthorization(principal.Identity as ClaimsIdentity);
         }
 
+        if (principal.Identity?.AuthenticationType == OpenIddictWebProviders.Google)
+        {
+            return await ProcessGoogleAuthorization(principal.Identity as ClaimsIdentity);
+        }
+
 
         return Forbid(OpenIddictErrors.AccessDenied, "Provider Not Supported");
     }
@@ -213,6 +237,24 @@ public class AuthorizationsController: Controller
         return Forbid(OpenIddictErrors.UnsupportedGrantType, "Grant Type Not Accepted");
     }
 
+    [HttpGet("~/callback/login/google")]
+    [HttpPost("~/callback/login/google")]
+    public async Task<IActionResult> GoogleCallback()
+    {
+        var result = await HttpContext.AuthenticateAsync(OI_CLIENT_AUTH_SCHEME);
+
+        // copy the claims you want to preserve to your local authentication cookie
+        var identity = new ClaimsIdentity(OpenIddictWebProviders.Google);
+        identity.AddClaim(new Claim(CustomClaims.GoogleClaims.AUDIENCE, result.Principal?.FindFirstValue(CustomClaims.GoogleClaims.AUDIENCE) ?? string.Empty));
+        identity.AddClaim(new Claim(CustomClaims.GoogleClaims.SUBJECT, result.Principal?.FindFirstValue(CustomClaims.GoogleClaims.SUBJECT) ?? string.Empty));
+
+        var properties = new AuthenticationProperties
+                         {
+                             RedirectUri = result.Properties?.RedirectUri
+                         };
+        return SignIn(new ClaimsPrincipal(identity), properties, COOKIE_AUTH_SCHEME);
+    }
+
     [HttpGet("~/callback/login/microsoft")]
     [HttpPost("~/callback/login/microsoft")]
     public async Task<IActionResult> MicrosoftCallback()
@@ -243,6 +285,16 @@ public static class CustomClaims
         public const string AUDIENCE = "aud";
         public const string NAME = "name";
         public const string OBJECT_ID = "oid";
+
+        #endregion
+    }
+
+    public static class GoogleClaims
+    {
+        #region Constants
+
+        public const string AUDIENCE = "aud";
+        public const string SUBJECT = "sub";
 
         #endregion
     }

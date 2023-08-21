@@ -25,6 +25,8 @@ public class Context: IdentityDbContext<User, Role, Guid, UserClaim, UserRole, U
 
     public DbSet<Game> Games { get; set; }
 
+    public DbSet<GoogleUser> GoogleUsers { get; set; }
+
     public DbSet<MicrosoftUser> MicrosoftUsers { get; set; }
 
     public DbSet<PlayerStatistic> PlayerStatistics { get; set; }
@@ -60,6 +62,7 @@ public class Context: IdentityDbContext<User, Role, Guid, UserClaim, UserRole, U
         modelBuilder.ApplyConfiguration(new UserSettingConfiguration());
         // External Identities
         modelBuilder.ApplyConfiguration(new MicrosoftUserConfiguration());
+        modelBuilder.ApplyConfiguration(new GoogleUserConfiguration());
         // Games
         modelBuilder.ApplyConfiguration(new GameConfiguration());
         modelBuilder.ApplyConfiguration(new GamePlayerValueConfiguration());

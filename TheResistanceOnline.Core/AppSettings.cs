@@ -31,6 +31,9 @@ public class AuthServerSettings
     [Required]
     public MicrosoftSettings MicrosoftSettings { get; set; }
 
+    [Required]
+    public GoogleSettings GoogleSettings { get; set; }
+
     #endregion
 }
 
@@ -48,4 +51,16 @@ public class MicrosoftSettings
     public string RedirectUri { get; set; }
 
     #endregion
+}
+
+public class GoogleSettings
+{
+    [Required]
+    public string ClientId { get; set; }
+
+    [Required]
+    public string ClientSecret { get; set; }
+
+    [Required]
+    public string RedirectUri { get; set; }
 }

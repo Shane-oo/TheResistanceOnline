@@ -88,7 +88,7 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
         }
         //
 
-        await _userManager.AddToRoleAsync(user, Roles.Admin.ToString());   //todo change back to just user
+        await _userManager.AddToRoleAsync(user, Roles.Admin.ToString()); //todo change back to just user
 
         return AuthenticationResult<Guid>.Accept(user.Id);
     }
@@ -121,6 +121,7 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
 
         var microsoftUser = await _dataContext.Query<IMicrosoftUserByObjectIdDbQuery>()
                                               .WithParams(command.ObjectId)
+                                              .WithNoTracking()
                                               .ExecuteAsync(cancellationToken);
 
         if (microsoftUser != null)

@@ -3,18 +3,18 @@ using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
 using TheResistanceOnline.Data.Queries;
 
-namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
+namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithGoogle;
 
-public interface IMicrosoftUserByObjectIdDbQuery: IDbQuery<MicrosoftUser>
+public interface IGoogleUserBySubjectDbQuery: IDbQuery<GoogleUser>
 {
-    IMicrosoftUserByObjectIdDbQuery Include(params string[] include);
+    IGoogleUserBySubjectDbQuery Include(params string[] include);
 
-    IMicrosoftUserByObjectIdDbQuery WithNoTracking();
+    IGoogleUserBySubjectDbQuery WithNoTracking();
 
-    IMicrosoftUserByObjectIdDbQuery WithParams(Guid objectId);
+    IGoogleUserBySubjectDbQuery WithParams(Guid subject);
 }
 
-public class MicrosoftUserByObjectIdDbQuery: IMicrosoftUserByObjectIdDbQuery
+public class GoogleUserBySubjectDbQuery: IGoogleUserBySubjectDbQuery
 {
     #region Fields
 
@@ -23,13 +23,13 @@ public class MicrosoftUserByObjectIdDbQuery: IMicrosoftUserByObjectIdDbQuery
     private readonly Context _context;
     private string[] _include;
 
-    private Guid _objectId;
+    private Guid _subject;
 
     #endregion
 
     #region Construction
 
-    public MicrosoftUserByObjectIdDbQuery(Context context)
+    public GoogleUserBySubjectDbQuery(Context context)
     {
         _context = context;
     }
@@ -38,9 +38,10 @@ public class MicrosoftUserByObjectIdDbQuery: IMicrosoftUserByObjectIdDbQuery
 
     #region Public Methods
 
-    public async Task<MicrosoftUser> ExecuteAsync(CancellationToken cancellationToken)
+    public async Task<GoogleUser> ExecuteAsync(CancellationToken cancellationToken)
     {
-        var query = _context.MicrosoftUsers.Where(m => m.ObjectId.Equals(_objectId));
+        var query = _context.GoogleUsers.Where(g => g.Subject.Equals(_subject));
+
         if (_include != null)
         {
             query = _include.Aggregate(query, (current, expression) => current.Include(expression));
@@ -54,21 +55,21 @@ public class MicrosoftUserByObjectIdDbQuery: IMicrosoftUserByObjectIdDbQuery
         return await query.FirstOrDefaultAsync(cancellationToken);
     }
 
-    public IMicrosoftUserByObjectIdDbQuery Include(params string[] include)
+    public IGoogleUserBySubjectDbQuery Include(params string[] include)
     {
         _include = include;
         return this;
     }
 
-    public IMicrosoftUserByObjectIdDbQuery WithNoTracking()
+    public IGoogleUserBySubjectDbQuery WithNoTracking()
     {
         _asNoTracking = true;
         return this;
     }
 
-    public IMicrosoftUserByObjectIdDbQuery WithParams(Guid objectId)
+    public IGoogleUserBySubjectDbQuery WithParams(Guid subject)
     {
-        _objectId = objectId;
+        _subject = subject;
         return this;
     }
 

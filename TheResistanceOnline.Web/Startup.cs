@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
+using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithGoogle;
 using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
 using TheResistanceOnline.Common.ValidationHelpers;
 using TheResistanceOnline.Core;
@@ -164,7 +165,15 @@ public class Startup
                                                    .SetClientSecret(microsoftSettings.ClientSecret)
                                                    .SetRedirectUri(microsoftSettings.RedirectUri)
                                                    .AddScopes("profile"); // must have "profile" to get objectId 
-                                              });
+                                              })
+                                .AddGoogle(g =>
+                                           {
+                                               var googleSettings = appSettings.AuthServerSettings.GoogleSettings;
+                                               g.SetClientId(googleSettings.ClientId)
+                                                .SetClientSecret(googleSettings.ClientSecret)
+                                                .SetRedirectUri(googleSettings.RedirectUri)
+                                                .AddScopes("openid"); // must have "openid" to get subject 
+                                           });
                            })
                 .AddServer(o =>
                            {
@@ -232,6 +241,7 @@ public class Startup
         services.AddTransient<IUserByUserIdDbQuery, UserByUserIdDbQuery>();
         // TheResistanceOnline.Authentications
         services.AddTransient<IMicrosoftUserByObjectIdDbQuery, MicrosoftUserByObjectIdDbQuery>();
+        services.AddTransient<IGoogleUserBySubjectDbQuery, GoogleUserBySubjectDbQuery>();
 
         var assemblies = new[]
                          {
@@ -251,7 +261,6 @@ public class Startup
         {
             services.AddValidatorsFromAssembly(assembly);
         }
-        
     }
 
     #endregion

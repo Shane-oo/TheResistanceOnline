@@ -19,6 +19,8 @@ public class User: IdentityUser<Guid>, IAuditableEntity
 
     public MicrosoftUser MicrosoftUser { get; set; }
 
+    public GoogleUser GoogleUser { get; set; }
+
     public List<PlayerStatistic> PlayerStatistics { get; set; }
 
     public virtual ICollection<UserClaim> UserClaims { get; set; }

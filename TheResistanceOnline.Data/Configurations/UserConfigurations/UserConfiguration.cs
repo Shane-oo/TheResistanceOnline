@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
 using TheResistanceOnline.Data.Entities.UserEntities;
 
-
 namespace TheResistanceOnline.Data.Configurations.UserConfigurations;
 
 public class UserConfiguration: IEntityTypeConfiguration<User>
@@ -38,7 +37,6 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
                .HasForeignKey(ut => ut.UserId)
                .IsRequired();
 
-        // Each User has one UserRole  //todo check if this allowed
         builder.HasOne(e => e.UserRole)
                .WithOne(e => e.User)
                .HasForeignKey<UserRole>(ur => ur.UserId)
@@ -50,13 +48,18 @@ public class UserConfiguration: IEntityTypeConfiguration<User>
                .IsRequired();
 
         builder.HasMany(u => u.PlayerStatistics)
-               .WithOne()
+               .WithOne(ps => ps.User)
                .HasForeignKey(ps => ps.UserId)
                .IsRequired();
 
         builder.HasOne(e => e.MicrosoftUser)
                .WithOne(m => m.User)
                .HasForeignKey<MicrosoftUser>(m => m.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(e => e.GoogleUser)
+               .WithOne(g => g.User)
+               .HasForeignKey<GoogleUser>(g => g.UserId)
                .OnDelete(DeleteBehavior.Cascade);
     }
 
