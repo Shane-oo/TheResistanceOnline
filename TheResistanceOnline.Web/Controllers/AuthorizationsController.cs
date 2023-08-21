@@ -38,14 +38,16 @@ public class AuthorizationsController: Controller
     #region Fields
 
     private readonly IMediator _mediator;
+    private readonly ILogger<AuthorizationsController> _logger;
 
     #endregion
 
     #region Construction
 
-    public AuthorizationsController(IMediator mediator)
+    public AuthorizationsController(IMediator mediator, ILogger<AuthorizationsController> logger)
     {
         _mediator = mediator;
+        _logger = logger;
     }
 
     #endregion
@@ -242,6 +244,15 @@ public class AuthorizationsController: Controller
     public async Task<IActionResult> GoogleCallback()
     {
         var result = await HttpContext.AuthenticateAsync(OI_CLIENT_AUTH_SCHEME);
+
+
+        if (result.Principal != null)
+        {
+            foreach(var claim in result.Principal.Claims)
+            {
+                _logger.LogError("GOOGLE CLAIM: {ClaimValue}", claim.Value);
+            }
+        }
 
         // copy the claims you want to preserve to your local authentication cookie
         var identity = new ClaimsIdentity(OpenIddictWebProviders.Google);
