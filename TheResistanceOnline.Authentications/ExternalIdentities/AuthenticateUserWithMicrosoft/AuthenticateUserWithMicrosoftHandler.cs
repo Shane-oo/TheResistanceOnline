@@ -16,9 +16,6 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
     private readonly AppSettings _appSettings;
 
     private readonly IDataContext _dataContext;
-
-    //todo delete
-    private readonly RoleManager<Role> _roleManager;
     private readonly UserManager<User> _userManager;
 
     #endregion
@@ -27,12 +24,10 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
 
     public AuthenticateUserWithMicrosoftHandler(IDataContext dataContext,
                                                 UserManager<User> userManager,
-                                                RoleManager<Role> roleManager, //todo delete
                                                 IOptions<AppSettings> appSettings)
     {
         _dataContext = dataContext;
         _userManager = userManager;
-        _roleManager = roleManager; //todo delete
         _appSettings = appSettings.Value;
     }
 
@@ -59,36 +54,7 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
             return Reject(errorDescription);
         }
 
-        //todo remove this code
-        if (!await _roleManager.RoleExistsAsync(Roles.User.ToString()))
-        {
-            await _roleManager.CreateAsync(new Role
-                                           {
-                                               Name = Roles.User.ToString(),
-                                               NormalizedName = Roles.User.ToString().Normalize()
-                                           });
-        }
-
-        if (!await _roleManager.RoleExistsAsync(Roles.Admin.ToString()))
-        {
-            await _roleManager.CreateAsync(new Role
-                                           {
-                                               Name = Roles.Admin.ToString(),
-                                               NormalizedName = Roles.Admin.ToString().Normalize()
-                                           });
-        }
-
-        if (!await _roleManager.RoleExistsAsync(Roles.Moderator.ToString()))
-        {
-            await _roleManager.CreateAsync(new Role
-                                           {
-                                               Name = Roles.Moderator.ToString(),
-                                               NormalizedName = Roles.Moderator.ToString().Normalize()
-                                           });
-        }
-        //
-
-        await _userManager.AddToRoleAsync(user, Roles.Admin.ToString()); //todo change back to just user
+        await _userManager.AddToRoleAsync(user, Roles.User.ToString());
 
         return AuthenticationResult<Guid>.Accept(user.Id);
     }
