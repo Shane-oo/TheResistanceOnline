@@ -33,7 +33,7 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     - run: |
-        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_WEB_CONTAINER_NAME }}.${{ github.sha }} --file TheResistanceOnline.Web/Dockerfile .
+        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_WEB_CONTAINER_NAME }}:${{ github.sha }} --file TheResistanceOnline.Web/Dockerfile .
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_WEB_CONTAINER_NAME }}:${{ github.sha }}
   
         
