@@ -250,7 +250,7 @@ public class AuthorizationsController: Controller
         {
             foreach(var claim in result.Principal.Claims)
             {
-                _logger.LogError("GOOGLE CLAIM: {ClaimValue}", claim.Value);
+                _logger.LogError("GOOGLE CLAIM {ClaimType} : {ClaimValue}", claim.Type, claim.Value);
             }
         }
 
