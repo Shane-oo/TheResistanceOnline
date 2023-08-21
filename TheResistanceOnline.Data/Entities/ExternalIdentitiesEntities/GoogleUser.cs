@@ -12,7 +12,7 @@ public class GoogleUser
 
     public User User { get; set; }
 
-    public Guid Subject { get; set; }
+    public string Subject { get; set; }
 
     #endregion
 }

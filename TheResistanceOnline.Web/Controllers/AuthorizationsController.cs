@@ -38,16 +38,14 @@ public class AuthorizationsController: Controller
     #region Fields
 
     private readonly IMediator _mediator;
-    private readonly ILogger<AuthorizationsController> _logger;
 
     #endregion
 
     #region Construction
 
-    public AuthorizationsController(IMediator mediator, ILogger<AuthorizationsController> logger)
+    public AuthorizationsController(IMediator mediator)
     {
         _mediator = mediator;
-        _logger = logger;
     }
 
     #endregion
@@ -89,9 +87,8 @@ public class AuthorizationsController: Controller
     {
         //authenticate User With Google 
         var command = new AuthenticateUserWithGoogleCommand(claimsIdentity.GetClaim(CustomClaims.GoogleClaims.AUDIENCE),
-                                                            Guid.TryParse(claimsIdentity.GetClaim(CustomClaims.GoogleClaims.SUBJECT), out var subject)
-                                                                ? subject
-                                                                : Guid.Empty);
+                                                            claimsIdentity.GetClaim(CustomClaims.GoogleClaims.SUBJECT));
+
         var authResult = await _mediator.Send(command);
 
         return SignInExternalAuthorization(authResult);
@@ -244,15 +241,6 @@ public class AuthorizationsController: Controller
     public async Task<IActionResult> GoogleCallback()
     {
         var result = await HttpContext.AuthenticateAsync(OI_CLIENT_AUTH_SCHEME);
-
-
-        if (result.Principal != null)
-        {
-            foreach(var claim in result.Principal.Claims)
-            {
-                _logger.LogError("GOOGLE CLAIM {ClaimType} : {ClaimValue}", claim.Type, claim.Value);
-            }
-        }
 
         // copy the claims you want to preserve to your local authentication cookie
         var identity = new ClaimsIdentity(OpenIddictWebProviders.Google);

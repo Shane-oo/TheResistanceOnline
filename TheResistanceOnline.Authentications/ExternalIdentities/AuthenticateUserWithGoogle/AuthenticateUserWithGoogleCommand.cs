@@ -8,13 +8,13 @@ public class AuthenticateUserWithGoogleCommand: CommandBase<AuthenticationResult
 
     public string Audience { get; set; }
 
-    public Guid Subject { get; set; }
+    public string Subject { get; set; }
 
     #endregion
 
     #region Construction
 
-    public AuthenticateUserWithGoogleCommand(string audience, Guid subject)
+    public AuthenticateUserWithGoogleCommand(string audience, string subject)
     {
         Audience = audience;
         Subject = subject;

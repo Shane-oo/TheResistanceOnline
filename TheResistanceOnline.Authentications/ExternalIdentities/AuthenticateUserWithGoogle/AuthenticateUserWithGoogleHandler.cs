@@ -72,7 +72,7 @@ public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUser
     public async Task<AuthenticationResult<Guid>> Handle(AuthenticateUserWithGoogleCommand command, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(command);
-        if (!command.Subject.HasValue())
+        if (string.IsNullOrEmpty(command.Subject))
         {
             return Reject("Missing Google Identifier.");
         }

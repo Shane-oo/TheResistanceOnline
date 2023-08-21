@@ -13,6 +13,7 @@ public class GoogleUserConfiguration: IEntityTypeConfiguration<GoogleUser>
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.Subject)
+               .HasMaxLength(255)
                .IsRequired();
 
         builder.Property(e => e.UserId)

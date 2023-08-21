@@ -11,7 +11,7 @@ public interface IGoogleUserBySubjectDbQuery: IDbQuery<GoogleUser>
 
     IGoogleUserBySubjectDbQuery WithNoTracking();
 
-    IGoogleUserBySubjectDbQuery WithParams(Guid subject);
+    IGoogleUserBySubjectDbQuery WithParams(string subject);
 }
 
 public class GoogleUserBySubjectDbQuery: IGoogleUserBySubjectDbQuery
@@ -23,7 +23,7 @@ public class GoogleUserBySubjectDbQuery: IGoogleUserBySubjectDbQuery
     private readonly Context _context;
     private string[] _include;
 
-    private Guid _subject;
+    private string _subject;
 
     #endregion
 
@@ -67,7 +67,7 @@ public class GoogleUserBySubjectDbQuery: IGoogleUserBySubjectDbQuery
         return this;
     }
 
-    public IGoogleUserBySubjectDbQuery WithParams(Guid subject)
+    public IGoogleUserBySubjectDbQuery WithParams(string subject)
     {
         _subject = subject;
         return this;
