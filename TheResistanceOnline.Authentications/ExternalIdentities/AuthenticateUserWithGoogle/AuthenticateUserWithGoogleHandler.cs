@@ -80,9 +80,9 @@ public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUser
         // Validate the audience
         // the aud claim identifies the intended audience of the token, the audience must be client ID of the App
 
-        if (command.Audience != _appSettings.AuthServerSettings.MicrosoftSettings.ClientId)
+        if (command.Audience != _appSettings.AuthServerSettings.GoogleSettings.ClientId)
         {
-            return Reject("Unauthorized audience.");
+            return Reject("Unauthorized Audience.");
         }
 
         var googleUser = await _context.Query<IGoogleUserBySubjectDbQuery>()
