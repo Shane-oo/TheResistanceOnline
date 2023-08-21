@@ -35,6 +35,27 @@ jobs:
     - run: |
         docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_WEB_CONTAINER_NAME }}:${{ github.sha }} --file TheResistanceOnline.Web/Dockerfile .
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_WEB_CONTAINER_NAME }}:${{ github.sha }}
-  
+
+  build-and-apply-entity-frameworkcore-migrations:
+    runs-on: ubuntu-latest
+    #needs: build-and-push-the-resistance-online-web-to-container
+    steps:
+      #checkout the repo
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@main
+
+    - name: 'Setup Dotnet'
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: 'Install dotnet-ef Tools and Update Database'
+      run: |
+        dotnet tool install --global dotnet-ef
+        dotnet tool restore
+        dotnet ef database update --project TheResistanceOnline.Infrastructure.Data.Migrations
+      env:
+        ConnectionStrings:ResistanceDb: ${{ secrets.THERESISTANCEDB_CONNECTION_STRING }}
+        
         
   
