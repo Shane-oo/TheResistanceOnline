@@ -25,7 +25,8 @@ export class TheResistanceGameService {
 
   private options: IHttpConnectionOptions = {
     accessTokenFactory: () => {
-      let token = localStorage.getItem('TheResistanceToken');
+
+      let token = 'eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZDQkMtSFM1MTIiLCJraWQiOiJERTE1MkZDOThDQzlDN0VGRkU2RkVGMkEwNkFFRjEzMjY1QzJFQTU5IiwidHlwIjoiYXQrand0IiwiY3R5IjoiSldUIn0.hSik6WIpo7R8ldJyvXuca5tSDfvu65i6JC_tKG5lllAr_GVkiNgz44VxcxAmWSgCXKv3NKuk8PZl7LLYVhZG67FLjBZNDpjfBtH-vNLCdqdUrphXvjVlTtmGktxN_DwkjNmVvQSLS3ZjRwU7pkMiNkUJfiSgtg5_m2YqEHXOU6kcWJgwoa5bd71B0IxX-oHJPehupnn6R-0E03PWTEj425_uV4llnJJ0dyORPY-2pFVKhq3l6YCc7w8_7dvFHDX2TegHWXN4imk7583VQRE8qEXU2qN5p9LmqDBDYzXdcB0YPPzY3vw7KrHPCAoeXsxNIdz9f3aSz-gDEmozusrOAQ.PMTiz3nTmIsANhScn_y5kw.2G187ZJPOyiA8mdpy_X0_9gNhmPQJRcDIwoiWKks7BJRQT3oJ7S6PiplDVKL5DxPzBEm40xVP5HZ0Qex4OiqHF4eDP7IkaOQd2aEggeHVNGGbttzVtnRn7OgmKaOjKyHmH1hrVtnbIDQ3TpPnf_S7_5uGPg746fXOow00mSITAWFUsaW8sSO7btbtsW69fzZRjRg_n6ycWlSL38dG1OonKKqRE0B9ehFNFKR0nC2VJ2XzQbIPJb2mult4ovzjeQrRABT6I844I5p0UXZGUfmW7kzUCsytmQ5LfiFSUiEWyufNTMFgnJCjIrnbNdkAD7dw6AoSTNtP82EXKmYatSGhx2CxjMgaLbKAo7B-HdFU8GmO015lHppMAN4FRN6LdnpU4XgRuohufuIMweQUjHa8OrWWfe84nssutkCjbsfDJt0YNhVzLIDGtXv8j8_Z0kEE91d32_nZzZvsVNSQ1HLMykU8sCqo3E6Fsmq5RTcjlqvsvfjiNS7Oa-kBBaUlAip99uvnkp0p1tX0wDtyj4kju2AE9VgLVnxWKt6nzpHStse9u8feNeR5ejda5TE_9pyDeYJ2-9JHB8N-IaFp_YWPxKbUCxKZZzQNEA1Y-6f45TB9Oye33geqmDa_py8r-u-ZkDQv9GE9Bu86Uf86L49GT9RM9a0W5hdo-X8lriWRXIVCV7b7IUFGHuIoNsz7dxH3pWcOWTxpXMR0o1ESjVd1Lf72vHxlOJPzVETdBiYjACJ6c6xoSk3eTT2G2nbnKmxD_Xj75bgiEf14wgMRV5ZT6kW0ocKQnYD384plU5vEqU6qxcspk8DZN90vWbb_7xpAXrWxddAlnzeEQ8L0vXDOVymfQzTlKk5IvRbta67YDZL7sGpLi7_Zx-D0TZojyTAuZF0xSOmUSy_puICkBV-OQjqRi_1Bso73BHNKkeC9WCQyE_26qr2roFxluor4WsE1xTIR5MuetePdTP0Fa3CHL1YDvJaeJqeEAb1ZXB6SJlePHHGtyn0Gi5fs3D0Qsgl5ed8WoPMJ9J5K_eFd9bdNaGsxjKItAs0ynxp3vmjzjt08ey8Lk8L2DG5FXE2q2xhPjb8YNDTf7pwGuO4zPD6WpDZo298bMhTe3d5DahdhtlGjt6EdvisgB7sypMySHSkCLpiBTLwWkIIfaGcsfrHGBwdBEgC-2v-eiX6SJB9u6bYuZuCIWF3hwu8sjaiQrMTfYIrDkwQV7HzPEyQoAGARsfbuiiwi2cdpYIvjZYm10FTGguHZBNpikX9_tehbz6v.cZQkCfSh6P7kQD_kUYYNVuFz4WjJ9UsYvW5KTerAZeI';
       if(token) {
         return token;
       }
@@ -37,7 +38,7 @@ export class TheResistanceGameService {
   };
 
   public connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
-    .withUrl(environment.Socket_URL + '/theresistancehub',
+    .withUrl(environment.SERVER_URL + '/lobby',
              this.options
     ).withAutomaticReconnect()
     .configureLogging(signalR.LogLevel.Error)
@@ -49,7 +50,7 @@ export class TheResistanceGameService {
   // start the connection
   public async start() {
     try {
-      console.log('trying to connect');
+      console.log('trying to connect',this.options);
       await this.connection.start();
       this.swalService.showSwal( SwalTypes.Success,'Connected To Server');
     } catch(err) {

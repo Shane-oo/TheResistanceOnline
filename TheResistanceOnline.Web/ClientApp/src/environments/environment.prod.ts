@@ -4,7 +4,7 @@ export const environment = {
 
 
   // old
-  Socket_URL: 'https://theresistanceboardgameonline.com/server',
+  SERVER_URL: 'https://theresistanceboardgameonline.com/server',
   Base_URL: 'https://theresistanceboardgameonline.com',
   API_Domain: 'theresistanceboardgameonline.com',
   Socket_Domain: 'theresistanceboardgameonline.com',

@@ -20,3 +20,4 @@ TheResistanceOnline.Infrastructure.Data.Migrations/local.settings.json
 .idea/.idea.TheResistanceOnline/.idea/jsLibraryMappings.xml
 .DS_Store
 TheResistanceOnline.Web/.DS_Store
+TheResistanceOnline.Server/appsettings.Development.json

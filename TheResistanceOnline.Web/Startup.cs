@@ -185,7 +185,8 @@ public class Startup
                                 .AllowRefreshTokenFlow();
 
                                o.SetTokenEndpointUris("/token")
-                                .SetAuthorizationEndpointUris("/authorize");
+                                .SetAuthorizationEndpointUris("/authorize")
+                                .SetIntrospectionEndpointUris("/connect/introspect");
 
                                if (Environment.IsDevelopment())
                                {

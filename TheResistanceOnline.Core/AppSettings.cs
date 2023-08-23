@@ -11,6 +11,9 @@ public class AppSettings
     [Required]
     public string ClientUrl { get; set; }
 
+
+    public SocketServerSettings SocketServerSettings { get; set; }
+
     #endregion
 }
 
@@ -55,6 +58,8 @@ public class MicrosoftSettings
 
 public class GoogleSettings
 {
+    #region Properties
+
     [Required]
     public string ClientId { get; set; }
 
@@ -63,4 +68,22 @@ public class GoogleSettings
 
     [Required]
     public string RedirectUri { get; set; }
+
+    #endregion
+}
+
+public class SocketServerSettings
+{
+    #region Properties
+
+    [Required]
+    public string ClientId { get; set; }
+
+    [Required]
+    public string ClientSecret { get; set; }
+
+    [Required]
+    public string Issuer { get; set; }
+
+    #endregion
 }
