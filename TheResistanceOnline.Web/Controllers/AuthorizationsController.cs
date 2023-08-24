@@ -143,6 +143,12 @@ public class AuthorizationsController: Controller
         var principal = new ClaimsPrincipal(identity);
         principal.SetScopes(OpenIddictScopes.OfflineAccess, OpenIddictScopes.OpenId, OpenIddictScopes.Roles, OpenIddictScopes.Profile);
 
+        // Application claims - that are potentially very sensitive - are only returned by OpenIddict 3.0 if all the following conditions are met:
+        // The claims are present in the access token. This means you have to assign them the "access_token" destination before calling SignIn.
+        // The application sending the introspection request was explicitly listed as a resource when calling SignIn (i.e you called principal.SetResources("client_id of the API doing introspection")).
+        // The API doing introspection was registered as a confidential client (i.e is forced to send a valid client_secret to be able to introspect a token).
+        principal.SetResources("TheResistanceOnline.Server");
+
         return SignIn(principal, AUTH_SCHEME);
     }
 
