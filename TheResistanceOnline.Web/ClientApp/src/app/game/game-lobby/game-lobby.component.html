@@ -1,0 +1,11 @@
+<div class="grid-container text-color">
+  <div class="game-lobby-lobbies">
+    <app-game-lobby-lobbies></app-game-lobby-lobbies>
+  </div>
+  <div class="game-lobby-search">
+    <app-game-lobby-search></app-game-lobby-search>
+  </div>
+  <div class="game-lobby-create">
+    <app-game-lobby-create (createLobbyEvent)="createLobby($event)"></app-game-lobby-create>
+  </div>
+</div>

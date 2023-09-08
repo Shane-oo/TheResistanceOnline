@@ -1,0 +1,38 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: auto;
+  font-family: inconsolata, serif;
+  grid-template-rows: auto;
+  grid-template-areas:
+    "main-left main-left main-left main-right main-right"
+    "main-left main-left main-left footer footer";
+}
+
+.game-lobby-lobbies {
+  grid-area: main-left;
+  margin: 7px;
+  background-color: #1f1608;
+  text-align: left;
+  border-radius: 10px;
+  padding: 20px;
+
+}
+
+.game-lobby-search {
+  grid-area: main-right;
+  margin: 7px;
+  background-color: #1f1608;
+  text-align: left;
+  border-radius: 10px;
+  padding: 20px;
+
+}
+
+.game-lobby-create {
+  grid-area: footer;
+  margin: 7px;
+  background-color: #1f1608;
+  text-align: left;
+  border-radius: 10px;
+  padding: 20px;
+}

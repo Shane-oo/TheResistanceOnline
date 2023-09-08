@@ -15,27 +15,30 @@ import { CountdownModule } from 'ngx-countdown';
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
-            declarations: [
-              TheResistanceGameComponent,
-              GameComponent,
-              GameCanvasComponent,
-              JoinGameComponent,
-              JoinGameDetailsComponent,
-              GameLobbyComponent,
-              GameChatBoxComponent
-            ],
-            imports: [
-              CommonModule,
-              RouterModule.forChild([
-                                      {path: '', component: TheResistanceGameComponent}]),
-              ReactiveFormsModule,
-              FormsModule,
-              FontAwesomeModule,
-              CountdownModule,
-              NgbDropdown,
-              NgbDropdownMenu,
-              NgbDropdownItem,
-              NgbDropdownToggle
-            ]
-          })
+    declarations: [
+        TheResistanceGameComponent,
+        GameComponent,
+        GameCanvasComponent,
+        JoinGameComponent,
+        JoinGameDetailsComponent,
+        GameLobbyComponent,
+        GameChatBoxComponent
+    ],
+    exports: [
+        GameLobbyComponent
+    ],
+    imports: [
+        CommonModule,
+        RouterModule.forChild([
+            {path: '', component: TheResistanceGameComponent}]),
+        ReactiveFormsModule,
+        FormsModule,
+        FontAwesomeModule,
+        CountdownModule,
+        NgbDropdown,
+        NgbDropdownMenu,
+        NgbDropdownItem,
+        NgbDropdownToggle
+    ]
+})
 export class TheResistanceGameModule {}

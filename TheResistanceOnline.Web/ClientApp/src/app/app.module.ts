@@ -57,6 +57,11 @@ export function tokenGetter() {
         path: 'the-resistance-game',
         loadChildren: () => import('./the-resistance-game/the-resistance-game.module').then(m => m.TheResistanceGameModule),
         canActivate: [authorizationGuard]
+      },
+      {
+        path: 'game',
+        loadChildren: () => import('./game/game.module').then(m => m.GameModule),
+        canActivate: [authorizationGuard]
       }
     ], {initialNavigation: 'enabledBlocking'}),
     SweetAlert2Module.forRoot(),

@@ -10,11 +10,6 @@ export interface UpdateUserCommand {
   userName: string
 }
 
-export interface UserDetailsFormModel {
-  userDetailsEditForm: FormGroup<UserDetailsEditFormModel>
-
-}
-
 export interface UserDetailsEditFormModel {
   userName: FormControl<string>,
   // createdOn: FormControl<string>,

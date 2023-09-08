@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
@@ -8,7 +9,9 @@ using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Data.Queries.UserQueries;
+using TheResistanceOnline.Games.Lobbies;
 using TheResistanceOnline.Server.Hubs;
+using TheResistanceOnline.Server.Lobbies.CreateLobby;
 
 namespace TheResistanceOnline.Server;
 
@@ -30,6 +33,9 @@ public class Startup
         Environment = environment;
     }
 
+    #endregion
+
+    #region Public Methods
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
@@ -121,22 +127,22 @@ public class Startup
         // TheResistanceOnline.Data
         services.AddTransient<IUserByUserIdDbQuery, UserByUserIdDbQuery>();
 
-        // var assemblies = new[]
-        //                  {
-        //                      // TheResistanceOnline.Users
-        //                      typeof(GetUserHandler).Assembly
-        //                  };
-        // // MediatR
-        // services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
-        //
-        // // AutoMapper
-        // services.AddAutoMapper(assemblies);
-        //
-        // // FluentValidation
-        // foreach(var assembly in assemblies)
-        // {
-        //     services.AddValidatorsFromAssembly(assembly);
-        // }
+        var assemblies = new[]
+                         {
+                             // TheResistanceOnline.Games
+                             typeof(CreateLobbyHandler).Assembly
+                         };
+        // MediatR
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
+
+        // AutoMapper
+        //services.AddAutoMapper(assemblies);
+
+        // FluentValidation
+        foreach(var assembly in assemblies)
+        {
+            services.AddValidatorsFromAssembly(assembly);
+        }
     }
 
     #endregion

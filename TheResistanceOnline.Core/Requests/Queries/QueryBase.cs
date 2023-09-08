@@ -11,6 +11,8 @@ public class QueryBase<TResponse>: IQuery<TResponse>
 {
     #region Properties
 
+    public string ConnectionId { get; set; }
+
     public Guid UserId { get; set; }
 
     public Roles UserRole { get; set; }
@@ -23,12 +25,20 @@ public class QueryBase<TResponse>: IQuery<TResponse>
     {
         UserId = Guid.Empty;
         UserRole = Roles.None;
+        ConnectionId = string.Empty;
     }
 
     protected QueryBase(Guid userId, Roles userRole)
     {
         UserId = userId;
         UserRole = userRole;
+    }
+
+    protected QueryBase(Guid userId, Roles userRole, string connectionId)
+    {
+        UserId = userId;
+        UserRole = userRole;
+        ConnectionId = connectionId;
     }
 
     #endregion

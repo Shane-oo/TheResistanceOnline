@@ -7,4 +7,6 @@ public interface IRequestBase
     public Guid UserId { get; set; }
 
     public Roles UserRole { get; set; }
+    
+    public string ConnectionId { get; set; }
 }

@@ -1,0 +1,47 @@
+.container {
+
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: ethnocentric, serif;
+
+}
+
+input {
+
+
+}
+
+.submit-button {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.button {
+  width: 150px;
+
+}
+
+
+input[type="text"] {
+  box-sizing: border-box;
+  width: 50%;
+  border-radius: 1px;
+  outline: none;
+  background-color: #271807;
+  border: none;
+  padding: 13px;
+  color: #f8e9d8;
+}
+
+input[type="checkbox"] {
+  box-sizing: border-box;
+  accent-color: #d48325;
+  width: 22px;
+  height: 22px;
+}
