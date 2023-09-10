@@ -6,6 +6,7 @@ using TheResistanceOnline.Games.Lobbies.CreateLobby;
 using TheResistanceOnline.Games.Lobbies.GetLobbies;
 using TheResistanceOnline.Games.Lobbies.JoinLobby;
 using TheResistanceOnline.Games.Lobbies.RemoveConnection;
+using TheResistanceOnline.Games.Lobbies.SearchLobby;
 
 namespace TheResistanceOnline.Games.Lobbies;
 
@@ -92,6 +93,29 @@ public class LobbyHub: BaseHub<ILobbyHub>
         try
         {
             return await _mediator.Send(command);
+        }
+        catch(Exception ex)
+        {
+            await Clients.Caller.Error(ex.Message);
+            throw;
+        }
+    }
+
+    [UsedImplicitly]
+    public async Task<LobbyDetailsModel> SearchLobby(SearchLobbyQuery query)
+    {
+        SetRequest(query);
+        query.GroupNamesToLobby = _groupNamesToLobby;
+        try
+        {
+            var foundLobbyId = await _mediator.Send(query);
+            var command = new JoinLobbyCommand
+                          {
+                              LobbyId = foundLobbyId,
+                              GroupNamesToLobby = _groupNamesToLobby
+                          };
+            SetRequest(command);
+            return await JoinLobby(command);
         }
         catch(Exception ex)
         {

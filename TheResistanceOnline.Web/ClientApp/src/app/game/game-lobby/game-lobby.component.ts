@@ -4,7 +4,7 @@ import {IHttpConnectionOptions} from "@microsoft/signalr";
 import {AuthenticationService} from "../../shared/services/authentication/authentication.service";
 import {environment} from "../../../environments/environment";
 import {SwalContainerService, SwalTypes} from "../../../ui/swal/swal-container.service";
-import {ConnectionModel, CreateLobbyCommand, JoinLobbyCommand, LobbyDetails} from "../game.models";
+import {ConnectionModel, CreateLobbyCommand, JoinLobbyCommand, LobbyDetails, SearchLobbyQuery} from "../game.models";
 
 
 @Component({
@@ -74,33 +74,38 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
 
   createLobby(command: CreateLobbyCommand) {
     this.connection.invoke('CreateLobby', command).then((lobbyDetails: LobbyDetails) => {
-      this.currentLobby = lobbyDetails;
-
-      this.stopReceiveNewLobbyListener();
-      this.stopReceiveUpdatePublicLobbyListener();
-      this.stopReceiveRemovePublicLobbyListener();
-
-      this.addReceiveNewConnectionInLobbyListener();
-      this.addReceiveLobbyClosedListener();
-      this.addReceiveRemoveConnectionInLobbyListener();
+      this.setCurrentLobby(lobbyDetails);
     }).catch(err => {
       // do nothing with errors because of the error listener
     });
   };
 
+  searchLobby(query: SearchLobbyQuery) {
+    this.connection.invoke('SearchLobby', query).then((lobbyDetails: LobbyDetails) => {
+      this.setCurrentLobby(lobbyDetails);
+    }).catch(err => {
+
+    });
+  }
+
   joinLobby(command: JoinLobbyCommand) {
     this.connection.invoke('JoinLobby', command).then((lobbyDetails: LobbyDetails) => {
-      this.currentLobby = lobbyDetails;
+      this.setCurrentLobby(lobbyDetails);
 
-      this.stopReceiveNewLobbyListener();
-      this.stopReceiveNewConnectionInLobbyListener();
-      this.stopReceiveRemovePublicLobbyListener();
-
-      this.addReceiveNewConnectionInLobbyListener();
-      this.addReceiveLobbyClosedListener();
-      this.addReceiveRemoveConnectionInLobbyListener();
     }).catch(err => {
     });
+  }
+
+  private setCurrentLobby = (lobbyDetails: LobbyDetails) => {
+    this.currentLobby = lobbyDetails;
+
+    this.stopReceiveNewLobbyListener();
+    this.stopReceiveUpdatePublicLobbyListener();
+    this.stopReceiveRemovePublicLobbyListener();
+
+    this.addReceiveNewConnectionInLobbyListener();
+    this.addReceiveLobbyClosedListener();
+    this.addReceiveRemoveConnectionInLobbyListener();
   }
 
   private addReceiveNewLobbyListener = () => {
@@ -116,7 +121,7 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
   private addReceiveNewConnectionInLobbyListener = () => {
     this.connection.on("NewConnectionInLobby", (newConnection: ConnectionModel) => {
       this.currentLobby!.connections.push(newConnection);
-    })
+    });
   }
 
   private stopReceiveNewConnectionInLobbyListener = () => {
@@ -129,7 +134,7 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
       if (lobbyToUpdate != -1) {
         this.lobbies[lobbyToUpdate] = lobbyDetails;
       }
-    })
+    });
   }
 
   private stopReceiveUpdatePublicLobbyListener = () => {
@@ -139,7 +144,7 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
   private addReceiveRemovePublicLobbyListener = () => {
     this.connection.on('RemovePublicLobby', (lobbyId: string) => {
       this.lobbies = this.lobbies.filter(l => l.id !== lobbyId);
-    })
+    });
   }
 
   private stopReceiveRemovePublicLobbyListener = () => {
@@ -149,6 +154,8 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
   private addReceiveLobbyClosedListener = () => {
     this.connection.on('LobbyClosed', () => {
       this.currentLobby = null;
+
+      this.getLobbies();
     });
   }
 

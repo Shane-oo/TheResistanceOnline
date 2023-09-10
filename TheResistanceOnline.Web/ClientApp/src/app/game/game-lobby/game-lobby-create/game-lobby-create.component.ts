@@ -17,7 +17,7 @@ export class GameLobbyCreateComponent {
         nonNullable: true,
         validators: [Validators.required,
           Validators.maxLength(20),
-          Validators.pattern('^[A-Za-z0-9ñÑáéíóúÁÉÍÓÚ/^\S*$/]+$'), // only allow text and numbers
+          Validators.pattern("^[a-zA-Z0-9]+$"), // only allow text and numbers
         ]
       }),
       isPrivate: new FormControl(false, {

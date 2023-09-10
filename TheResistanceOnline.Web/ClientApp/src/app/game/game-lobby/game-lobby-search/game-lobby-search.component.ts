@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {CreateLobbyCommand, CreateLobbyFormModel, SearchLobbyFormModel, SearchLobbyQuery} from "../../game.models";
 
@@ -9,6 +9,7 @@ import {CreateLobbyCommand, CreateLobbyFormModel, SearchLobbyFormModel, SearchLo
 })
 export class GameLobbySearchComponent {
   public searchLobbyForm: FormGroup<SearchLobbyFormModel>;
+  @Output() searchLobbyEvent = new EventEmitter<SearchLobbyQuery>();
 
   constructor() {
     this.searchLobbyForm = new FormGroup<SearchLobbyFormModel>({
@@ -16,7 +17,7 @@ export class GameLobbySearchComponent {
         nonNullable: true,
         validators: [Validators.required,
           Validators.maxLength(20),
-          Validators.pattern('^[A-Za-z0-9ñÑáéíóúÁÉÍÓÚ/^\S*$/]+$'), // only allow text and numbers
+          Validators.pattern("^[a-zA-Z0-9]+$"), // only allow text and numbers
         ]
       }),
     })
@@ -27,9 +28,8 @@ export class GameLobbySearchComponent {
     const searchLobbyQuery: SearchLobbyQuery = {
       id: formValues.id,
     };
-    console.log("find ",searchLobbyQuery)
 
-    //this.createLobbyEvent.emit(createLobbyCommand);
+    this.searchLobbyEvent.emit(searchLobbyQuery);
   }
 
   validateControl = (controlName: string) => {

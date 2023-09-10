@@ -1,28 +1,25 @@
 using FluentValidation;
-using MediatR;
-using TheResistanceOnline.Core.Requests.Commands;
+using TheResistanceOnline.Core.Requests.Queries;
 using TheResistanceOnline.Games.Lobbies.Common;
 
-namespace TheResistanceOnline.Games.Lobbies.CreateLobby;
+namespace TheResistanceOnline.Games.Lobbies.SearchLobby;
 
-public class CreateLobbyCommand: CommandBase<LobbyDetailsModel>
+public class SearchLobbyQuery: QueryBase<string>
 {
     #region Properties
 
     public string Id { get; set; }
-
-    public bool IsPrivate { get; set; }
 
     public Dictionary<string, LobbyDetailsModel> GroupNamesToLobby { get; set; }
 
     #endregion
 }
 
-public class CreateLobbyCommandValidator: AbstractValidator<CreateLobbyCommand>
+public class SearchLobbyQueryValidator: AbstractValidator<SearchLobbyQuery>
 {
     #region Construction
 
-    public CreateLobbyCommandValidator()
+    public SearchLobbyQueryValidator()
     {
         RuleFor(c => c.Id)
             .NotEmpty()
