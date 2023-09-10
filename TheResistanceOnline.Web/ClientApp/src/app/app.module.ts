@@ -24,10 +24,6 @@ import {adminGuard} from './shared/guards/admin.guard';
 import {HomeComponent} from './home/home.component';
 import {AuthenticationInterceptor} from "./shared/services/authentication/authentication.interceptor";
 
-export function tokenGetter() {
-  return localStorage.getItem('TheResistanceToken');
-}
-
 @NgModule({
   declarations: [
     AppComponent,
