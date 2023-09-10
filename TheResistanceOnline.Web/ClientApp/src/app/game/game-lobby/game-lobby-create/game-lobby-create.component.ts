@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {CreateLobbyCommand, CreateLobbyFormModel} from "../../game.models";
-import {UpdateUserCommand} from "../../../user/user.models";
 
 @Component({
   selector: 'app-game-lobby-create',
@@ -14,14 +13,14 @@ export class GameLobbyCreateComponent {
 
   constructor() {
     this.createLobbyForm = new FormGroup<CreateLobbyFormModel>({
-      roomId: new FormControl('', {
+      id: new FormControl('', {
         nonNullable: true,
         validators: [Validators.required,
-          Validators.maxLength(12),
+          Validators.maxLength(20),
           Validators.pattern('^[A-Za-z0-9ñÑáéíóúÁÉÍÓÚ/^\S*$/]+$'), // only allow text and numbers
         ]
       }),
-      privateRoom: new FormControl(false, {
+      isPrivate: new FormControl(false, {
         nonNullable: true,
         validators: [Validators.required]
       })
@@ -31,8 +30,8 @@ export class GameLobbyCreateComponent {
   createLobby(createLobbyFormValue: any) {
     const formValues = {...createLobbyFormValue};
     const createLobbyCommand: CreateLobbyCommand = {
-      roomId: formValues.roomId,
-      privateRoom: formValues.privateRoom
+      id: formValues.id,
+      isPrivate: formValues.isPrivate
     };
 
     this.createLobbyEvent.emit(createLobbyCommand);

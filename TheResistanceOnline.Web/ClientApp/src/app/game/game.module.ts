@@ -8,6 +8,7 @@ import {GameLobbyLobbiesComponent} from './game-lobby/game-lobby-lobbies/game-lo
 import {GameLobbySearchComponent} from './game-lobby/game-lobby-search/game-lobby-search.component';
 import {GameLobbyCreateComponent} from './game-lobby/game-lobby-create/game-lobby-create.component';
 import {ReactiveFormsModule} from "@angular/forms";
+import {PipesModule} from "../shared/pipes/pipes.module";
 
 
 
@@ -24,6 +25,7 @@ import {ReactiveFormsModule} from "@angular/forms";
     RouterModule.forChild([
       {path: '', component: GameComponent}]),
     ReactiveFormsModule,
+    PipesModule,
   ]
 })
 export class GameModule {

@@ -1,1 +1,32 @@
-<p>game-lobby-search works!</p>
+<div class="container">
+  <h4>Search For A Lobby</h4>
+  <div>
+    <form (ngSubmit)="searchLobby(searchLobbyForm.value)" [formGroup]="searchLobbyForm">
+      <div>
+        <input formControlName="id" id="id" type="text">
+        <div>
+          <ul>
+            <li *ngIf="validateControl('id') && hasError('id', 'required')">
+              Lobby Id is required.
+            </li>
+            <li *ngIf="validateControl('id') && hasError('id', 'maxlength')">
+              Lobby Id too long.
+            </li>
+            <li *ngIf="validateControl('id') && hasError('id', 'pattern')">
+              Invalid characters.
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="submit-button">
+        <button [disabled]="!searchLobbyForm.valid"
+                [style.opacity]="!searchLobbyForm.valid? '0.2':''"
+                [style.pointer-events]="!searchLobbyForm.valid? 'none':''"
+                class="primary-button button" type="submit">
+          Search
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

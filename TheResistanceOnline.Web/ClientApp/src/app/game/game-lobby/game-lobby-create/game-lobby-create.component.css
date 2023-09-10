@@ -7,11 +7,6 @@ h1, h2, h3, h4, h5, h6 {
 
 }
 
-input {
-
-
-}
-
 .submit-button {
   width: 100%;
   display: flex;
@@ -24,13 +19,13 @@ input {
 
 .button {
   width: 150px;
-
+  opacity: 80%;
 }
 
 
 input[type="text"] {
   box-sizing: border-box;
-  width: 50%;
+  width: 100%;
   border-radius: 1px;
   outline: none;
   background-color: #271807;

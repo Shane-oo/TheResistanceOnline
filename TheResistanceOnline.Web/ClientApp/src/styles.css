@@ -521,7 +521,7 @@ body {
   background-color: #57350f;
   border: none;
   color: #f8e9d8;
-  width: 100%;
+  width: auto;
   margin: 10px;
   padding: 1em 2em;
   border-radius: 6px;
@@ -529,7 +529,7 @@ body {
   display: inline-block;
   z-index: 2;
   white-space: nowrap;
-  height: 100%;
+  height: auto;
 }
 
 

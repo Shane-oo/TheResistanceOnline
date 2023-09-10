@@ -21,3 +21,4 @@ TheResistanceOnline.Infrastructure.Data.Migrations/local.settings.json
 .DS_Store
 TheResistanceOnline.Web/.DS_Store
 TheResistanceOnline.Server/appsettings.Development.json
+TheResistanceOnline.Games/.idea/

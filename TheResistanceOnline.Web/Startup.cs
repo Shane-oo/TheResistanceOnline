@@ -238,7 +238,7 @@ public class Startup
 
         // Db Queries
         // TheResistanceOnline.Data
-        services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>();
+        //services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>(); dont need this i think
         services.AddTransient<IUserByUserIdDbQuery, UserByUserIdDbQuery>();
         // TheResistanceOnline.Authentications
         services.AddTransient<IMicrosoftUserByObjectIdDbQuery, MicrosoftUserByObjectIdDbQuery>();

@@ -45,6 +45,12 @@ export class SwalContainerService {
           message = "Success"
         }
         break;
+      case SwalTypes.Info:
+        if(message.length === 0){
+          break; // message required for info
+        }
+        this.container.instance.isInfo = true;
+        break;
     }
     this.container.instance.message = message;
     this.container.instance.isSwalVisible = true;
@@ -123,6 +129,7 @@ export class SwalContainerService {
     this.container.instance.isSwalVisible = false;
     this.container.instance.isError = false;
     this.container.instance.isSuccess = false;
+    this.container.instance.isInfo = false;
   }
 
   private checkSize() {

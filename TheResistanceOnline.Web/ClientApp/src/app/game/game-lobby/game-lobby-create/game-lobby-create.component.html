@@ -3,32 +3,31 @@
   <div>
     <form (ngSubmit)="createLobby(createLobbyForm.value)" [formGroup]="createLobbyForm">
       <div>
-        <span>Room Id: </span>
-        <input formControlName="roomId" id="roomId" type="text">
+        <input formControlName="id" id="id" type="text">
         <div>
           <ul>
-            <li *ngIf="validateControl('roomId') && hasError('roomId', 'required')">
-              Room Id is required.
+            <li *ngIf="validateControl('id') && hasError('id', 'required')">
+              Lobby Id is required.
             </li>
-            <li *ngIf="validateControl('roomId') && hasError('roomId', 'maxlength')">
-              Room Id too long.
+            <li *ngIf="validateControl('id') && hasError('id', 'maxlength')">
+              Lobby Id too long.
             </li>
-            <li *ngIf="validateControl('roomId') && hasError('roomId', 'pattern')">
+            <li *ngIf="validateControl('id') && hasError('id', 'pattern')">
               Invalid characters.
             </li>
           </ul>
         </div>
       </div>
       <div>
-        <span>Private Room: </span>
-        <input formControlName="privateRoom" id="privateRoom" type="checkbox">
+        <span>Private Lobby: </span>
+        <input formControlName="isPrivate" id="isPrivate" type="checkbox">
       </div>
       <div class="submit-button">
         <button [disabled]="!createLobbyForm.valid"
-                [style.opacity]="!createLobbyForm.valid? '0.5':''"
+                [style.opacity]="!createLobbyForm.valid? '0.2':''"
                 [style.pointer-events]="!createLobbyForm.valid? 'none':''"
                 class="primary-button button" type="submit">
-          Submit
+          Create
         </button>
       </div>
 

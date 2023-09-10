@@ -8,20 +8,24 @@
 
 
     <ItemGroup>
-      <ProjectReference Include="..\TheResistanceOnline.Core\TheResistanceOnline.Core.csproj" />
+        <ProjectReference Include="..\TheResistanceOnline.Core\TheResistanceOnline.Core.csproj"/>
     </ItemGroup>
 
 
     <ItemGroup>
-      <PackageReference Include="FluentValidation" Version="11.7.1" />
-      <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="7.0.10" />
+        <PackageReference Include="FluentValidation" Version="11.7.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="7.0.10"/>
+        <PackageReference Include="OpenIddict.Abstractions" Version="4.7.0"/>
     </ItemGroup>
 
 
     <ItemGroup>
-      <Reference Include="TheResistanceOnline.Core">
-        <HintPath>..\TheResistanceOnline.Core\bin\Debug\net7.0\TheResistanceOnline.Core.dll</HintPath>
-      </Reference>
+        <!-- Must Have So can use Hubs in Class Project -->
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
     </ItemGroup>
+
+
+
+
 
 </Project>

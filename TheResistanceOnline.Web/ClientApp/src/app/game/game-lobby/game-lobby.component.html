@@ -1,11 +1,21 @@
-<div class="grid-container text-color">
-  <div class="game-lobby-lobbies">
-    <app-game-lobby-lobbies></app-game-lobby-lobbies>
+<div *ngIf="!currentLobby">
+  <div class="grid-container text-color">
+    <div class="game-lobby-lobbies">
+      <app-game-lobby-lobbies (joinLobbyEvent)="joinLobby($event)" [lobbies]="lobbies"></app-game-lobby-lobbies>
+    </div>
+    <div class="game-lobby-create">
+      <app-game-lobby-create (createLobbyEvent)="createLobby($event)"></app-game-lobby-create>
+    </div>
+    <div class="game-lobby-search">
+      <app-game-lobby-search></app-game-lobby-search>
+    </div>
+
   </div>
-  <div class="game-lobby-search">
-    <app-game-lobby-search></app-game-lobby-search>
-  </div>
-  <div class="game-lobby-create">
-    <app-game-lobby-create (createLobbyEvent)="createLobby($event)"></app-game-lobby-create>
-  </div>
+</div>
+<div *ngIf="currentLobby">
+
+  I am in this lobby
+  {{currentLobby.id}}
+  is private = {{currentLobby.isPrivate}}
+  {{currentLobby.connections.length}}
 </div>

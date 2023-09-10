@@ -10,8 +10,7 @@ using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Data.Queries.UserQueries;
 using TheResistanceOnline.Games.Lobbies;
-using TheResistanceOnline.Server.Hubs;
-using TheResistanceOnline.Server.Lobbies.CreateLobby;
+using TheResistanceOnline.Games.Lobbies.CreateLobby;
 
 namespace TheResistanceOnline.Server;
 
