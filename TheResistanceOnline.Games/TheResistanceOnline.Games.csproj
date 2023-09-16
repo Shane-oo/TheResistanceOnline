@@ -21,7 +21,17 @@
 
     <ItemGroup>
         <!-- Must Have So can use Hubs in Class Project -->
+
+
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+
+
+
+
+
+
+
+
     </ItemGroup>
 
 
