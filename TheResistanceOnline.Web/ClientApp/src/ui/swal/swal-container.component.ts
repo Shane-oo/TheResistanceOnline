@@ -5,34 +5,45 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'swal-container',
   template: `
-      <!--Error Component-->
-      <swal *ngIf="isSwalVisible && isError"
-            [toast]="true"
-            position='top-end'
-            [showConfirmButton]="false"
-            [timer]="7500"
-            icon="error"
-            html="<span class=swal-text>{{ message }}</span>"
-            [swalFireOnInit]="true"
-            (didClose)="isSwalVisible = false;isError = false"
-            background='#271807'
-            (didOpen)="swalDidOpen($event)"
-      >
-      </swal>
-      <!--Success Component-->
-      <swal *ngIf="isSwalVisible && isSuccess"
-            [toast]="true"
-            position='top-end'
-            [showConfirmButton]="false"
-            [timer]="2000"
-            icon="success"
-            html="<span class=swal-text>{{ message }}</span>"
-            [swalFireOnInit]="true"
-            (didClose)="isSwalVisible = false;isSuccess = false"
-            background='#271807'
-            (didOpen)="swalDidOpen($event)">
-      </swal>
-      <!--Warning Component todo-->
+    <!--Error Component-->
+    <swal *ngIf="isSwalVisible && isError"
+          [toast]="true"
+          position='top-end'
+          [showConfirmButton]="false"
+          [timer]="7500"
+          icon="error"
+          html="<span class=swal-text>{{ message }}</span>"
+          [swalFireOnInit]="true"
+          (didClose)="isSwalVisible = false;isError = false"
+          background='#271807'
+          (didOpen)="swalDidOpen($event)"
+    >
+    </swal>
+    <!--Success Component-->
+    <swal *ngIf="isSwalVisible && isSuccess"
+          [toast]="true"
+          position='top-end'
+          [showConfirmButton]="false"
+          [timer]="2000"
+          icon="success"
+          html="<span class=swal-text>{{ message }}</span>"
+          [swalFireOnInit]="true"
+          (didClose)="isSwalVisible = false;isSuccess = false"
+          background='#271807'
+          (didOpen)="swalDidOpen($event)">
+    </swal>
+    <!--Warning Component -->
+    <swal *ngIf="isSwalVisible && isWarning"
+          [toast]="true"
+          position='top-end'
+          [showConfirmButton]="false"
+          [timer]="2000"
+          icon="warning"
+          html="<span class=swal-text>{{ message }}</span>"
+          [swalFireOnInit]="true"
+          (didClose)="isSwalVisible = false;isWarning = false"
+          background='#271807'
+          (didOpen)="swalDidOpen($event)">
       <!--Info Component -->
       <swal *ngIf="isSwalVisible && isInfo"
             [toast]="true"
@@ -57,6 +68,7 @@ export class SwalContainerComponent {
   public isError: boolean = false;
   public isSuccess: boolean = false;
   public isInfo: boolean = false;
+  public isWarning: boolean = false;
 
   constructor() {
   }

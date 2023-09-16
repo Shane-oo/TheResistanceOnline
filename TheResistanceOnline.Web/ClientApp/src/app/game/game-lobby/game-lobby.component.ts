@@ -154,7 +154,7 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
   private addReceiveLobbyClosedListener = () => {
     this.connection.on('LobbyClosed', () => {
       this.currentLobby = null;
-
+      this.swalService.showSwal(SwalTypes.Warning, "Host Closed The Lobby");
       this.getLobbies();
     });
   }

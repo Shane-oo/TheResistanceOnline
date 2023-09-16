@@ -36,20 +36,26 @@ export class SwalContainerService {
       case SwalTypes.Error:
         this.container.instance.isError = true;
         if (message.length === 0) {
-          message = "Error"
+          message = "Error";
         }
         break;
       case SwalTypes.Success:
         this.container.instance.isSuccess = true;
         if (message.length === 0) {
-          message = "Success"
+          message = "Success";
         }
         break;
       case SwalTypes.Info:
+        this.container.instance.isInfo = true;
         if(message.length === 0){
           break; // message required for info
         }
-        this.container.instance.isInfo = true;
+        break;
+      case SwalTypes.Warning:
+        this.container.instance.isWarning = true;
+        if(message.length === 0){
+          message = "Warning";
+        }
         break;
     }
     this.container.instance.message = message;
