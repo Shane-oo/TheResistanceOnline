@@ -8,9 +8,9 @@ public class SendOfferCommand: CommandBase<Unit>
 {
     #region Properties
 
-    public RTCSessionDescriptionModel RTCSessionDescription { get; set; }
+    public string ConnectionIdOfWhoOfferIsFor { get; set; }
 
-    public Dictionary<string, string> ConnectionIdsToGroupNames { get; set; }
+    public RTCSessionDescriptionModel RTCSessionDescription { get; set; }
 
     #endregion
 }

@@ -8,6 +8,8 @@ public class SendCandidateCommand: CommandBase<Unit>
 {
     #region Properties
 
+    public string ConnectIdOfWhoCandidateIsFor { get; set; }
+
     public Dictionary<string, string> ConnectionIdsToGroupNames { get; set; }
 
     public RTCIceCandidateModel RTCIceCandidate { get; set; }

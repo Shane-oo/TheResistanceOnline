@@ -1,10 +1,11 @@
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using TheResistanceOnline.Games.Streams.Common;
 using TheResistanceOnline.Games.Streams.CreateOffer;
+using TheResistanceOnline.Games.Streams.GetPeerConnections;
 using TheResistanceOnline.Games.Streams.SendAnswer;
 using TheResistanceOnline.Games.Streams.SendCandidate;
+using TheResistanceOnline.Games.Streams.SendOffer;
 
 namespace TheResistanceOnline.Games.Streams;
 
@@ -12,11 +13,15 @@ public interface IStreamHub
 {
     Task Error(string errorMessage);
 
-    Task HandleAnswer(RTCSessionDescriptionModel answer);
+    Task HandleAnswer(AnswerModel answer);
 
-    Task HandleCandidate(RTCIceCandidateModel candidate);
+    Task HandleCandidate(CandidateModel candidate);
 
-    Task HandleOffer(RTCSessionDescriptionModel offer);
+    Task HandleOffer(OfferModel offer);
+
+    Task NewConnectionId(string connectionId);
+
+    Task RemoveConnectionId(string connectionId);
 }
 
 public class StreamHub: BaseHub<IStreamHub>
@@ -41,6 +46,23 @@ public class StreamHub: BaseHub<IStreamHub>
 
     #region Public Methods
 
+    [UsedImplicitly]
+    public async Task<List<string>> GetConnectionIds(GetConnectionIdsQuery query)
+    {
+        SetRequest(query);
+        query.ConnectionIdsToGroupNames = _properties._connectionIdsToGroupNames;
+
+        try
+        {
+            return await _mediator.Send(query);
+        }
+        catch(Exception ex)
+        {
+            await Clients.Caller.Error(ex.Message);
+            throw;
+        }
+    }
+
     public override async Task OnConnectedAsync()
     {
         var httpContext = Context.GetHttpContext();
@@ -51,6 +73,10 @@ public class StreamHub: BaseHub<IStreamHub>
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId);
                 _properties._connectionIdsToGroupNames.Add(Context.ConnectionId, lobbyId);
+
+                // let others now of new connection
+                await Clients.Group(lobbyId).NewConnectionId(Context.ConnectionId);
+
                 await base.OnConnectedAsync();
             }
             else
@@ -66,7 +92,12 @@ public class StreamHub: BaseHub<IStreamHub>
 
     public override async Task OnDisconnectedAsync(Exception exception)
     {
-        _properties._connectionIdsToGroupNames.Remove(Context.ConnectionId);
+        if (_properties._connectionIdsToGroupNames.TryGetValue(Context.ConnectionId, out var lobbyId))
+        {
+            await Clients.Group(lobbyId).RemoveConnectionId(Context.ConnectionId);
+            _properties._connectionIdsToGroupNames.Remove(Context.ConnectionId);
+        }
+
         await base.OnDisconnectedAsync(exception);
     }
 
@@ -74,8 +105,6 @@ public class StreamHub: BaseHub<IStreamHub>
     public async Task SendAnswer(SendAnswerCommand command)
     {
         SetRequest(command);
-        command.ConnectionIdsToGroupNames = _properties._connectionIdsToGroupNames;
-
         try
         {
             await _mediator.Send(command);
@@ -108,8 +137,6 @@ public class StreamHub: BaseHub<IStreamHub>
     public async Task SendOffer(SendOfferCommand command)
     {
         SetRequest(command);
-        command.ConnectionIdsToGroupNames = _properties._connectionIdsToGroupNames;
-
         try
         {
             await _mediator.Send(command);

@@ -30,13 +30,13 @@ public class SendOfferHandler: IRequestHandler<SendOfferCommand, Unit>
         ArgumentNullException.ThrowIfNull(command);
 
         UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
-
-        if (!command.ConnectionIdsToGroupNames.TryGetValue(command.ConnectionId, out var groupName))
-        {
-            throw new NotFoundException("Group Not Found");
-        }
-
-        await _streamHubContext.Clients.GroupExcept(groupName, command.ConnectionId).HandleOffer(command.RTCSessionDescription);
+     
+        var offer = new OfferModel
+                    {
+                        ConnectionIdOfWhoOffered = command.ConnectionId,
+                        RtcSessionDescription = command.RTCSessionDescription
+                    };
+        await _streamHubContext.Clients.Client(command.ConnectionIdOfWhoOfferIsFor).HandleOffer(offer);
 
         return default;
     }

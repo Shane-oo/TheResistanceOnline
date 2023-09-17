@@ -30,12 +30,12 @@ public class SendAnswerHandler: IRequestHandler<SendAnswerCommand, Unit>
 
         UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
 
-        if (!command.ConnectionIdsToGroupNames.TryGetValue(command.ConnectionId, out var groupName))
-        {
-            throw new NotFoundException("Group Not Found");
-        }
-
-        await _streamHubContext.Clients.GroupExcept(groupName, command.ConnectionId).HandleAnswer(command.RTCSessionDescription);
+        var answer = new AnswerModel
+                     {
+                         ConnectionIdOfWhoAnswered = command.ConnectionId,
+                         RtcSessionDescription = command.RtcSessionDescription
+                     };
+        await _streamHubContext.Clients.Client(command.ConnectionIdOfWhoAnswerIsFor).HandleAnswer(answer);
 
         return default;
     }

@@ -30,12 +30,13 @@ public class SendCandidateHandler: IRequestHandler<SendCandidateCommand, Unit>
 
         UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
 
-        if (!command.ConnectionIdsToGroupNames.TryGetValue(command.ConnectionId, out var groupName))
-        {
-            throw new NotFoundException("Group Not Found");
-        }
 
-        await _streamHubContext.Clients.GroupExcept(groupName, command.ConnectionId).HandleCandidate(command.RTCIceCandidate);
+        var candidateModel = new CandidateModel
+                             {
+                                 ConnectionIdOfWhoSentCandidate = command.ConnectionId,
+                                 RtcIceCandidate = command.RTCIceCandidate
+                             };
+        await _streamHubContext.Clients.Client(command.ConnectIdOfWhoCandidateIsFor).HandleCandidate(candidateModel);
 
         return default;
     }
