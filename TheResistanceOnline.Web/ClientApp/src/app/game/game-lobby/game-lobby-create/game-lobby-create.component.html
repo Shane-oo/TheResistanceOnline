@@ -19,6 +19,27 @@
         </div>
       </div>
       <div>
+        <span>Max Players: </span>
+        <input formControlName="maxPlayers" id="maxPlayers" type="number" min="5" max="10">
+        <div>
+          <ul>
+            <li *ngIf="validateControl('maxPlayers') && hasError('maxPlayers', 'required')">
+              Max Players is required.
+            </li>
+            <li *ngIf="validateControl('maxPlayers') && hasError('maxPlayers', 'max')">
+              Max Players must be less than 10.
+            </li>
+            <li *ngIf="validateControl('maxPlayers') && hasError('maxPlayers', 'min')">
+              Max Players must be more than 5.
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <span>Fill Empty Spots with Bots: </span>
+        <input formControlName="fillWithBots" id="fillWithBots" type="checkbox">
+      </div>
+      <div>
         <span>Private Lobby: </span>
         <input formControlName="isPrivate" id="isPrivate" type="checkbox">
       </div>

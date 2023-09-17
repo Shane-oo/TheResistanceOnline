@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {CreateLobbyCommand, CreateLobbyFormModel, SearchLobbyFormModel, SearchLobbyQuery} from "../../game.models";
+import {SearchLobbyFormModel, SearchLobbyQuery} from "../game-lobby.models";
 
 @Component({
   selector: 'app-game-lobby-search',

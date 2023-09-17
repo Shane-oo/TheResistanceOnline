@@ -67,7 +67,9 @@ public class CreateLobbyHandler: IRequestHandler<CreateLobbyCommand, LobbyDetail
                                                  }
                                              },
                                Id = command.Id,
-                               IsPrivate = command.IsPrivate
+                               IsPrivate = command.IsPrivate,
+                               MaxPlayers = command.MaxPlayers,
+                               FillWithBots = command.FillWithBots
                            };
 
         command.GroupNamesToLobby.Add(command.Id, lobbyDetails);

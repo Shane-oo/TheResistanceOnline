@@ -40,7 +40,7 @@ public class JoinLobbyHandler: IRequestHandler<JoinLobbyCommand, LobbyDetailsMod
             throw new DomainException("Lobby With That Id Was Not Found");
         }
 
-        if (lobbyDetails.Connections.Count == 10)
+        if (lobbyDetails.Connections.Count == lobbyDetails.MaxPlayers)
         {
             throw new DomainException("Lobby Is Full");
         }

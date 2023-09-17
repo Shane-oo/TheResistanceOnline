@@ -4,7 +4,14 @@ import {IHttpConnectionOptions} from "@microsoft/signalr";
 import {AuthenticationService} from "../../shared/services/authentication/authentication.service";
 import {environment} from "../../../environments/environment";
 import {SwalContainerService, SwalTypes} from "../../../ui/swal/swal-container.service";
-import {ConnectionModel, CreateLobbyCommand, JoinLobbyCommand, LobbyDetails, SearchLobbyQuery} from "../game.models";
+import {
+  ConnectionModel,
+  CreateLobbyCommand,
+  JoinLobbyCommand,
+  LobbyDetails,
+  ReadyUpCommand,
+  SearchLobbyQuery
+} from "./game-lobby.models";
 
 
 @Component({
@@ -72,6 +79,11 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
     await this.connection.stop();
   }
 
+  readyUp(command: ReadyUpCommand) {
+    this.connection.invoke('ReadyUp', command).catch(err => {
+    });
+  }
+
   createLobby(command: CreateLobbyCommand) {
     this.connection.invoke('CreateLobby', command).then((lobbyDetails: LobbyDetails) => {
       this.setCurrentLobby(lobbyDetails);
@@ -106,6 +118,8 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
     this.addReceiveNewConnectionInLobbyListener();
     this.addReceiveLobbyClosedListener();
     this.addReceiveRemoveConnectionInLobbyListener();
+    this.addReceiveUpdateConnectionsReadyInLobbyListener();
+    this.addReceiveStartGameListener();
   }
 
   private addReceiveNewLobbyListener = () => {
@@ -172,6 +186,22 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
   private stopReceiveRemoveConnectionInLobbyListener = () => {
     this.connection.off('RemoveConnectionInLobby');
   }
+
+  private addReceiveUpdateConnectionsReadyInLobbyListener = () => {
+    this.connection.on("UpdateConnectionsReadyInLobby", (connectionId: string) => {
+      const connectionToUpdateIndex = this.currentLobby!.connections.findIndex(c => c.connectionId === connectionId);
+      if (connectionToUpdateIndex !== -1) {
+        this.currentLobby!.connections[connectionToUpdateIndex].isReady = true;
+      }
+    });
+  }
+
+  private addReceiveStartGameListener = () => {
+    this.connection.on('StartGame', () => {
+      console.log("TOLD TO START GAME Wooo");
+    });
+  }
+
 
   private addReceiveErrorMessageListener = () => {
     this.connection.on("Error", (errorMessage: string) => {

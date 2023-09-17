@@ -5,6 +5,7 @@ using TheResistanceOnline.Games.Lobbies.Common;
 using TheResistanceOnline.Games.Lobbies.CreateLobby;
 using TheResistanceOnline.Games.Lobbies.GetLobbies;
 using TheResistanceOnline.Games.Lobbies.JoinLobby;
+using TheResistanceOnline.Games.Lobbies.ReadyUp;
 using TheResistanceOnline.Games.Lobbies.RemoveConnection;
 using TheResistanceOnline.Games.Lobbies.SearchLobby;
 
@@ -25,6 +26,10 @@ public interface ILobbyHub
     Task RemovePublicLobby(string id);
 
     Task UpdatePublicLobby(LobbyDetailsModel lobby);
+
+    Task UpdateConnectionsReadyInLobby(string connectionId); // set ready to true for this connectionid 
+
+    Task StartGame(); // tell the users to now go to the ResistanceHub so game can startNo //todo create a StartGameModel maybe?
 }
 
 [Authorize]
@@ -49,6 +54,23 @@ public class LobbyHub: BaseHub<ILobbyHub>
     #endregion
 
     #region Public Methods
+
+    [UsedImplicitly]
+    public async Task ReadyUp(ReadyUpCommand command)
+    {
+        SetRequest(command);
+        command.GroupNamesToLobby = _properties._groupNamesToLobby;
+
+        try
+        {
+            await _mediator.Send(command);
+        }
+        catch(Exception ex)
+        {
+            await Clients.Caller.Error(ex.Message);
+            throw;
+        }
+    }
 
     [UsedImplicitly]
     public async Task<LobbyDetailsModel> CreateLobby(CreateLobbyCommand command)
