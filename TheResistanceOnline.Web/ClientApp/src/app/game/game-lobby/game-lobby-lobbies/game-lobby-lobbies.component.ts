@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {JoinLobbyCommand, LobbyDetails} from "../../game.models";
+import {JoinLobbyCommand, LobbyDetails} from "../game-lobby.models";
 
 @Component({
   selector: 'app-game-lobby-lobbies',

@@ -4,7 +4,7 @@
     <div class="lobbyDetails">
       <button (click)="joinLobby(lobby)" class="primary-button join-game-button"><b>{{lobby.id}}</b></button>
       &nbsp;
-      <span>{{lobby.connections | select:"userName"}} - {{lobby.connections.length}}/10</span>
+      <span>{{lobby.connections | select:"userName"}} - {{lobby.connections.length}}/{{lobby.maxPlayers}}</span>
     </div>
   </div>
 </div>

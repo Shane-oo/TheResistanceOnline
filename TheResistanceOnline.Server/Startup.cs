@@ -11,6 +11,7 @@ using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Data.Queries.UserQueries;
 using TheResistanceOnline.Games.Lobbies;
 using TheResistanceOnline.Games.Lobbies.CreateLobby;
+using TheResistanceOnline.Games.Streams;
 
 namespace TheResistanceOnline.Server;
 
@@ -52,7 +53,11 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.UseEndpoints(endpoints => { endpoints.MapHub<LobbyHub>("/lobby"); });
+        app.UseEndpoints(endpoints =>
+                         {
+                             endpoints.MapHub<LobbyHub>("/lobby");
+                             endpoints.MapHub<StreamHub>("/stream");
+                         });
     }
 
     public void ConfigureServices(IServiceCollection services)
@@ -142,6 +147,10 @@ public class Startup
         {
             services.AddValidatorsFromAssembly(assembly);
         }
+
+        // Services
+        services.AddSingleton<LobbyHubPersistedProperties>();
+        services.AddSingleton<StreamHubPersistedProperties>();
     }
 
     #endregion

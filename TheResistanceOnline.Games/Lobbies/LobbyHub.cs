@@ -5,6 +5,7 @@ using TheResistanceOnline.Games.Lobbies.Common;
 using TheResistanceOnline.Games.Lobbies.CreateLobby;
 using TheResistanceOnline.Games.Lobbies.GetLobbies;
 using TheResistanceOnline.Games.Lobbies.JoinLobby;
+using TheResistanceOnline.Games.Lobbies.ReadyUp;
 using TheResistanceOnline.Games.Lobbies.RemoveConnection;
 using TheResistanceOnline.Games.Lobbies.SearchLobby;
 
@@ -25,6 +26,10 @@ public interface ILobbyHub
     Task RemovePublicLobby(string id);
 
     Task UpdatePublicLobby(LobbyDetailsModel lobby);
+
+    Task UpdateConnectionsReadyInLobby(string connectionId); // set ready to true for this connectionid 
+
+    Task StartGame(); // tell the users to now go to the ResistanceHub so game can startNo //todo create a StartGameModel maybe?
 }
 
 [Authorize]
@@ -32,7 +37,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
 {
     #region Fields
 
-    private static readonly Dictionary<string, LobbyDetailsModel> _groupNamesToLobby = new();
+    private readonly LobbyHubPersistedProperties _properties;
 
     private readonly IMediator _mediator;
 
@@ -40,9 +45,10 @@ public class LobbyHub: BaseHub<ILobbyHub>
 
     #region Construction
 
-    public LobbyHub(IMediator mediator)
+    public LobbyHub(IMediator mediator, LobbyHubPersistedProperties properties)
     {
         _mediator = mediator;
+        _properties = properties;
     }
 
     #endregion
@@ -50,10 +56,27 @@ public class LobbyHub: BaseHub<ILobbyHub>
     #region Public Methods
 
     [UsedImplicitly]
+    public async Task ReadyUp(ReadyUpCommand command)
+    {
+        SetRequest(command);
+        command.GroupNamesToLobby = _properties._groupNamesToLobby;
+
+        try
+        {
+            await _mediator.Send(command);
+        }
+        catch(Exception ex)
+        {
+            await Clients.Caller.Error(ex.Message);
+            throw;
+        }
+    }
+
+    [UsedImplicitly]
     public async Task<LobbyDetailsModel> CreateLobby(CreateLobbyCommand command)
     {
         SetRequest(command);
-        command.GroupNamesToLobby = _groupNamesToLobby;
+        command.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
         {
@@ -71,7 +94,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
     {
         var query = new GetLobbiesQuery();
         SetRequest(query);
-        query.GroupNamesToLobby = _groupNamesToLobby;
+        query.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
         {
@@ -88,7 +111,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
     public async Task<LobbyDetailsModel> JoinLobby(JoinLobbyCommand command)
     {
         SetRequest(command);
-        command.GroupNamesToLobby = _groupNamesToLobby;
+        command.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
         {
@@ -105,14 +128,14 @@ public class LobbyHub: BaseHub<ILobbyHub>
     public async Task<LobbyDetailsModel> SearchLobby(SearchLobbyQuery query)
     {
         SetRequest(query);
-        query.GroupNamesToLobby = _groupNamesToLobby;
+        query.GroupNamesToLobby = _properties._groupNamesToLobby;
         try
         {
             var foundLobbyId = await _mediator.Send(query);
             var command = new JoinLobbyCommand
                           {
                               LobbyId = foundLobbyId,
-                              GroupNamesToLobby = _groupNamesToLobby
+                              GroupNamesToLobby = _properties._groupNamesToLobby
                           };
             SetRequest(command);
             return await JoinLobby(command);
@@ -131,15 +154,15 @@ public class LobbyHub: BaseHub<ILobbyHub>
 
     public override async Task OnDisconnectedAsync(Exception exception)
     {
-        var matchingLobbies = _groupNamesToLobby
-                              .Values
-                              .Where(l => l.Connections.Any(c => c.ConnectionId == Context.ConnectionId))
-                              .ToList();
+        var matchingLobbies = _properties._groupNamesToLobby
+                                         .Values
+                                         .Where(l => l.Connections.Any(c => c.ConnectionId == Context.ConnectionId))
+                                         .ToList();
         if (matchingLobbies.Any())
         {
             var command = new RemoveConnectionCommand
                           {
-                              GroupNamesToLobby = _groupNamesToLobby,
+                              GroupNamesToLobby = _properties._groupNamesToLobby,
                               LobbiesToRemoveFrom = matchingLobbies
                           };
             SetRequest(command);

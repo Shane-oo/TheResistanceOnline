@@ -10,6 +10,11 @@ import {GameLobbyLobbiesComponent} from './game-lobby/game-lobby-lobbies/game-lo
 import {GameLobbySearchComponent} from './game-lobby/game-lobby-search/game-lobby-search.component';
 import {GameLobbyCreateComponent} from './game-lobby/game-lobby-create/game-lobby-create.component';
 import {GameResistanceComponent} from './game-resistance/game-resistance.component';
+import { GameStreamComponent } from './game-stream/game-stream.component';
+import { GameStreamVideoComponent } from './game-stream/game-stream-video/game-stream-video.component';
+import { GameLobbyWaitingRoomComponent } from './game-lobby/game-lobby-waiting-room/game-lobby-waiting-room.component';
+import { GameLobbyWaitingRoomDetailsComponent } from './game-lobby/game-lobby-waiting-room/game-lobby-waiting-room-details/game-lobby-waiting-room-details.component';
+import { GameLobbyWaitingRoomPlayersComponent } from './game-lobby/game-lobby-waiting-room/game-lobby-waiting-room-players/game-lobby-waiting-room-players.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +22,12 @@ import {GameResistanceComponent} from './game-resistance/game-resistance.compone
     GameLobbyLobbiesComponent,
     GameLobbySearchComponent,
     GameLobbyCreateComponent,
-    GameResistanceComponent
+    GameResistanceComponent,
+    GameStreamComponent,
+    GameStreamVideoComponent,
+    GameLobbyWaitingRoomComponent,
+    GameLobbyWaitingRoomDetailsComponent,
+    GameLobbyWaitingRoomPlayersComponent
   ],
   imports: [
     CommonModule,

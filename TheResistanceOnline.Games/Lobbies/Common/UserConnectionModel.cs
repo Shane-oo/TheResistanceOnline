@@ -6,6 +6,8 @@ public class ConnectionModel
 
     public string ConnectionId { get; set; }
 
+    public bool IsReady { get; set; }
+
     public string UserName { get; set; }
 
     #endregion

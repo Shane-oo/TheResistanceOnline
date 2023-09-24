@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {CreateLobbyCommand, CreateLobbyFormModel} from "../../game.models";
+import {CreateLobbyCommand, CreateLobbyFormModel} from "../game-lobby.models";
+
 
 @Component({
   selector: 'app-game-lobby-create',
@@ -23,6 +24,17 @@ export class GameLobbyCreateComponent {
       isPrivate: new FormControl(false, {
         nonNullable: true,
         validators: [Validators.required]
+      }),
+      maxPlayers: new FormControl(10, {
+        nonNullable: true,
+        validators: [Validators.required,
+          Validators.max(10),
+          Validators.min(5)
+        ]
+      }),
+      fillWithBots: new FormControl(false, {
+        nonNullable: true,
+        validators: [Validators.required]
       })
     })
   }
@@ -31,7 +43,9 @@ export class GameLobbyCreateComponent {
     const formValues = {...createLobbyFormValue};
     const createLobbyCommand: CreateLobbyCommand = {
       id: formValues.id,
-      isPrivate: formValues.isPrivate
+      isPrivate: formValues.isPrivate,
+      maxPlayers: formValues.maxPlayers,
+      fillWithBots: formValues.fillWithBots
     };
 
     this.createLobbyEvent.emit(createLobbyCommand);

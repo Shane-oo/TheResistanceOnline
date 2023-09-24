@@ -1,0 +1,38 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: auto;
+  font-family: inconsolata, serif;
+  grid-template-rows: auto;
+  grid-template-areas:
+
+    "game-lobby-waiting-room-details game-lobby-waiting-room-details game-lobby-waiting-room-players game-lobby-waiting-room-players";
+}
+
+
+.game-lobby-waiting-room-details {
+  grid-area: game-lobby-waiting-room-details;
+  margin: 7px;
+  background-color: #1f1608;
+  text-align: left;
+  border-radius: 10px;
+  padding: 20px;
+
+}
+
+.game-lobby-waiting-room-players {
+  grid-area: game-lobby-waiting-room-players;
+  margin: 7px;
+  background-color: #1f1608;
+  text-align: left;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+@media only screen and (max-width: 500px) {
+  .grid-container {
+    grid-template-areas:
+
+    "game-lobby-waiting-room-details game-lobby-waiting-room-details game-lobby-waiting-room-details game-lobby-waiting-room-details"
+    "game-lobby-waiting-room-players game-lobby-waiting-room-players game-lobby-waiting-room-players game-lobby-waiting-room-players";
+  }
+}

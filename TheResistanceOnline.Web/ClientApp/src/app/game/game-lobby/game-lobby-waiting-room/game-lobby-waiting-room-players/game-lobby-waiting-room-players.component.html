@@ -1,0 +1,15 @@
+<div>
+  <h4>Players</h4>
+
+
+  <div *ngFor="let connection of connections">
+    <span>{{connection.userName}}</span>
+    <span>{{connection.isReady ? ' - Ready' : ''}}</span>
+  </div>
+
+  <div class="ready-button">
+    <button class="primary-button button" (click)="ready()">
+      Ready Up
+    </button>
+  </div>
+</div>

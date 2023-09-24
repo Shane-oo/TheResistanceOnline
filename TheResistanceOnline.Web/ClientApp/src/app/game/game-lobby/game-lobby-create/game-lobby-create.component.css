@@ -34,6 +34,18 @@ input[type="text"] {
   color: #f8e9d8;
 }
 
+
+input[type="number"] {
+  box-sizing: border-box;
+  width: 25%;
+  border-radius: 1px;
+  outline: none;
+  background-color: #271807;
+  border: none;
+  padding: 13px;
+  color: #f8e9d8;
+}
+
 input[type="checkbox"] {
   box-sizing: border-box;
   accent-color: #d48325;

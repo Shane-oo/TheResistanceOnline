@@ -13,9 +13,5 @@
   </div>
 </div>
 <div *ngIf="currentLobby">
-
-  I am in this lobby
-  {{currentLobby.id}}
-  is private = {{currentLobby.isPrivate}}
-  {{currentLobby.connections.length}}
+  <app-game-lobby-waiting-room [lobby]="currentLobby" (readyEventEmitter)="readyUp($event)"></app-game-lobby-waiting-room>
 </div>

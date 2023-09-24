@@ -26,7 +26,6 @@ public class RemoveConnectionHandler: IRequestHandler<RemoveConnectionCommand, U
     {
         ArgumentNullException.ThrowIfNull(command);
 
-
         foreach(var lobby in command.LobbiesToRemoveFrom)
         {
             // if host left the lobby then the lobby must close
