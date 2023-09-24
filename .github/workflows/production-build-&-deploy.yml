@@ -10,11 +10,13 @@ env:
   AZURE_CONTAINER_REGISTRY: "theresistanceonlinecontainer"
   THERESTISTANCEONLINE_WEB_CONTAINER_NAME: "theresistanceonlineweb"
   THERESTISTANCEONLINE_WEB_APP_NAME: "the-resistance-online-web"
+  THERESTISTANCEONLINE_SERVER_CONTAINER_NAME: "theresistanceonlineserver"
+  THERESISTANCEONLINE_SERVER_APP_NAME: "" # todo
   RESOURCE_GROUP: "rsg-the-resistance-online"
   DOTNET_VERSION: 7.0.x
 
 jobs:
-  build-and-push-the-resistance-online-web-to-container:
+  build-and-push-the-resistance-online-web-and-server-to-container:
     runs-on: ubuntu-latest
     steps:
     #checkout the repo
@@ -35,10 +37,12 @@ jobs:
     - run: |
         docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_WEB_CONTAINER_NAME }}:${{ github.sha }} --file TheResistanceOnline.Web/Dockerfile .
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_WEB_CONTAINER_NAME }}:${{ github.sha }}
-
+        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_SERVER_CONTAINER_NAME }}:${{ github.sha }} --file TheResistanceOnline.Server/Dockerfile .
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_SERVER_CONTAINER_NAME }}:${{ github.sha }}
+        
   build-and-apply-entity-frameworkcore-migrations:
     runs-on: ubuntu-latest
-    needs: build-and-push-the-resistance-online-web-to-container
+    needs: build-and-push-the-resistance-online-web-and-server-to-container
     steps:
       #checkout the repo
     - name: 'Checkout GitHub Action'
@@ -59,7 +63,7 @@ jobs:
 
   set-the-resistance-online-web-to-new-image:
     runs-on: ubuntu-latest
-    needs: [build-and-push-the-resistance-online-web-to-container,build-and-apply-entity-frameworkcore-migrations]
+    needs: [build-and-push-the-resistance-online-web-and-server-to-container,build-and-apply-entity-frameworkcore-migrations]
     steps:
 
     - name: 'Login via Azure CLI'
