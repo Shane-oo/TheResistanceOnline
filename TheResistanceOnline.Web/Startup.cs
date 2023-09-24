@@ -95,7 +95,7 @@ public class Startup
                                                            p.AllowAnyMethod()
                                                             .AllowAnyHeader()
                                                             .AllowCredentials()
-                                                            .WithOrigins(appSettings.ClientUrl);
+                                                            .WithOrigins(appSettings.ClientUrls);
                                                        });
                          });
 

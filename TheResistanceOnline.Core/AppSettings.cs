@@ -9,7 +9,7 @@ public class AppSettings
     public AuthServerSettings AuthServerSettings { get; set; }
 
     [Required]
-    public string ClientUrl { get; set; }
+    public string[] ClientUrls { get; set; }
 
 
     public SocketServerSettings SocketServerSettings { get; set; }
