@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import * as signalR from "@microsoft/signalr";
 import {IHttpConnectionOptions} from "@microsoft/signalr";
 import {AuthenticationService} from "../../shared/services/authentication/authentication.service";
@@ -10,8 +10,9 @@ import {
   JoinLobbyCommand,
   LobbyDetails,
   ReadyUpCommand,
-  SearchLobbyQuery
+  SearchLobbyQuery,
 } from "./game-lobby.models";
+import {StartGameModel} from "../game.models";
 
 
 @Component({
@@ -20,6 +21,7 @@ import {
   styleUrls: ['./game-lobby.component.css']
 })
 export class GameLobbyComponent implements OnInit, OnDestroy {
+  @Output() public startGameEvent: EventEmitter<StartGameModel> = new EventEmitter<StartGameModel>;
   public currentLobby: LobbyDetails | null = null;
   public lobbies: LobbyDetails[] = [];
   private options: IHttpConnectionOptions = {
@@ -35,7 +37,7 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
     skipNegotiation: true,
     timeout: 120000 // 2 minutes
   };
-  private connection: signalR.HubConnection = new signalR.HubConnectionBuilder()
+  private lobbyHubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
     .withUrl(environment.SERVER_URL + '/lobby',
       this.options
     ).withAutomaticReconnect()
@@ -58,10 +60,10 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
 
   public async start() {
     try {
-      this.swalService.showSwal(SwalTypes.Info, "Connecting To Server...");
+      this.swalService.showSwal(SwalTypes.Info, "Connecting To Lobby Hub...");
 
-      await this.connection.start().then(() => {
-        this.swalService.showSwal(SwalTypes.Success, 'Connected To Server');
+      await this.lobbyHubConnection.start().then(() => {
+        this.swalService.showSwal(SwalTypes.Success, 'Connected To Lobby Hub');
 
         // add required initial listeners
         this.addReceiveErrorMessageListener();
@@ -76,16 +78,16 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
   }
 
   public async stop() {
-    await this.connection.stop();
+    await this.lobbyHubConnection.stop();
   }
 
   readyUp(command: ReadyUpCommand) {
-    this.connection.invoke('ReadyUp', command).catch(err => {
+    this.lobbyHubConnection.invoke('ReadyUp', command).catch(err => {
     });
   }
 
   createLobby(command: CreateLobbyCommand) {
-    this.connection.invoke('CreateLobby', command).then((lobbyDetails: LobbyDetails) => {
+    this.lobbyHubConnection.invoke('CreateLobby', command).then((lobbyDetails: LobbyDetails) => {
       this.setCurrentLobby(lobbyDetails);
     }).catch(err => {
       // do nothing with errors because of the error listener
@@ -93,7 +95,7 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
   };
 
   searchLobby(query: SearchLobbyQuery) {
-    this.connection.invoke('SearchLobby', query).then((lobbyDetails: LobbyDetails) => {
+    this.lobbyHubConnection.invoke('SearchLobby', query).then((lobbyDetails: LobbyDetails) => {
       this.setCurrentLobby(lobbyDetails);
     }).catch(err => {
 
@@ -101,7 +103,7 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
   }
 
   joinLobby(command: JoinLobbyCommand) {
-    this.connection.invoke('JoinLobby', command).then((lobbyDetails: LobbyDetails) => {
+    this.lobbyHubConnection.invoke('JoinLobby', command).then((lobbyDetails: LobbyDetails) => {
       this.setCurrentLobby(lobbyDetails);
 
     }).catch(err => {
@@ -123,27 +125,29 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
   }
 
   private addReceiveNewLobbyListener = () => {
-    this.connection.on("NewPublicLobby", (lobbyDetails: LobbyDetails) => {
+    this.lobbyHubConnection.on("NewPublicLobby", (lobbyDetails: LobbyDetails) => {
       this.lobbies.push(lobbyDetails);
     });
   }
 
   private stopReceiveNewLobbyListener = () => {
-    this.connection.off("NewPublicLobby");
+    this.lobbyHubConnection.off("NewPublicLobby");
   }
 
   private addReceiveNewConnectionInLobbyListener = () => {
-    this.connection.on("NewConnectionInLobby", (newConnection: ConnectionModel) => {
-      this.currentLobby!.connections.push(newConnection);
+    this.lobbyHubConnection.on("NewConnectionInLobby", (newConnection: ConnectionModel) => {
+      if (this.currentLobby?.connections && newConnection) {
+        this.currentLobby.connections.push(newConnection);
+      }
     });
   }
 
   private stopReceiveNewConnectionInLobbyListener = () => {
-    this.connection.off("NewConnectionInLobby");
+    this.lobbyHubConnection.off("NewConnectionInLobby");
   }
 
   private addReceiveUpdatePublicLobbyListener = () => {
-    this.connection.on('UpdatePublicLobby', (lobbyDetails: LobbyDetails) => {
+    this.lobbyHubConnection.on('UpdatePublicLobby', (lobbyDetails: LobbyDetails) => {
       let lobbyToUpdate = this.lobbies.findIndex(l => l.id === lobbyDetails.id);
       if (lobbyToUpdate != -1) {
         this.lobbies[lobbyToUpdate] = lobbyDetails;
@@ -152,21 +156,21 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
   }
 
   private stopReceiveUpdatePublicLobbyListener = () => {
-    this.connection.off("UpdatePublicLobby");
+    this.lobbyHubConnection.off("UpdatePublicLobby");
   }
 
   private addReceiveRemovePublicLobbyListener = () => {
-    this.connection.on('RemovePublicLobby', (lobbyId: string) => {
+    this.lobbyHubConnection.on('RemovePublicLobby', (lobbyId: string) => {
       this.lobbies = this.lobbies.filter(l => l.id !== lobbyId);
     });
   }
 
   private stopReceiveRemovePublicLobbyListener = () => {
-    this.connection.off("RemovePublicLobby");
+    this.lobbyHubConnection.off("RemovePublicLobby");
   }
 
   private addReceiveLobbyClosedListener = () => {
-    this.connection.on('LobbyClosed', () => {
+    this.lobbyHubConnection.on('LobbyClosed', () => {
       this.currentLobby = null;
       this.swalService.showSwal(SwalTypes.Warning, "Host Closed The Lobby");
       this.getLobbies();
@@ -174,21 +178,21 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
   }
 
   private stopReceiveLobbyClosedListener = () => {
-    this.connection.off('LobbyClosed');
+    this.lobbyHubConnection.off('LobbyClosed');
   }
 
   private addReceiveRemoveConnectionInLobbyListener = () => {
-    this.connection.on('RemoveConnectionInLobby', (connectionId: string) => {
+    this.lobbyHubConnection.on('RemoveConnectionInLobby', (connectionId: string) => {
       this.currentLobby!.connections = this.currentLobby!.connections.filter(c => c.connectionId !== connectionId);
     });
   }
 
   private stopReceiveRemoveConnectionInLobbyListener = () => {
-    this.connection.off('RemoveConnectionInLobby');
+    this.lobbyHubConnection.off('RemoveConnectionInLobby');
   }
 
   private addReceiveUpdateConnectionsReadyInLobbyListener = () => {
-    this.connection.on("UpdateConnectionsReadyInLobby", (connectionId: string) => {
+    this.lobbyHubConnection.on("UpdateConnectionsReadyInLobby", (connectionId: string) => {
       const connectionToUpdateIndex = this.currentLobby!.connections.findIndex(c => c.connectionId === connectionId);
       if (connectionToUpdateIndex !== -1) {
         this.currentLobby!.connections[connectionToUpdateIndex].isReady = true;
@@ -197,20 +201,20 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
   }
 
   private addReceiveStartGameListener = () => {
-    this.connection.on('StartGame', () => {
-      console.log("TOLD TO START GAME Wooo");
+    this.lobbyHubConnection.on('StartGame', (startGameModel: StartGameModel) => {
+      this.startGameEvent.emit(startGameModel);
     });
   }
 
 
   private addReceiveErrorMessageListener = () => {
-    this.connection.on("Error", (errorMessage: string) => {
+    this.lobbyHubConnection.on("Error", (errorMessage: string) => {
       this.swalService.showSwal(SwalTypes.Error, errorMessage);
     });
   }
 
   private getLobbies() {
-    this.connection.invoke("GetLobbies")
+    this.lobbyHubConnection.invoke("GetLobbies")
       .then((lobbies: LobbyDetails[]) => {
         this.lobbies = lobbies;
         // listen for new lobbies created/updated

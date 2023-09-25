@@ -177,9 +177,9 @@ public class Startup
                            })
                 .AddServer(o =>
                            {
-                               o.SetAccessTokenLifetime(TimeSpan.FromMinutes(90))
+                               o.SetAccessTokenLifetime(TimeSpan.FromMinutes(120))
                                 .SetRefreshTokenLifetime(TimeSpan.FromDays(31))
-                                .SetIdentityTokenLifetime(TimeSpan.FromMinutes(90));
+                                .SetIdentityTokenLifetime(TimeSpan.FromMinutes(120));
 
                                o.AllowAuthorizationCodeFlow()
                                 .AllowRefreshTokenFlow();

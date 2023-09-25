@@ -76,32 +76,6 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
     await this.stop();
   }
 
-  public async start() {
-    try {
-      this.swalService.showSwal(SwalTypes.Info, "Connecting To Stream Hub...");
-
-      // add query params
-      this.streamHubConnection.baseUrl += `?lobbyId=${this.lobbyId}`
-
-      await this.streamHubConnection.start().then(() => {
-        this.swalService.showSwal(SwalTypes.Success, 'Connected To Stream Hub');
-
-        this.getConnectionIdsInLobby();
-
-        // add required initial listeners
-        this.addReceiveErrorMessageListener();
-      });
-    } catch (err) {
-      this.swalService.showSwal(SwalTypes.Error, 'Error Connecting To Stream Hub');
-      setTimeout(() => this.start(), 30000);
-    }
-  }
-
-  public async stop() {
-    await this.streamHubConnection.stop();
-    this.rtcPeerConnectionsMap.clear();
-  }
-
   public async makeCall() {
 
     if (this.connectionIds?.length) {
@@ -113,6 +87,28 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
         await this.createOffer(connectionId, rtcPeerConnection);
       }
     }
+  }
+
+  private async start() {
+    try {
+      // add query params
+      this.streamHubConnection.baseUrl += `?lobbyId=${this.lobbyId}`
+
+      await this.streamHubConnection.start().then(() => {
+        this.getConnectionIdsInLobby();
+
+        // add required initial listeners
+        this.addReceiveErrorMessageListener();
+      });
+    } catch (err) {
+      this.swalService.showSwal(SwalTypes.Error, 'Error Connecting To Stream Hub');
+      setTimeout(() => this.start(), 30000);
+    }
+  }
+
+  private async stop() {
+    await this.streamHubConnection.stop();
+    this.rtcPeerConnectionsMap.clear();
   }
 
   private getConnectionIdsInLobby() {

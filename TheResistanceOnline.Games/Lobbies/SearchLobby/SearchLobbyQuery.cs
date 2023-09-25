@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using FluentValidation;
 using TheResistanceOnline.Core.Requests.Queries;
 using TheResistanceOnline.Games.Lobbies.Common;
@@ -10,7 +11,7 @@ public class SearchLobbyQuery: QueryBase<string>
 
     public string Id { get; set; }
 
-    public Dictionary<string, LobbyDetailsModel> GroupNamesToLobby { get; set; }
+    public ConcurrentDictionary<string, LobbyDetailsModel> GroupNamesToLobby { get; set; }
 
     #endregion
 }

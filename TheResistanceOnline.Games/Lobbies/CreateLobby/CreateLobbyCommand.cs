@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using FluentValidation;
 using MediatR;
 using TheResistanceOnline.Core.Requests.Commands;
@@ -17,7 +18,7 @@ public class CreateLobbyCommand: CommandBase<LobbyDetailsModel>
 
     public bool FillWithBots { get; set; }
 
-    public Dictionary<string, LobbyDetailsModel> GroupNamesToLobby { get; set; }
+    public ConcurrentDictionary<string, LobbyDetailsModel> GroupNamesToLobby { get; set; }
 
     #endregion
 }

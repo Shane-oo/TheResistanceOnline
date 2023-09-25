@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.Games.Streams.CreateOffer;
-using TheResistanceOnline.Games.Streams.GetPeerConnections;
+using TheResistanceOnline.Games.Streams.GetConnectionIds;
 using TheResistanceOnline.Games.Streams.SendAnswer;
 using TheResistanceOnline.Games.Streams.SendCandidate;
 using TheResistanceOnline.Games.Streams.SendOffer;
@@ -72,8 +72,7 @@ public class StreamHub: BaseHub<IStreamHub>
             if (!string.IsNullOrEmpty(lobbyId))
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId);
-                _properties._connectionIdsToGroupNames.Add(Context.ConnectionId, lobbyId);
-
+                _properties._connectionIdsToGroupNames[Context.ConnectionId] = lobbyId;
                 // let others now of new connection
                 await Clients.Group(lobbyId).NewConnectionId(Context.ConnectionId);
 
@@ -95,7 +94,7 @@ public class StreamHub: BaseHub<IStreamHub>
         if (_properties._connectionIdsToGroupNames.TryGetValue(Context.ConnectionId, out var lobbyId))
         {
             await Clients.Group(lobbyId).RemoveConnectionId(Context.ConnectionId);
-            _properties._connectionIdsToGroupNames.Remove(Context.ConnectionId);
+            _properties._connectionIdsToGroupNames.Remove(Context.ConnectionId, out _);
         }
 
         await base.OnDisconnectedAsync(exception);
@@ -120,7 +119,6 @@ public class StreamHub: BaseHub<IStreamHub>
     public async Task SendCandidate(SendCandidateCommand command)
     {
         SetRequest(command);
-        command.ConnectionIdsToGroupNames = _properties._connectionIdsToGroupNames;
 
         try
         {

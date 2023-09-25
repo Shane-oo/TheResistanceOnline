@@ -11,6 +11,7 @@ using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Data.Queries.UserQueries;
 using TheResistanceOnline.Games.Lobbies;
 using TheResistanceOnline.Games.Lobbies.CreateLobby;
+using TheResistanceOnline.Games.Resistance;
 using TheResistanceOnline.Games.Streams;
 
 namespace TheResistanceOnline.Server;
@@ -57,6 +58,7 @@ public class Startup
                          {
                              endpoints.MapHub<LobbyHub>("/lobby");
                              endpoints.MapHub<StreamHub>("/stream");
+                             endpoints.MapHub<ResistanceHub>("/resistance");
                          });
     }
 

@@ -38,20 +38,48 @@ public class ReadyUpHandler: IRequestHandler<ReadyUpCommand, Unit>
         var connection = lobbyDetails.Connections.FirstOrDefault(c => c.ConnectionId == command.ConnectionId);
         if (connection is null) throw new NotFoundException();
 
+        if (connection.IsReady)
+        {
+            return default; // connection has already readied up
+        }
+
         connection.IsReady = true;
 
-        if (!lobbyDetails.FillWithBots && lobbyDetails.Connections.Count(c => c.IsReady) >= 5)
+        switch(lobbyDetails.FillWithBots)
         {
-            // if its all real players only start game when min player count reached
-            await _lobbyHubContext.Clients.Group(lobbyDetails.Id).StartGame();
-        }
-        else if (lobbyDetails.FillWithBots && (lobbyDetails.Connections.All(c => c.IsReady) || lobbyDetails.Connections.Count(c => c.IsReady) >= 5))
-        {
-            await _lobbyHubContext.Clients.Group(lobbyDetails.Id).StartGame();
-        }
-        else
-        {
-            await _lobbyHubContext.Clients.Group(lobbyDetails.Id).UpdateConnectionsReadyInLobby(command.ConnectionId);
+            case false when lobbyDetails.Connections.Count(c => c.IsReady) >= 5:
+            {
+                // if its all real players only start game when min player count reached
+
+                var startGame = new StartGameModel
+                                {
+                                    LobbyId = lobbyDetails.Id,
+                                    UserNames = lobbyDetails.Connections.Select(c => c.UserName).ToList(),
+                                    TotalPlayers = lobbyDetails.Connections.Count,
+                                    Type = GameType.ResistanceClassic
+                                };
+
+                await _lobbyHubContext.Clients.Group(lobbyDetails.Id).StartGame(startGame);
+                break;
+            }
+            case true when lobbyDetails.Connections.All(c => c.IsReady) || lobbyDetails.Connections.Count(c => c.IsReady) >= 5:
+            {
+                var botCount = lobbyDetails.MaxPlayers - lobbyDetails.Connections.Count;
+                var startGame = new StartGameModel
+                                {
+                                    LobbyId = lobbyDetails.Id,
+                                    UserNames = lobbyDetails.Connections.Select(c => c.UserName).ToList(),
+                                    BotsAllowed = true,
+                                    Bots = botCount,
+                                    TotalPlayers = lobbyDetails.Connections.Count + botCount,
+                                    Type = GameType.ResistanceClassic
+                                };
+                await _lobbyHubContext.Clients.Group(lobbyDetails.Id).StartGame(startGame);
+                break;
+            }
+            default:
+                await _lobbyHubContext.Clients.Group(lobbyDetails.Id).UpdateConnectionsReadyInLobby(command.ConnectionId);
+                break;
         }
 
         return default;

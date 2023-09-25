@@ -1,4 +1,4 @@
-namespace TheResistanceOnline.Games.Streams.Common;
+namespace TheResistanceOnline.Games.Streams.SendCandidate;
 
 public class RTCIceCandidateModel
 {

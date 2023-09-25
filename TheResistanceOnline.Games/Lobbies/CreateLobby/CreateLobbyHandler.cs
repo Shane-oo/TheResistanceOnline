@@ -72,7 +72,7 @@ public class CreateLobbyHandler: IRequestHandler<CreateLobbyCommand, LobbyDetail
                                FillWithBots = command.FillWithBots
                            };
 
-        command.GroupNamesToLobby.Add(command.Id, lobbyDetails);
+        command.GroupNamesToLobby[command.Id] = lobbyDetails;
 
         if (!lobbyDetails.IsPrivate)
         {

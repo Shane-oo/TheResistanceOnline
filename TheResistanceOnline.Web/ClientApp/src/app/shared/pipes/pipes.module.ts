@@ -8,7 +8,8 @@ import {SelectPipe} from "./select.pipe";
   declarations: [JoinPipe,
     SelectPipe],
   exports: [
-    SelectPipe
+    SelectPipe,
+    JoinPipe
   ],
   imports: [
     CommonModule

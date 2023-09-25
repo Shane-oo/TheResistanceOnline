@@ -1,7 +1,6 @@
 using MediatR;
 using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Games.Streams.GetPeerConnections;
 
 namespace TheResistanceOnline.Games.Streams.GetConnectionIds;
 

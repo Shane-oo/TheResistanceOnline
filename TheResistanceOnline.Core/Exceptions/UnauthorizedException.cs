@@ -29,18 +29,21 @@ public class UnauthorizedException: Exception
                 {
                     Throw();
                 }
+
                 break;
             case Roles.Moderator:
                 if (request.UserRole != Roles.Admin && request.UserRole != Roles.Moderator)
                 {
                     Throw();
                 }
+
                 break;
             case Roles.User:
                 if (request.UserRole != Roles.Admin && request.UserRole != Roles.Moderator && request.UserRole != Roles.User)
                 {
                     Throw();
                 }
+
                 break;
             case Roles.None:
                 // No role is required for this action (Anonymous)

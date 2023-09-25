@@ -29,7 +29,7 @@ public interface ILobbyHub
 
     Task UpdateConnectionsReadyInLobby(string connectionId); // set ready to true for this connectionid 
 
-    Task StartGame(); // tell the users to now go to the ResistanceHub so game can startNo //todo create a StartGameModel maybe?
+    Task StartGame(StartGameModel startGame);
 }
 
 [Authorize]

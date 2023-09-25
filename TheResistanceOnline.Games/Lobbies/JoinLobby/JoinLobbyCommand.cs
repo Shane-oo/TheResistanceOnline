@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using TheResistanceOnline.Core.Requests.Commands;
 using TheResistanceOnline.Games.Lobbies.Common;
 
@@ -7,7 +8,7 @@ public class JoinLobbyCommand: CommandBase<LobbyDetailsModel>
 {
     #region Properties
 
-    public Dictionary<string, LobbyDetailsModel> GroupNamesToLobby { get; set; }
+    public ConcurrentDictionary<string, LobbyDetailsModel> GroupNamesToLobby { get; set; }
 
     public string LobbyId { get; set; }
 
