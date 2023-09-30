@@ -25,7 +25,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Authent
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Server", "TheResistanceOnline.Server\TheResistanceOnline.Server.csproj", "{3276143C-017E-4DB2-ABCF-D7A2DFF3FD52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Games", "TheResistanceOnline.Games\TheResistanceOnline.Games.csproj", "{466D9192-D492-4CAF-8BC2-48F4EDA24D66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Hubs", "TheResistanceOnline.Hubs\TheResistanceOnline.Hubs.csproj", "{466D9192-D492-4CAF-8BC2-48F4EDA24D66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.GamePlay", "TheResistanceOnline.GamePlay\TheResistanceOnline.GamePlay.csproj", "{88AA7C5E-E74C-4D2D-BAC1-A41D534656B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{466D9192-D492-4CAF-8BC2-48F4EDA24D66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{466D9192-D492-4CAF-8BC2-48F4EDA24D66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{466D9192-D492-4CAF-8BC2-48F4EDA24D66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88AA7C5E-E74C-4D2D-BAC1-A41D534656B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88AA7C5E-E74C-4D2D-BAC1-A41D534656B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88AA7C5E-E74C-4D2D-BAC1-A41D534656B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88AA7C5E-E74C-4D2D-BAC1-A41D534656B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

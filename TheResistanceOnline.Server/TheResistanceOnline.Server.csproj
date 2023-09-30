@@ -23,7 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\TheResistanceOnline.Core\TheResistanceOnline.Core.csproj" />
-      <ProjectReference Include="..\TheResistanceOnline.Games\TheResistanceOnline.Games.csproj" />
+      <ProjectReference Include="..\TheResistanceOnline.Hubs\TheResistanceOnline.Hubs.csproj" />
 
     </ItemGroup>
 

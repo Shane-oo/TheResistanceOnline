@@ -73,7 +73,6 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
       });
     } catch (err) {
       this.swalService.showSwal(SwalTypes.Error, 'Error Connecting To Server');
-      setTimeout(() => this.start(), 30000);
     }
   }
 
@@ -171,9 +170,10 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
 
   private addReceiveLobbyClosedListener = () => {
     this.lobbyHubConnection.on('LobbyClosed', () => {
-      this.currentLobby = null;
+      // best solution i found otherwise cause bugs
       this.swalService.showSwal(SwalTypes.Warning, "Host Closed The Lobby");
-      this.getLobbies();
+      location.reload();
+
     });
   }
 

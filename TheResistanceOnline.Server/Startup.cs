@@ -10,9 +10,10 @@ using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Data.Queries.UserQueries;
 using TheResistanceOnline.Games.Lobbies;
-using TheResistanceOnline.Games.Lobbies.CreateLobby;
-using TheResistanceOnline.Games.Resistance;
-using TheResistanceOnline.Games.Streams;
+using TheResistanceOnline.Hubs.Lobbies;
+using TheResistanceOnline.Hubs.Lobbies.CreateLobby;
+using TheResistanceOnline.Hubs.Resistance;
+using TheResistanceOnline.Hubs.Streams;
 
 namespace TheResistanceOnline.Server;
 
@@ -135,7 +136,7 @@ public class Startup
 
         var assemblies = new[]
                          {
-                             // TheResistanceOnline.Games
+                             // TheResistanceOnline.Hubs
                              typeof(CreateLobbyHandler).Assembly
                          };
         // MediatR

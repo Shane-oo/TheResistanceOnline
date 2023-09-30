@@ -3,8 +3,9 @@
 </div>
 <div *ngIf="inGame">
   <div *ngIf="startGameCommand.type === GameType.ResistanceClassic">
-    <app-game-resistance></app-game-resistance>
+    <app-game-resistance [startGameCommand]="startGameCommand"></app-game-resistance>
   </div>
+
   <app-game-stream [lobbyId]="startGameCommand.lobbyId"></app-game-stream>
 
 </div>

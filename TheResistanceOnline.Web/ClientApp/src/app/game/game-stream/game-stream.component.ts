@@ -102,7 +102,6 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     } catch (err) {
       this.swalService.showSwal(SwalTypes.Error, 'Error Connecting To Stream Hub');
-      setTimeout(() => this.start(), 30000);
     }
   }
 
