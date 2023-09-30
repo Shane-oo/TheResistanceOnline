@@ -153,6 +153,7 @@ public class Startup
         // Services
         services.AddSingleton<LobbyHubPersistedProperties>();
         services.AddSingleton<StreamHubPersistedProperties>();
+        services.AddSingleton<ResistanceHubPersistedProperties>();
     }
 
     #endregion
