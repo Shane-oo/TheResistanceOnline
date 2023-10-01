@@ -22,6 +22,4 @@ export class GameComponent {
 
     this.inGame = true;
   }
-
-  protected readonly GameType = GameType;
 }

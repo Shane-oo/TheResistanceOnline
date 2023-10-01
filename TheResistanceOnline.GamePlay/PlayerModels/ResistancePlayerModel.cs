@@ -8,6 +8,10 @@ public class ResistancePlayerModel: PlayerModel
     {
     }
 
+    #endregion
+
+    #region Construction
+
     protected ResistancePlayerModel(string name, bool isBot): base(name, isBot)
     {
     }
@@ -15,6 +19,11 @@ public class ResistancePlayerModel: PlayerModel
     #endregion
 
     #region Public Methods
+
+    public override List<string> PickTeam(List<string> chosenPlayers = null)
+    {
+        return chosenPlayers;
+    }
 
     public override bool Vote()
     {

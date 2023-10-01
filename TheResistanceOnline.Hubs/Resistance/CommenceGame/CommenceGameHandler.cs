@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.GamePlay;
+using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.GamePlay.GameModels;
 
 namespace TheResistanceOnline.Hubs.Resistance.CommenceGame;
@@ -37,19 +38,31 @@ public class CommenceGameHandler: IRequestHandler<CommenceGameCommand, Unit>
             command.GameDetails.GameModel = new ResistanceClassicGameModel();
         }
 
-        command.GameDetails.GameModel.AssignTeams(command.GameDetails.Connections
-                                                         .Select(c => c.UserName)
-                                                         .ToList(),
-                                                  command.GameDetails.InitialBotCount);
+        command.GameDetails.GameModel.SetupGame(command.GameDetails.Connections
+                                                       .Select(c => c.UserName)
+                                                       .ToList(),
+                                                command.GameDetails.InitialBotCount);
 
-        Console.WriteLine(command.GameDetails.GameModel);
-
-        foreach(var player in command.GameDetails.GameModel.Players)
+        foreach(var connection in command.GameDetails.Connections)
         {
-            player.Vote();
+            var playerDetails = command.GameDetails.GameModel.Players[connection.UserName];
+            var commenceGameModel = new CommenceGameModel
+                                    {
+                                        Team = playerDetails.Team,
+                                        TeamMates = playerDetails.Team == Team.Spy
+                                                        ? command.GameDetails.GameModel.Players
+                                                                 .Where(p => p.Value.Team == Team.Spy && p.Key != connection.UserName)
+                                                                 .Select(p => p.Key)
+                                                                 .ToList()
+                                                        : null,
+                                        MissionLeader = command.GameDetails.GameModel.MissionLeader,
+                                        Phase = command.GameDetails.GameModel.Phase,
+                                        Players = command.GameDetails.GameModel.PlayerNames
+                                    };
+            commenceGameModel.IsMissionLeader = commenceGameModel.MissionLeader == playerDetails.Name;
+            await _resistanceHubContext.Clients.Client(connection.ConnectionId).CommenceGame(commenceGameModel);
         }
 
-        await _resistanceHubContext.Clients.Group(command.LobbyId).CommenceGame(); // todo listen for this on client side
         return default;
     }
 

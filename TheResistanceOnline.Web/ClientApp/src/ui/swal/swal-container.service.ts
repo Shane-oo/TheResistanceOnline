@@ -47,13 +47,13 @@ export class SwalContainerService {
         break;
       case SwalTypes.Info:
         this.container.instance.isInfo = true;
-        if(message.length === 0){
+        if (message.length === 0) {
           break; // message required for info
         }
         break;
       case SwalTypes.Warning:
         this.container.instance.isWarning = true;
-        if(message.length === 0){
+        if (message.length === 0) {
           message = "Warning";
         }
         break;
@@ -62,9 +62,9 @@ export class SwalContainerService {
     this.container.instance.isSwalVisible = true;
   }
 
-  public fireNotifySpiesModal = (spies: PlayerDetails[]) => {
+  public fireNotifySpiesModal = (spies: string[]) => {
     this.checkSize();
-    const formattedString = spies.map(p => p.userName).join(', ');
+    const formattedString = spies.join(', ');
     let htmlBody = `<div class="SpyFont">
                         <h4>Spies:</h4>
                         <div>

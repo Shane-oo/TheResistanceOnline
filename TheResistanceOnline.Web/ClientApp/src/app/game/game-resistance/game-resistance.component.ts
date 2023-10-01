@@ -1,10 +1,11 @@
 import {AfterViewInit, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {StartGameCommand} from "../game.models";
+import {GameType, StartGameCommand} from "../game.models";
 import * as signalR from "@microsoft/signalr";
 import {IHttpConnectionOptions} from "@microsoft/signalr";
 import {AuthenticationService} from "../../shared/services/authentication/authentication.service";
 import {environment} from "../../../environments/environment";
 import {SwalContainerService, SwalTypes} from "../../../ui/swal/swal-container.service";
+import {CommenceGameModel, Team} from "./game-resistance.models";
 
 
 @Component({
@@ -14,6 +15,7 @@ import {SwalContainerService, SwalTypes} from "../../../ui/swal/swal-container.s
 })
 export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() startGameCommand!: StartGameCommand;
+  protected readonly GameType = GameType;
   private options: IHttpConnectionOptions = {
     accessTokenFactory: () => {
       const token = this.authService.authenticationData?.access_token;
@@ -27,14 +29,12 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
     skipNegotiation: true,
     timeout: 120000, // 2 minutes
   };
-
   private resistanceHubConnection: signalR.HubConnection = new signalR.HubConnectionBuilder()
     .withUrl(environment.SERVER_URL + '/resistance',
       this.options
     ).withAutomaticReconnect()
     .configureLogging(signalR.LogLevel.Error)
     .build();
-
 
   constructor(private authService: AuthenticationService, private swalService: SwalContainerService) {
   }
@@ -62,12 +62,19 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
 
         await this.resistanceHubConnection.start().then(() => {
           this.swalService.showSwal(SwalTypes.Success, "Connected To Resistance Hub");
+
+          // add Required Listeners
+          // add required initial listeners
+          this.addReceiveErrorMessageListener();
+          this.addReceiveCommenceGameModelListener();
+
           // my monstrosity of a hack to hopefully stop two people from sending startGame at the same time
           // so that commenceGame isnt done twice
-          // do better shane
-          setTimeout(() => this.startGame(), Math.floor(Math.random() * 9000))
+          setTimeout(() => {
+            this.swalService.showSwal(SwalTypes.Info, "Waiting For Game To Start...")
+            this.startGame();
+          }, Math.floor(Math.random() * 9000))
 
-          // add required initial listeners
         });
       } catch (err) {
         this.swalService.showSwal(SwalTypes.Error, 'Error Connecting To Resistance Hub');
@@ -82,13 +89,28 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
   private startGame() {
     if (this.startGameCommand) {
       this.resistanceHubConnection.invoke("StartGame", this.startGameCommand)
-        .then(() => {
-          this.swalService.showSwal(SwalTypes.Info, "Waiting For Game To Start...")
-        })
         .catch(err => {
         });
     }
   }
 
+  private addReceiveErrorMessageListener = () => {
+    this.resistanceHubConnection.on("Error", (errorMessage: string) => {
+      this.swalService.showSwal(SwalTypes.Error, errorMessage);
+    });
+  }
 
+  private addReceiveCommenceGameModelListener = () => {
+    this.resistanceHubConnection.on("CommenceGame", (commenceGameModel: CommenceGameModel) => {
+      console.log("Commence Game!", commenceGameModel);
+      if (commenceGameModel.team === Team.Resistance) {
+        this.swalService.fireNotifyResistanceModal();
+      } else {
+        this.swalService.fireNotifySpiesModal(commenceGameModel.teamMates!)
+      }
+
+      // CommenceGame only called once
+      this.resistanceHubConnection.off("CommenceGame");
+    })
+  }
 }

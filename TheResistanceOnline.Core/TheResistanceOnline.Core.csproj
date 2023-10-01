@@ -17,12 +17,4 @@
     </ItemGroup>
 
 
-
-
-
-    <ItemGroup>
-      <Folder Include="ObserverPattern\" />
-    </ItemGroup>
-
-
 </Project>

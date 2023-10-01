@@ -10,8 +10,7 @@ namespace TheResistanceOnline.Hubs.Resistance;
 
 public interface IResistanceHub: IErrorHub
 {
-
-    public Task CommenceGame();
+    public Task CommenceGame(CommenceGameModel commenceGameModel);
 }
 
 public class ResistanceHub: BaseHub<IResistanceHub>
@@ -101,8 +100,11 @@ public class ResistanceHub: BaseHub<IResistanceHub>
                                               };
                     await _mediator.Send(commenceGameCommand);
                 }
-                // set a timer where if game hasnt commenced within like 5 minutes then its
-                // a dead game and delete the details from all the maps
+                // else{}
+                // todo set a timer where if game hasnt commenced within like 2 minutes then its
+                // a dead game and delete the details from all the maps too bad everyone
+                // also set a timer on client side where if they havent got a commence game in 3 minutes
+                // then refresh page as its a dead lobby
             }
             catch(Exception ex)
             {

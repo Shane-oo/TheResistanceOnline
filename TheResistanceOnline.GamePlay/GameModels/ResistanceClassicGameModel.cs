@@ -1,14 +1,15 @@
 using TheResistanceOnline.Common.Extensions;
 using TheResistanceOnline.GamePlay.BotModels.BotFactories;
+using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.GamePlay.PlayerModels;
 
 namespace TheResistanceOnline.GamePlay.GameModels;
 
 public class ResistanceClassicGameModel: GameModel
 {
-    #region Public Methods
+    #region Private Methods
 
-    public override void AssignTeams(List<string> playerUserNames, int botCount)
+    private void AssignTeams(List<string> playerUserNames, int botCount)
     {
         var playerSetupModels = CreatePlayerSetupModels(playerUserNames, botCount);
 
@@ -56,17 +57,35 @@ public class ResistanceClassicGameModel: GameModel
         foreach(var resistancePlayer in resistancePlayers)
         {
             var player = resistancePlayer.IsBot
-                             ? botFactory.CreateResistanceBot(resistancePlayer.Name)
+                             ? botFactory.CreateResistanceBot(resistancePlayer.Name, this)
                              : new ResistancePlayerModel(resistancePlayer.Name);
-            Players.Add(player);
+            player.Team = Team.Resistance;
+            Players.Add(player.Name, player);
         }
 
         foreach(var spyPlayer in spyPlayers)
         {
             var player = spyPlayer.IsBot
-                             ? botFactory.CreateSpyBot(spyPlayer.Name)
+                             ? botFactory.CreateSpyBot(spyPlayer.Name, this)
                              : new SpyPlayerModel(spyPlayer.Name);
-            Players.Add(player);
+            player.Team = Team.Spy;
+            Players.Add(player.Name, player);
+        }
+    }
+
+    #endregion
+
+    #region Public Methods
+
+    public override void SetupGame(List<string> playerUserNames, int botCount)
+    {
+        AssignTeams(playerUserNames, botCount);
+        var missionLeader = Players.First();
+        UpdateMissionLeader(missionLeader.Key);
+        if (missionLeader.Value.IsBot)
+        {
+            UpdateMissionTeam(missionLeader.Value.PickTeam());
+            UpdatePhase(Phase.Vote);
         }
     }
 

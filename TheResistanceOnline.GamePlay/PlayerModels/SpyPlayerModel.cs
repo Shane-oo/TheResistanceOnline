@@ -1,3 +1,5 @@
+using TheResistanceOnline.GamePlay.GameModels;
+
 namespace TheResistanceOnline.GamePlay.PlayerModels;
 
 public class SpyPlayerModel: PlayerModel
@@ -20,6 +22,12 @@ public class SpyPlayerModel: PlayerModel
     {
         Console.WriteLine("This is the spy player voting");
         return true;
+    }
+
+    public override List<string> PickTeam(List<string> chosenPlayers = null)
+    {
+        Console.WriteLine("this is the real spy player picking team");
+        return chosenPlayers;
     }
 
     #endregion

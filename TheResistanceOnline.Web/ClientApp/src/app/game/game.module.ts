@@ -20,6 +20,7 @@ import {
   GameLobbyWaitingRoomPlayersComponent
 } from './game-lobby/game-lobby-waiting-room/game-lobby-waiting-room-players/game-lobby-waiting-room-players.component';
 import {GameComponent} from './game.component';
+import { GameResistanceClassicComponent } from './game-resistance/game-resistance-classic/game-resistance-classic.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import {GameComponent} from './game.component';
     GameLobbyWaitingRoomComponent,
     GameLobbyWaitingRoomDetailsComponent,
     GameLobbyWaitingRoomPlayersComponent,
-    GameComponent
+    GameComponent,
+    GameResistanceClassicComponent
   ],
   imports: [
     CommonModule,

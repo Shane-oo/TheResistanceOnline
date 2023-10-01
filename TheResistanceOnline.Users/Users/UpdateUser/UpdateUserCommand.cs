@@ -23,6 +23,7 @@ public class UpdateUserCommandValidator: AbstractValidator<UpdateUserCommand>
             .NotEmpty()
             .NotNull()
             .Matches("^[a-zA-Z0-9]+$").WithMessage("UserName can only contain letters and/or numbers")
+            .Must(u => !u.ToLower().StartsWith("bot")).WithMessage("'bot' is a reserved name")
             .Length(1, 31).WithMessage("Username Too Long");
     }
 
