@@ -35,34 +35,34 @@ import {AuthenticationInterceptor} from "./shared/services/authentication/authen
     AdminComponent,
     HomeComponent
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    FormsModule,
-    RouterModule.forRoot([
-      {path: '', component: HomeComponent, pathMatch: 'full'},
-      {path: 'counter', component: CounterComponent},
-      {path: 'fetch-data', component: FetchDataComponent, canActivate: [authorizationGuard]},
-      {
-        path: 'user',
-        loadChildren: () => import('./user/user.module').then(m => m.UserModule)
-      },
-      {path: 'admin', component: AdminComponent, canActivate: [authorizationGuard, adminGuard]},
-      {
-        path: 'the-resistance-game',
-        loadChildren: () => import('./the-resistance-game/the-resistance-game.module').then(m => m.TheResistanceGameModule),
-        canActivate: [authorizationGuard]
-      },
-      {
-        path: 'game',
-        loadChildren: () => import('./game/game.module').then(m => m.GameModule),
-        canActivate: [authorizationGuard]
-      }
-    ], {initialNavigation: 'enabledBlocking'}),
-    SweetAlert2Module.forRoot(),
-    NgbModule
-  ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        FormsModule,
+        RouterModule.forRoot([
+            {path: '', component: HomeComponent, pathMatch: 'full'},
+            {path: 'counter', component: CounterComponent},
+            {path: 'fetch-data', component: FetchDataComponent, canActivate: [authorizationGuard]},
+            {
+                path: 'user',
+                loadChildren: () => import('./user/user.module').then(m => m.UserModule)
+            },
+            {path: 'admin', component: AdminComponent, canActivate: [authorizationGuard, adminGuard]},
+            {
+                path: 'the-resistance-game',
+                loadChildren: () => import('./the-resistance-game/the-resistance-game.module').then(m => m.TheResistanceGameModule),
+                canActivate: [authorizationGuard]
+            },
+            {
+                path: 'game',
+                loadChildren: () => import('./game/game.module').then(m => m.GameModule),
+                canActivate: [authorizationGuard]
+            }
+        ], {initialNavigation: 'enabledBlocking'}),
+        SweetAlert2Module.forRoot(),
+        NgbModule,
+    ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,

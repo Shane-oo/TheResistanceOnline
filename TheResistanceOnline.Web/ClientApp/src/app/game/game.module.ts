@@ -20,7 +20,10 @@ import {
   GameLobbyWaitingRoomPlayersComponent
 } from './game-lobby/game-lobby-waiting-room/game-lobby-waiting-room-players/game-lobby-waiting-room-players.component';
 import {GameComponent} from './game.component';
-import { GameResistanceClassicComponent } from './game-resistance/game-resistance-classic/game-resistance-classic.component';
+import {
+  GameResistanceClassicComponent
+} from './game-resistance/game-resistance-classic/game-resistance-classic.component';
+import {ResistanceVisualisationModule} from "../shared/resistance-visualisation/resistance-visualisation.module";
 
 @NgModule({
   declarations: [
@@ -37,14 +40,19 @@ import { GameResistanceClassicComponent } from './game-resistance/game-resistanc
     GameComponent,
     GameResistanceClassicComponent
   ],
+  exports: [
+    GameResistanceClassicComponent
+  ],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {path: '', component: GameComponent},
+      {path: 'game-dev', component: GameResistanceClassicComponent}
     ]),
 
     ReactiveFormsModule,
     PipesModule,
+    ResistanceVisualisationModule,
   ]
 })
 export class GameModule {

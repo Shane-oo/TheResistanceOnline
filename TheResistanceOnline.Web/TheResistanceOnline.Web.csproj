@@ -39,6 +39,8 @@
 
     <ItemGroup>
         <Folder Include="ClientApp\src\app\shared\custom-validators\the-resistance-game" />
+        <Folder Include="ClientApp\src\app\shared\resistance-visualisation\resistance-game\utils\" />
+        <Folder Include="ClientApp\src\app\shared\resistance-visualisation\resistance-game\world\" />
         <Folder Include="ClientApp\src\app\shared\services\state\" />
         <Folder Include="ClientApp\src\assets\textures" />
         <Folder Include="ClientApp\src\assets\models" />
