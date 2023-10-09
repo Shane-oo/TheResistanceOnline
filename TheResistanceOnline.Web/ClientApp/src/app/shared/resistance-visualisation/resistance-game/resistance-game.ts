@@ -14,7 +14,6 @@ import {Metrics} from "./utils/metrics";
 
 export class ResistanceGame {
     private readonly destroyed = new Subject<void>();
-    private readonly canvas: HTMLCanvasElement;
     private readonly gameCamera: ResistanceGameCamera;
     private readonly gameRenderer: ResistanceGameRenderer;
     // Three.js
@@ -33,13 +32,13 @@ export class ResistanceGame {
         // Setup
         this.debug = new Debug();
         this.metrics = new Metrics();
-        this.canvas = canvas;
+
         this.sizes = new Sizes();
         this.time = new Time();
         this.scene = new Scene();
         this.resources = new Resources(sources);
-        this.gameCamera = new ResistanceGameCamera(this.scene, this.sizes, this.canvas);
-        this.gameRenderer = new ResistanceGameRenderer(this.scene, this.gameCamera, this.sizes, this.canvas);
+        this.gameCamera = new ResistanceGameCamera(this.scene, this.sizes, canvas, this.debug);
+        this.gameRenderer = new ResistanceGameRenderer(this.scene, this.gameCamera, this.sizes, canvas);
 
         this.resources.loadedSubject
             .pipe(takeUntil(this.destroyed))

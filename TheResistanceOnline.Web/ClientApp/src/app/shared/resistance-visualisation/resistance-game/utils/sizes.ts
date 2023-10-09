@@ -1,45 +1,47 @@
 import {Subject} from "rxjs";
 
 export class Sizes {
-  resizeSubject: Subject<void> = new Subject<void>();
+    resizeSubject: Subject<void> = new Subject<void>();
+    private readonly widthOffset = 1.33;
+    private readonly heightOffset = 1.66;
 
-  constructor() {
-    // Setup
-    this._width = window.innerWidth;
-    this._height = window.innerHeight
-    this._pixelRatio = Math.min(window.devicePixelRatio, 2);
+    constructor() {
+        // Setup
+        this._width = window.innerWidth / this.widthOffset;
+        this._height = window.innerHeight / this.heightOffset;
+        this._pixelRatio = Math.min(window.devicePixelRatio, 2);
 
-    // Resize event
-    window.addEventListener('resize', this.resize);
-  }
+        // Resize event
+        window.addEventListener('resize', this.resize);
+    }
 
-  private _height: number;
+    private _height: number;
 
-  get height(): number {
-    return this._height;
-  }
+    get height(): number {
+        return this._height;
+    }
 
-  private _pixelRatio: number;
+    private _pixelRatio: number;
 
-  get pixelRatio(): number {
-    return this._pixelRatio;
-  }
+    get pixelRatio(): number {
+        return this._pixelRatio;
+    }
 
-  private _width: number;
+    private _width: number;
 
-  get width(): number {
-    return this._width;
-  }
+    get width(): number {
+        return this._width;
+    }
 
-  destroy() {
-    window.removeEventListener('resize', this.resize);
-  }
+    destroy() {
+        window.removeEventListener('resize', this.resize);
+    }
 
-  private resize = () => {
-    this._width = window.innerWidth;
-    this._height = window.innerHeight
-    this._pixelRatio = Math.min(window.devicePixelRatio, 2);
+    private resize = () => {
+        this._width = window.innerWidth / this.widthOffset;
+        this._height = window.innerHeight / this.heightOffset;
+        this._pixelRatio = Math.min(window.devicePixelRatio, 2);
 
-    this.resizeSubject.next();
-  }
+        this.resizeSubject.next();
+    }
 }
