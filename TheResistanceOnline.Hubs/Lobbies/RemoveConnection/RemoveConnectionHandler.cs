@@ -32,7 +32,7 @@ public class RemoveConnectionHandler: IRequestHandler<RemoveConnectionCommand, U
             // if host left the lobby then the lobby must close
             if (lobby.HostConnectionId == command.ConnectionId)
             {
-                command.GroupNamesToLobby.Remove(lobby.Id, out _);
+                command.GroupNamesToLobby.TryRemove(lobby.Id, out _);
 
                 if (!lobby.IsPrivate)
                 {

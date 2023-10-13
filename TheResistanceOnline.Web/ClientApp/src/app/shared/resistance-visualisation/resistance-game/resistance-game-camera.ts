@@ -23,8 +23,7 @@ export class ResistanceGameCamera {
     this.sizes = sizes;
     this.scene = scene;
     this.canvas = canvas;
-    console.log(this.sizes.width)
-    console.log(this.sizes.height)
+
     // Perspective Camera
     this._perspectiveCamera = new PerspectiveCamera(this.fov,
       this.sizes.width / this.sizes.height,

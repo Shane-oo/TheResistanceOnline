@@ -15,6 +15,12 @@ public interface IResistanceHub: IErrorHub
 
 public class ResistanceHub: BaseHub<IResistanceHub>
 {
+    #region Constants
+
+    private const int GAME_TIME_TO_LIVE_MINUTES = 60;
+
+    #endregion
+
     #region Fields
 
     private readonly IMediator _mediator;
@@ -28,6 +34,28 @@ public class ResistanceHub: BaseHub<IResistanceHub>
     {
         _mediator = mediator;
         _properties = properties;
+        CleanUp();
+    }
+
+    #endregion
+
+    #region Private Methods
+
+    private void CleanUp()
+    {
+        var groupsToDelete = new List<string>();
+        foreach(var groupNameToLobby in _properties._groupNamesToGameModels)
+        {
+            if (groupNameToLobby.Value.TimeCreated.AddMinutes(GAME_TIME_TO_LIVE_MINUTES) <= DateTime.UtcNow)
+            {
+                groupsToDelete.Add(groupNameToLobby.Key);
+            }
+        }
+
+        foreach(var groupToDelete in groupsToDelete)
+        {
+            _properties._groupNamesToGameModels.TryRemove(groupToDelete, out _);
+        }
     }
 
     #endregion
@@ -45,7 +73,11 @@ public class ResistanceHub: BaseHub<IResistanceHub>
                 await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId);
                 _properties._connectionIdsToGroupNames[Context.ConnectionId] = lobbyId;
 
-                _properties._groupNamesToGameModels.TryAdd(lobbyId, new GameDetails());
+                var newGame = new GameDetails
+                              {
+                                  TimeCreated = DateTime.UtcNow
+                              };
+                _properties._groupNamesToGameModels.TryAdd(lobbyId, newGame);
 
                 await base.OnConnectedAsync();
             }

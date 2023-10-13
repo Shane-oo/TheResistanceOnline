@@ -16,9 +16,11 @@ public class GameDetails
 
     public GameModel GameModel { get; set; }
 
+    public GameType GameType { get; set; }
+
     public int InitialBotCount { get; set; }
 
-    public GameType GameType { get; set; }
+    public DateTime TimeCreated { get; set; }
 
     #endregion
 }

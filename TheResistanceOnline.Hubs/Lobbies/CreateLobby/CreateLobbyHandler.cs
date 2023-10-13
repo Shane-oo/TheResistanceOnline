@@ -71,11 +71,11 @@ public class CreateLobbyHandler: IRequestHandler<CreateLobbyCommand, LobbyDetail
                                Id = command.Id,
                                IsPrivate = command.IsPrivate,
                                MaxPlayers = command.MaxPlayers,
-                               FillWithBots = command.FillWithBots
+                               FillWithBots = command.FillWithBots,
+                               TimeCreated = DateTime.UtcNow
                            };
 
         command.GroupNamesToLobby[command.Id] = lobbyDetails;
-
         if (!lobbyDetails.IsPrivate)
         {
             var allConnectionsInLobbies = command.GroupNamesToLobby.Values

@@ -1,16 +1,10 @@
 
-
 .point {
-    position: absolute;
-    top: 20%;
-    left: 20%;
+  position: absolute;
+  top: 20%;
+  left: 20%;
 }
 
-.container {
-  width: 100%; /* Change this to 100% for a responsive container */
-  height: 100vh; /* Use viewport height for a full-screen height */
-  position: relative; /* Keep the container positioned normally */
-}
 
 .webgl {
   position: absolute; /* Change this to absolute positioning */

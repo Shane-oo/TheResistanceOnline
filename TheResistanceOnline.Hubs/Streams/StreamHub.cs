@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using TheResistanceOnline.Games;
 using TheResistanceOnline.Hubs.Common;
 using TheResistanceOnline.Hubs.Streams.GetConnectionIds;
 using TheResistanceOnline.Hubs.Streams.SendAnswer;

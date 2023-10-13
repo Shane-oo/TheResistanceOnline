@@ -18,5 +18,7 @@ public class LobbyDetailsModel
 
     public int MaxPlayers { get; set; }
 
+    public DateTime TimeCreated { get; set; }
+
     #endregion
 }
