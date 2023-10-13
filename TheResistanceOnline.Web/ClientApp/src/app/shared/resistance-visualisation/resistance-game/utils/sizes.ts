@@ -47,7 +47,6 @@ export class Sizes {
       this._width = window.innerWidth / this.widthOffset;
       this._height = window.innerHeight / this.heightOffset;
       this._pixelRatio = Math.min(window.devicePixelRatio, 2);
-      console.log(this.width)
       this.resizeSubject.next();
     }, 100)
 
