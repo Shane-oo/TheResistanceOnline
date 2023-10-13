@@ -1,19 +1,23 @@
-.container {
-    width: 1000px;
-    height: 1000px;
-}
 
-.webgl {
-    position: fixed;
-
-    outline: none;
-    top: 60%;
-    left: 50%;
-    transform: translate(-50%, -60%);
-}
 
 .point {
     position: absolute;
     top: 20%;
     left: 20%;
+}
+
+.container {
+  width: 100%; /* Change this to 100% for a responsive container */
+  height: 100vh; /* Use viewport height for a full-screen height */
+  position: relative; /* Keep the container positioned normally */
+}
+
+.webgl {
+  position: absolute; /* Change this to absolute positioning */
+  width: 100%; /* Make the canvas width 100% of the container */
+  height: 100%; /* Make the canvas height 100% of the container */
+  outline: none;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -60%);
 }
