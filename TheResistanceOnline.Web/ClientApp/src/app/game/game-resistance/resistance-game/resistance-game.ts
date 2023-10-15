@@ -12,22 +12,19 @@ import {Debug} from "./utils/debug";
 import {Dispose} from "./utils/dispose";
 import {Metrics} from "./utils/metrics";
 
+
 export class ResistanceGame {
   private static instance: ResistanceGame | null;
-  private readonly destroyed = new Subject<void>();
   public readonly gameCamera!: ResistanceGameCamera;
-  private readonly gameRenderer!: ResistanceGameRenderer;
-  // Three.js
   public readonly scene!: Scene;
-  // World
-  private world?: World;
-  // Utils
   public readonly debug!: Debug;
-  private readonly metrics!: Metrics;
   public readonly resources!: Resources;
-  private readonly time!: Time;
   public readonly sizes!: Sizes;
-
+  private readonly destroyed = new Subject<void>();
+  private readonly gameRenderer!: ResistanceGameRenderer;
+  private world?: World;
+  private readonly metrics!: Metrics;
+  private readonly time!: Time;
 
   constructor(canvas?: HTMLCanvasElement) {
 
@@ -96,6 +93,13 @@ export class ResistanceGame {
 
   setMissionLeader(player: string) {
     this.world?.setMissionLeader(player);
+  }
+
+  setMissionBuildPhase(missionMembers: number) {
+    // todo set a timeout and say if this user does not pick missionMembers in time
+    // pick at random for them 3 minutes max
+    // display timer maybe?
+    this.world?.setMissionBuildPhase(missionMembers);
   }
 
 

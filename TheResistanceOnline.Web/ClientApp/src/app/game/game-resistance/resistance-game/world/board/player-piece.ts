@@ -1,4 +1,4 @@
-import {BoxGeometry, BufferGeometry, Material, Mesh, MeshStandardMaterial, Scene} from "three";
+import {BoxGeometry, BufferGeometry, Mesh, MeshStandardMaterial, Scene} from "three";
 import GUI from "lil-gui";
 import {ResistanceGame} from "../../resistance-game";
 import {Resources} from "../../utils/resources";
@@ -6,7 +6,11 @@ import {Resources} from "../../utils/resources";
 // there will be multiple player pieces, one for each player
 export class PlayerPiece {
   private readonly scene: Scene;
-  private readonly _mesh: Mesh<BufferGeometry, Material>;
+  private readonly _playerPiece: Mesh<BufferGeometry, MeshStandardMaterial>;
+  private readonly _votePieces: {
+    yesVote: Mesh<BufferGeometry, MeshStandardMaterial>,
+    noVote: Mesh<BufferGeometry, MeshStandardMaterial>
+  };
   private readonly _name: string;
   private readonly position: { x: number, z: number, };
   // Utils
@@ -21,8 +25,13 @@ export class PlayerPiece {
 
     this._name = name;
     this.position = position;
-    this._mesh = this.createPiece();
-    this.scene.add(this._mesh);
+    // Player Piece
+    this._playerPiece = this.createPlayerPiece();
+    this.scene.add(this._playerPiece);
+    // Vote Pieces
+    this._votePieces = this.createVotePieces();
+    this.scene.add(this._votePieces.yesVote);
+    this.scene.add(this._votePieces.noVote);
 
     // Debug
     if (resistanceGame.debug.gui) {
@@ -31,46 +40,78 @@ export class PlayerPiece {
     }
   }
 
-  get mesh(): Mesh<BufferGeometry, Material> {
-    return this._mesh;
+  get voteYesPiece(): Mesh<BufferGeometry, MeshStandardMaterial> {
+    return this._votePieces.yesVote;
+  }
+
+  get voteNoPiece(): Mesh<BufferGeometry, MeshStandardMaterial> {
+    return this._votePieces.noVote;
   }
 
   get name(): string {
     return this._name;
   }
 
+  get playerPiece(): Mesh<BufferGeometry, MeshStandardMaterial> {
+    return this._playerPiece;
+  }
+
   destroy() {
 
   }
 
-  private createPiece(): Mesh<BufferGeometry, Material> {
-    const material = new MeshStandardMaterial({color: 'blue'});
-    const geometry = new BoxGeometry(0.25, 0.25, 0.25);
+  private createVotePieces(): {
+    yesVote: Mesh<BufferGeometry, MeshStandardMaterial>,
+    noVote: Mesh<BufferGeometry, MeshStandardMaterial>
+  } {
+    const geometry = new BoxGeometry(0.125, 0.125, 0.125);
 
-    const mesh = new Mesh<BufferGeometry, Material>(geometry, material);
+    const yesVoteMesh = new Mesh<BufferGeometry, MeshStandardMaterial>(geometry,
+      new MeshStandardMaterial({color: 'green'})
+    );
+    yesVoteMesh.position.setX(this.position.x - 0.1);
+    yesVoteMesh.position.setZ(this.position.z + 0.1);
+
+
+    const noVoteMesh = new Mesh<BufferGeometry, MeshStandardMaterial>(geometry,
+      new MeshStandardMaterial({color: 'red'})
+    );
+    noVoteMesh.position.setX(this.position.x + 0.1);
+    noVoteMesh.position.setZ(this.position.z + 0.1);
+
+    yesVoteMesh.visible = false;
+    noVoteMesh.visible = false;
+
+    return {yesVote: yesVoteMesh, noVote: noVoteMesh};
+  }
+
+  private createPlayerPiece(): Mesh<BufferGeometry, MeshStandardMaterial> {
+    const geometry = new BoxGeometry(0.125, 0.125, 0.125);
+    const mesh = new Mesh(geometry, new MeshStandardMaterial({color: 'purple'}));
+    mesh.name = this._name;
     mesh.position.setX(this.position.x);
-    mesh.position.setZ(this.position.z);
+    mesh.position.setZ(this.position.z - 0.05);
+    mesh.updateMatrixWorld();
 
-    console.log(mesh.position)
     return mesh;
   }
 
   private configureDebug() {
-    this.debugFolder?.add(this._mesh.position, 'x')
-      .name('PositionX')
-      .min(-10)
-      .max(10)
-      .step(0.1);
-    this.debugFolder?.add(this._mesh.position, 'y')
-      .name('PositionY')
-      .min(-10)
-      .max(10)
-      .step(0.1);
-    this.debugFolder?.add(this._mesh.position, 'z')
-      .name('PositionZ')
-      .min(-10)
-      .max(10)
-      .step(0.1);
+    // this.debugFolder?.add(this._voteYesPiece.position, 'x')
+    //   .name('PositionX')
+    //   .min(-10)
+    //   .max(10)
+    //   .step(0.1);
+    // this.debugFolder?.add(this._voteYesPiece.position, 'y')
+    //   .name('PositionY')
+    //   .min(-10)
+    //   .max(10)
+    //   .step(0.1);
+    // this.debugFolder?.add(this._voteYesPiece.position, 'z')
+    //   .name('PositionZ')
+    //   .min(-10)
+    //   .max(10)
+    //   .step(0.1);
   }
 
 }

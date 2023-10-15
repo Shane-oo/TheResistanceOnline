@@ -3,7 +3,6 @@ import {ModelResource, Resources} from "../../utils/resources";
 import GUI from "lil-gui";
 import {PlayerPiece} from "./player-piece";
 import {ResistanceGame} from "../../resistance-game";
-import {Sizes} from "../../utils/sizes";
 import {MissionLeaderPiece} from "./mission-leader-piece";
 
 export class Board {
@@ -27,7 +26,6 @@ export class Board {
   private readonly scene: Scene;
   private readonly modelResource: ModelResource;
   private readonly model: Group;
-  private playerPieces?: PlayerPiece[];
   private readonly missionLeaderPiece: MissionLeaderPiece;
   // Utils
   private readonly resources: Resources;
@@ -57,6 +55,12 @@ export class Board {
     }
   }
 
+  private _playerPieces?: PlayerPiece[];
+
+  get playerPieces(): PlayerPiece[] | undefined {
+    return this._playerPieces;
+  }
+
   createPlayerPieces(players: string[]) {
     const playerPieces: PlayerPiece[] = [];
 
@@ -65,20 +69,20 @@ export class Board {
       playerPieces.push(piece);
     }
 
-    this.playerPieces = playerPieces;
+    this._playerPieces = playerPieces;
   }
 
   moveLeaderPiece(player: string) {
-    const playerPiece = this.playerPieces?.find(p => p.name === player);
+    const playerPiece = this._playerPieces?.find(p => p.name === player);
     if (playerPiece) {
-      console.log(playerPiece,"is the mission leader")
-      this.missionLeaderPiece.movePiece(playerPiece.mesh.position);
+      console.log(playerPiece, "is the mission leader")
+      this.missionLeaderPiece.movePiece(playerPiece.voteYesPiece.position);
     }
   }
 
   destroy() {
-    if (this.playerPieces) {
-      for (const piece of this.playerPieces) {
+    if (this._playerPieces) {
+      for (const piece of this._playerPieces) {
         piece.destroy();
       }
     }

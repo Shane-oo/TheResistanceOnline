@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild} from '@angular/core';
 import {Subject, first, takeUntil} from "rxjs";
 import {ResistanceGame} from "../resistance-game/resistance-game";
-import {CommenceGameModel} from "../game-resistance.models";
+import {CommenceGameModel, Phase} from "../game-resistance.models";
 
 
 @Component({
@@ -39,6 +39,28 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
   commenceGame(gameCommenced: CommenceGameModel) {
     this.resistanceGame.setPlayers(gameCommenced.players);
     this.resistanceGame.setMissionLeader(gameCommenced.missionLeader);
+
+    switch (gameCommenced.phase) {
+      case Phase.MissionBuild:
+        if (gameCommenced.isMissionLeader) {
+          let missionMembers = 0;
+          switch (gameCommenced.players.length) {
+            case 5:
+            case 6:
+            case 7:
+              missionMembers = 2;
+              break;
+            case 8:
+            case 9:
+            case 10:
+              missionMembers = 3;
+              break;
+          }
+          this.resistanceGame.setMissionBuildPhase(missionMembers);
+        }
+
+        break;
+    }
   }
 
 }

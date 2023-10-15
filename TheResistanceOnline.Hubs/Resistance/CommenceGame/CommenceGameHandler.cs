@@ -60,6 +60,7 @@ public class CommenceGameHandler: IRequestHandler<CommenceGameCommand, Unit>
                                         Players = command.GameDetails.GameModel.PlayerNames
                                     };
             commenceGameModel.IsMissionLeader = commenceGameModel.MissionLeader == playerDetails.Name;
+
             await _resistanceHubContext.Clients.Client(connection.ConnectionId).CommenceGame(commenceGameModel);
         }
 
