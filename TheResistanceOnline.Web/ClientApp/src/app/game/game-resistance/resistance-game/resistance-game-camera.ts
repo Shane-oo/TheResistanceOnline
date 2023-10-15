@@ -6,7 +6,7 @@ import {ResistanceGame} from "./resistance-game";
 
 export class ResistanceGameCamera {
   // Constants
-  private readonly fov = 32;
+  private readonly fov = 35;
   private readonly planeAspectRatio = 2.75;
 
   private readonly _perspectiveCamera: PerspectiveCamera;
@@ -77,7 +77,7 @@ export class ResistanceGameCamera {
   }
 
   private configureCamera() {
-    this._perspectiveCamera.position.set(0, 5.2, 0);
+    this._perspectiveCamera.position.set(0, 3.5, 0);
     this.resize();
   }
 
@@ -86,26 +86,26 @@ export class ResistanceGameCamera {
     if (this.debugFolder) {
       this.debugFolder.add(this._perspectiveCamera, 'fov')
         .name('fov')
-        .min(-1000)
-        .max(1000)
-        .step(0.001)
+        .min(0)
+        .max(100)
+        .step(0.01)
         .onChange(() => this._perspectiveCamera.updateProjectionMatrix());
 
       this.debugFolder.add(this._perspectiveCamera.position, 'x')
         .name('cameraX')
         .min(-100)
         .max(100)
-        .step(0.001);
+        .step(0.01);
       this.debugFolder.add(this._perspectiveCamera.position, 'y')
         .name('cameraY')
         .min(-100)
         .max(100)
-        .step(0.001);
+        .step(0.01);
       this.debugFolder.add(this._perspectiveCamera.position, 'z')
         .name('cameraZ')
         .min(-100)
         .max(100)
-        .step(0.001);
+        .step(0.01);
     }
 
   }
