@@ -13,7 +13,7 @@ import {Dispose} from "./utils/dispose";
 import {Metrics} from "./utils/metrics";
 
 export class ResistanceGame {
-  private static instance: ResistanceGame;
+  private static instance: ResistanceGame | null;
   private readonly destroyed = new Subject<void>();
   public readonly gameCamera!: ResistanceGameCamera;
   private readonly gameRenderer!: ResistanceGameRenderer;
@@ -85,12 +85,17 @@ export class ResistanceGame {
     this.scene.traverse((child) => {
       Dispose.disposeOfChild(child);
     });
+
+    ResistanceGame.instance = null;
   }
 
   setPlayers(players: string[]) {
-    console.log("Setting Players");
     // for now put a cube where the player should be
     this.world?.setPlayers(players);
+  }
+
+  setMissionLeader(player: string) {
+    this.world?.setMissionLeader(player);
   }
 
 

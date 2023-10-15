@@ -43,4 +43,8 @@ export class World {
     this.board.createPlayerPieces(players);
   }
 
+  setMissionLeader(player:string){
+     this.board.moveLeaderPiece(player);
+  }
+
 }

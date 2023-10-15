@@ -35,7 +35,7 @@ export class ResistanceGameCamera {
     // Orbit Controls
     this.orbitControls = new OrbitControls(this._perspectiveCamera, this.canvas);
     this.orbitControls.enableDamping = true;
-    //this.orbitControls.enabled = false;
+    this.orbitControls.enabled = false;
 
     // Debug
     if (resistanceGame.debug.gui) {

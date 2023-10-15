@@ -37,8 +37,8 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
   }
 
   commenceGame(gameCommenced: CommenceGameModel) {
-    console.log("MY GAME COMMENCED", gameCommenced)
     this.resistanceGame.setPlayers(gameCommenced.players);
+    this.resistanceGame.setMissionLeader(gameCommenced.missionLeader);
   }
 
 }

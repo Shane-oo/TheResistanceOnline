@@ -4,6 +4,7 @@ import GUI from "lil-gui";
 import {PlayerPiece} from "./player-piece";
 import {ResistanceGame} from "../../resistance-game";
 import {Sizes} from "../../utils/sizes";
+import {MissionLeaderPiece} from "./mission-leader-piece";
 
 export class Board {
 
@@ -27,9 +28,9 @@ export class Board {
   private readonly modelResource: ModelResource;
   private readonly model: Group;
   private playerPieces?: PlayerPiece[];
+  private readonly missionLeaderPiece: MissionLeaderPiece;
   // Utils
   private readonly resources: Resources;
-  private readonly sizes: Sizes;
   // Debug
   private readonly debugFolder?: GUI;
 
@@ -38,7 +39,6 @@ export class Board {
 
     this.scene = resistanceGame.scene;
     this.resources = resistanceGame.resources;
-    this.sizes = resistanceGame.sizes;
 
     // Board
     this.modelResource = this.resources.getModelResourceByName('resistanceGameBoard');
@@ -46,6 +46,8 @@ export class Board {
     this.configureModel();
     this.scene.add(this.model);
 
+    // Mission Leader
+    this.missionLeaderPiece = new MissionLeaderPiece();
 
     // Debug
     if (resistanceGame.debug.gui) {
@@ -64,6 +66,14 @@ export class Board {
     }
 
     this.playerPieces = playerPieces;
+  }
+
+  moveLeaderPiece(player: string) {
+    const playerPiece = this.playerPieces?.find(p => p.name === player);
+    if (playerPiece) {
+      console.log(playerPiece,"is the mission leader")
+      this.missionLeaderPiece.movePiece(playerPiece.mesh.position);
+    }
   }
 
   destroy() {

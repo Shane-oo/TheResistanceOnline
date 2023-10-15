@@ -18,6 +18,12 @@ export const sources: Resource[] = [
     type: ResourceType.GltfModel,
     path: 'assets/models/ResistanceGame/ResistanceGame.glb',
     textureType: null
+  },
+  {
+    name: 'missionLeaderPiece',
+    type: ResourceType.GltfModel,
+    path: 'assets/models/ResistanceGame/MissionLeaderPiece.glb',
+    textureType: null
   }
 ];
 

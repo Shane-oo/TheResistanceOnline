@@ -6,8 +6,8 @@ import {Resources} from "../../utils/resources";
 // there will be multiple player pieces, one for each player
 export class PlayerPiece {
   private readonly scene: Scene;
-  private readonly mesh: Mesh<BufferGeometry, Material>;
-  private readonly name: string;
+  private readonly _mesh: Mesh<BufferGeometry, Material>;
+  private readonly _name: string;
   private readonly position: { x: number, z: number, };
   // Utils
   private readonly resources: Resources;
@@ -19,16 +19,24 @@ export class PlayerPiece {
     this.scene = resistanceGame.scene;
     this.resources = resistanceGame.resources;
 
-    this.name = name;
+    this._name = name;
     this.position = position;
-    this.mesh = this.createPiece();
-    this.scene.add(this.mesh);
+    this._mesh = this.createPiece();
+    this.scene.add(this._mesh);
 
     // Debug
     if (resistanceGame.debug.gui) {
       this.debugFolder = resistanceGame.debug.gui.addFolder(`player-piece-${name}`);
       this.configureDebug();
     }
+  }
+
+  get mesh(): Mesh<BufferGeometry, Material> {
+    return this._mesh;
+  }
+
+  get name(): string {
+    return this._name;
   }
 
   destroy() {
@@ -48,17 +56,17 @@ export class PlayerPiece {
   }
 
   private configureDebug() {
-    this.debugFolder?.add(this.mesh.position, 'x')
+    this.debugFolder?.add(this._mesh.position, 'x')
       .name('PositionX')
       .min(-10)
       .max(10)
       .step(0.1);
-    this.debugFolder?.add(this.mesh.position, 'y')
+    this.debugFolder?.add(this._mesh.position, 'y')
       .name('PositionY')
       .min(-10)
       .max(10)
       .step(0.1);
-    this.debugFolder?.add(this.mesh.position, 'z')
+    this.debugFolder?.add(this._mesh.position, 'z')
       .name('PositionZ')
       .min(-10)
       .max(10)
