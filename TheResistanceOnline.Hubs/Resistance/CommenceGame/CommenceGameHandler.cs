@@ -29,7 +29,7 @@ public class CommenceGameHandler: IRequestHandler<CommenceGameCommand, Unit>
     {
         // in case of case where commenceGameCommand is sent twice 
         // immediately commence game and hopefully in the other thread game has been commenced
-        if (command.GameDetails.GameCommenced) return default;
+       if (command.GameDetails.GameCommenced) return default;
 
         command.GameDetails.GameCommenced = true;
 

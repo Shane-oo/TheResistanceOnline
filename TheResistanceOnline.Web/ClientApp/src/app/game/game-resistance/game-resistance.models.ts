@@ -19,3 +19,8 @@ export enum Team {
   Resistance,
   Spy
 }
+
+
+export interface GameModel {
+
+}

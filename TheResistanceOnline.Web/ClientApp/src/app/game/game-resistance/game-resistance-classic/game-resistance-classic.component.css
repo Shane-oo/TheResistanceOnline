@@ -1,0 +1,9 @@
+.webgl {
+  position: absolute; /* Change this to absolute positioning */
+  width: 100%; /* Make the canvas width 100% of the container */
+  height: 100%; /* Make the canvas height 100% of the container */
+  outline: none;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+}

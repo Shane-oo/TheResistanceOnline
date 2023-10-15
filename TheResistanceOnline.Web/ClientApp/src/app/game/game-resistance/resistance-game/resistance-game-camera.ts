@@ -1,12 +1,11 @@
 import {MathUtils, PerspectiveCamera, Scene} from 'three';
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {Sizes} from "./utils/sizes";
-import {Debug} from "./utils/debug";
 import GUI from "lil-gui";
+import {ResistanceGame} from "./resistance-game";
 
 export class ResistanceGameCamera {
-
-  // Values
+  // Constants
   private readonly fov = 32;
   private readonly planeAspectRatio = 2.75;
 
@@ -19,9 +18,10 @@ export class ResistanceGameCamera {
   // Debug
   private readonly debugFolder?: GUI;
 
-  constructor(scene: Scene, sizes: Sizes, canvas: HTMLCanvasElement, debug: Debug) {
-    this.sizes = sizes;
-    this.scene = scene;
+  constructor(canvas: HTMLCanvasElement) {
+    const resistanceGame = new ResistanceGame();
+    this.sizes = resistanceGame.sizes;
+    this.scene = resistanceGame.scene;
     this.canvas = canvas;
 
     // Perspective Camera
@@ -35,11 +35,11 @@ export class ResistanceGameCamera {
     // Orbit Controls
     this.orbitControls = new OrbitControls(this._perspectiveCamera, this.canvas);
     this.orbitControls.enableDamping = true;
-    this.orbitControls.enabled = false;
+    //this.orbitControls.enabled = false;
 
     // Debug
-    if (debug.gui) {
-      this.debugFolder = debug.gui.addFolder('Camera');
+    if (resistanceGame.debug.gui) {
+      this.debugFolder = resistanceGame.debug.gui.addFolder('Camera');
       this.configureDebug();
     }
   }

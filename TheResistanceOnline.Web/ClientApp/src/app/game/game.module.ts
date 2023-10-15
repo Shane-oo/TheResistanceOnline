@@ -23,7 +23,6 @@ import {GameComponent} from './game.component';
 import {
   GameResistanceClassicComponent
 } from './game-resistance/game-resistance-classic/game-resistance-classic.component';
-import {ResistanceVisualisationModule} from "../shared/resistance-visualisation/resistance-visualisation.module";
 
 @NgModule({
   declarations: [
@@ -51,8 +50,7 @@ import {ResistanceVisualisationModule} from "../shared/resistance-visualisation/
     ]),
 
     ReactiveFormsModule,
-    PipesModule,
-    ResistanceVisualisationModule,
+    PipesModule
   ]
 })
 export class GameModule {
