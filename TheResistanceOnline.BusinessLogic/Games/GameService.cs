@@ -1,10 +1,11 @@
 using AutoMapper;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
-using TheResistanceOnline.BusinessLogic.Games.DbQueries;
+
 using TheResistanceOnline.BusinessLogic.Games.Models;
 using TheResistanceOnline.BusinessLogic.PlayerStatistics;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Games;
+using TheResistanceOnline.Data.Entities.GameEntities;
+using TheResistanceOnline.Data.Queries.Games;
 
 namespace TheResistanceOnline.BusinessLogic.Games
 {
@@ -209,7 +210,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
 
         public async Task<List<GamePlayerValue>> GetGamePlayerValuesAsync(GetGamePlayerValuesCommand command)
         {
-            var gamePlayerValues = await _context.Query<IAllGamePlayerValuesDbQuery>().ExecuteAsync(command.CancellationToken);
+            var gamePlayerValues = await _context.Query<IAllGamePlayerValuesDbQuery>().ExecuteAsync(new CancellationToken());
             return gamePlayerValues;
         }
 
@@ -389,7 +390,7 @@ namespace TheResistanceOnline.BusinessLogic.Games
                        };
 
             _context.Add(game);
-            await _context.SaveChangesAsync(command.CancellationToken);
+            await _context.SaveChangesAsync(new CancellationToken());
         }
 
 

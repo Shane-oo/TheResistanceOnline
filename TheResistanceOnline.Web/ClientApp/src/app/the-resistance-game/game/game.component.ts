@@ -168,7 +168,7 @@ export class GameComponent implements OnInit {
   notifySpies = () => {
     const spies = this.gameDetails.playersDetails.filter(p => p.team === TeamModel.Spy);
     if(spies.some(p => p.playerId === this.playerId)) {
-      this.swalService.fireNotifySpiesModal(spies);
+      this.swalService.fireNotifySpiesModal(spies.map(s=>s.userName!));
     }
   };
 

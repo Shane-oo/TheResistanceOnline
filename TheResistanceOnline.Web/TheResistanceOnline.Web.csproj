@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
         <IsPackable>false</IsPackable>
         <SpaRoot>ClientApp\</SpaRoot>
         <SpaProxyServerUrl>https://localhost:44452</SpaProxyServerUrl>
@@ -14,13 +14,17 @@
   </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="12.0.0" />
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
-        <PackageReference Include="Azure.Identity" Version="1.8.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="5.2.0" />
+        <PackageReference Include="AutoMapper" Version="12.0.1" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1" />
+        <PackageReference Include="MediatR" Version="12.1.1" />
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+        <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.11" />
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="7.0.11" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.11" />
+        <PackageReference Include="OpenIddict.AspNetCore" Version="4.8.0" />
+        <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="4.8.0" />
+        <PackageReference Include="OpenIddict.EntityFrameworkCore.Models" Version="4.8.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -35,15 +39,17 @@
 
     <ItemGroup>
         <Folder Include="ClientApp\src\app\shared\custom-validators\the-resistance-game" />
-        <Folder Include="ClientApp\src\app\shared\services" />
+        <Folder Include="ClientApp\src\app\shared\services\state\" />
         <Folder Include="ClientApp\src\assets\textures" />
         <Folder Include="ClientApp\src\assets\models" />
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\TheResistanceOnline.Authentications\TheResistanceOnline.Authentications.csproj" />
         <ProjectReference Include="..\TheResistanceOnline.BusinessLogic\TheResistanceOnline.BusinessLogic.csproj" />
+        <ProjectReference Include="..\TheResistanceOnline.Common\TheResistanceOnline.Common.csproj" />
         <ProjectReference Include="..\TheResistanceOnline.Data\TheResistanceOnline.Data.csproj" />
-        <ProjectReference Include="..\TheResistanceOnline.Infrastructure.Data\TheResistanceOnline.Infrastructure.Data.csproj" />
+        <ProjectReference Include="..\TheResistanceOnline.Users\TheResistanceOnline.Users.csproj" />
     </ItemGroup>
 
     <ItemGroup>

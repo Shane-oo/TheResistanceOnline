@@ -11,11 +11,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Busines
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Data", "TheResistanceOnline.Data\TheResistanceOnline.Data.csproj", "{45093AB0-78C3-46F7-9727-03090417CB81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Infrastructure.Data", "TheResistanceOnline.Infrastructure.Data\TheResistanceOnline.Infrastructure.Data.csproj", "{B82A74ED-26EE-4EF0-AFB4-91A95A805374}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Infrastructure.Data.Migrations", "TheResistanceOnline.Infrastructure.Data.Migrations\TheResistanceOnline.Infrastructure.Data.Migrations.csproj", "{3BB7E6B3-A290-41AA-B5DB-B2199CF9ADD2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.SocketServer", "TheResistanceOnline.SocketServer\TheResistanceOnline.SocketServer.csproj", "{A9953D2B-70D8-4A73-9E70-1EAAD0C8B5E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Users", "TheResistanceOnline.Users\TheResistanceOnline.Users.csproj", "{FA336D24-EFF3-44A8-89D7-9F9207D0E314}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Common", "TheResistanceOnline.Common\TheResistanceOnline.Common.csproj", "{09524FC3-DD5C-4EF6-B497-FF23C12EDEF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Core", "TheResistanceOnline.Core\TheResistanceOnline.Core.csproj", "{1DFA2AB2-C25A-42A9-9268-783FB75557CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Authentications", "TheResistanceOnline.Authentications\TheResistanceOnline.Authentications.csproj", "{65753107-FE40-45F9-8092-D218AA8D68CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Server", "TheResistanceOnline.Server\TheResistanceOnline.Server.csproj", "{3276143C-017E-4DB2-ABCF-D7A2DFF3FD52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.Hubs", "TheResistanceOnline.Hubs\TheResistanceOnline.Hubs.csproj", "{466D9192-D492-4CAF-8BC2-48F4EDA24D66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheResistanceOnline.GamePlay", "TheResistanceOnline.GamePlay\TheResistanceOnline.GamePlay.csproj", "{88AA7C5E-E74C-4D2D-BAC1-A41D534656B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +51,6 @@ Global
 		{45093AB0-78C3-46F7-9727-03090417CB81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45093AB0-78C3-46F7-9727-03090417CB81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45093AB0-78C3-46F7-9727-03090417CB81}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B82A74ED-26EE-4EF0-AFB4-91A95A805374}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B82A74ED-26EE-4EF0-AFB4-91A95A805374}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B82A74ED-26EE-4EF0-AFB4-91A95A805374}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B82A74ED-26EE-4EF0-AFB4-91A95A805374}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3BB7E6B3-A290-41AA-B5DB-B2199CF9ADD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3BB7E6B3-A290-41AA-B5DB-B2199CF9ADD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BB7E6B3-A290-41AA-B5DB-B2199CF9ADD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,6 +59,34 @@ Global
 		{A9953D2B-70D8-4A73-9E70-1EAAD0C8B5E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9953D2B-70D8-4A73-9E70-1EAAD0C8B5E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9953D2B-70D8-4A73-9E70-1EAAD0C8B5E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA336D24-EFF3-44A8-89D7-9F9207D0E314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA336D24-EFF3-44A8-89D7-9F9207D0E314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA336D24-EFF3-44A8-89D7-9F9207D0E314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA336D24-EFF3-44A8-89D7-9F9207D0E314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09524FC3-DD5C-4EF6-B497-FF23C12EDEF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09524FC3-DD5C-4EF6-B497-FF23C12EDEF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09524FC3-DD5C-4EF6-B497-FF23C12EDEF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09524FC3-DD5C-4EF6-B497-FF23C12EDEF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DFA2AB2-C25A-42A9-9268-783FB75557CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DFA2AB2-C25A-42A9-9268-783FB75557CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DFA2AB2-C25A-42A9-9268-783FB75557CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DFA2AB2-C25A-42A9-9268-783FB75557CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65753107-FE40-45F9-8092-D218AA8D68CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65753107-FE40-45F9-8092-D218AA8D68CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65753107-FE40-45F9-8092-D218AA8D68CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65753107-FE40-45F9-8092-D218AA8D68CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3276143C-017E-4DB2-ABCF-D7A2DFF3FD52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3276143C-017E-4DB2-ABCF-D7A2DFF3FD52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3276143C-017E-4DB2-ABCF-D7A2DFF3FD52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3276143C-017E-4DB2-ABCF-D7A2DFF3FD52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{466D9192-D492-4CAF-8BC2-48F4EDA24D66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{466D9192-D492-4CAF-8BC2-48F4EDA24D66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{466D9192-D492-4CAF-8BC2-48F4EDA24D66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{466D9192-D492-4CAF-8BC2-48F4EDA24D66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88AA7C5E-E74C-4D2D-BAC1-A41D534656B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88AA7C5E-E74C-4D2D-BAC1-A41D534656B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88AA7C5E-E74C-4D2D-BAC1-A41D534656B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88AA7C5E-E74C-4D2D-BAC1-A41D534656B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

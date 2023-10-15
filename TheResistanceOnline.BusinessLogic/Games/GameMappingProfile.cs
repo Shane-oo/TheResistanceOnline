@@ -1,6 +1,6 @@
 using AutoMapper;
 using TheResistanceOnline.BusinessLogic.Games.Models;
-using TheResistanceOnline.Data.Games;
+using TheResistanceOnline.Data.Entities.GameEntities;
 
 namespace TheResistanceOnline.BusinessLogic.Games;
 

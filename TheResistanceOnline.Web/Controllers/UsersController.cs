@@ -1,51 +1,105 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TheResistanceOnline.BusinessLogic.Core.Queries;
-using TheResistanceOnline.BusinessLogic.Users;
-using TheResistanceOnline.BusinessLogic.Users.Models;
+using OpenIddict.Abstractions;
+using TheResistanceOnline.Core.Exceptions;
+using TheResistanceOnline.Users.Users.GetUser;
+using TheResistanceOnline.Users.Users.UpdateUser;
 
-namespace TheResistanceOnline.Web.Controllers
+namespace TheResistanceOnline.Web.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class UsersController: ApiControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    [Authorize]
-    public class UsersController: ControllerBase
+    #region Fields
+
+    private readonly IHostEnvironment _environment;
+
+    private readonly ILogger<UsersController> _logger;
+    private readonly IMediator _mediator;
+
+    #endregion
+
+    #region Construction
+
+    public UsersController(IMediator mediator, ILogger<UsersController> logger, IHostEnvironment environment)
     {
-        #region Fields
-
-        private readonly IUserService _userService;
-
-        #endregion
-
-        #region Construction
-
-        public UsersController(IUserService userService)
-        {
-            _userService = userService;
-        }
-
-        #endregion
-
-        #region Public Methods
-
-        [HttpGet("{userId}")]
-        public async Task<ActionResult<UserDetailsModel>> GetUser([FromRoute] ByIdQuery query)
-        {
-            try
-            {
-                var userDetails = await _userService.GetUserByUserIdAsync(query);
-                return Ok(userDetails);
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        #endregion
-
-
-        // [Route("Roles")]
-        // public async Task<ActionResult<List<ModelBase>>> GetRoles([FromRoute] Query query) => await _userService.GetRolesAsync(query);
+        _mediator = mediator;
+        _logger = logger;
+        _environment = environment;
     }
+
+    #endregion
+
+    #region Public Methods
+
+    //[AuthorizeRoles(Roles.Admin)] 
+    [HttpGet]
+    public async Task<ActionResult<UserDetailsModel>> GetUser([FromRoute] GetUserQuery query, CancellationToken cancellationToken)
+    {
+        SetRequest(query);
+        try
+        {
+            var userDetails = await _mediator.Send(query, cancellationToken);
+            return Ok(userDetails);
+        }
+        catch(DomainException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch(NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch(UnauthorizedException)
+        {
+            return Forbid();
+        }
+        catch(OperationCanceledException)
+        {
+            return NoContent();
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError("{ExMessage}. {InnerExceptionMessage}", ex.Message, ex.InnerException?.Message);
+            return Problem(_environment.IsDevelopment() ? ex.Message : "Something Went Wrong");
+        }
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<UserDetailsModel>> UpdateUser(UpdateUserCommand command, CancellationToken cancellationToken)
+    {
+        SetRequest(command);
+        try
+        {
+            await _mediator.Send(command, cancellationToken);
+        }
+        catch(DomainException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch(NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch(UnauthorizedException)
+        {
+            return Forbid();
+        }
+        catch(OperationCanceledException)
+        {
+            return NoContent();
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError("{ExMessage}. {InnerExceptionMessage}", ex.Message, ex.InnerException?.Message);
+            return Problem(_environment.IsDevelopment() ? ex.Message : "Something Went Wrong");
+        }
+
+        return await GetUser(new GetUserQuery(command.UserId, command.UserRole), cancellationToken);
+    }
+
+    #endregion
 }

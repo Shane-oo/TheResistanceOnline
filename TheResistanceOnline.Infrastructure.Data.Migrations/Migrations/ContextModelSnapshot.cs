@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TheResistanceOnline.Infrastructure.Data;
+using TheResistanceOnline.Data;
 
 #nullable disable
 
@@ -17,15 +17,320 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.AuthorizationEntities.Application", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClientId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ClientSecret")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ConsentType")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayNames")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Permissions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostLogoutRedirectUris")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RedirectUris")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Requirements")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId")
+                        .IsUnique()
+                        .HasFilter("[ClientId] IS NOT NULL");
+
+                    b.ToTable("Applications", (string)null);
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.AuthorizationEntities.Authorization", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ApplicationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Scopes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId", "Status", "Subject", "Type");
+
+                    b.ToTable("Authorizations", (string)null);
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.AuthorizationEntities.Scope", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Descriptions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayNames")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Resources")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[Name] IS NOT NULL");
+
+                    b.ToTable("Scopes", (string)null);
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.AuthorizationEntities.Token", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ApplicationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AuthorizationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyToken")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Payload")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RedemptionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReferenceId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorizationId");
+
+                    b.HasIndex("ReferenceId")
+                        .IsUnique()
+                        .HasFilter("[ReferenceId] IS NOT NULL");
+
+                    b.HasIndex("ApplicationId", "Status", "Subject", "Type");
+
+                    b.ToTable("Tokens", (string)null);
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities.GoogleUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.HasIndex("Subject", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("GoogleUsers");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities.MicrosoftUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("ObjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.HasIndex("ObjectId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("MicrosoftUsers");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.GameEntities.Game", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ModifiedOn")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("WinningTeam")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id")
+                        .HasName("PK_Games");
+
+                    b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.GameEntities.GamePlayerValue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id")
+                        .HasName("PK_GamePlayerValues");
+
+                    b.HasIndex("GameId")
+                        .IsUnique();
+
+                    b.ToTable("GamePlayerValues");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -46,10 +351,10 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("Roles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.RoleClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,267 +368,21 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("RoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("LoginProvider", "ProviderKey");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId", "LoginProvider", "Name");
-
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("TheResistanceOnline.Data.Games.Game", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("WinningTeam")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id")
-                        .HasName("PK_Games");
-
-                    b.ToTable("Games");
-                });
-
-            modelBuilder.Entity("TheResistanceOnline.Data.Games.GamePlayerValue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id")
-                        .HasName("PK_GamePlayerValues");
-
-                    b.HasIndex("GameId")
-                        .IsUnique();
-
-                    b.ToTable("GamePlayerValues");
-                });
-
-            modelBuilder.Entity("TheResistanceOnline.Data.PlayerStatistics.PlayerStatistic", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Team")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("Won")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id")
-                        .HasName("PK_PlayerStatistics");
-
-                    b.HasIndex("GameId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("PlayerStatistics");
-                });
-
-            modelBuilder.Entity("TheResistanceOnline.Data.ProfilePictures.ProfilePicture", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("Id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Description");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
-                        .HasColumnName("Name");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id")
-                        .HasName("PK_ProfilePictures");
-
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
-
-                    b.ToTable("ProfilePictures");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Black man cyberpunk",
-                            Name = "1.png"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "White woman cyberpunk",
-                            Name = "2.png"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "White man spy",
-                            Name = "3.png"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "White woman spy",
-                            Name = "4.png"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "White man cyber warrior",
-                            Name = "5.png"
-                        });
-                });
-
-            modelBuilder.Entity("TheResistanceOnline.Data.UserSettings.UserSetting", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("ResetPasswordLinkSent")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("ResetPasswordLinkSentRecord")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
-
-                    b.ToTable("UserSettings");
-                });
-
-            modelBuilder.Entity("TheResistanceOnline.Data.Users.User", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -332,8 +391,8 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -348,16 +407,19 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LoginOn")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ModifiedOn")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(31)
+                        .HasColumnType("nvarchar(31)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -375,8 +437,8 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(31)
+                        .HasColumnType("nvarchar(31)");
 
                     b.HasKey("Id");
 
@@ -388,69 +450,197 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.UserClaim", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.UserLogin", b =>
                 {
-                    b.HasOne("TheResistanceOnline.Data.Users.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.UserRole", b =>
                 {
-                    b.HasOne("TheResistanceOnline.Data.Users.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.UserSetting", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.HasOne("TheResistanceOnline.Data.Users.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserSetting");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.UserToken", b =>
                 {
-                    b.HasOne("TheResistanceOnline.Data.Users.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("UserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TheResistanceOnline.Data.Games.GamePlayerValue", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.PlayerStatistics.PlayerStatistic", b =>
                 {
-                    b.HasOne("TheResistanceOnline.Data.Games.Game", "Game")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Team")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Won")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PlayerStatistics");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.AuthorizationEntities.Authorization", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Entities.AuthorizationEntities.Application", "Application")
+                        .WithMany("Authorizations")
+                        .HasForeignKey("ApplicationId")
+                        .HasConstraintName("FK_Authorizations_Applications_ApplicationId");
+
+                    b.Navigation("Application");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.AuthorizationEntities.Token", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Entities.AuthorizationEntities.Application", "Application")
+                        .WithMany("Tokens")
+                        .HasForeignKey("ApplicationId")
+                        .HasConstraintName("FK_Tokens_Applications_ApplicationId");
+
+                    b.HasOne("TheResistanceOnline.Data.Entities.AuthorizationEntities.Authorization", "Authorization")
+                        .WithMany("Tokens")
+                        .HasForeignKey("AuthorizationId")
+                        .HasConstraintName("FK_Tokens_Authorizations_AuthorizationId");
+
+                    b.Navigation("Application");
+
+                    b.Navigation("Authorization");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities.GoogleUser", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Entities.UserEntities.User", "User")
+                        .WithOne("GoogleUser")
+                        .HasForeignKey("TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities.GoogleUser", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities.MicrosoftUser", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Entities.UserEntities.User", "User")
+                        .WithOne("MicrosoftUser")
+                        .HasForeignKey("TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities.MicrosoftUser", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.GameEntities.GamePlayerValue", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Entities.GameEntities.Game", "Game")
                         .WithOne("GamePlayerValue")
-                        .HasForeignKey("TheResistanceOnline.Data.Games.GamePlayerValue", "GameId")
+                        .HasForeignKey("TheResistanceOnline.Data.Entities.GameEntities.GamePlayerValue", "GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("TheResistanceOnline.Data.Games.PlayerValue", "PlayerValues", b1 =>
+                    b.OwnsMany("TheResistanceOnline.Data.Entities.GameEntities.PlayerValue", "PlayerValues", b1 =>
                         {
                             b1.Property<int>("GamePlayerValueId")
                                 .HasColumnType("int");
@@ -510,15 +700,89 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                     b.Navigation("PlayerValues");
                 });
 
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.RoleClaim", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Entities.UserEntities.Role", "Role")
+                        .WithMany("RoleClaims")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.UserClaim", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Entities.UserEntities.User", "User")
+                        .WithMany("UserClaims")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.UserLogin", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Entities.UserEntities.User", "User")
+                        .WithMany("UserLogins")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.UserRole", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Entities.UserEntities.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TheResistanceOnline.Data.Entities.UserEntities.User", "User")
+                        .WithOne("UserRole")
+                        .HasForeignKey("TheResistanceOnline.Data.Entities.UserEntities.UserRole", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.UserSetting", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Entities.UserEntities.User", "User")
+                        .WithOne("UserSetting")
+                        .HasForeignKey("TheResistanceOnline.Data.Entities.UserEntities.UserSetting", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.UserToken", b =>
+                {
+                    b.HasOne("TheResistanceOnline.Data.Entities.UserEntities.User", "User")
+                        .WithMany("UserTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("TheResistanceOnline.Data.PlayerStatistics.PlayerStatistic", b =>
                 {
-                    b.HasOne("TheResistanceOnline.Data.Games.Game", "Game")
+                    b.HasOne("TheResistanceOnline.Data.Entities.GameEntities.Game", "Game")
                         .WithMany("PlayerStatistics")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TheResistanceOnline.Data.Users.User", "User")
+                    b.HasOne("TheResistanceOnline.Data.Entities.UserEntities.User", "User")
                         .WithMany("PlayerStatistics")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -529,38 +793,49 @@ namespace TheResistanceOnline.Infrastructure.Data.Migrations.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TheResistanceOnline.Data.ProfilePictures.ProfilePicture", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.AuthorizationEntities.Application", b =>
                 {
-                    b.HasOne("TheResistanceOnline.Data.Users.User", "User")
-                        .WithOne("ProfilePicture")
-                        .HasForeignKey("TheResistanceOnline.Data.ProfilePictures.ProfilePicture", "UserId");
+                    b.Navigation("Authorizations");
 
-                    b.Navigation("User");
+                    b.Navigation("Tokens");
                 });
 
-            modelBuilder.Entity("TheResistanceOnline.Data.UserSettings.UserSetting", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.AuthorizationEntities.Authorization", b =>
                 {
-                    b.HasOne("TheResistanceOnline.Data.Users.User", "User")
-                        .WithOne("UserSetting")
-                        .HasForeignKey("TheResistanceOnline.Data.UserSettings.UserSetting", "UserId");
-
-                    b.Navigation("User");
+                    b.Navigation("Tokens");
                 });
 
-            modelBuilder.Entity("TheResistanceOnline.Data.Games.Game", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.GameEntities.Game", b =>
                 {
                     b.Navigation("GamePlayerValue");
 
                     b.Navigation("PlayerStatistics");
                 });
 
-            modelBuilder.Entity("TheResistanceOnline.Data.Users.User", b =>
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.Role", b =>
                 {
+                    b.Navigation("RoleClaims");
+
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("TheResistanceOnline.Data.Entities.UserEntities.User", b =>
+                {
+                    b.Navigation("GoogleUser");
+
+                    b.Navigation("MicrosoftUser");
+
                     b.Navigation("PlayerStatistics");
 
-                    b.Navigation("ProfilePicture");
+                    b.Navigation("UserClaims");
+
+                    b.Navigation("UserLogins");
+
+                    b.Navigation("UserRole");
 
                     b.Navigation("UserSetting");
+
+                    b.Navigation("UserTokens");
                 });
 #pragma warning restore 612, 618
         }

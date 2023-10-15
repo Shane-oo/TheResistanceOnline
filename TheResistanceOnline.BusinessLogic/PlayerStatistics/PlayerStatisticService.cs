@@ -17,7 +17,7 @@ public class PlayerStatisticService: IPlayerStatisticService
         return command.GameDetails.PlayersDetails!.Where(p => !p.IsBot)
                       .Select(playerDetails => new PlayerStatistic
                                                {
-                                                   UserId = playerDetails.PlayerId.ToString(), // Real Users Player Id is Their User Id
+                                                   UserId = playerDetails.PlayerId, // Real Users Player Id is Their User Id
                                                    Team = (int)playerDetails.Team,
                                                    Won = (int)playerDetails.Team == winningTeam
                                                })

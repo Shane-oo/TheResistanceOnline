@@ -5,7 +5,9 @@
 export const environment = {
   production: false,
   API_URL: 'https://localhost:7158',
-  Socket_URL: 'https://localhost:5001',
+  SERVER_URL: 'https://localhost:7201',
+
+  // old
   Base_URL: 'https://localhost:44452',
   API_Domain: 'localhost:7158',
   Socket_Domain: 'localhost:5001',

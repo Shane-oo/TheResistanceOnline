@@ -1,35 +1,17 @@
-export interface UserRegisterModel {
-  email: string;
-  userName: string;
-  password: string;
-  confirmPassword: string;
-  clientUri: string;
+import {AbstractControl, FormControl, FormGroup} from "@angular/forms";
+
+export interface UserDetailsModel {
+  userName: string,
+  createdOn: string,
+  modifiedOn: string | null
 }
 
-export interface UserLoginModel {
-  email: string;
-  password: string;
-  clientUri: string;
+export interface UpdateUserCommand {
+  userName: string
 }
 
-export interface LoginResponseModel {
-  token: string;
-}
-
-export interface UserForgotPasswordModel {
-  email: string;
-  clientUri: string;
-}
-
-
-export interface UserResetPasswordModel {
-  password: string;
-  confirmPassword: string;
-  email: string;
-  token: string;
-}
-
-export interface UserConfirmEmailModel {
-  email: string;
-  token: string;
+export interface UserDetailsEditFormModel {
+  userName: FormControl<string>,
+  // createdOn: FormControl<string>,
+  // modifiedOn: FormControl<string | null>
 }

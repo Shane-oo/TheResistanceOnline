@@ -1,5 +1,5 @@
-using TheResistanceOnline.BusinessLogic.Core.Commands;
 using TheResistanceOnline.BusinessLogic.Games.Models;
+using TheResistanceOnline.Core.Requests.Commands;
 
 namespace TheResistanceOnline.BusinessLogic.Games.Commands;
 

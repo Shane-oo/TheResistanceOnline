@@ -1,0 +1,17 @@
+<div *ngIf="!currentLobby">
+  <div class="grid-container text-color">
+    <div class="game-lobby-lobbies">
+      <app-game-lobby-lobbies (joinLobbyEvent)="joinLobby($event)" [lobbies]="lobbies"></app-game-lobby-lobbies>
+    </div>
+    <div class="game-lobby-create">
+      <app-game-lobby-create (createLobbyEvent)="createLobby($event)"></app-game-lobby-create>
+    </div>
+    <div class="game-lobby-search">
+      <app-game-lobby-search (searchLobbyEvent)="searchLobby($event)"></app-game-lobby-search>
+    </div>
+
+  </div>
+</div>
+<div *ngIf="currentLobby">
+  <app-game-lobby-waiting-room [lobby]="currentLobby" (readyEventEmitter)="readyUp($event)"></app-game-lobby-waiting-room>
+</div>

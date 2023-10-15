@@ -1,73 +1,54 @@
-import { Injectable } from '@angular/core';
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
-import { Router } from '@angular/router';
-import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-container.service';
+import {Injectable} from '@angular/core';
+import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {catchError, Observable, throwError} from 'rxjs';
+import {SwalContainerService, SwalTypes} from '../../../ui/swal/swal-container.service';
 
 @Injectable({
-              providedIn: 'root'
-            })
+  providedIn: 'root'
+})
 
 export class ErrorHandlerService implements HttpInterceptor {
 
-  constructor(private router: Router, private swalService: SwalContainerService) {
+  constructor(private swalService: SwalContainerService) {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req)
-               .pipe(
-                 catchError((error: HttpErrorResponse) => {
-                   this.handleError(error);
-                   // ToDo this should be different but idk
-                   return throwError(() => new Error());
-                 })
-               );
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          const errorMessage = this.handleError(error);
+          return throwError(() => new Error(errorMessage));
+        })
+      );
   }
 
-  private handleError = (error: HttpErrorResponse): void => {
-    if(error.status === 404) {
-      this.handleNotFound(error);
-    } else if(error.status === 400) {
-      this.handleBadRequest(error);
-    } else if(error.status === 401) {
-      this.handleUnauthorized(error);
-    } else if(error.status === 403) {
-      this.handleForbidden(error);
+  private handleError = (error: HttpErrorResponse): string => {
+    if (error.status === 404) {
+      return this.handleNotFound(error);
+    } else if (error.status === 400) {
+      return this.handleBadRequest(error);
+    } else if (error.status === 500) {
+      return this.handleInternalServerError(error);
     }
 
+    return "";
   };
 
   private handleNotFound = (error: HttpErrorResponse): string => {
-    // Id rather send them to home page and display a swal error
-    console.log('handle not found');
-    //this.router.navigate(['/404']);
-    return error.message;
+    const errorMessage = error.error;
+    this.swalService.showSwal(SwalTypes.Error, errorMessage);
+    return errorMessage;
   };
 
-  private handleBadRequest = (error: HttpErrorResponse) => {
-    if(error.error.errors) {
-      if(error.error.errors.ConfirmPassword) {
-        this.swalService.showSwal(error.error.errors.ConfirmPassword, SwalTypesModel.Error);
-        return;
-      }
-      if(error.error.errors) {
-        console.log(error.error.errors)
-        if(error.error.errors.UserName) {
-          this.swalService.showSwal(error.error.errors.UserName, SwalTypesModel.Error);
-          return;
-        }
-      }
-
-    }
-    this.swalService.showSwal(error.error ? error.error : error.message, SwalTypesModel.Error);
-    return;
+  private handleBadRequest = (error: HttpErrorResponse): string => {
+    const errorMessage = error.error;
+    this.swalService.showSwal(SwalTypes.Error, errorMessage);
+    return errorMessage;
   };
 
-  private handleUnauthorized = (error: HttpErrorResponse) => {
-    this.swalService.showSwal('Unauthorized: ' + error.error ? error.error : error.message, SwalTypesModel.Error);
-  };
-  private handleForbidden = (error: HttpErrorResponse) => {
-    this.swalService.showSwal('Forbidden', SwalTypesModel.Error);
-  };
-
+  private handleInternalServerError = (error: HttpErrorResponse): string => {
+    const errorMessage = error.error.detail;
+    this.swalService.showSwal(SwalTypes.Error, errorMessage);
+    return errorMessage;
+  }
 }

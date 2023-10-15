@@ -3,7 +3,7 @@ using TheResistanceOnline.BusinessLogic.BotObservers.BayesAgent.Models;
 using TheResistanceOnline.BusinessLogic.Games;
 using TheResistanceOnline.BusinessLogic.Games.Commands;
 using TheResistanceOnline.BusinessLogic.Games.Models;
-using TheResistanceOnline.Data.Games;
+using TheResistanceOnline.Data.Entities.GameEntities;
 
 namespace TheResistanceOnline.BusinessLogic.BotObservers;
 

@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Web + Socket" type="CompoundRunConfigurationType">
-    <toRun name="TheResistanceOnline.SocketServer" type="LaunchSettings" />
+    <toRun name="TheResistanceOnline.Server: https" type="LaunchSettings" />
     <toRun name="TheResistanceOnline.Web" type="LaunchSettings" />
     <method v="2" />
   </configuration>

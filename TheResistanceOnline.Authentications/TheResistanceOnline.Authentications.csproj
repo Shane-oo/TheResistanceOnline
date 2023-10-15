@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\TheResistanceOnline.Common\TheResistanceOnline.Common.csproj" />
+      <ProjectReference Include="..\TheResistanceOnline.Core\TheResistanceOnline.Core.csproj" />
+      <ProjectReference Include="..\TheResistanceOnline.Data\TheResistanceOnline.Data.csproj" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <PackageReference Include="Ulid" Version="1.3.3" />
+    </ItemGroup>
+
+
+
+
+
+</Project>
