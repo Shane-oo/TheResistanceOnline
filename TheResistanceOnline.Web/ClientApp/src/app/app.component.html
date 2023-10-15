@@ -1,6 +1,7 @@
-<app-nav-menu (onToggleSideNav)="onToggleSideNav($event)"></app-nav-menu>
 
-<div [ngClass]="getBodyClass()" class="body">
-  <router-outlet></router-outlet>
-</div>
+<app-nav-menu></app-nav-menu>
+<div class="main-background-color background">
+<router-outlet></router-outlet>
+
 <overlay></overlay>
+</div>

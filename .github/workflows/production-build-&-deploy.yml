@@ -1,0 +1,85 @@
+name: production - build and deploy pipeline
+on:
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+env:
+  AZURE_CONTAINER_REGISTRY: "theresistanceonlinecontainer"
+  THERESTISTANCEONLINE_WEB_CONTAINER_NAME: "theresistanceonlineweb"
+  THERESTISTANCEONLINE_WEB_APP_NAME: "the-resistance-online-web"
+  THERESTISTANCEONLINE_SERVER_CONTAINER_NAME: "theresistanceonlineserver"
+  THERESISTANCEONLINE_SERVER_APP_NAME: "the-resistance-online-server"
+  RESOURCE_GROUP: "rsg-the-resistance-online"
+  DOTNET_VERSION: 7.0.x
+
+jobs:
+  build-and-push-the-resistance-online-web-and-server-to-container:
+    runs-on: ubuntu-latest
+    steps:
+    #checkout the repo
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@main
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: 'Build and Push image'
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    - run: |
+        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_WEB_CONTAINER_NAME }}:${{ github.sha }} --file TheResistanceOnline.Web/Dockerfile .
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_WEB_CONTAINER_NAME }}:${{ github.sha }}
+        docker build -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_SERVER_CONTAINER_NAME }}:${{ github.sha }} --file TheResistanceOnline.Server/Dockerfile .
+        docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_SERVER_CONTAINER_NAME }}:${{ github.sha }}
+        
+  build-and-apply-entity-frameworkcore-migrations:
+    runs-on: ubuntu-latest
+    needs: build-and-push-the-resistance-online-web-and-server-to-container
+    steps:
+      #checkout the repo
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@main
+
+    - name: 'Setup Dotnet'
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: 'Install dotnet-ef Tools and Update Database'
+      run: |
+        dotnet tool install --global dotnet-ef
+        dotnet tool restore
+        dotnet ef database update --project TheResistanceOnline.Infrastructure.Data.Migrations
+      env:
+        ConnectionStrings:ResistanceDb: ${{ secrets.THERESISTANCEDB_CONNECTION_STRING }}
+
+  set-the-resistance-online-web-apps-to-new-images:
+    runs-on: ubuntu-latest
+    needs: [build-and-push-the-resistance-online-web-and-server-to-container,build-and-apply-entity-frameworkcore-migrations]
+    steps:
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: 'Update The Resistance Online Web App to New Image'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.THERESTISTANCEONLINE_WEB_APP_NAME }}
+        images: |
+          ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_WEB_CONTAINER_NAME }}:${{ github.sha }}
+        
+    - name: 'Update The Resistance Online Server App to New Image'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.THERESISTANCEONLINE_SERVER_APP_NAME }}
+        images: |
+          ${{ secrets.REGISTRY_LOGIN_SERVER }}/${{ env.THERESTISTANCEONLINE_SERVER_CONTAINER_NAME }}:${{ github.sha }}   
+  

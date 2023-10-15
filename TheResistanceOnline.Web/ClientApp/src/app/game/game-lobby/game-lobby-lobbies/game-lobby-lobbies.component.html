@@ -1,0 +1,10 @@
+<div class="container">
+  <h4>Public Lobbies</h4>
+  <div *ngFor="let lobby of lobbies">
+    <div class="lobbyDetails">
+      <button (click)="joinLobby(lobby)" class="primary-button join-game-button"><b>{{lobby.id}}</b></button>
+      &nbsp;
+      <span>{{lobby.connections | select:"userName" | join}} - {{lobby.connections.length}}/{{lobby.maxPlayers}}</span>
+    </div>
+  </div>
+</div>

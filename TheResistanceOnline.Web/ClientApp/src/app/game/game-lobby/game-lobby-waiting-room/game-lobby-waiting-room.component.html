@@ -1,0 +1,12 @@
+<div>
+  <div class="grid-container text-color">
+    <div class="game-lobby-waiting-room-details">
+      <app-game-lobby-waiting-room-details [lobby]="lobby"></app-game-lobby-waiting-room-details>
+    </div>
+    <div class="game-lobby-waiting-room-players">
+      <app-game-lobby-waiting-room-players [connections]="lobby.connections"
+                                           (readyEventEmitter)="ready()"></app-game-lobby-waiting-room-players>
+    </div>
+
+  </div>
+</div>

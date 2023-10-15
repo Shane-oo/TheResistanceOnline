@@ -1,177 +1,110 @@
 .content {
-  background-size: cover;
-  line-height: 10px;
-  transition: all .5s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  min-height: 100vh;
+    background-size: cover;
+    line-height: 10px;
+    transition: all .5s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
 }
 
 .login-box {
-  width: 780px;
-  height: 390px;
-  background-color: #1e1e1e;
-  text-align: center;
-  box-shadow: 0.0315rem 0 0.625rem 0 #fc0114;
-  border-radius: 10px;
-  padding: 20px;
+    width: 500px;
+    height: 390px;
+    background-color: #1f1608;
+    text-align: center;
+    border-radius: 10px;
+    padding: 20px;
+
 }
 
 .login-io-box {
-  display: flex;
-  align-content: stretch;;
-  justify-content: space-around;
-  flex-wrap: nowrap;
-  flex-direction: row;
-  align-items: center;
+    display: flex;
+    align-content: stretch;;
+    justify-content: space-around;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
 }
 
 .sol-box {
-  width: 450px;
+    width: 450px;
+    font-family: inconsolata, serif;
+
 }
 
 .sol-box h2 {
-  font-family: ethnocentric, serif;
-  font-size: 20px;
-  font-weight: 500;
-  color: #367bee;
+    font-family: ethnocentric, serif;
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
 }
 
-
-.form-box {
-  font-family: ethnocentric, serif;
-  font-size: 16px;
-  font-weight: 100;
-  color: #367bee;
-}
-
-.form-box input[type="email"] {
-  font-family: satella, serif;
-  font-size: 17px;
-  color: ghostwhite;
-}
-.form-box input[type="password"] {
-  font-family: satella, serif;
-  font-size: 17px;
-  color: ghostwhite;
-}
-
-.form-box p {
-  text-align: left;
-}
-
-.form-box div {
-  padding: 5px;
-}
-
-/*ToDo buy the non bold font and use here*/
 .sol-box input {
-  box-sizing: border-box;
-  width: 100%;
-  border-radius: 4px;
-  outline: none;
-  background-color: #303338;
-  border: none;
-  padding: 13px;
-  color: #e6e6e6;
-  font-size: 13px;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 4px;
+    outline: none;
+    background-color: #303338;
+    border: none;
+    padding: 13px;
+    font-size: 13px;
 }
 
-.forgot-pass-link {
-  font-size: 12px;
-  text-align: left;
-  color: #72767d;
-  text-decoration: none;
-}
-
-.forgot-pass-link :hover {
-
-  text-decoration: underline;
-}
-
-
-.register-link {
-  color: #6583f2;
-  margin-top: 10px;
-  text-decoration: none;
-  font-size: 14px;
-  padding-left: 5px;;
-}
-
-.register-link:hover {
-  text-decoration: underline;
-  color: #367bee;
-}
 
 .login-button {
-  text-align: center;
-  background-color: #6583f2;
-  padding: 15px;
-  width: 100%;
-  color: #e6e6e6;
-  border: none;
-  border-radius: 5px;
+    text-align: center;
+    background-color: #57350f;
+    padding: 15px;
+    width: 50%;
+    border: none;
+    border-radius: 5px;
+    color: #f8e9d8;
+    margin-top: 15px;
+
 }
 
 .login-button:hover {
-  background: #367bee;
-
+    text-decoration: #d48325 underline;
 }
 
-.iht {
-  color: #72767d;
-  font-size: 14px;
-  line-height: 40px;
-
-}
 
 .sag-box {
-  right: 10px;
-  width: 250px;
-  text-align: center;
-  line-height: 20px;
-
+    right: 10px;
+    width: 250px;
+    text-align: center;
+    line-height: 20px;
 }
 
 .sag-box h4 {
-  font-family: ethnocentric, serif;
-  font-size: 15px;
-  font-weight: 700;
-  padding: 20px;
-  color: #367bee;
+    font-family: ethnocentric, serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 20px;
 }
 
 .logo {
-  height: 178px;
-  width: 177px;
-  border-radius: 5px;
-  box-shadow: 0.025rem 0 0.56rem 0 #191923;
+    height: 178px;
+    width: 177px;
+    border-radius: 5px;
+    box-shadow: 0.025rem 0 0.56rem 0 #191923;
 }
 
 @media only screen and (max-width: 760px) {
-  .sag-box {
-    display: none;
-  }
+    .sag-box {
+        display: none;
+    }
 
-  .login-box {
-    width: 390px;
-  }
+    .login-box {
+        width: 390px;
+    }
 }
 
 @media only screen and (max-width: 450px) {
-  .login-box {
-    width: 250px;
-    height: 450px;
-    margin-left: 50px;
+    .login-box {
+        width: 250px;
+        height: 450px;
 
-  }
-}
-
-/*ToDo buy the non bold font and use here*/
-.validation {
-  font-size: 10px;
-  color: #fc0114;
-  text-align: left;
+    }
 }

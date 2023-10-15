@@ -1,0 +1,12 @@
+<div class="grid-container text-color">
+
+  <div class="user-details-edit">
+    <app-user-details-edit [userDetails]="userDetails" (updateUserEvent)="updateUser($event)"></app-user-details-edit>
+  </div>
+  <div class="user-details-friends">
+    <app-user-details-friends></app-user-details-friends>
+  </div>
+  <div class="user-details-interactions">
+    <app-user-details-interactions></app-user-details-interactions>
+  </div>
+</div>

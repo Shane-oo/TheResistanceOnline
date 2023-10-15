@@ -1,38 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from './user/authentication.service';
-import { SideNavToggle } from './nav-menu/nav-data';
+import {Component, OnInit} from '@angular/core';
+import {AuthenticationService} from "./shared/services/authentication/authentication.service";
 
 @Component({
-             selector: 'app-root',
-             templateUrl: './app.component.html'
-           })
+    selector: 'app-root',
+    templateUrl: './app.component.html'
+})
 export class AppComponent implements OnInit {
-  title = 'app';
-  isSideNavCollapsed = false;
-  screenWidth = 0;
+    title = 'app';
 
-  constructor(private authService: AuthenticationService) {
-  }
-
-  ngOnInit(): void {
-    if(this.authService.isUserAuthenticated()) {
-      this.authService.sendAuthStateChange(true);
+    constructor(private authService: AuthenticationService) {
     }
-  }
 
-  onToggleSideNav(data: SideNavToggle): void {
-    this.screenWidth = data.screenWidth;
-    this.isSideNavCollapsed = data.collapsed;
-  }
-
-
-  getBodyClass(): string {
-    let styleClass = '';
-    if(this.isSideNavCollapsed && this.screenWidth > 768) {
-      styleClass = 'body-trimmed';
-    } else {
-      styleClass = 'body-md-screen';
+    ngOnInit(): void {
+        if (this.authService.isUserAuthenticated()) {
+            this.authService.sendAuthStateChangeNotification(true);
+        }
     }
-    return styleClass;
-  }
+
 }

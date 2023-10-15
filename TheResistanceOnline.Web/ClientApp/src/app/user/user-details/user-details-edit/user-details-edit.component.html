@@ -1,0 +1,40 @@
+<div class="container">
+  <h4>Details</h4>
+  <div>
+    <p>Created On: {{_userDetails.createdOn}}</p>
+    <p *ngIf="_userDetails?.modifiedOn">Modified On: {{_userDetails.modifiedOn}}</p>
+  </div>
+  <div>
+    <form (ngSubmit)="updateUser(userDetailsEditForm.value)" [formGroup]="userDetailsEditForm">
+      <div>
+        <span>UserName: </span>
+        <input formControlName="userName" id="userName" type="text">
+        <div>
+          <ul>
+            <li *ngIf="validateControl('userName') && hasError('userName', 'required')">
+              UserName is required.
+            </li>
+
+            <li *ngIf="validateControl('userName') && hasError('userName', 'maxlength')">
+              UserName too long.
+            </li>
+
+            <li *ngIf="validateControl('userName') && hasError('userName', 'pattern')">
+              Invalid characters.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="submit-button">
+        <button [disabled]="!userDetailsEditForm.valid"
+                [style.opacity]="!userDetailsEditForm.valid? '0.5':''"
+                [style.pointer-events]="!userDetailsEditForm.valid? 'none':''"
+                class="primary-button button" type="submit">
+          Submit
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TheResistanceGameService } from '../the-resistance-game.service';
 import { GameAction, GameDetails, GameStage } from '../the-resistance-game.models';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SwalContainerService, SwalTypesModel } from '../../../ui/swal/swal-container.service';
+import { SwalContainerService, SwalTypes } from '../../../ui/swal/swal-container.service';
 
 
 @Component({

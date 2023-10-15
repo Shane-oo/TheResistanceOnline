@@ -1,65 +1,24 @@
-using Microsoft.AspNetCore.StaticFiles;
-using TheResistanceOnline.Web.DI;
+using Microsoft.AspNetCore;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace TheResistanceOnline.Web;
 
-// Add services to the container.
-
-builder.Services.AddAppSettings(builder);
-builder.Services.AddControllersWithViews();
-// Add services to the container.
-builder.Services.AddCors(options =>
-                         {
-                             options.AddPolicy("CorsPolicy", corsPolicy => corsPolicy
-                                                                           .AllowAnyMethod()
-                                                                           .AllowAnyHeader()
-                                                                           .AllowCredentials()
-                                                                           .WithOrigins("https://theresistanceboardgameonline.com",
-                                                                                        "https://localhost:44452")
-                                              );
-                         });
-builder.Services.Configure<StaticFileOptions>(options =>
-                                              {
-                                                  options.ContentTypeProvider = new FileExtensionContentTypeProvider
-                                                                                {
-                                                                                    Mappings =
-                                                                                    {
-                                                                                        [".gltf"] = "model/gltf+json",
-                                                                                        [".glb"] = "model/gltf-binary",
-                                                                                        [".bin"] = "application/octet-stream"
-                                                                                    }
-                                                                                };
-                                                  options.ServeUnknownFileTypes = true; // enable serving of unknown file types
-                                              });
-builder.Services.AddServices();
-builder.Services.AddAuthenticationServices();
-builder.Services.AddContext();
-builder.Services.AddMemoryCache();
-
-
-var app = builder.Build();
-
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+public class Program
 {
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    #region Private Methods
+
+    private static IWebHostBuilder CreateWebHostBuilder(string[] args)
+    {
+        return WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
+    }
+
+    #endregion
+
+    #region Public Methods
+
+    public static void Main(string[] args)
+    {
+        CreateWebHostBuilder(args).Build().Run();
+    }
+
+    #endregion
 }
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
-app.UseCors("CorsPolicy");
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-// dont touch
-app.MapControllerRoute(
-                       "default",
-                       "{controller}/{action=Index}/{id?}");
-// dont touch maybe
-app.MapFallbackToFile("index.html");
-
-app.Run();

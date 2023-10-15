@@ -1,0 +1,57 @@
+<div class="container">
+  <h4>Create a lobby</h4>
+  <div>
+    <form (ngSubmit)="createLobby(createLobbyForm.value)" [formGroup]="createLobbyForm">
+      <div>
+        <input formControlName="id" id="id" type="text">
+        <div>
+          <ul>
+            <li *ngIf="validateControl('id') && hasError('id', 'required')">
+              Lobby Id is required.
+            </li>
+            <li *ngIf="validateControl('id') && hasError('id', 'maxlength')">
+              Lobby Id too long.
+            </li>
+            <li *ngIf="validateControl('id') && hasError('id', 'pattern')">
+              Invalid characters.
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <span>Max Players: </span>
+        <input formControlName="maxPlayers" id="maxPlayers" type="number" min="5" max="10">
+        <div>
+          <ul>
+            <li *ngIf="validateControl('maxPlayers') && hasError('maxPlayers', 'required')">
+              Max Players is required.
+            </li>
+            <li *ngIf="validateControl('maxPlayers') && hasError('maxPlayers', 'max')">
+              Max Players must be less than 10.
+            </li>
+            <li *ngIf="validateControl('maxPlayers') && hasError('maxPlayers', 'min')">
+              Max Players must be more than 5.
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <span>Bots: </span>
+        <input formControlName="fillWithBots" id="fillWithBots" type="checkbox">
+      </div>
+      <div>
+        <span>Private Lobby: </span>
+        <input formControlName="isPrivate" id="isPrivate" type="checkbox">
+      </div>
+      <div class="submit-button">
+        <button [disabled]="!createLobbyForm.valid"
+                [style.opacity]="!createLobbyForm.valid? '0.2':''"
+                [style.pointer-events]="!createLobbyForm.valid? 'none':''"
+                class="primary-button button" type="submit">
+          Create
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
