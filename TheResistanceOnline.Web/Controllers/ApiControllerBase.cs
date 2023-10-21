@@ -2,7 +2,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
-using TheResistanceOnline.Core;
 using TheResistanceOnline.Core.Requests;
 using TheResistanceOnline.Data.Entities.UserEntities;
 
@@ -18,18 +17,16 @@ public class ApiControllerBase: ControllerBase
                                ? userId
                                : Guid.Empty;
 
-    private Roles UserRole => User.Identity is { IsAuthenticated: true }
-                              && Enum.TryParse<Roles>(User.FindFirstValue(OpenIddictConstants.Claims.Role), out var role)
-                                  ? role
-                                  : Roles.None;
-
     #endregion
+
+    #region Private Methods
 
     protected void SetRequest(IRequestBase request)
     {
         request.UserId = UserId;
-        request.UserRole = UserRole;
     }
+
+    #endregion
 }
 
 public class AuthorizeRoles: AuthorizeAttribute

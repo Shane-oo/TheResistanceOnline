@@ -106,8 +106,9 @@ public class LobbyHub: BaseHub<ILobbyHub>
     }
 
     [UsedImplicitly]
-    public async Task<List<LobbyDetailsModel>> GetLobbies(GetLobbiesQuery query)
+    public async Task<List<LobbyDetailsModel>> GetLobbies()
     {
+        var query = new GetLobbiesQuery();
         SetRequest(query);
         query.GroupNamesToLobby = _properties._groupNamesToLobby;
 

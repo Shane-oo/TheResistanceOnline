@@ -11,15 +11,19 @@ import {sources} from "./sources";
 import {Debug} from "./utils/debug";
 import {Dispose} from "./utils/dispose";
 import {Metrics} from "./utils/metrics";
+import {RayCasting} from "./world/raycasting";
 
 
 export class ResistanceGame {
+  objectClickedSubject: Subject<string> = new Subject<string>();
+
   private static instance: ResistanceGame | null;
   public readonly gameCamera!: ResistanceGameCamera;
   public readonly scene!: Scene;
   public readonly debug!: Debug;
   public readonly resources!: Resources;
   public readonly sizes!: Sizes;
+  public readonly rayCasting!: RayCasting;
   private readonly destroyed = new Subject<void>();
   private readonly gameRenderer!: ResistanceGameRenderer;
   private world?: World;
@@ -45,7 +49,9 @@ export class ResistanceGame {
     this.resources = new Resources(sources);
     this.gameCamera = new ResistanceGameCamera(canvas!);
     this.gameRenderer = new ResistanceGameRenderer(canvas!);
+    this.rayCasting = new RayCasting();
 
+    // Events
     this.resources.loadedSubject
       .pipe(takeUntil(this.destroyed))
       .subscribe(() => {
@@ -53,7 +59,6 @@ export class ResistanceGame {
         this.world = new World();
       })
 
-    // Events
     this.sizes.resizeSubject
       .pipe(takeUntil(this.destroyed))
       .subscribe(() => {
@@ -64,6 +69,12 @@ export class ResistanceGame {
       .pipe(takeUntil(this.destroyed))
       .subscribe(() => {
         this.update();
+      });
+
+    this.rayCasting.objectClickedSubject
+      .pipe(takeUntil(this.destroyed))
+      .subscribe((name: string) => {
+        this.objectClickedSubject.next(name);
       });
   }
 

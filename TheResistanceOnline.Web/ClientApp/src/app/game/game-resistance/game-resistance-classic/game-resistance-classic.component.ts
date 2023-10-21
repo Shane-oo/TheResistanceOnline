@@ -1,7 +1,8 @@
-import {AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild} from '@angular/core';
 import {Subject, first, takeUntil} from "rxjs";
 import {ResistanceGame} from "../resistance-game/resistance-game";
 import {CommenceGameModel, Phase} from "../game-resistance.models";
+import {ReadyUpCommand} from "../../game-lobby/game-lobby.models";
 
 
 @Component({
@@ -11,6 +12,8 @@ import {CommenceGameModel, Phase} from "../game-resistance.models";
 })
 export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy {
   @Input() gameCommenced!: Subject<CommenceGameModel>;
+  @Output() objectClickedEventEmitter = new EventEmitter<string>();
+
   private resistanceGame!: ResistanceGame;
   private readonly destroyed = new Subject<void>();
 
@@ -24,6 +27,13 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
   ngAfterViewInit(): void {
     this.resistanceGame = new ResistanceGame(this.canvasElementRef.nativeElement);
 
+    // Resistance Game Events
+    this.resistanceGame.objectClickedSubject
+      .pipe(takeUntil(this.destroyed))
+      .subscribe((name: string) => {
+        this.objectClickedEventEmitter.emit(name);
+      })
+
     this.gameCommenced
       .pipe(first()) //This will automatically complete (and therefore unsubscribe) after the first value has been emitted.
       .subscribe(c => {
@@ -33,6 +43,7 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
 
   ngOnDestroy(): void {
     this.destroyed.next();
+    this.destroyed.complete();
     this.resistanceGame.destroy();
   }
 

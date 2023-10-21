@@ -14,15 +14,9 @@ export const sources: Resource[] = [
     textureType: TextureType.NormalMap
   },
   {
-    name: 'resistanceGameBoard',
+    name: 'missionTeamPiece',
     type: ResourceType.GltfModel,
-    path: 'assets/models/ResistanceGame/ResistanceGame.glb',
-    textureType: null
-  },
-  {
-    name: 'missionLeaderPiece',
-    type: ResourceType.GltfModel,
-    path: 'assets/models/ResistanceGame/MissionLeaderPiece.glb',
+    path: 'assets/models/ResistanceGame/MissionTeamPiece.glb',
     textureType: null
   }
 ];

@@ -16,11 +16,6 @@ public class BaseHub<T>: Hub<T> where T : class
                                ? userId
                                : Guid.Empty;
 
-    private Roles UserRole => Context.User?.Identity is { IsAuthenticated: true }
-                              && Enum.TryParse<Roles>(Context.User.FindFirstValue(OpenIddictConstants.Claims.Role), out var role)
-                                  ? role
-                                  : Roles.None;
-
     #endregion
 
     #region Private Methods
@@ -28,7 +23,6 @@ public class BaseHub<T>: Hub<T> where T : class
     protected void SetRequest(IRequestBase request)
     {
         request.UserId = UserId;
-        request.UserRole = UserRole;
         request.ConnectionId = Context.ConnectionId;
     }
 

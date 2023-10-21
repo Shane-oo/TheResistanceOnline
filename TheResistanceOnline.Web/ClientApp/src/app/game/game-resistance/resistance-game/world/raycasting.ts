@@ -1,18 +1,11 @@
-import {
-  BufferGeometry,
-  Color,
-  Mesh,
-  MeshStandardMaterial,
-  PerspectiveCamera,
-  Raycaster,
-  Scene,
-  Vector2,
-  Vector3
-} from "three";
+import {BufferGeometry, Color, Mesh, MeshStandardMaterial, PerspectiveCamera, Raycaster, Vector2} from "three";
 import {ResistanceGame} from "../resistance-game";
 import {Sizes} from "../utils/sizes";
+import {Subject} from "rxjs";
 
 export class RayCasting {
+  objectClickedSubject: Subject<string> = new Subject<string>();
+
   private readonly raycaster: Raycaster;
   private readonly sizes: Sizes;
   private readonly camera: PerspectiveCamera;
@@ -26,7 +19,6 @@ export class RayCasting {
     this.raycaster = new Raycaster();
     this.raycaster.camera = this.camera;
 
-    console.log(this.raycaster.far)
     // Click Event
     window.addEventListener('mousedown', this.onMouseUp);
   }
@@ -43,24 +35,16 @@ export class RayCasting {
 
   private onMouseUp = (event: MouseEvent) => {
     if (this._objectsToTest.length > 0) {
-      console.log("mouse up", event)
       this.mouse.x = (event.offsetX / this.sizes.width) * 2 - 1;
       this.mouse.y = -(event.offsetY / this.sizes.height) * 2 + 1;
-
-      console.log(this.mouse);
 
       this.raycaster.setFromCamera(this.mouse, this.camera);
 
       const intersects = this.raycaster.intersectObjects(this._objectsToTest);
-      console.log(intersects)
       const intersection = intersects[0] ?? null;
       if (intersection) {
-        console.log("i clicked on", intersection.object)
         const mesh = intersection.object as Mesh<BufferGeometry, MeshStandardMaterial>;
-        mesh.material.color = new Color('pink');
-
-        // todo shane i am here
-        // emit what objects they picked to be on the mission
+        this.objectClickedSubject.next(mesh.name);
       }
     }
 

@@ -1,3 +1,4 @@
+using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.GamePlay.ObserverPattern;
 using TheResistanceOnline.GamePlay.PlayerModels;
@@ -20,7 +21,7 @@ public abstract class GameModel: IGameModelSubject
 
     public int MissionSize => GetMissionSize();
 
-    public List<string> MissionTeam { get; private set; }
+    public List<PlayerModel> MissionTeam { get; private set; }
 
     public Phase Phase { get; private set; } = Phase.MissionBuild;
 
@@ -52,6 +53,13 @@ public abstract class GameModel: IGameModelSubject
         return playerSetupModels;
     }
 
+    protected void SubmitMissionTeam()
+    {
+        if (!MissionTeamFull())
+        {
+        }
+    }
+
 
     protected void UpdateMission(int mission)
     {
@@ -66,12 +74,6 @@ public abstract class GameModel: IGameModelSubject
             playerModel.IsMissionLeader = missionLeaderName == playerModel.Name;
         }
 
-        NotifyObservers();
-    }
-
-    protected void UpdateMissionTeam(List<string> missionTeam)
-    {
-        MissionTeam = missionTeam;
         NotifyObservers();
     }
 
@@ -171,6 +173,31 @@ public abstract class GameModel: IGameModelSubject
 
     #region Public Methods
 
+    public void AddMissionTeamMember(PlayerModel player)
+    {
+        ArgumentNullException.ThrowIfNull(player);
+
+        if (MissionTeamFull())
+        {
+            return;
+        }
+
+        MissionTeam.Add(player);
+    }
+
+    public PlayerModel GetPlayerModel(string name)
+    {
+        var player = Players.FirstOrDefault(p => p.Key == name).Value;
+        NotFoundException.ThrowIfNull(player);
+
+        return player;
+    }
+
+    public bool MissionTeamFull()
+    {
+        return MissionTeam.Count == GetMissionSize();
+    }
+
     public void NotifyObservers()
     {
         foreach(var observer in _observers)
@@ -182,6 +209,11 @@ public abstract class GameModel: IGameModelSubject
     public void RegisterObserver(IObserver observer)
     {
         _observers.Add(observer);
+    }
+
+    public void RemoveMissionTeamMember(PlayerModel player)
+    {
+        MissionTeam.Remove(player);
     }
 
     public void RemoveObserver(IObserver observer)

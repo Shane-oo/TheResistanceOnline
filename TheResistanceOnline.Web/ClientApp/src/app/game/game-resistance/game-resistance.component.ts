@@ -53,6 +53,15 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
     await this.stop();
   }
 
+  objectClickedEvent(name: string) {
+
+
+    this.resistanceHubConnection.invoke("ObjectSelected", name)
+      .catch(err => {
+      });
+
+  }
+
   private async start() {
     if (this.startGameCommand) {
       try {

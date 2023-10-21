@@ -1,31 +1,28 @@
-import {Group, Mesh, Scene} from "three";
-import {ModelResource, Resources} from "../../utils/resources";
+import {Scene, Vector3} from "three";
+import {Resources} from "../../utils/resources";
 import GUI from "lil-gui";
-import {PlayerPiece} from "./player-piece";
+import {PlayerPiece} from "./pieces/player-piece";
 import {ResistanceGame} from "../../resistance-game";
-import {MissionLeaderPiece} from "./mission-leader-piece";
+import {MissionLeaderPiece} from "./pieces/mission-leader-piece";
 
 export class Board {
-
   private readonly playerPositions: { x: number, z: number }[] = [
-    {x: -2, z: -1}, // top left
-    {x: 0, z: -1}, // top middle
-    {x: 2, z: -1}, // top right
+    {x: -2, z: -1.25}, // top left
+    {x: 0, z: -1.25}, // top middle
+    {x: 2, z: -1.25}, // top right
 
     {x: 2.75, z: 0.5}, // right top
     {x: 2.75, z: -0.5}, // right bottom
 
-    {x: 2, z: 1}, // bottom right
-    {x: 0, z: 1}, // bottom middle
-    {x: -2, z: 1}, // bottom left
+    {x: 2, z: 1.25}, // bottom right
+    {x: 0, z: 1.25}, // bottom middle
+    {x: -2, z: 1.25}, // bottom left
 
     {x: -2.75, z: 0.5}, // left bottom
     {x: -2.75, z: -0.5} // left top
   ];
 
   private readonly scene: Scene;
-  private readonly modelResource: ModelResource;
-  private readonly model: Group;
   private readonly missionLeaderPiece: MissionLeaderPiece;
   // Utils
   private readonly resources: Resources;
@@ -38,11 +35,6 @@ export class Board {
     this.scene = resistanceGame.scene;
     this.resources = resistanceGame.resources;
 
-    // Board
-    this.modelResource = this.resources.getModelResourceByName('resistanceGameBoard');
-    this.model = this.modelResource.gltf.scene;
-    this.configureModel();
-    this.scene.add(this.model);
 
     // Mission Leader
     this.missionLeaderPiece = new MissionLeaderPiece();
@@ -63,9 +55,13 @@ export class Board {
 
   createPlayerPieces(players: string[]) {
     const playerPieces: PlayerPiece[] = [];
-
+    const position = new Vector3();
     for (let i = 0; i < players.length; i++) {
       const piece = new PlayerPiece(players[i], this.playerPositions[i]);
+
+      position.set(this.playerPositions[i].x, 0, this.playerPositions[i].z)
+      piece.movePiece(position);
+
       playerPieces.push(piece);
     }
 
@@ -75,8 +71,10 @@ export class Board {
   moveLeaderPiece(player: string) {
     const playerPiece = this._playerPieces?.find(p => p.name === player);
     if (playerPiece) {
-      console.log(playerPiece, "is the mission leader")
-      this.missionLeaderPiece.movePiece(playerPiece.voteYesPiece.position);
+      const position = playerPiece.mesh.position.clone();
+      position.setZ(position.z - 0.15); // above the player piece
+
+      this.missionLeaderPiece.movePiece(position);
     }
   }
 
@@ -86,34 +84,13 @@ export class Board {
         piece.destroy();
       }
     }
+    this.missionLeaderPiece.destroy();
   }
 
-  private configureModel() {
-    this.model.scale.set(0.143, 0.05, 0.143);
-    this.model.traverse((child) => {
-      if (child instanceof Mesh) {
-        child.castShadow = true;
-      }
-    });
-  }
 
   private configureDebug() {
     if (this.debugFolder) {
-      this.debugFolder.add(this.model.scale, 'x')
-        .name('scaleX')
-        .min(0)
-        .max(2)
-        .step(0.001)
-      this.debugFolder.add(this.model.scale, 'y')
-        .name('scaley')
-        .min(0)
-        .max(2)
-        .step(0.001)
-      this.debugFolder.add(this.model.scale, 'z')
-        .name('scalez')
-        .min(0)
-        .max(2)
-        .step(0.001)
+
     }
   }
 

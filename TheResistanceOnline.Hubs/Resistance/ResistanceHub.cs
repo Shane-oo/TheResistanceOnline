@@ -1,9 +1,11 @@
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.Hubs.Common;
 using TheResistanceOnline.Hubs.Resistance.CommenceGame;
 using TheResistanceOnline.Hubs.Resistance.Common;
+using TheResistanceOnline.Hubs.Resistance.SelectMissionTeamPlayer;
 using TheResistanceOnline.Hubs.Resistance.StartGame;
 
 namespace TheResistanceOnline.Hubs.Resistance;
@@ -11,6 +13,12 @@ namespace TheResistanceOnline.Hubs.Resistance;
 public interface IResistanceHub: IErrorHub
 {
     public Task CommenceGame(CommenceGameModel commenceGameModel);
+
+    public Task NewMissionTeamMember(string playerName);
+
+    public Task RemoveMissionTeamMember(string playerName);
+
+    public Task ShowMissionTeamSubmit(bool show);
 }
 
 public class ResistanceHub: BaseHub<IResistanceHub>
@@ -58,9 +66,72 @@ public class ResistanceHub: BaseHub<IResistanceHub>
         }
     }
 
+    private string GetCallerPlayerName(GameDetails gameDetails)
+    {
+        return gameDetails.Connections.FirstOrDefault(c => c.ConnectionId == Context.ConnectionId)?.UserName;
+    }
+
+    private GameDetails GetGameDetails(string lobbyId)
+    {
+        if (!string.IsNullOrEmpty(lobbyId))
+        {
+            return _properties._groupNamesToGameModels.TryGetValue(lobbyId, out var gameDetails) ? gameDetails : null;
+        }
+
+        return null;
+    }
+
+    private string GetLobbyId()
+    {
+        return _properties._connectionIdsToGroupNames.TryGetValue(Context.ConnectionId, out var lobbyId) ? lobbyId : null;
+    }
+
+    private async Task MissionTeamPlayerSelected(SelectMissionTeamPlayerCommand command)
+    {
+        SetRequest(command);
+
+        await _mediator.Send(command);
+    }
+
     #endregion
 
     #region Public Methods
+
+    [UsedImplicitly]
+    public async Task ObjectSelected(string name)
+    {
+        var lobbyId = GetLobbyId();
+        var gameDetails = GetGameDetails(lobbyId);
+        if (gameDetails == null)
+        {
+            await Clients.Caller.Error("Game Not Found");
+            return;
+        }
+
+        switch(gameDetails.GameModel.Phase)
+        {
+            case Phase.MissionBuild:
+                var command = new SelectMissionTeamPlayerCommand
+                              {
+                                  PlayerName = name,
+                                  GameModel = gameDetails.GameModel,
+                                  LobbyId = lobbyId,
+                                  CallerPlayerName = GetCallerPlayerName(gameDetails)
+                              };
+                await MissionTeamPlayerSelected(command);
+                break;
+            case Phase.Vote:
+                break;
+            case Phase.VoteResults:
+                break;
+            case Phase.Mission:
+                break;
+            case Phase.MissionResults:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
 
     public override async Task OnConnectedAsync()
     {
@@ -98,10 +169,10 @@ public class ResistanceHub: BaseHub<IResistanceHub>
         {
             // todo let players know someone left, or just replace with bot idk yet
             //await Clients.Group(lobbyId).RemoveConnectionId(Context.ConnectionId);
-            if (_properties._groupNamesToGameModels.TryGetValue(lobbyId, out var gameModel))
+            if (_properties._groupNamesToGameModels.TryGetValue(lobbyId, out var gameDetails))
             {
-                gameModel.Connections.RemoveAll(c => c.ConnectionId == Context.ConnectionId);
-                if (!gameModel.Connections.Any())
+                gameDetails.Connections.RemoveAll(c => c.ConnectionId == Context.ConnectionId);
+                if (!gameDetails.Connections.Any())
                 {
                     _properties._groupNamesToGameModels.Remove(lobbyId, out _);
                 }
@@ -116,37 +187,37 @@ public class ResistanceHub: BaseHub<IResistanceHub>
     [UsedImplicitly]
     public async Task StartGame(StartGameCommand command)
     {
-        SetRequest(command);
-        if (_properties._groupNamesToGameModels.TryGetValue(command.LobbyId, out var gameModel))
+        var gameDetails = GetGameDetails(command.LobbyId);
+        if (gameDetails == null)
         {
-            command.GameDetails = gameModel;
-            try
-            {
-                var commenceGame = await _mediator.Send(command);
-                if (commenceGame)
-                {
-                    var commenceGameCommand = new CommenceGameCommand
-                                              {
-                                                  LobbyId = command.LobbyId,
-                                                  GameDetails = gameModel
-                                              };
-                    await _mediator.Send(commenceGameCommand);
-                }
-                // else{}
-                // todo set a timer where if game hasnt commenced within like 2 minutes then its
-                // a dead game and delete the details from all the maps too bad everyone
-                // also set a timer on client side where if they havent got a commence game in 3 minutes
-                // then refresh page as its a dead lobby
-            }
-            catch(Exception ex)
-            {
-                await Clients.Caller.Error(ex.Message);
-                throw;
-            }
+            await Clients.Caller.Error("Game Not Found");
+            return;
         }
-        else
+
+        SetRequest(command);
+        command.GameDetails = gameDetails;
+        try
         {
-            await Clients.Caller.Error($"Game Not Found for {command.LobbyId}");
+            var canCommenceGame = await _mediator.Send(command);
+            if (canCommenceGame)
+            {
+                var commenceGameCommand = new CommenceGameCommand
+                                          {
+                                              LobbyId = command.LobbyId,
+                                              GameDetails = gameDetails
+                                          };
+                await _mediator.Send(commenceGameCommand);
+            }
+            // else{}
+            // todo set a timer where if game hasnt commenced within like 2 minutes then its
+            // a dead game and delete the details from all the maps too bad everyone
+            // also set a timer on client side where if they havent got a commence game in 3 minutes
+            // then refresh page as its a dead lobby
+        }
+        catch(Exception ex)
+        {
+            await Clients.Caller.Error(ex.Message);
+            throw;
         }
     }
 

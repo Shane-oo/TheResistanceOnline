@@ -32,7 +32,7 @@ export class GameLobbyCreateComponent {
           Validators.min(5)
         ]
       }),
-      fillWithBots: new FormControl(false, {
+      fillWithBots: new FormControl(true, {
         nonNullable: true,
         validators: [Validators.required]
       })

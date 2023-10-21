@@ -5,9 +5,9 @@ import {Debug} from "../utils/debug";
 import {Board} from "./board/board";
 import {ResistanceGame} from "../resistance-game";
 import {RayCasting} from "./raycasting";
+import {takeUntil} from "rxjs";
 
 export class World {
-  private static instance: World;
 
   private readonly scene: Scene;
   private readonly environment: Environment;
@@ -15,13 +15,14 @@ export class World {
   // Utils
   private readonly resources: Resources;
   private readonly debug: Debug;
-  private readonly raycaster: RayCasting;
+  private readonly rayCasting: RayCasting;
 
   constructor() {
     const resistanceGame = new ResistanceGame()
 
     this.scene = resistanceGame.scene;
 
+    this.rayCasting = resistanceGame.rayCasting;
     this.resources = resistanceGame.resources;
     this.debug = resistanceGame.debug;
 
@@ -30,7 +31,6 @@ export class World {
 
     this.environment = new Environment();
 
-    this.raycaster = new RayCasting();
   }
 
   update() {
@@ -38,6 +38,7 @@ export class World {
 
   destroy() {
     this.environment.destroy();
+    this.rayCasting.destroy();
     this.board.destroy();
   }
 
@@ -50,10 +51,11 @@ export class World {
   }
 
   setMissionBuildPhase(missionMembers: number) {
-    const playerPieces = this.board.playerPieces?.map(p => p.playerPiece);
+    const playerPieces = this.board.playerPieces?.map(p => p.mesh);
     if (playerPieces) {
-      this.raycaster.objectsToTest = playerPieces;
+      this.rayCasting.objectsToTest = playerPieces;
     }
+
   }
 
 }
