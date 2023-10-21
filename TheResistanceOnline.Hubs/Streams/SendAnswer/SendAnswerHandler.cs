@@ -28,8 +28,6 @@ public class SendAnswerHandler: IRequestHandler<SendAnswerCommand, Unit>
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
-
         var answer = new AnswerModel
                      {
                          ConnectionIdOfWhoAnswered = command.ConnectionId,

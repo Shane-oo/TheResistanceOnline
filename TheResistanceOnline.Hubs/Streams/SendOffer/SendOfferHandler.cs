@@ -28,8 +28,6 @@ public class SendOfferHandler: IRequestHandler<SendOfferCommand, Unit>
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
-     
         var offer = new OfferModel
                     {
                         ConnectionIdOfWhoOffered = command.ConnectionId,

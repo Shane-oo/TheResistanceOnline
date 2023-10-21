@@ -28,9 +28,6 @@ public class SendCandidateHandler: IRequestHandler<SendCandidateCommand, Unit>
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
-
-
         var candidateModel = new CandidateModel
                              {
                                  ConnectionIdOfWhoSentCandidate = command.ConnectionId,

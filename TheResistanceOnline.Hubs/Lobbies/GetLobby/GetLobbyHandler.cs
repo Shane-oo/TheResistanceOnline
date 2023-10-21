@@ -1,21 +1,21 @@
 using FluentValidation;
 using MediatR;
 using TheResistanceOnline.Core.Exceptions;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Hubs.Lobbies.Common;
 
-namespace TheResistanceOnline.Hubs.Lobbies.SearchLobby;
+namespace TheResistanceOnline.Hubs.Lobbies.GetLobby;
 
-public class SearchLobbyHandler: IRequestHandler<SearchLobbyQuery, string>
+public class GetLobbyHandler: IRequestHandler<GetLobbyQuery, LobbyDetailsModel>
 {
     #region Fields
 
-    private readonly IValidator<SearchLobbyQuery> _validator;
+    private readonly IValidator<GetLobbyQuery> _validator;
 
     #endregion
 
     #region Construction
 
-    public SearchLobbyHandler(IValidator<SearchLobbyQuery> validator)
+    public GetLobbyHandler(IValidator<GetLobbyQuery> validator)
     {
         _validator = validator;
     }
@@ -24,11 +24,9 @@ public class SearchLobbyHandler: IRequestHandler<SearchLobbyQuery, string>
 
     #region Public Methods
 
-    public async Task<string> Handle(SearchLobbyQuery command, CancellationToken cancellationToken)
+    public async Task<LobbyDetailsModel> Handle(GetLobbyQuery command, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(command);
-
-        UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
 
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid) throw new DomainException(validationResult.Errors.First().ErrorMessage);
@@ -38,7 +36,7 @@ public class SearchLobbyHandler: IRequestHandler<SearchLobbyQuery, string>
             throw new NotFoundException($"{command.Id} Not Found");
         }
 
-        return lobbyDetails.Id;
+        return lobbyDetails;
     }
 
     #endregion

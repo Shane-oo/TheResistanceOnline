@@ -34,8 +34,6 @@ public class StartGameHandler: IRequestHandler<StartGameCommand, bool>
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
-
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid) throw new DomainException(validationResult.Errors.First().ErrorMessage);
 

@@ -31,8 +31,6 @@ public class ReadyUpHandler: IRequestHandler<ReadyUpCommand, Unit>
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
-
         if (!command.GroupNamesToLobby.TryGetValue(command.LobbyId, out var lobbyDetails))
         {
             throw new DomainException("Lobby With That Id Was Not Found");

@@ -6,10 +6,10 @@ using TheResistanceOnline.Hubs.Common;
 using TheResistanceOnline.Hubs.Lobbies.Common;
 using TheResistanceOnline.Hubs.Lobbies.CreateLobby;
 using TheResistanceOnline.Hubs.Lobbies.GetLobbies;
+using TheResistanceOnline.Hubs.Lobbies.GetLobby;
 using TheResistanceOnline.Hubs.Lobbies.JoinLobby;
 using TheResistanceOnline.Hubs.Lobbies.ReadyUp;
 using TheResistanceOnline.Hubs.Lobbies.RemoveConnection;
-using TheResistanceOnline.Hubs.Lobbies.SearchLobby;
 
 namespace TheResistanceOnline.Hubs.Lobbies;
 
@@ -91,7 +91,12 @@ public class LobbyHub: BaseHub<ILobbyHub>
 
         try
         {
-            return await _mediator.Send(command);
+            var lobbyId = await _mediator.Send(command);
+            var getLobbyQuery = new GetLobbyQuery
+                                {
+                                    Id = lobbyId,
+                                };
+            return await GetLobby(getLobbyQuery);
         }
         catch(Exception ex)
         {
@@ -101,9 +106,26 @@ public class LobbyHub: BaseHub<ILobbyHub>
     }
 
     [UsedImplicitly]
-    public async Task<List<LobbyDetailsModel>> GetLobbies()
+    public async Task<List<LobbyDetailsModel>> GetLobbies(GetLobbiesQuery query)
     {
-        var query = new GetLobbiesQuery();
+        SetRequest(query);
+        query.GroupNamesToLobby = _properties._groupNamesToLobby;
+
+        try
+        {
+            return await _mediator.Send(query);
+        }
+        catch(Exception ex)
+        {
+            await Clients.Caller.Error(ex.Message);
+            throw;
+        }
+    }
+
+
+    [UsedImplicitly]
+    public async Task<LobbyDetailsModel> GetLobby(GetLobbyQuery query)
+    {
         SetRequest(query);
         query.GroupNamesToLobby = _properties._groupNamesToLobby;
 
@@ -126,7 +148,12 @@ public class LobbyHub: BaseHub<ILobbyHub>
 
         try
         {
-            return await _mediator.Send(command);
+            var lobbyId = await _mediator.Send(command);
+            var getLobbyQuery = new GetLobbyQuery
+                                {
+                                    Id = lobbyId,
+                                };
+            return await GetLobby(getLobbyQuery);
         }
         catch(Exception ex)
         {
@@ -169,29 +196,6 @@ public class LobbyHub: BaseHub<ILobbyHub>
         try
         {
             await _mediator.Send(command);
-        }
-        catch(Exception ex)
-        {
-            await Clients.Caller.Error(ex.Message);
-            throw;
-        }
-    }
-
-    [UsedImplicitly]
-    public async Task<LobbyDetailsModel> SearchLobby(SearchLobbyQuery query)
-    {
-        SetRequest(query);
-        query.GroupNamesToLobby = _properties._groupNamesToLobby;
-        try
-        {
-            var foundLobbyId = await _mediator.Send(query);
-            var command = new JoinLobbyCommand
-                          {
-                              LobbyId = foundLobbyId,
-                              GroupNamesToLobby = _properties._groupNamesToLobby
-                          };
-            SetRequest(command);
-            return await JoinLobby(command);
         }
         catch(Exception ex)
         {

@@ -1,11 +1,12 @@
 using System.Collections.Concurrent;
 using FluentValidation;
+using MediatR;
 using TheResistanceOnline.Core.Requests.Commands;
 using TheResistanceOnline.Hubs.Lobbies.Common;
 
 namespace TheResistanceOnline.Hubs.Lobbies.CreateLobby;
 
-public class CreateLobbyCommand: CommandBase<LobbyDetailsModel>
+public class CreateLobbyCommand: CommandBase<string>
 {
     #region Properties
 

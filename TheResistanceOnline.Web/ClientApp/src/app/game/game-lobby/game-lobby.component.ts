@@ -10,7 +10,6 @@ import {
   JoinLobbyCommand,
   LobbyDetails,
   ReadyUpCommand,
-  SearchLobbyQuery,
 } from "./game-lobby.models";
 import {StartGameModel} from "../game.models";
 
@@ -93,13 +92,6 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
     });
   };
 
-  searchLobby(query: SearchLobbyQuery) {
-    this.lobbyHubConnection.invoke('SearchLobby', query).then((lobbyDetails: LobbyDetails) => {
-      this.setCurrentLobby(lobbyDetails);
-    }).catch(err => {
-
-    });
-  }
 
   joinLobby(command: JoinLobbyCommand) {
     this.lobbyHubConnection.invoke('JoinLobby', command).then((lobbyDetails: LobbyDetails) => {

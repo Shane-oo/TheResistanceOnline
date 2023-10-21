@@ -4,7 +4,7 @@ using TheResistanceOnline.Hubs.Lobbies.Common;
 
 namespace TheResistanceOnline.Hubs.Lobbies.JoinLobby;
 
-public class JoinLobbyCommand: CommandBase<LobbyDetailsModel>
+public class JoinLobbyCommand: CommandBase<string>
 {
     #region Properties
 

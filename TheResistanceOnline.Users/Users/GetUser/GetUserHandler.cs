@@ -33,8 +33,6 @@ public class GetUserHandler: IRequestHandler<GetUserQuery, UserDetailsModel>
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        UnauthorizedException.ThrowIfUserIsNotAllowedAccess(query, Roles.User);
-
         var user = await _context.Query<IUserByUserIdDbQuery>()
                                  .WithParams(query.UserId)
                                  .WithNoTracking()

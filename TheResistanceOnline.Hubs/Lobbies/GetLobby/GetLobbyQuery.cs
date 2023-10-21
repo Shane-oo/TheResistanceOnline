@@ -3,9 +3,9 @@ using FluentValidation;
 using TheResistanceOnline.Core.Requests.Queries;
 using TheResistanceOnline.Hubs.Lobbies.Common;
 
-namespace TheResistanceOnline.Hubs.Lobbies.SearchLobby;
+namespace TheResistanceOnline.Hubs.Lobbies.GetLobby;
 
-public class SearchLobbyQuery: QueryBase<string>
+public class GetLobbyQuery: QueryBase<LobbyDetailsModel>
 {
     #region Properties
 
@@ -16,7 +16,7 @@ public class SearchLobbyQuery: QueryBase<string>
     #endregion
 }
 
-public class SearchLobbyQueryValidator: AbstractValidator<SearchLobbyQuery>
+public class SearchLobbyQueryValidator: AbstractValidator<GetLobbyQuery>
 {
     #region Construction
 

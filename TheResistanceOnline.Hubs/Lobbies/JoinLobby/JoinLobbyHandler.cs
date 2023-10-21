@@ -10,7 +10,7 @@ using TheResistanceOnline.Hubs.Lobbies.Common;
 
 namespace TheResistanceOnline.Hubs.Lobbies.JoinLobby;
 
-public class JoinLobbyHandler: IRequestHandler<JoinLobbyCommand, LobbyDetailsModel>
+public class JoinLobbyHandler: IRequestHandler<JoinLobbyCommand, string>
 {
     #region Fields
 
@@ -31,11 +31,9 @@ public class JoinLobbyHandler: IRequestHandler<JoinLobbyCommand, LobbyDetailsMod
 
     #region Public Methods
 
-    public async Task<LobbyDetailsModel> Handle(JoinLobbyCommand command, CancellationToken cancellationToken)
+    public async Task<string> Handle(JoinLobbyCommand command, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(command);
-
-        UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
 
         if (!command.GroupNamesToLobby.TryGetValue(command.LobbyId, out var lobbyDetails))
         {
@@ -79,7 +77,7 @@ public class JoinLobbyHandler: IRequestHandler<JoinLobbyCommand, LobbyDetailsMod
             await _lobbyHubContext.Clients.AllExcept(allConnectionsInLobbies).UpdatePublicLobby(lobbyDetails);
         }
 
-        return lobbyDetails;
+        return lobbyDetails.Id;
     }
 
     #endregion

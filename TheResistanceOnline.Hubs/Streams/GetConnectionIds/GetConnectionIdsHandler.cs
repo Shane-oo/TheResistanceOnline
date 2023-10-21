@@ -12,8 +12,6 @@ public class GetConnectionIdsHandler: IRequestHandler<GetConnectionIdsQuery, Lis
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        UnauthorizedException.ThrowIfUserIsNotAllowedAccess(query, Roles.User);
-
         if (!query.ConnectionIdsToGroupNames.TryGetValue(query.ConnectionId, out var groupName))
         {
             throw new NotFoundException("Group Not Found");

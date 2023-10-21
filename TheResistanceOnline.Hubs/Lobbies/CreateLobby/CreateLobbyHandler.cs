@@ -3,15 +3,13 @@ using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.Data.Queries.UserQueries;
-using TheResistanceOnline.Games.Lobbies;
 using TheResistanceOnline.Hubs.Common;
 using TheResistanceOnline.Hubs.Lobbies.Common;
 
 namespace TheResistanceOnline.Hubs.Lobbies.CreateLobby;
 
-public class CreateLobbyHandler: IRequestHandler<CreateLobbyCommand, LobbyDetailsModel>
+public class CreateLobbyHandler: IRequestHandler<CreateLobbyCommand, string>
 {
     #region Fields
 
@@ -34,11 +32,9 @@ public class CreateLobbyHandler: IRequestHandler<CreateLobbyCommand, LobbyDetail
 
     #region Public Methods
 
-    public async Task<LobbyDetailsModel> Handle(CreateLobbyCommand command, CancellationToken cancellationToken)
+    public async Task<string> Handle(CreateLobbyCommand command, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(command);
-
-        UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
 
         var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid) throw new DomainException(validationResult.Errors.First().ErrorMessage);
@@ -86,7 +82,7 @@ public class CreateLobbyHandler: IRequestHandler<CreateLobbyCommand, LobbyDetail
             await _lobbyHubContext.Clients.AllExcept(allConnectionsInLobbies).NewPublicLobby(lobbyDetails);
         }
 
-        return lobbyDetails;
+        return lobbyDetails.Id;
     }
 
     #endregion
