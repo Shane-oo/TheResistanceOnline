@@ -21,7 +21,7 @@ public abstract class GameModel: IGameModelSubject
 
     public int MissionSize => GetMissionSize();
 
-    public List<PlayerModel> MissionTeam { get; private set; }
+    public List<string> MissionTeam { get; set; } = new();
 
     public Phase Phase { get; private set; } = Phase.MissionBuild;
 
@@ -173,7 +173,7 @@ public abstract class GameModel: IGameModelSubject
 
     #region Public Methods
 
-    public void AddMissionTeamMember(PlayerModel player)
+    public void AddMissionTeamMember(string player)
     {
         ArgumentNullException.ThrowIfNull(player);
 
@@ -183,6 +183,8 @@ public abstract class GameModel: IGameModelSubject
         }
 
         MissionTeam.Add(player);
+
+        NotifyObservers();
     }
 
     public PlayerModel GetPlayerModel(string name)
@@ -211,9 +213,13 @@ public abstract class GameModel: IGameModelSubject
         _observers.Add(observer);
     }
 
-    public void RemoveMissionTeamMember(PlayerModel player)
+    public void RemoveMissionTeamMember(string player)
     {
+        ArgumentNullException.ThrowIfNull(player);
+
         MissionTeam.Remove(player);
+
+        NotifyObservers();
     }
 
     public void RemoveObserver(IObserver observer)

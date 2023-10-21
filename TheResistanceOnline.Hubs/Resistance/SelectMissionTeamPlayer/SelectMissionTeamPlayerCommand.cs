@@ -13,7 +13,7 @@ public class SelectMissionTeamPlayerCommand: CommandBase
 
     public string LobbyId { get; set; }
 
-    public string PlayerName { get; set; }
+    public string SelectedPlayerName { get; set; }
 
     #endregion
 }

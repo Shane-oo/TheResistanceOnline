@@ -1,18 +1,13 @@
-using TheResistanceOnline.GamePlay.GameModels;
 using TheResistanceOnline.GamePlay.ObserverPattern;
-using TheResistanceOnline.GamePlay.PlayerModels;
 
-namespace TheResistanceOnline.GamePlay.BotModels.ResistanceClassicBotModels.ResistanceBots;
+namespace TheResistanceOnline.GamePlay.PlayerModels.BotModels.ResistanceClassicBotModels.ResistanceBots;
 
 public class DumbResistanceBotModel: ResistancePlayerModel, IResistanceBotModel
 {
     #region Construction
-    private readonly IGameModelSubject _gameModel;
 
-    public DumbResistanceBotModel(string name, IGameModelSubject gameModel): base(name, true)
+    public DumbResistanceBotModel(string name, IGameModelSubject gameModel): base(name, gameModel, true)
     {
-        _gameModel = gameModel;
-        _gameModel.RegisterObserver(this);
     }
 
     #endregion
@@ -23,6 +18,7 @@ public class DumbResistanceBotModel: ResistancePlayerModel, IResistanceBotModel
     {
         Console.WriteLine("Bot thing");
     }
+
 
     public void DoAResistanceBotThing()
     {
@@ -37,9 +33,4 @@ public class DumbResistanceBotModel: ResistancePlayerModel, IResistanceBotModel
     }
 
     #endregion
-
-    public void Update()
-    {
-        Console.WriteLine("Told to update my values from subject");
-    }
 }

@@ -1,8 +1,6 @@
-using TheResistanceOnline.GamePlay.GameModels;
 using TheResistanceOnline.GamePlay.ObserverPattern;
-using TheResistanceOnline.GamePlay.PlayerModels;
 
-namespace TheResistanceOnline.GamePlay.BotModels.BotFactories;
+namespace TheResistanceOnline.GamePlay.PlayerModels.BotModels.BotFactories;
 
 public interface IBotFactory
 {

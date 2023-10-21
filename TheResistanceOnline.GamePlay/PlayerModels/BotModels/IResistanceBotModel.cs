@@ -1,4 +1,6 @@
-namespace TheResistanceOnline.GamePlay.BotModels;
+using TheResistanceOnline.GamePlay.BotModels;
+
+namespace TheResistanceOnline.GamePlay.PlayerModels.BotModels;
 
 public interface IResistanceBotModel: IBotModel
 {

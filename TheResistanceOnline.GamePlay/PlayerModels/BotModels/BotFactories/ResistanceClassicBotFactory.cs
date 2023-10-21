@@ -1,10 +1,8 @@
-using TheResistanceOnline.GamePlay.BotModels.ResistanceClassicBotModels.ResistanceBots;
-using TheResistanceOnline.GamePlay.BotModels.ResistanceClassicBotModels.SpyBots;
-using TheResistanceOnline.GamePlay.GameModels;
 using TheResistanceOnline.GamePlay.ObserverPattern;
-using TheResistanceOnline.GamePlay.PlayerModels;
+using TheResistanceOnline.GamePlay.PlayerModels.BotModels.ResistanceClassicBotModels.ResistanceBots;
+using TheResistanceOnline.GamePlay.PlayerModels.BotModels.ResistanceClassicBotModels.SpyBots;
 
-namespace TheResistanceOnline.GamePlay.BotModels.BotFactories;
+namespace TheResistanceOnline.GamePlay.PlayerModels.BotModels.BotFactories;
 
 public class ResistanceClassicBotFactory: IBotFactory
 {

@@ -113,7 +113,7 @@ public class ResistanceHub: BaseHub<IResistanceHub>
             case Phase.MissionBuild:
                 var command = new SelectMissionTeamPlayerCommand
                               {
-                                  PlayerName = name,
+                                  SelectedPlayerName = name,
                                   GameModel = gameDetails.GameModel,
                                   LobbyId = lobbyId,
                                   CallerPlayerName = GetCallerPlayerName(gameDetails)
