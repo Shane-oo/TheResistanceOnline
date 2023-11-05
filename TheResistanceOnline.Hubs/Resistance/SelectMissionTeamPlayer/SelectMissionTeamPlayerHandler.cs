@@ -42,7 +42,7 @@ public class SelectMissionTeamPlayerHandler: IRequestHandler<SelectMissionTeamPl
                 await _resistanceHubContext.Clients.Client(command.ConnectionId).ShowMissionTeamSubmit(true);
             }
         }
-        else
+        else if (gameModel.MissionTeam.Any(p => p == command.SelectedPlayerName))
         {
             // Player wants to remove team member
             player.RemoveMissionTeamMember(command.SelectedPlayerName);
@@ -50,6 +50,10 @@ public class SelectMissionTeamPlayerHandler: IRequestHandler<SelectMissionTeamPl
             await _resistanceHubContext.Clients.Group(command.LobbyId).RemoveMissionTeamMember(command.SelectedPlayerName);
 
             await _resistanceHubContext.Clients.Client(command.ConnectionId).ShowMissionTeamSubmit(false);
+        }
+        else
+        {
+            await _resistanceHubContext.Clients.Client(command.ConnectionId).Error("Mission Team Full");
         }
 
         return default;

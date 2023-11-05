@@ -50,6 +50,14 @@ export class World {
     this.board.moveLeaderPiece(player);
   }
 
+  addMissionTeamMember(player: string){
+    this.board.addMissionTeamMemberPieceToPlayer(player);
+  }
+
+  removeMissionTeamMember(player:string){
+    this.board.removeMissionTeamMemberPieceFromPlayer(player);
+  }
+
   setMissionBuildPhase(missionMembers: number) {
     const playerPieces = this.board.playerPieces?.map(p => p.mesh);
     if (playerPieces) {

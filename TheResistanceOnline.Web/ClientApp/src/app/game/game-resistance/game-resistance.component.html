@@ -1,7 +1,11 @@
 <h1>Game Resistance</h1>
 <div *ngIf="startGameCommand.type === GameType.ResistanceClassic">
   <app-game-resistance-classic [gameCommenced]="gameCommenced"
+                               [newMissionTeamMember]="newMissionTeamMember"
+                               [removeMissionTeamMember]="removeMissionTeamMember"
+                               [showMissionTeamSubmit] ="showMissionTeamSubmit"
                                (objectClickedEventEmitter)="objectClickedEvent($event)">
   </app-game-resistance-classic>
+
 </div>
 

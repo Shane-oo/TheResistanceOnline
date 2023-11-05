@@ -1,8 +1,7 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild} from '@angular/core';
-import {Subject, first, takeUntil} from "rxjs";
+import {first, Subject, takeUntil} from "rxjs";
 import {ResistanceGame} from "../resistance-game/resistance-game";
 import {CommenceGameModel, Phase} from "../game-resistance.models";
-import {ReadyUpCommand} from "../../game-lobby/game-lobby.models";
 
 
 @Component({
@@ -12,6 +11,10 @@ import {ReadyUpCommand} from "../../game-lobby/game-lobby.models";
 })
 export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy {
   @Input() gameCommenced!: Subject<CommenceGameModel>;
+  @Input() newMissionTeamMember!: Subject<string>;
+  @Input() removeMissionTeamMember!: Subject<string>;
+  @Input() showMissionTeamSubmit: boolean = false;
+
   @Output() objectClickedEventEmitter = new EventEmitter<string>();
 
   private resistanceGame!: ResistanceGame;
@@ -39,6 +42,18 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
       .subscribe(c => {
         this.commenceGame(c);
       });
+
+    this.newMissionTeamMember
+      .pipe(takeUntil(this.destroyed))
+      .subscribe(((selectedPlayerName: string) => {
+        this.addMissionTeamMember(selectedPlayerName);
+      }));
+
+    this.removeMissionTeamMember
+      .pipe(takeUntil(this.destroyed))
+      .subscribe(((selectedPlayerName: string) => {
+        this.deleteMissionTeamMember(selectedPlayerName);
+      }));
   }
 
   ngOnDestroy(): void {
@@ -72,6 +87,14 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
 
         break;
     }
+  }
+
+  private addMissionTeamMember(playerName: string) {
+    this.resistanceGame.addMissionTeamMember(playerName);
+  }
+
+  private deleteMissionTeamMember(playerName: string) {
+    this.resistanceGame.removeMissionTeamMember(playerName);
   }
 
 }

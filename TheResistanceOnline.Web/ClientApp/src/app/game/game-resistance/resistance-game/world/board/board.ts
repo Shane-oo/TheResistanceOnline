@@ -4,6 +4,7 @@ import GUI from "lil-gui";
 import {PlayerPiece} from "./pieces/player-piece";
 import {ResistanceGame} from "../../resistance-game";
 import {MissionLeaderPiece} from "./pieces/mission-leader-piece";
+import {MissionTeamPiece} from "./pieces/mission-team-piece";
 
 export class Board {
   private readonly playerPositions: { x: number, z: number }[] = [
@@ -24,6 +25,7 @@ export class Board {
 
   private readonly scene: Scene;
   private readonly missionLeaderPiece: MissionLeaderPiece;
+  private missionTeamPieces: { playerPiece: PlayerPiece, missionTeamPiece: MissionTeamPiece }[] = [];
   // Utils
   private readonly resources: Resources;
   // Debug
@@ -69,12 +71,41 @@ export class Board {
   }
 
   moveLeaderPiece(player: string) {
-    const playerPiece = this._playerPieces?.find(p => p.name === player);
+    const playerPiece = this.getPlayerPieceByName(player);
     if (playerPiece) {
       const position = playerPiece.mesh.position.clone();
       position.setZ(position.z - 0.15); // above the player piece
 
       this.missionLeaderPiece.movePiece(position);
+    }
+  }
+
+  addMissionTeamMemberPieceToPlayer(player: string) {
+    const playerPiece = this.getPlayerPieceByName(player);
+    if (playerPiece) {
+      const missionTeamPiece = new MissionTeamPiece();
+
+      const position = playerPiece.mesh.position.clone();
+      position.setZ(position.z + 0.15); // below the player piece
+      missionTeamPiece.movePiece(position);
+
+      this.missionTeamPieces.push({
+        playerPiece: playerPiece,
+        missionTeamPiece: missionTeamPiece
+      });
+    }
+  }
+
+  removeMissionTeamMemberPieceFromPlayer(player: string) {
+    const playerPiece = this.getPlayerPieceByName(player);
+    if (playerPiece) {
+      const missionTeamPiece = this.missionTeamPieces.find(p => p.playerPiece === playerPiece);
+      if (missionTeamPiece) {
+        this.scene.remove(missionTeamPiece.missionTeamPiece.mesh);
+        missionTeamPiece?.missionTeamPiece.destroy();
+
+        this.missionTeamPieces = this.missionTeamPieces.filter(p => p !== missionTeamPiece);
+      }
     }
   }
 
@@ -87,6 +118,9 @@ export class Board {
     this.missionLeaderPiece.destroy();
   }
 
+  private getPlayerPieceByName(name: string) {
+    return this._playerPieces?.find(p => p.name === name);
+  }
 
   private configureDebug() {
     if (this.debugFolder) {

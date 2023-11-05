@@ -113,6 +113,14 @@ export class ResistanceGame {
     this.world?.setMissionBuildPhase(missionMembers);
   }
 
+  addMissionTeamMember(player: string) {
+    this.world?.addMissionTeamMember(player);
+  }
+
+  removeMissionTeamMember(player:string){
+    this.world?.removeMissionTeamMember(player);
+  }
+
 
   private resize() {
     this.gameCamera.resize();
