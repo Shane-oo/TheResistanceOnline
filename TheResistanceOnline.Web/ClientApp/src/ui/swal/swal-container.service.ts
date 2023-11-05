@@ -1,10 +1,7 @@
 import {ComponentRef, Injectable} from '@angular/core';
 import {SwalContainerComponent} from './swal-container.component';
 import {OverlayService} from '../overlay/overlay.service';
-import Swal, {SweetAlertResult} from 'sweetalert2';
-import {Subject} from 'rxjs';
-import {environment} from '../../environments/environment';
-import {PlayerDetails} from '../../app/the-resistance-game/the-resistance-game.models';
+import Swal from 'sweetalert2';
 
 export const enum SwalTypes {
   Info,

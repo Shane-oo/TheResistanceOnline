@@ -18,7 +18,11 @@ export const sources: Resource[] = [
     type: ResourceType.GltfModel,
     path: 'assets/models/ResistanceGame/MissionTeamPiece.glb',
     textureType: null
+  },
+  {
+    name: 'ethnocentricFont',
+    type: ResourceType.Font,
+    path: 'assets/fonts/ethnocentric_font.json',
+    textureType: null
   }
 ];
-
-

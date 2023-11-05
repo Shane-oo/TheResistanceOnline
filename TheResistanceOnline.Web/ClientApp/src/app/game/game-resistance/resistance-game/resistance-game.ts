@@ -30,6 +30,8 @@ export class ResistanceGame {
   private readonly metrics!: Metrics;
   private readonly time!: Time;
 
+  private readonly players?: string[];
+
   constructor(canvas?: HTMLCanvasElement) {
 
     // Singleton Pattern
@@ -117,7 +119,7 @@ export class ResistanceGame {
     this.world?.addMissionTeamMember(player);
   }
 
-  removeMissionTeamMember(player:string){
+  removeMissionTeamMember(player: string) {
     this.world?.removeMissionTeamMember(player);
   }
 

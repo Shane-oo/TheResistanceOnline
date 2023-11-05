@@ -1,11 +1,13 @@
 import {GLTF, GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {Texture, TextureLoader} from "three";
 import {Subject} from "rxjs";
+import {Font, FontLoader} from "three/examples/jsm/loaders/FontLoader";
 
 export enum ResourceType {
   CubeTexture,
   GltfModel,
-  Texture
+  Texture,
+  Font
 }
 
 export enum TextureType {
@@ -24,6 +26,11 @@ export interface ModelResource {
   gltf: GLTF
 }
 
+export interface FontResource {
+  name: string,
+  font: Font
+}
+
 export interface Resource {
   name: string,
   type: ResourceType,
@@ -35,7 +42,8 @@ export class Resources {
   loadedSubject: Subject<void> = new Subject<void>();
   private readonly loaders: {
     gltfLoader: GLTFLoader,
-    textureLoader: TextureLoader
+    textureLoader: TextureLoader,
+    fontLoader: FontLoader
   };
   private readonly sources: Resource[];
   private readonly toLoad: number;
@@ -50,7 +58,8 @@ export class Resources {
 
     this.loaders = {
       gltfLoader: new GLTFLoader(),
-      textureLoader: new TextureLoader()
+      textureLoader: new TextureLoader(),
+      fontLoader: new FontLoader()
     };
 
     this.startLoading();
@@ -68,6 +77,12 @@ export class Resources {
     return this._textures;
   }
 
+  private _fonts: FontResource[] = [];
+
+  get fonts(): FontResource[] {
+    return this._fonts;
+  }
+
   getTextureResourceByName(name: string): TextureResource {
     const index = this._textures.findIndex(r => r.name === name);
     if (index !== -1) {
@@ -82,6 +97,14 @@ export class Resources {
       return this._models[index];
     }
     throw new Error(`Model Resource "${name}" not found`);
+  }
+
+  getFontByName(name: string): FontResource {
+    const index = this._fonts.findIndex(r => r.name === name);
+    if (index !== -1) {
+      return this._fonts[index];
+    }
+    throw new Error(`Font Resource "${name}" not found`);
   }
 
   destroy() {
@@ -109,8 +132,18 @@ export class Resources {
               this.textureLoaded(source, texture);
             });
           break;
+        case ResourceType.Font:
+          this.loaders.fontLoader.load(<string>source.path,
+            (font: Font) => {
+              this.fontLoaded(source, font);
+            });
       }
     }
+  }
+
+  private fontLoaded(source: Resource, font: Font) {
+    this._fonts.push({name: source.name, font: font});
+    this.updateLoad();
   }
 
   private modelLoaded(source: Resource, gltf: GLTF) {

@@ -14,7 +14,11 @@ export class PlayerPiece extends Piece {
   constructor(name: string, position: { x: number, z: number }) {
     super(name);
 
+    // Move Piece
     this.position = position;
+    const positionVector = new Vector3(this.position.x, 0, this.position.z)
+    this.movePiece(positionVector);
+
     // Vote Pieces
     this.votePieces = this.createVotePieces();
 
@@ -25,8 +29,6 @@ export class PlayerPiece extends Piece {
     const geometry = new BoxGeometry(0.125, 0.125, 0.125);
     const mesh = new Mesh(geometry, new MeshStandardMaterial({color: 'purple'}));
     mesh.name = this.name;
-
-    mesh.updateMatrixWorld();
 
     return mesh;
   }

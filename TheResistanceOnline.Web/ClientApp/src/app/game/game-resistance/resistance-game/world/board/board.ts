@@ -1,10 +1,12 @@
-import {Scene, Vector3} from "three";
+import {Scene} from "three";
 import {Resources} from "../../utils/resources";
 import GUI from "lil-gui";
 import {PlayerPiece} from "./pieces/player-piece";
 import {ResistanceGame} from "../../resistance-game";
 import {MissionLeaderPiece} from "./pieces/mission-leader-piece";
 import {MissionTeamPiece} from "./pieces/mission-team-piece";
+import {MissionRoundPiece} from "./pieces/rounds/mission-round-piece";
+import {getMissionTeamCount} from "../../utils/helpers";
 
 export class Board {
   private readonly playerPositions: { x: number, z: number }[] = [
@@ -23,8 +25,17 @@ export class Board {
     {x: -2.75, z: -0.5} // left top
   ];
 
+  private readonly missionRoundPositions: { x: number, z: number }[] = [
+    {x: -1.5, z: 0},
+    {x: -0.75, z: 0},
+    {x: 0, z: 0},
+    {x: 0.75, z: 0},
+    {x: 1.5, z: 0}
+  ]
+
   private readonly scene: Scene;
   private readonly missionLeaderPiece: MissionLeaderPiece;
+  private missionRoundsPieces?: MissionRoundPiece[];
   private missionTeamPieces: { playerPiece: PlayerPiece, missionTeamPiece: MissionTeamPiece }[] = [];
   // Utils
   private readonly resources: Resources;
@@ -36,7 +47,6 @@ export class Board {
 
     this.scene = resistanceGame.scene;
     this.resources = resistanceGame.resources;
-
 
     // Mission Leader
     this.missionLeaderPiece = new MissionLeaderPiece();
@@ -57,13 +67,8 @@ export class Board {
 
   createPlayerPieces(players: string[]) {
     const playerPieces: PlayerPiece[] = [];
-    const position = new Vector3();
     for (let i = 0; i < players.length; i++) {
       const piece = new PlayerPiece(players[i], this.playerPositions[i]);
-
-      position.set(this.playerPositions[i].x, 0, this.playerPositions[i].z)
-      piece.movePiece(position);
-
       playerPieces.push(piece);
     }
 
@@ -116,6 +121,16 @@ export class Board {
       }
     }
     this.missionLeaderPiece.destroy();
+  }
+
+  createMissionRoundPieces(playerCount: number) {
+    const rounds = [];
+
+    for (let i = 1; i < 6; i++) {
+      rounds.push(new MissionRoundPiece(i, getMissionTeamCount(i, playerCount), this.missionRoundPositions[i - 1]));
+    }
+
+    this.missionRoundsPieces = rounds;
   }
 
   private getPlayerPieceByName(name: string) {

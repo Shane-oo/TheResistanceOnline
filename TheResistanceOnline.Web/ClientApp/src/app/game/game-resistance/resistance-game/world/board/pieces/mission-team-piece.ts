@@ -6,7 +6,6 @@ export class MissionTeamPiece extends Piece {
 
   constructor() {
     super("MissionTeamPiece");
-
   }
 
   createMesh(): Mesh<BufferGeometry, MeshStandardMaterial> {

@@ -44,6 +44,7 @@ export class World {
 
   setPlayers(players: string[]) {
     this.board.createPlayerPieces(players);
+    this.board.createMissionRoundPieces(players.length);
   }
 
   setMissionLeader(player: string) {
