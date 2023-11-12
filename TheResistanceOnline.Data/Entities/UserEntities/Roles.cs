@@ -1,4 +1,4 @@
-namespace TheResistanceOnline.Data.Entities.UserEntities;
+namespace TheResistanceOnline.Data.Entities;
 
 public enum Roles
 {

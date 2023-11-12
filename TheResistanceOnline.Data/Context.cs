@@ -1,15 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TheResistanceOnline.Data.Configurations.AuthorizationConfigurations;
-using TheResistanceOnline.Data.Configurations.ExternalIdentitiesConfigurations;
-using TheResistanceOnline.Data.Configurations.GameConfigurations;
-using TheResistanceOnline.Data.Configurations.PlayerStatisticConfigurations;
-using TheResistanceOnline.Data.Configurations.UserConfigurations;
-using TheResistanceOnline.Data.Entities.AuthorizationEntities;
-using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
-using TheResistanceOnline.Data.Entities.GameEntities;
-using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.PlayerStatistics;
+using TheResistanceOnline.Data.Configurations;
+using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Data;
 

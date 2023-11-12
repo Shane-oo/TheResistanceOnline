@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TheResistanceOnline.Data.Entities.GameEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.Configurations.GameConfigurations;
+namespace TheResistanceOnline.Data.Configurations;
 
 public class GameConfiguration: IEntityTypeConfiguration<Game>
 {

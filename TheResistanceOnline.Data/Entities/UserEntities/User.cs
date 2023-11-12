@@ -1,9 +1,8 @@
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity;
-using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
-using TheResistanceOnline.Data.PlayerStatistics;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.Entities.UserEntities;
+namespace TheResistanceOnline.Data.Entities;
 
 public class User: IdentityUser<Guid>, IAuditableEntity
 {

@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using JetBrains.Annotations;
-using TheResistanceOnline.Data.Entities.GameEntities;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.PlayerStatistics;
+namespace TheResistanceOnline.Data.Entities;
 
 [UsedImplicitly]
 [Table("PlayerStatistics")]

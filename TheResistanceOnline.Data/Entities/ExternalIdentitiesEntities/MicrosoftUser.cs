@@ -1,6 +1,6 @@
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
+namespace TheResistanceOnline.Data.Entities;
 
 public class MicrosoftUser
 {

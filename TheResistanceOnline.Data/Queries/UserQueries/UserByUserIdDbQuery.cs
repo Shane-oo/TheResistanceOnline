@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.Queries.UserQueries;
+namespace TheResistanceOnline.Data.Queries;
 
 public interface IUserByUserIdDbQuery: IDbQuery<User>
 {

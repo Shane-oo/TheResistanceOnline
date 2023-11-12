@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace TheResistanceOnline.Data.Entities.UserEntities;
+namespace TheResistanceOnline.Data.Entities;
 
 public class UserRole: IdentityUserRole<Guid>
 {

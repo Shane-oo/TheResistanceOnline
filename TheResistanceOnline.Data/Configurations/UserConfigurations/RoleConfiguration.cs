@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TheResistanceOnline.Data.Entities.UserEntities;
-
-namespace TheResistanceOnline.Data.Configurations.UserConfigurations;
+using TheResistanceOnline.Data.Entities;
+namespace TheResistanceOnline.Data.Configurations;
 
 public class RoleConfiguration: IEntityTypeConfiguration<Role>
 {

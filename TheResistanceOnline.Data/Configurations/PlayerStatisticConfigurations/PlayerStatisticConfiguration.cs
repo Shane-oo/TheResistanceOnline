@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TheResistanceOnline.Data.PlayerStatistics;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.Configurations.PlayerStatisticConfigurations;
+namespace TheResistanceOnline.Data.Configurations;
 
 public class PlayerStatisticConfiguration: IEntityTypeConfiguration<PlayerStatistic>
 {

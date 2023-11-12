@@ -1,6 +1,6 @@
 using OpenIddict.EntityFrameworkCore.Models;
 
-namespace TheResistanceOnline.Data.Entities.AuthorizationEntities;
+namespace TheResistanceOnline.Data.Entities;
 
 public class Authorization: OpenIddictEntityFrameworkCoreAuthorization<int, Application, Token>
 {

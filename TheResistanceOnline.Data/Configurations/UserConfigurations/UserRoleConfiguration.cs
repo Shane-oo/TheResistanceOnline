@@ -1,9 +1,8 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.Configurations.UserConfigurations;
+namespace TheResistanceOnline.Data.Configurations;
 
 public class UserRoleConfiguration: IEntityTypeConfiguration<UserRole>
 {

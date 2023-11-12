@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TheResistanceOnline.Data.Entities.AuthorizationEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.Configurations.AuthorizationConfigurations;
+namespace TheResistanceOnline.Data.Configurations;
 
 public class TokenConfiguration: IEntityTypeConfiguration<Token>
 {
