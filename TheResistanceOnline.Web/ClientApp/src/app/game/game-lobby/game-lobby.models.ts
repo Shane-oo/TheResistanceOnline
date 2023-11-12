@@ -1,4 +1,5 @@
 import {FormControl} from "@angular/forms";
+import {ConnectionModel} from "../game.models";
 
 export interface CreateLobbyCommand {
   id: string,
@@ -30,11 +31,6 @@ export interface LobbyDetails {
   connections: ConnectionModel[]
 }
 
-export interface ConnectionModel {
-  connectionId: string,
-  userName: string,
-  isReady: boolean
-}
 
 export interface ReadyUpCommand {
   lobbyId: string;

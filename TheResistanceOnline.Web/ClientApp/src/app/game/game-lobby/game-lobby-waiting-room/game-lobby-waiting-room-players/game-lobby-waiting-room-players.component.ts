@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {ConnectionModel} from "../../game-lobby.models";
+import {ConnectionModel} from "../../../game.models";
 
 @Component({
   selector: 'app-game-lobby-waiting-room-players',

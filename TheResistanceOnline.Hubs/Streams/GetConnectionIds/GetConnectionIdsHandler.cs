@@ -1,28 +1,38 @@
+using System.Collections.Concurrent;
 using MediatR;
-using TheResistanceOnline.Core.Exceptions;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using Microsoft.AspNetCore.SignalR;
+using TheResistanceOnline.Data;
+using TheResistanceOnline.Hubs.Common;
 
 namespace TheResistanceOnline.Hubs.Streams.GetConnectionIds;
 
-public class GetConnectionIdsHandler: IRequestHandler<GetConnectionIdsQuery, List<string>>
+public class GetConnectionIdsHandler: IRequestHandler<GetConnectionIdsQuery, List<ConnectionModel>>
 {
+    #region Fields
+
+    private readonly IDataContext _context;
+    private readonly IHubContext<StreamHub, IStreamHub> _streamHubContext;
+
+    #endregion
+
+    #region Construction
+
+    public GetConnectionIdsHandler(IDataContext context, IHubContext<StreamHub, IStreamHub> streamHubContext)
+    {
+        _context = context;
+        _streamHubContext = streamHubContext;
+    }
+
+    #endregion
+
     #region Public Methods
 
-    public async Task<List<string>> Handle(GetConnectionIdsQuery query, CancellationToken cancellationToken)
+    public async Task<List<ConnectionModel>> Handle(GetConnectionIdsQuery query, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        if (!query.ConnectionIdsToGroupNames.TryGetValue(query.ConnectionId, out var groupName))
-        {
-            throw new NotFoundException("Group Not Found");
-        }
 
-        var connectionIds = query.ConnectionIdsToGroupNames.Where(c => c.Value == groupName
-                                                                       && c.Key != query.ConnectionId)
-                                 .Select(g => g.Key)
-                                 .ToList();
-
-        return connectionIds;
+        return null;
     }
 
     #endregion

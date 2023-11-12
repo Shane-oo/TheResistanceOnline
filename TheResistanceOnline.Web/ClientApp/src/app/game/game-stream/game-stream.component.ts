@@ -13,6 +13,7 @@ import {
   SendOfferCommand
 } from "./game-stream.models";
 import {GameStreamVideoComponent} from "./game-stream-video/game-stream-video.component";
+import {ConnectionModel} from "../game.models";
 
 @Component({
   selector: 'app-game-stream',
@@ -27,7 +28,7 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
     iceServers: [
       {
         urls: [
-          'stun:stun1.l.google.com:19302' //todo fetch the most up to date stun urls from  https://raw.githubusercontent.com/pradt2/always-online-stun/master/valid_hosts.txt
+          'stun:stun2.l.google.com:19305' //todo fetch the most up to date stun urls from  https://raw.githubusercontent.com/pradt2/always-online-stun/master/valid_hosts.txt
         ]
       }
     ],
@@ -37,10 +38,8 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // todo do I have to do anything about muting and disabling video?
   private rtcPeerConnectionsMap: Map<string, RTCPeerConnection> = new Map<string, RTCPeerConnection>();
-  private connectionIds: string[] = []; //todo instead of connection ids this should probaby be userids or usernames
-                                        // so that order is maintained around the screen i.e. one user has one video
-                                        // so that placement is not lost around the screen
 
+  private connections: ConnectionModel[] = [];
 
   private options: IHttpConnectionOptions = {
     accessTokenFactory: () => {
@@ -74,13 +73,14 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async ngOnDestroy() {
     await this.stop();
+    this.rtcPeerConnectionsMap.clear();
   }
 
   public async makeCall() {
 
-    if (this.connectionIds?.length) {
-      for (let i = 0; i < this.connectionIds.length; i++) {
-        await this.initRtcPeerConnection(this.connectionIds[i], i);
+    if (this.connections?.length) {
+      for (let i = 0; i < this.connections.length; i++) {
+        await this.initRtcPeerConnection(this.connections[i].connectionId, i);
       }
 
       for (let [connectionId, rtcPeerConnection] of this.rtcPeerConnectionsMap) {
@@ -94,66 +94,70 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
       // add query params
       this.streamHubConnection.baseUrl += `?lobbyId=${this.lobbyId}`
 
-      await this.streamHubConnection.start().then(() => {
-        this.getConnectionIdsInLobby();
+      this.addReceiveNewConnectionIdListener();
+      this.addReceiveRemoveConnectionIdListener();
 
-        // add required initial listeners
-        this.addReceiveErrorMessageListener();
+      this.addReceiveInitiateCall();
+      this.addReceiveHandleOfferListener();
+      this.addReceiveHandleAnswerListener();
+      this.addReceiveHandleCandidateListener();
+      // add required initial listeners
+      this.addReceiveErrorMessageListener();
+
+      // my monstrosity of a hack to hopefully stop two people from sending startGame at the same time
+      // so that commenceGame isnt done twice
+
+
+      await this.streamHubConnection.start().then(() => {
+
+
+          console.log("getting connections ids in lobby")
+          this.swalService.showSwal(SwalTypes.Info, "Waiting For Game To Start...")
+
       });
+
+
     } catch (err) {
       this.swalService.showSwal(SwalTypes.Error, 'Error Connecting To Stream Hub');
     }
   }
+
+  private addReceiveInitiateCall() {
+    this.streamHubConnection.on("InitiateCall", async (connection: ConnectionModel) => {
+      await this.call(connection);
+    });
+  }
+
 
   private async stop() {
     await this.streamHubConnection.stop();
     this.rtcPeerConnectionsMap.clear();
   }
 
-  private getConnectionIdsInLobby() {
-    this.streamHubConnection.invoke("GetConnectionIds", {})
-      .then(async (connectionIds: string[]) => {
-        this.connectionIds = connectionIds;
-
-        console.log("got these connectionids", this.connectionIds)
+  private async call(connection: ConnectionModel) {
+    console.log('call', connection)
 
 
-        this.addReceiveHandleOfferListener();
-        this.addReceiveHandleAnswerListener();
-        this.addReceiveHandleCandidateListener();
+    if (!this.rtcPeerConnectionsMap.has(connection.connectionId)) {
 
+      await this.initRtcPeerConnection(connection.connectionId, this.rtcPeerConnectionsMap.size)
 
-        // listen for new lobbies created/updated
-        this.addReceiveNewConnectionIdListener();
-        this.addReceiveRemoveConnectionIdListener();
-        //this.addReceiveUpdateConnectionIdListener();     a m
-
-      });
+      const rtcPeerConnection = this.rtcPeerConnectionsMap.get(connection.connectionId);
+      if (rtcPeerConnection) {
+        await this.createOffer(connection.connectionId, rtcPeerConnection);
+      }
+    }
   }
 
+
   private addReceiveNewConnectionIdListener = () => {
-    this.streamHubConnection.on("NewConnectionId", async (connectionId: string) => {
-      if (this.connectionIds?.length) {
-        this.connectionIds.push(connectionId);
+    this.streamHubConnection.on("NewConnectionId", async (connection: ConnectionModel) => {
+      if (this.connections?.length) {
+        this.connections.push(connection);
       } else {
-        this.connectionIds = [connectionId];
+        this.connections = [connection];
       }
-      if (!this.rtcPeerConnectionsMap.has(connectionId)) {
-        const index = this.connectionIds.findIndex(c => c === connectionId);
-        if (index === -1) {
-          return;
-        }
-        await this.initRtcPeerConnection(connectionId, index)
-
-
-        const rtcPeerConnection = this.rtcPeerConnectionsMap.get(connectionId);
-        if (rtcPeerConnection) {
-          await this.createOffer(connectionId, rtcPeerConnection);
-        }
-      }
-
-
-    })
+    });
   }
 
   private removeReceiveNewConnectionIdListener = () => {
@@ -162,7 +166,7 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private addReceiveRemoveConnectionIdListener = () => {
     this.streamHubConnection.on("RemoveConnectionId", (connectionId: string) => {
-      this.connectionIds = this.connectionIds.filter(c => c !== connectionId);
+      this.connections = this.connections.filter(c => c.connectionId !== connectionId);
       this.rtcPeerConnectionsMap.delete(connectionId);
       console.log("deleted", connectionId, "from maps")
     })
@@ -186,23 +190,16 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private async initRtcPeerConnection(connectionId: string, videoIndex: number) {
-    console.log("initRtcPeerConnection for", connectionId, videoIndex)
-
-
+    console.log("init", connectionId, videoIndex)
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: true
     }).catch((err) => {
-      console.log("there was an error with media")
       this.swalService.showSwal(SwalTypes.Error, "Unable to get Microphone and/or Camera");
     });
 
     if (stream) {
-
-
       const remoteStream = new MediaStream();
-
-      const idk = this.childComponent.remoteVideoRefs[videoIndex];
 
       this.childComponent.remoteVideoRefs[videoIndex].nativeElement.srcObject = remoteStream;
       const rtcPeerConnection = new RTCPeerConnection(this.rtcConfiguration);
@@ -242,7 +239,7 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
     this.streamHubConnection.on('HandleOffer', async (offer: HandleOfferModel) => {
 
       if (!this.rtcPeerConnectionsMap.has(offer.connectionIdOfWhoOffered)) {
-        const index = this.connectionIds.findIndex(c => c === offer.connectionIdOfWhoOffered);
+        const index = this.connections.findIndex(c => c.connectionId === offer.connectionIdOfWhoOffered);
         if (index === -1) {
           return;
         }
@@ -252,7 +249,6 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
       const rtcPeerConnection = this.rtcPeerConnectionsMap.get(offer.connectionIdOfWhoOffered);
 
       if (rtcPeerConnection) {
-
         await rtcPeerConnection.setRemoteDescription(offer.rtcSessionDescription);
 
         const answer = await rtcPeerConnection.createAnswer();
@@ -272,10 +268,13 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private addReceiveHandleAnswerListener = () => {
     this.streamHubConnection.on('HandleAnswer', async (answer: HandleAnswerModel) => {
+      console.log("connectionIdOfWhoANswer", answer.connectionIdOfWhoAnswered)
       const rtcPeerConnection = this.rtcPeerConnectionsMap.get(answer.connectionIdOfWhoAnswered);
       if (rtcPeerConnection) {
         await rtcPeerConnection.setRemoteDescription(answer.rtcSessionDescription);
       }
+
+
     });
   }
 
@@ -287,5 +286,4 @@ export class GameStreamComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
   }
-
 }

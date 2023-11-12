@@ -1,8 +1,11 @@
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.Hubs.Common;
+using TheResistanceOnline.Hubs.Streams.Common;
 using TheResistanceOnline.Hubs.Streams.GetConnectionIds;
+using TheResistanceOnline.Hubs.Streams.JoinStream;
 using TheResistanceOnline.Hubs.Streams.SendAnswer;
 using TheResistanceOnline.Hubs.Streams.SendCandidate;
 using TheResistanceOnline.Hubs.Streams.SendOffer;
@@ -17,7 +20,9 @@ public interface IStreamHub: IErrorHub
 
     Task HandleOffer(OfferModel offer);
 
-    Task NewConnectionId(string connectionId);
+    Task InitiateCall(ConnectionModel connection);
+
+    Task NewConnectionId(ConnectionModel connection);
 
     Task RemoveConnectionId(string connectionId);
 }
@@ -42,16 +47,40 @@ public class StreamHub: BaseHub<IStreamHub>
 
     #endregion
 
+    #region Private Methods
+
+    private string GetGroupName()
+    {
+        if (_properties._connectionIdsToGroupNames.TryGetValue(Context.ConnectionId, out var groupName))
+        {
+            return groupName;
+        }
+
+        throw new NotFoundException("Group Not Found");
+    }
+
+    private StreamGroupModel GetStreamGroup(string groupName)
+    {
+        if (_properties._groupNameToGroupModel.TryGetValue(groupName, out var streamGroupModel))
+        {
+            return streamGroupModel;
+        }
+
+        throw new NotFoundException("Group Model Not Found");
+    }
+
+    #endregion
+
     #region Public Methods
 
     [UsedImplicitly]
-    public async Task<List<string>> GetConnectionIds(GetConnectionIdsQuery query)
+    public async Task<List<ConnectionModel>> GetConnectionIds(GetConnectionIdsQuery query)
     {
         SetRequest(query);
-        query.ConnectionIdsToGroupNames = _properties._connectionIdsToGroupNames;
-
         try
         {
+            var groupName = GetGroupName();
+            query.StreamGroupModel = GetStreamGroup(groupName);
             return await _mediator.Send(query);
         }
         catch(Exception ex)
@@ -69,12 +98,19 @@ public class StreamHub: BaseHub<IStreamHub>
             var lobbyId = lobbyQuery.FirstOrDefault();
             if (!string.IsNullOrEmpty(lobbyId))
             {
-                await Groups.AddToGroupAsync(Context.ConnectionId, lobbyId);
-                _properties._connectionIdsToGroupNames[Context.ConnectionId] = lobbyId;
-                // let others now of new connection
-                await Clients.Group(lobbyId).NewConnectionId(Context.ConnectionId);
-
                 await base.OnConnectedAsync();
+
+                
+                var command = new JoinStreamCommand
+                              {
+                                  LobbyId = lobbyId,
+                                  ConnectionIdsToGroupNames = _properties._connectionIdsToGroupNames,
+                                  GroupNameToGroupModel = _properties._groupNameToGroupModel
+                              };
+                SetRequest(command);
+
+                await _mediator.Send(command);
+
             }
             else
             {
@@ -91,8 +127,16 @@ public class StreamHub: BaseHub<IStreamHub>
     {
         if (_properties._connectionIdsToGroupNames.TryGetValue(Context.ConnectionId, out var lobbyId))
         {
+            var groupName = GetGroupName();
+            var groupModel = GetStreamGroup(groupName);
             await Clients.Group(lobbyId).RemoveConnectionId(Context.ConnectionId);
             _properties._connectionIdsToGroupNames.Remove(Context.ConnectionId, out _);
+
+            groupModel.ConnectionIds.RemoveAll(c => c.ConnectionId == Context.ConnectionId);
+            if (!groupModel.ConnectionIds.Any())
+            {
+                _properties._groupNameToGroupModel.Remove(groupName, out _);
+            }
         }
 
         await base.OnDisconnectedAsync(exception);
@@ -102,6 +146,7 @@ public class StreamHub: BaseHub<IStreamHub>
     public async Task SendAnswer(SendAnswerCommand command)
     {
         SetRequest(command);
+
         try
         {
             await _mediator.Send(command);

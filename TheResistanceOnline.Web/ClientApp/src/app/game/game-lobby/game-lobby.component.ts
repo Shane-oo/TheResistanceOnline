@@ -5,13 +5,12 @@ import {AuthenticationService} from "../../shared/services/authentication/authen
 import {environment} from "../../../environments/environment";
 import {SwalContainerService, SwalTypes} from "../../../ui/swal/swal-container.service";
 import {
-  ConnectionModel,
   CreateLobbyCommand,
   JoinLobbyCommand,
   LobbyDetails,
   ReadyUpCommand,
 } from "./game-lobby.models";
-import {StartGameModel} from "../game.models";
+import {ConnectionModel, StartGameModel} from "../game.models";
 
 
 @Component({

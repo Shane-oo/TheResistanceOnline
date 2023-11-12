@@ -11,10 +11,10 @@ public class BaseHub<T>: Hub<T> where T : class
 {
     #region Properties
 
-    private Guid UserId => Context.User?.Identity is { IsAuthenticated: true }
-                           && Guid.TryParse(Context.User.FindFirstValue(OpenIddictConstants.Claims.Subject), out var userId)
-                               ? userId
-                               : Guid.Empty;
+    protected Guid UserId => Context.User?.Identity is { IsAuthenticated: true }
+                             && Guid.TryParse(Context.User.FindFirstValue(OpenIddictConstants.Claims.Subject), out var userId)
+                                 ? userId
+                                 : Guid.Empty;
 
     #endregion
 

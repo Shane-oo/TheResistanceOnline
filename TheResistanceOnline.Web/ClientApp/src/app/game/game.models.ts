@@ -19,3 +19,9 @@ export interface StartGameCommand {
 export enum GameType {
   ResistanceClassic
 }
+
+export interface ConnectionModel {
+  connectionId: string,
+  userName: string,
+  isReady: boolean
+}

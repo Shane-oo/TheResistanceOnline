@@ -29,3 +29,5 @@ export interface HandleCandidateModel {
   connectionIdOfWhoSentCandidate: string;
   rtcIceCandidate: RTCIceCandidateInit;
 }
+
+
