@@ -1,7 +1,5 @@
 name: production - build and deploy pipeline
 on: 
-  push:
-    branches: ["184-refactor-and-bring-back-from-the-dead"] # todo remove down the track
   pull_request:
     branches: ["main"]
   workflow_dispatch:
