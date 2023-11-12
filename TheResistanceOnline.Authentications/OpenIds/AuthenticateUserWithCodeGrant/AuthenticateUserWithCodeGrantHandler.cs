@@ -3,7 +3,7 @@ using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.Data.Queries.UserQueries;
 
-namespace TheResistanceOnline.Authentications.OpenIds.AuthenticateUserWithCodeGrant;
+namespace TheResistanceOnline.Authentications.OpenIds;
 
 public class AuthenticateUserWithCodeGrantHandler:
     IRequestHandler<AuthenticateUserWithCodeGrantCommand, AuthenticationResult<UserAuthenticationPayload>>

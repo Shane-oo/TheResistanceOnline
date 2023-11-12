@@ -1,6 +1,6 @@
 using TheResistanceOnline.Core.Requests.Commands;
 
-namespace TheResistanceOnline.Authentications.OpenIds.AuthenticateUserWithCodeGrant;
+namespace TheResistanceOnline.Authentications.OpenIds;
 
 public class AuthenticateUserWithCodeGrantCommand: CommandBase<AuthenticationResult<UserAuthenticationPayload>>
 {

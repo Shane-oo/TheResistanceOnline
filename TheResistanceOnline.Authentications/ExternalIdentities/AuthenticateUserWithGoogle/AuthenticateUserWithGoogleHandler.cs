@@ -7,7 +7,7 @@ using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
 using TheResistanceOnline.Data.Entities.UserEntities;
 
-namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithGoogle;
+namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
 public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUserWithGoogleCommand, AuthenticationResult<Guid>>
 {

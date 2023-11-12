@@ -1,6 +1,6 @@
 using TheResistanceOnline.Core.Requests.Commands;
 
-namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithGoogle;
+namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
 public class AuthenticateUserWithGoogleCommand: CommandBase<AuthenticationResult<Guid>>
 {

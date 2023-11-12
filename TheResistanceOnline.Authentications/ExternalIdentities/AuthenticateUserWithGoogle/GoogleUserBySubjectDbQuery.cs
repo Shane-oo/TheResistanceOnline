@@ -3,7 +3,7 @@ using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
 using TheResistanceOnline.Data.Queries;
 
-namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithGoogle;
+namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
 public interface IGoogleUserBySubjectDbQuery: IDbQuery<GoogleUser>
 {

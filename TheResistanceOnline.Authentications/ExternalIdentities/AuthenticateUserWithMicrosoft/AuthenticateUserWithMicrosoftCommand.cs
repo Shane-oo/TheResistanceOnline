@@ -1,6 +1,6 @@
 using TheResistanceOnline.Core.Requests.Commands;
 
-namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
+namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
 public class AuthenticateUserWithMicrosoftCommand: CommandBase<AuthenticationResult<Guid>>
 {
