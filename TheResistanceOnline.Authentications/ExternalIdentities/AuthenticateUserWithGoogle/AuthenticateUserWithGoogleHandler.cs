@@ -11,8 +11,9 @@ public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUser
 {
     #region Fields
 
-    private readonly AppSettings _appSettings;
     private readonly IDataContext _context;
+
+    private readonly GoogleSettings _googleSettings;
 
     private readonly UserManager<User> _userManager;
 
@@ -26,7 +27,7 @@ public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUser
     {
         _context = context;
         _userManager = userManager;
-        _appSettings = appSettings.Value;
+        _googleSettings = appSettings.Value.AuthServerSettings.GoogleSettings;
     }
 
     #endregion
@@ -69,8 +70,7 @@ public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUser
 
         // Validate the audience
         // the aud claim identifies the intended audience of the token, the audience must be client ID of the App
-
-        if (command.Audience != _appSettings.AuthServerSettings.GoogleSettings.ClientId)
+        if (command.Audience != _googleSettings.ClientId)
         {
             return Reject("Unauthorized Audience.");
         }

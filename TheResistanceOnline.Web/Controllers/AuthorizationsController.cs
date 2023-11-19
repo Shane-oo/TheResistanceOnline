@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
@@ -17,7 +18,6 @@ using OpenIddictClaims = OpenIddict.Abstractions.OpenIddictConstants.Claims;
 using OpenIddictDestinations = OpenIddict.Abstractions.OpenIddictConstants.Destinations;
 using OpenIddictScopes = OpenIddict.Abstractions.OpenIddictConstants.Scopes;
 using OpenIddictWebProviders = OpenIddict.Client.WebIntegration.OpenIddictClientWebIntegrationConstants.Providers;
-using ADClaims = TheResistanceOnline.Web.Controllers.CustomClaims.AzureADClaims;
 
 namespace TheResistanceOnline.Web.Controllers;
 
@@ -93,11 +93,18 @@ public class AuthorizationsController: Controller
         return SignInExternalAuthorization(authResult);
     }
 
+    private async Task<IActionResult> ProcessRedditAuthorization(ClaimsIdentity claimsIdentity)
+    {
+        // authenticate User with Reddit
+        var command = new 
+    }
+
+
     private async Task<IActionResult> ProcessMicrosoftAuthorization(ClaimsIdentity claimsIdentity)
     {
         //authenticate User With Microsoft 
-        var command = new AuthenticateUserWithMicrosoftCommand(claimsIdentity.GetClaim(ADClaims.AUDIENCE),
-                                                               Guid.TryParse(claimsIdentity.GetClaim(ADClaims.OBJECT_ID), out var objectId)
+        var command = new AuthenticateUserWithMicrosoftCommand(claimsIdentity.GetClaim(CustomClaims.AzureADClaims.AUDIENCE),
+                                                               Guid.TryParse(claimsIdentity.GetClaim(CustomClaims.AzureADClaims.OBJECT_ID), out var objectId)
                                                                    ? new MicrosoftId(objectId)
                                                                    : null);
         var authResult = await _mediator.Send(command);
@@ -202,7 +209,7 @@ public class AuthorizationsController: Controller
                 return await ProcessGoogleAuthorization(principal.Identity as ClaimsIdentity);
             case OpenIddictWebProviders.Reddit:
                 //
-                break;
+                return await ProcessRedditAuthorization(principal.Identity as ClaimsIdentity);
         }
 
 
@@ -255,11 +262,7 @@ public class AuthorizationsController: Controller
         identity.AddClaim(new Claim(CustomClaims.GoogleClaims.AUDIENCE, result.Principal?.FindFirstValue(CustomClaims.GoogleClaims.AUDIENCE) ?? string.Empty));
         identity.AddClaim(new Claim(CustomClaims.GoogleClaims.SUBJECT, result.Principal?.FindFirstValue(CustomClaims.GoogleClaims.SUBJECT) ?? string.Empty));
 
-        var properties = new AuthenticationProperties
-                         {
-                             RedirectUri = result.Properties?.RedirectUri
-                         };
-        return SignIn(new ClaimsPrincipal(identity), properties, COOKIE_AUTH_SCHEME);
+        return SignInExternalProviderCallback(new ClaimsPrincipal(identity), result.Properties?.RedirectUri);
     }
 
     [HttpGet("~/callback/login/microsoft")]
@@ -270,14 +273,10 @@ public class AuthorizationsController: Controller
 
         // copy the claims you want to preserve to your local authentication cookie
         var identity = new ClaimsIdentity(OpenIddictWebProviders.Microsoft);
-        identity.AddClaim(new Claim(ADClaims.AUDIENCE, result.Principal?.FindFirstValue(ADClaims.AUDIENCE) ?? string.Empty));
-        identity.AddClaim(new Claim(ADClaims.OBJECT_ID, result.Principal?.FindFirstValue(ADClaims.OBJECT_ID) ?? string.Empty));
+        identity.AddClaim(new Claim(CustomClaims.AzureADClaims.AUDIENCE, result.Principal?.FindFirstValue(CustomClaims.AzureADClaims.AUDIENCE) ?? string.Empty));
+        identity.AddClaim(new Claim(CustomClaims.AzureADClaims.OBJECT_ID, result.Principal?.FindFirstValue(CustomClaims.AzureADClaims.OBJECT_ID) ?? string.Empty));
 
-        var properties = new AuthenticationProperties
-                         {
-                             RedirectUri = result.Properties?.RedirectUri
-                         };
-        return SignIn(new ClaimsPrincipal(identity), properties, COOKIE_AUTH_SCHEME);
+        return SignInExternalProviderCallback(new ClaimsPrincipal(identity), result.Properties?.RedirectUri);
     }
 
     [HttpGet("~/callback/login/reddit")]
@@ -286,8 +285,21 @@ public class AuthorizationsController: Controller
     {
         var result = await HttpContext.AuthenticateAsync(OI_CLIENT_AUTH_SCHEME);
 
-        //...
-        return null;
+        var identity = new ClaimsIdentity(OpenIddictWebProviders.Reddit);
+        identity.AddClaim(new Claim(CustomClaims.RedditClaims.ID, result.Principal?.FindFirstValue(CustomClaims.RedditClaims.ID) ?? string.Empty));
+        identity.AddClaim(new Claim(CustomClaims.RedditClaims.AUDIENCE, result.Principal?.FindFirstValue(CustomClaims.RedditClaims.AUDIENCE) ?? string.Empty));
+
+
+        return SignInExternalProviderCallback(new ClaimsPrincipal(identity), result.Properties?.RedirectUri);
+    }
+
+    public SignInResult SignInExternalProviderCallback(ClaimsPrincipal claimsPrincipal, [CanBeNull] string redirectUri)
+    {
+        var properties = new AuthenticationProperties
+                         {
+                             RedirectUri = redirectUri
+                         };
+        return SignIn(claimsPrincipal, properties, COOKIE_AUTH_SCHEME);
     }
 
     #endregion
@@ -312,6 +324,16 @@ public static class CustomClaims
 
         public const string AUDIENCE = "aud";
         public const string SUBJECT = "sub";
+
+        #endregion
+    }
+
+    public static class RedditClaims
+    {
+        #region Constants
+
+        public const string ID = "id";
+        public const string AUDIENCE = "oauth_client_id";
 
         #endregion
     }

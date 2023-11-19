@@ -12,7 +12,7 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
 {
     #region Fields
 
-    private readonly AppSettings _appSettings;
+    private readonly MicrosoftSettings _microsoftSettings;
 
     private readonly IDataContext _dataContext;
     private readonly UserManager<User> _userManager;
@@ -27,7 +27,7 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
     {
         _dataContext = dataContext;
         _userManager = userManager;
-        _appSettings = appSettings.Value;
+        _microsoftSettings = appSettings.Value.AuthServerSettings.MicrosoftSettings;
     }
 
     #endregion
@@ -72,7 +72,7 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
         // Validate the audience
         // the aud claim identifies the intended audience of the token, the audience must be client ID of the App
 
-        if (command.Audience != _appSettings.AuthServerSettings.MicrosoftSettings.ClientId)
+        if (command.Audience != _microsoftSettings.ClientId)
         {
             return Reject("Unauthorized audience.");
         }

@@ -1,5 +1,7 @@
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using TheResistanceOnline.Authentications.ExternalIdentities;
+using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithReddit;
 
 namespace TheResistanceOnline.Authentications;
 
@@ -9,13 +11,16 @@ public static class DependencyInjection
 
     public static void AddAuthenticationDbQueries(this IServiceCollection services)
     {
-        services.AddTransient<IMicrosoftUserByObjectIdDbQuery, MicrosoftUserByObjectIdDbQuery>();
-        services.AddTransient<IGoogleUserBySubjectDbQuery, GoogleUserBySubjectDbQuery>();
+        services.AddScoped<IMicrosoftUserByObjectIdDbQuery, MicrosoftUserByObjectIdDbQuery>();
+        services.AddScoped<IGoogleUserBySubjectDbQuery, GoogleUserBySubjectDbQuery>();
+        services.AddScoped<IRedditUserByIdDbQuery, RedditUserByIdDbQuery>();
     }
 
     public static void AddAuthenticationServices(this IServiceCollection services)
     {
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
+        var assembly = typeof(DependencyInjection).Assembly;
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
+        services.AddValidatorsFromAssembly(assembly);
     }
 
     #endregion
