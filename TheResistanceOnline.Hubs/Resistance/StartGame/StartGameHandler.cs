@@ -2,11 +2,10 @@ using FluentValidation;
 using MediatR;
 using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.Queries.UserQueries;
+using TheResistanceOnline.Data.Queries;
 using TheResistanceOnline.Hubs.Common;
 
-namespace TheResistanceOnline.Hubs.Resistance.StartGame;
+namespace TheResistanceOnline.Hubs.Resistance;
 
 public class StartGameHandler: IRequestHandler<StartGameCommand, bool>
 {

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TheResistanceOnline.Data.Entities;
+
 namespace TheResistanceOnline.Data.Configurations;
 
 public class RoleConfiguration: IEntityTypeConfiguration<Role>
@@ -11,17 +12,17 @@ public class RoleConfiguration: IEntityTypeConfiguration<Role>
     {
         builder.ToTable("Roles");
 
-        // Each Role can have many entries in the UserRole join table
-        builder.HasMany(e => e.UserRoles)
-               .WithOne(e => e.Role)
-               .HasForeignKey(ur => ur.RoleId)
-               .IsRequired();
+        builder.HasKey(r => r.Id);
 
-        // Each Role can have many associated RoleClaims
-        builder.HasMany(e => e.RoleClaims)
-               .WithOne(e => e.Role)
-               .HasForeignKey(rc => rc.RoleId)
-               .IsRequired();
+        builder.Property(u => u.Id)
+               .HasConversion(id => id.Value, value => new RoleId(value))
+               .ValueGeneratedOnAdd();
+
+        builder.Property(r => r.ConcurrencyStamp).IsConcurrencyToken();
+        builder.Property(u => u.Name).HasMaxLength(256);
+        builder.Property(u => u.NormalizedName).HasMaxLength(256);
+
+        builder.HasIndex(r => r.NormalizedName).HasDatabaseName("RoleNameIndex").IsUnique();
     }
 
     #endregion

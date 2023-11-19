@@ -1,20 +1,10 @@
-using System.Security.Cryptography.X509Certificates;
-using FluentValidation;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.EntityFrameworkCore;
-using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
-using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithGoogle;
-using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
+using TheResistanceOnline.Authentications;
 using TheResistanceOnline.Common.ValidationHelpers;
 using TheResistanceOnline.Core;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.AuthorizationEntities;
-using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.Interceptors;
-using TheResistanceOnline.Data.Queries.UserQueries;
-using TheResistanceOnline.Users.Users.GetUser;
+using TheResistanceOnline.Users;
 using TheResistanceOnline.Web.Controllers;
 
 namespace TheResistanceOnline.Web;
@@ -35,18 +25,6 @@ public class Startup
     {
         Configuration = configuration;
         Environment = env;
-    }
-
-    #endregion
-
-    #region Private Methods
-
-    private static X509Certificate2 LoadCertificate(string thumbprint)
-    {
-        // path to private ssl certificates in a Linux os Azure App Service
-        var bytes = File.ReadAllBytes($"/var/ssl/private/{thumbprint}.p12");
-        var certificate = new X509Certificate2(bytes);
-        return certificate;
     }
 
     #endregion
@@ -115,109 +93,11 @@ public class Startup
                                                   o.ServeUnknownFileTypes = true;
                                               });
 
-        services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
-        services.AddDbContext<Context>((sp, o) =>
-                                       {
-                                           var connectionString = Configuration.GetConnectionString("ResistanceDb");
-                                           ArgumentException.ThrowIfNullOrEmpty(connectionString);
-                                           var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
+        services.AddDataContext(Configuration);
 
-                                           o.UseSqlServer(connectionString)
-                                            .AddInterceptors(auditableInterceptor
-                                                             ?? throw new InvalidOperationException("auditableInterceptor cannot be null"));
+        services.AddOpenIddictServer(appSettings, Environment);
 
-                                           o.UseOpenIddict<Application, Authorization, Scope, Token, int>();
-                                       });
-
-        services.AddOpenIddict()
-                .AddCore(o =>
-                         {
-                             o.UseEntityFrameworkCore()
-                              .UseDbContext<Context>()
-                              .ReplaceDefaultEntities<Application, Authorization, Scope, Token, int>();
-                         })
-                .AddClient(o =>
-                           {
-                               o.AllowAuthorizationCodeFlow();
-
-                               if (Environment.IsDevelopment())
-                               {
-                                   o.AddDevelopmentEncryptionCertificate()
-                                    .AddDevelopmentSigningCertificate();
-                               }
-                               else
-                               {
-                                   o.AddEncryptionCertificate(LoadCertificate(appSettings.AuthServerSettings.EncryptionCertificateThumbprint))
-                                    .AddSigningCertificate(LoadCertificate(appSettings.AuthServerSettings.SigningCertificateThumbprint));
-                               }
-
-                               o.UseAspNetCore()
-                                .EnableRedirectionEndpointPassthrough();
-
-                               o.UseSystemNetHttp()
-                                .SetProductInformation(typeof(Program).Assembly);
-
-                               o.UseWebProviders()
-                                .AddMicrosoft(m =>
-                                              {
-                                                  var microsoftSettings = appSettings.AuthServerSettings.MicrosoftSettings;
-                                                  m.SetClientId(microsoftSettings.ClientId)
-                                                   .SetClientSecret(microsoftSettings.ClientSecret)
-                                                   .SetRedirectUri(microsoftSettings.RedirectUri)
-                                                   .AddScopes("profile"); // must have "profile" to get objectId 
-                                              })
-                                .AddGoogle(g =>
-                                           {
-                                               var googleSettings = appSettings.AuthServerSettings.GoogleSettings;
-                                               g.SetClientId(googleSettings.ClientId)
-                                                .SetClientSecret(googleSettings.ClientSecret)
-                                                .SetRedirectUri(googleSettings.RedirectUri)
-                                                .AddScopes("openid"); // must have "openid" to get subject 
-                                           });
-                           })
-                .AddServer(o =>
-                           {
-                               o.SetAccessTokenLifetime(TimeSpan.FromMinutes(120))
-                                .SetRefreshTokenLifetime(TimeSpan.FromDays(31))
-                                .SetIdentityTokenLifetime(TimeSpan.FromMinutes(120));
-
-                               o.AllowAuthorizationCodeFlow()
-                                .AllowRefreshTokenFlow();
-
-                               o.SetTokenEndpointUris("/token")
-                                .SetAuthorizationEndpointUris("/authorize")
-                                .SetIntrospectionEndpointUris("/connect/introspect");
-
-                               if (Environment.IsDevelopment())
-                               {
-                                   o.AddDevelopmentEncryptionCertificate()
-                                    .AddDevelopmentSigningCertificate();
-                               }
-                               else
-                               {
-                                   o.AddEncryptionCertificate(LoadCertificate(appSettings.AuthServerSettings.EncryptionCertificateThumbprint))
-                                    .AddSigningCertificate(LoadCertificate(appSettings.AuthServerSettings.SigningCertificateThumbprint));
-                               }
-
-                               o.UseAspNetCore()
-                                .EnableTokenEndpointPassthrough()
-                                .EnableAuthorizationEndpointPassthrough();
-                           })
-                .AddValidation(o =>
-                               {
-                                   o.UseLocalServer();
-                                   o.UseAspNetCore();
-                               });
-
-        services.AddIdentity<User, Role>(o =>
-                                         {
-                                             o.ClaimsIdentity.UserNameClaimType = OpenIddictConstants.Claims.Name;
-                                             o.ClaimsIdentity.UserIdClaimType = OpenIddictConstants.Claims.Subject;
-                                             o.ClaimsIdentity.RoleClaimType = OpenIddictConstants.Claims.Role;
-                                             o.User.RequireUniqueEmail = false; // disables user needs email to create
-                                         })
-                .AddEntityFrameworkStores<Context>()
-                .AddDefaultTokenProviders();
+        services.AddUserIdentity();
 
         services.AddAuthentication(o =>
                                    {
@@ -231,37 +111,15 @@ public class Startup
                                o.SlidingExpiration = false;
                            });
 
-        // Dependency Injection
-        // Data Context
-        services.AddScoped<IDataContext, DataContext>();
-        // Services
-
-        // Db Queries
         // TheResistanceOnline.Data
-        //services.AddTransient<IUserByNameOrEmailDbQuery, UserByNameOrEmailDbQuery>(); dont need this i think
-        services.AddTransient<IUserByUserIdDbQuery, UserByUserIdDbQuery>();
+        services.AddSharedDbQueries();
+
         // TheResistanceOnline.Authentications
-        services.AddTransient<IMicrosoftUserByObjectIdDbQuery, MicrosoftUserByObjectIdDbQuery>();
-        services.AddTransient<IGoogleUserBySubjectDbQuery, GoogleUserBySubjectDbQuery>();
+        services.AddAuthenticationDbQueries();
+        services.AddAuthenticationServices();
 
-        var assemblies = new[]
-                         {
-                             // TheResistanceOnline.Authentications
-                             typeof(AuthenticateUserWithMicrosoftHandler).Assembly,
-                             // TheResistanceOnline.Users
-                             typeof(GetUserHandler).Assembly
-                         };
-        // MediatR
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
-
-        // AutoMapper
-        services.AddAutoMapper(assemblies);
-
-        // FluentValidation
-        foreach(var assembly in assemblies)
-        {
-            services.AddValidatorsFromAssembly(assembly);
-        }
+        // TheResistanceOnline.Users
+        services.AddUserServices();
     }
 
     #endregion

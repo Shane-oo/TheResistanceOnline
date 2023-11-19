@@ -1,5 +1,5 @@
 using MediatR;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Core.Requests.Queries;
 
@@ -13,7 +13,7 @@ public class QueryBase<TResponse>: IQuery<TResponse>
 
     public string ConnectionId { get; set; }
 
-    public Guid UserId { get; set; }
+    public UserId UserId { get; set; }
 
     public Roles UserRole { get; set; }
 
@@ -23,18 +23,18 @@ public class QueryBase<TResponse>: IQuery<TResponse>
 
     protected QueryBase()
     {
-        UserId = Guid.Empty;
+        UserId = new UserId(Guid.Empty);
         UserRole = Roles.None;
         ConnectionId = string.Empty;
     }
 
-    protected QueryBase(Guid userId, Roles userRole)
+    protected QueryBase(UserId userId, Roles userRole)
     {
         UserId = userId;
         UserRole = userRole;
     }
 
-    protected QueryBase(Guid userId, Roles userRole, string connectionId)
+    protected QueryBase(UserId userId, Roles userRole, string connectionId)
     {
         UserId = userId;
         UserRole = userRole;

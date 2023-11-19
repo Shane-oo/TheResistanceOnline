@@ -1,9 +1,8 @@
 using FluentValidation;
 using MediatR;
 using TheResistanceOnline.Core.Exceptions;
-using TheResistanceOnline.Hubs.Lobbies.Common;
 
-namespace TheResistanceOnline.Hubs.Lobbies.GetLobby;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
 public class GetLobbyHandler: IRequestHandler<GetLobbyQuery, LobbyDetailsModel>
 {

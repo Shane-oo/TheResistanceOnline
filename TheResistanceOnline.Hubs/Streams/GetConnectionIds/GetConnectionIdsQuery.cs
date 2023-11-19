@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using TheResistanceOnline.Core.Requests.Queries;
 
-namespace TheResistanceOnline.Hubs.Streams.GetConnectionIds;
+namespace TheResistanceOnline.Hubs.Streams;
 
 public class GetConnectionIdsQuery: QueryBase<List<string>>
 {

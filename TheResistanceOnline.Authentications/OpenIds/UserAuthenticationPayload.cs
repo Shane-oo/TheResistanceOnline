@@ -1,3 +1,5 @@
+using TheResistanceOnline.Data.Entities;
+
 namespace TheResistanceOnline.Authentications.OpenIds;
 
 public class UserAuthenticationPayload
@@ -6,7 +8,7 @@ public class UserAuthenticationPayload
 
     public string Role { get; set; }
 
-    public Guid UserId { get; set; }
+    public UserId UserId { get; set; }
 
     public string UserName { get; set; }
 

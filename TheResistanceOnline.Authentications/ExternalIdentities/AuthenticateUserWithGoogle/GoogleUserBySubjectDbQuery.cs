@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
+using TheResistanceOnline.Data.Entities;
 using TheResistanceOnline.Data.Queries;
 
 namespace TheResistanceOnline.Authentications.ExternalIdentities;
@@ -11,7 +11,7 @@ public interface IGoogleUserBySubjectDbQuery: IDbQuery<GoogleUser>
 
     IGoogleUserBySubjectDbQuery WithNoTracking();
 
-    IGoogleUserBySubjectDbQuery WithParams(string subject);
+    IGoogleUserBySubjectDbQuery WithParams(GoogleId googleId);
 }
 
 public class GoogleUserBySubjectDbQuery: IGoogleUserBySubjectDbQuery
@@ -21,9 +21,9 @@ public class GoogleUserBySubjectDbQuery: IGoogleUserBySubjectDbQuery
     private bool _asNoTracking;
 
     private readonly Context _context;
-    private string[] _include;
 
-    private string _subject;
+    private GoogleId _googleId;
+    private string[] _include;
 
     #endregion
 
@@ -40,7 +40,7 @@ public class GoogleUserBySubjectDbQuery: IGoogleUserBySubjectDbQuery
 
     public async Task<GoogleUser> ExecuteAsync(CancellationToken cancellationToken)
     {
-        var query = _context.GoogleUsers.Where(g => g.Subject.Equals(_subject));
+        var query = _context.GoogleUsers.Where(g => g.Id == _googleId);
 
         if (_include != null)
         {
@@ -67,9 +67,9 @@ public class GoogleUserBySubjectDbQuery: IGoogleUserBySubjectDbQuery
         return this;
     }
 
-    public IGoogleUserBySubjectDbQuery WithParams(string subject)
+    public IGoogleUserBySubjectDbQuery WithParams(GoogleId googleId)
     {
-        _subject = subject;
+        _googleId = googleId;
         return this;
     }
 

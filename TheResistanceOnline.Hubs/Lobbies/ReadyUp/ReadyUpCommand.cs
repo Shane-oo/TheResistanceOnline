@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
 using MediatR;
 using TheResistanceOnline.Core.Requests.Commands;
-using TheResistanceOnline.Hubs.Lobbies.Common;
 
-namespace TheResistanceOnline.Hubs.Lobbies.ReadyUp;
+
+namespace TheResistanceOnline.Hubs.Lobbies;
 
 public class ReadyUpCommand: CommandBase<Unit>
 {

@@ -2,9 +2,8 @@ using System.Collections.Concurrent;
 using FluentValidation;
 using MediatR;
 using TheResistanceOnline.Core.Requests.Commands;
-using TheResistanceOnline.Hubs.Lobbies.Common;
 
-namespace TheResistanceOnline.Hubs.Lobbies.CreateLobby;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
 public class CreateLobbyCommand: CommandBase<string>
 {

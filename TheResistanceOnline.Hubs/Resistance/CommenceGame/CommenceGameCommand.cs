@@ -1,9 +1,7 @@
 using MediatR;
 using TheResistanceOnline.Core.Requests.Commands;
-using TheResistanceOnline.Games;
-using TheResistanceOnline.Hubs.Resistance.Common;
 
-namespace TheResistanceOnline.Hubs.Resistance.CommenceGame;
+namespace TheResistanceOnline.Hubs.Resistance;
 
 public class CommenceGameCommand: CommandBase<Unit>
 

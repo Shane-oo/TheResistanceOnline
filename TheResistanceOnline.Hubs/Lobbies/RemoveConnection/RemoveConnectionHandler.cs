@@ -1,8 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using TheResistanceOnline.Games.Lobbies;
 
-namespace TheResistanceOnline.Hubs.Lobbies.RemoveConnection;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
 public class RemoveConnectionHandler: IRequestHandler<RemoveConnectionCommand, Unit>
 {

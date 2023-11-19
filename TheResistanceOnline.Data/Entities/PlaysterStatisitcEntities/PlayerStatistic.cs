@@ -12,7 +12,7 @@ public class PlayerStatistic
 
     public int Id { get; set; }
 
-    public Guid UserId { get; set; }
+    public UserId UserId { get; set; }
 
     public User User { get; set; }
 

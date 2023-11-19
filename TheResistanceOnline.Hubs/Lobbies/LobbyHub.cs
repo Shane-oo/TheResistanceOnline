@@ -1,15 +1,7 @@
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using TheResistanceOnline.Games.Lobbies.ReadyUp;
 using TheResistanceOnline.Hubs.Common;
-using TheResistanceOnline.Hubs.Lobbies.Common;
-using TheResistanceOnline.Hubs.Lobbies.CreateLobby;
-using TheResistanceOnline.Hubs.Lobbies.GetLobbies;
-using TheResistanceOnline.Hubs.Lobbies.GetLobby;
-using TheResistanceOnline.Hubs.Lobbies.JoinLobby;
-using TheResistanceOnline.Hubs.Lobbies.ReadyUp;
-using TheResistanceOnline.Hubs.Lobbies.RemoveConnection;
 
 namespace TheResistanceOnline.Hubs.Lobbies;
 

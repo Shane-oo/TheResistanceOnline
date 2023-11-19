@@ -1,6 +1,6 @@
-using TheResistanceOnline.Hubs.Streams.Common;
+using TheResistanceOnline.Hubs.Streams;
 
-namespace TheResistanceOnline.Hubs.Streams.SendAnswer;
+namespace TheResistanceOnline.Hubs.Streams;
 
 public class AnswerModel
 {

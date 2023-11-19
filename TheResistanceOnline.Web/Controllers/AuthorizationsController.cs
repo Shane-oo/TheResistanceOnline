@@ -9,10 +9,9 @@ using OpenIddict.Abstractions;
 using OpenIddict.Client.AspNetCore;
 using OpenIddict.Server.AspNetCore;
 using TheResistanceOnline.Authentications;
-using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithGoogle;
-using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
+using TheResistanceOnline.Authentications.ExternalIdentities;
 using TheResistanceOnline.Authentications.OpenIds;
-using TheResistanceOnline.Authentications.OpenIds.AuthenticateUserWithCodeGrant;
+using TheResistanceOnline.Data.Entities;
 using OpenIddictErrors = OpenIddict.Abstractions.OpenIddictConstants.Errors;
 using OpenIddictClaims = OpenIddict.Abstractions.OpenIddictConstants.Claims;
 using OpenIddictDestinations = OpenIddict.Abstractions.OpenIddictConstants.Destinations;
@@ -78,7 +77,7 @@ public class AuthorizationsController: Controller
             return Forbid(OpenIddictErrors.InvalidRequestObject, "Required Claim Not Found");
         }
 
-        var authResult = await _mediator.Send(new AuthenticateUserWithCodeGrantCommand(userId));
+        var authResult = await _mediator.Send(new AuthenticateUserWithCodeGrantCommand(new UserId(userId)));
 
         return !authResult.IsAuthenticated ? Forbid(OpenIddictErrors.InvalidGrant, authResult.Reason) : SignInUser(request, authResult.Payload);
     }
@@ -87,7 +86,7 @@ public class AuthorizationsController: Controller
     {
         //authenticate User With Google 
         var command = new AuthenticateUserWithGoogleCommand(claimsIdentity.GetClaim(CustomClaims.GoogleClaims.AUDIENCE),
-                                                            claimsIdentity.GetClaim(CustomClaims.GoogleClaims.SUBJECT));
+                                                            new GoogleId(claimsIdentity.GetClaim(CustomClaims.GoogleClaims.SUBJECT)));
 
         var authResult = await _mediator.Send(command);
 
@@ -99,14 +98,14 @@ public class AuthorizationsController: Controller
         //authenticate User With Microsoft 
         var command = new AuthenticateUserWithMicrosoftCommand(claimsIdentity.GetClaim(ADClaims.AUDIENCE),
                                                                Guid.TryParse(claimsIdentity.GetClaim(ADClaims.OBJECT_ID), out var objectId)
-                                                                   ? objectId
-                                                                   : Guid.Empty);
+                                                                   ? new MicrosoftId(objectId)
+                                                                   : null);
         var authResult = await _mediator.Send(command);
 
         return SignInExternalAuthorization(authResult);
     }
 
-    private IActionResult SignInExternalAuthorization(AuthenticationResult<Guid> authResult)
+    private IActionResult SignInExternalAuthorization(AuthenticationResult<UserId> authResult)
     {
         if (!authResult.IsAuthenticated)
         {
@@ -117,7 +116,8 @@ public class AuthorizationsController: Controller
         var userId = authResult.Payload;
 
         var identity = new ClaimsIdentity(AUTH_SCHEME);
-        identity.AddClaim(OpenIddictClaims.Subject, userId.ToString());
+
+        identity.AddClaim(OpenIddictClaims.Subject, userId.Value.ToString() ?? string.Empty);
 
         var principal = new ClaimsPrincipal(identity);
 
@@ -133,7 +133,7 @@ public class AuthorizationsController: Controller
         var identity = new ClaimsIdentity(AUTH_SCHEME, OpenIddictClaims.Name, OpenIddictClaims.Role);
 
         identity.AddClaim(OpenIddictClaims.ClientId, request.ClientId!);
-        identity.AddClaim(OpenIddictClaims.Subject, payload.UserId.ToString());
+        identity.AddClaim(OpenIddictClaims.Subject, payload.UserId.Value.ToString());
         identity.AddClaim(OpenIddictClaims.Name, payload.UserName);
         identity.AddClaim(OpenIddictClaims.Role, payload.Role);
 
@@ -194,14 +194,15 @@ public class AuthorizationsController: Controller
             return Challenge(properties, OI_CLIENT_AUTH_SCHEME);
         }
 
-        if (principal.Identity?.AuthenticationType == OpenIddictWebProviders.Microsoft)
+        switch(principal.Identity?.AuthenticationType)
         {
-            return await ProcessMicrosoftAuthorization(principal.Identity as ClaimsIdentity);
-        }
-
-        if (principal.Identity?.AuthenticationType == OpenIddictWebProviders.Google)
-        {
-            return await ProcessGoogleAuthorization(principal.Identity as ClaimsIdentity);
+            case OpenIddictWebProviders.Microsoft:
+                return await ProcessMicrosoftAuthorization(principal.Identity as ClaimsIdentity);
+            case OpenIddictWebProviders.Google:
+                return await ProcessGoogleAuthorization(principal.Identity as ClaimsIdentity);
+            case OpenIddictWebProviders.Reddit:
+                //
+                break;
         }
 
 
@@ -277,6 +278,16 @@ public class AuthorizationsController: Controller
                              RedirectUri = result.Properties?.RedirectUri
                          };
         return SignIn(new ClaimsPrincipal(identity), properties, COOKIE_AUTH_SCHEME);
+    }
+
+    [HttpGet("~/callback/login/reddit")]
+    [HttpPost("~/callback/login/reddit")]
+    public async Task<IActionResult> RedditCallback()
+    {
+        var result = await HttpContext.AuthenticateAsync(OI_CLIENT_AUTH_SCHEME);
+
+        //...
+        return null;
     }
 
     #endregion

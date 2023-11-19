@@ -1,15 +1,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using TheResistanceOnline.Common.Extensions;
 using TheResistanceOnline.Core;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
-public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUserWithGoogleCommand, AuthenticationResult<Guid>>
+public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUserWithGoogleCommand, AuthenticationResult<UserId>>
 {
     #region Fields
 
@@ -35,17 +33,9 @@ public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUser
 
     #region Private Methods
 
-    private async Task<AuthenticationResult<Guid>> CreateUser(AuthenticateUserWithGoogleCommand command)
+    private async Task<AuthenticationResult<UserId>> CreateUser(AuthenticateUserWithGoogleCommand command)
     {
-        var user = new User
-                   {
-                       UserName = "User" + Ulid.NewUlid(),
-                       GoogleUser = new GoogleUser
-                                    {
-                                        Subject = command.Subject
-                                    },
-                       UserSetting = new UserSetting()
-                   };
+        var user = GoogleUser.Create(command.GoogleId).User;
 
         var result = await _userManager.CreateAsync(user);
 
@@ -57,22 +47,22 @@ public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUser
 
         await _userManager.AddToRoleAsync(user, Roles.User.ToString());
 
-        return AuthenticationResult<Guid>.Accept(user.Id);
+        return AuthenticationResult<UserId>.Accept(user.Id);
     }
 
-    private static AuthenticationResult<Guid> Reject(string reason)
+    private static AuthenticationResult<UserId> Reject(string reason)
     {
-        return AuthenticationResult<Guid>.Reject(reason);
+        return AuthenticationResult<UserId>.Reject(reason);
     }
 
     #endregion
 
     #region Public Methods
 
-    public async Task<AuthenticationResult<Guid>> Handle(AuthenticateUserWithGoogleCommand command, CancellationToken cancellationToken)
+    public async Task<AuthenticationResult<UserId>> Handle(AuthenticateUserWithGoogleCommand command, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(command);
-        if (string.IsNullOrEmpty(command.Subject))
+        if (command.GoogleId == null || string.IsNullOrEmpty(command.GoogleId.Value))
         {
             return Reject("Missing Google Identifier.");
         }
@@ -86,13 +76,13 @@ public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUser
         }
 
         var googleUser = await _context.Query<IGoogleUserBySubjectDbQuery>()
-                                       .WithParams(command.Subject)
+                                       .WithParams(command.GoogleId)
                                        .WithNoTracking()
                                        .ExecuteAsync(cancellationToken);
 
         if (googleUser != null)
         {
-            return AuthenticationResult<Guid>.Accept(googleUser.UserId);
+            return AuthenticationResult<UserId>.Accept(googleUser.UserId);
         }
 
         return await CreateUser(command);

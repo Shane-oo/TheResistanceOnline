@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using TheResistanceOnline.Core.Requests;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Web.Controllers;
 
@@ -12,10 +12,10 @@ public class ApiControllerBase: ControllerBase
 {
     #region Properties
 
-    private Guid UserId => User.Identity is { IsAuthenticated: true }
-                           && Guid.TryParse(User.FindFirstValue(OpenIddictConstants.Claims.Subject), out var userId)
-                               ? userId
-                               : Guid.Empty;
+    private UserId UserId => User.Identity is { IsAuthenticated: true }
+                             && Guid.TryParse(User.FindFirstValue(OpenIddictConstants.Claims.Subject), out var userIdGuid)
+                                 ? new UserId(userIdGuid)
+                                 : null;
 
     #endregion
 

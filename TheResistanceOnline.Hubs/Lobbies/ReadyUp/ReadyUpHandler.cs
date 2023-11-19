@@ -1,12 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.Core.Exceptions;
-using TheResistanceOnline.Data.Entities.UserEntities;
 using TheResistanceOnline.GamePlay;
-using TheResistanceOnline.Games.Lobbies;
-using TheResistanceOnline.Games.Lobbies.ReadyUp;
 
-namespace TheResistanceOnline.Hubs.Lobbies.ReadyUp;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
 public class ReadyUpHandler: IRequestHandler<ReadyUpCommand, Unit>
 {

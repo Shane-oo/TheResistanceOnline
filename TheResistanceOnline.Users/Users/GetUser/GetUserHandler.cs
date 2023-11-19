@@ -2,10 +2,9 @@ using AutoMapper;
 using MediatR;
 using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.Queries.UserQueries;
+using TheResistanceOnline.Data.Queries;
 
-namespace TheResistanceOnline.Users.Users.GetUser;
+namespace TheResistanceOnline.Users.Users;
 
 public class GetUserHandler: IRequestHandler<GetUserQuery, UserDetailsModel>
 {

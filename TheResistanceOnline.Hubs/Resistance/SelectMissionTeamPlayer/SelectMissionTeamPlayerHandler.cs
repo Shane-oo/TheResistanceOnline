@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 
-namespace TheResistanceOnline.Hubs.Resistance.SelectMissionTeamPlayer;
+namespace TheResistanceOnline.Hubs.Resistance;
 
 public class SelectMissionTeamPlayerHandler: IRequestHandler<SelectMissionTeamPlayerCommand, Unit>
 {

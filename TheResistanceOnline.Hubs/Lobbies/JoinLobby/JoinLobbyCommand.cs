@@ -1,8 +1,7 @@
 using System.Collections.Concurrent;
 using TheResistanceOnline.Core.Requests.Commands;
-using TheResistanceOnline.Hubs.Lobbies.Common;
 
-namespace TheResistanceOnline.Hubs.Lobbies.JoinLobby;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
 public class JoinLobbyCommand: CommandBase<string>
 {

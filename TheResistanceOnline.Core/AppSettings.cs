@@ -37,6 +37,9 @@ public class AuthServerSettings
     [Required]
     public GoogleSettings GoogleSettings { get; set; }
 
+    [Required]
+    public RedditSettings RedditSettings { get; set; }
+
     #endregion
 }
 
@@ -57,6 +60,22 @@ public class MicrosoftSettings
 }
 
 public class GoogleSettings
+{
+    #region Properties
+
+    [Required]
+    public string ClientId { get; set; }
+
+    [Required]
+    public string ClientSecret { get; set; }
+
+    [Required]
+    public string RedirectUri { get; set; }
+
+    #endregion
+}
+
+public class RedditSettings
 {
     #region Properties
 

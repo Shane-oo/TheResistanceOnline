@@ -1,9 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using TheResistanceOnline.Core.Exceptions;
-using TheResistanceOnline.Data.Entities.UserEntities;
 
-namespace TheResistanceOnline.Hubs.Streams.SendAnswer;
+namespace TheResistanceOnline.Hubs.Streams;
 
 public class SendAnswerHandler: IRequestHandler<SendAnswerCommand, Unit>
 {

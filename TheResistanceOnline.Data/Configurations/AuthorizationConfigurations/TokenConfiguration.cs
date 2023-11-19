@@ -18,6 +18,17 @@ public class TokenConfiguration: IEntityTypeConfiguration<Token>
         builder.Property(e => e.Subject).HasMaxLength(400);
         builder.Property(e => e.Type).HasMaxLength(50);
 
+        builder.HasOne(e => e.Authorization)
+               .WithMany(a => a.Tokens)
+               .HasForeignKey(e => e.AuthorizationId)
+               .IsRequired(false)
+               .HasConstraintName("FK_Tokens_Authorizations_AuthorizationId");
+
+        builder.HasOne(e => e.Application)
+               .WithMany(a => a.Tokens)
+               .HasForeignKey(e => e.ApplicationId)
+               .IsRequired(false)
+               .HasConstraintName("FK_Tokens_Applications_ApplicationId");
 
         builder.HasIndex(e => e.ReferenceId)
                .IsUnique();

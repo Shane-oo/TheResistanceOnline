@@ -1,19 +1,12 @@
-using FluentValidation;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
 using TheResistanceOnline.Common.ValidationHelpers;
 using TheResistanceOnline.Core;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.Interceptors;
-using TheResistanceOnline.Data.Queries.UserQueries;
-using TheResistanceOnline.Games.Lobbies;
+using TheResistanceOnline.Hubs;
 using TheResistanceOnline.Hubs.Lobbies;
-using TheResistanceOnline.Hubs.Lobbies.CreateLobby;
 using TheResistanceOnline.Hubs.Resistance;
 using TheResistanceOnline.Hubs.Streams;
+using TheResistanceOnline.Users;
 
 namespace TheResistanceOnline.Server;
 
@@ -86,39 +79,11 @@ public class Startup
 
         services.AddSignalR();
 
+        services.AddDataContext(Configuration);
 
-        services.AddSingleton<UpdateAuditableEntitiesInterceptor>();
-        services.AddDbContext<Context>((sp, o) =>
-                                       {
-                                           var connectionString = Configuration.GetConnectionString("ResistanceDb");
-                                           ArgumentException.ThrowIfNullOrEmpty(connectionString);
-                                           var auditableInterceptor = sp.GetService<UpdateAuditableEntitiesInterceptor>();
+        services.AddOpenIddictIntrospection(appSettings, Environment);
 
-                                           o.UseSqlServer(connectionString)
-                                            .AddInterceptors(auditableInterceptor);
-                                       });
-        services.AddOpenIddict()
-                .AddValidation(o =>
-                               {
-                                   o.SetIssuer(appSettings.SocketServerSettings.Issuer);
-
-                                   o.UseIntrospection()
-                                    .SetClientId(appSettings.SocketServerSettings.ClientId)
-                                    .SetClientSecret(appSettings.SocketServerSettings.ClientSecret);
-
-                                   o.UseSystemNetHttp();
-                                   o.UseAspNetCore();
-                               });
-
-        services.AddIdentity<User, Role>(o =>
-                                         {
-                                             o.ClaimsIdentity.UserNameClaimType = OpenIddictConstants.Claims.Name;
-                                             o.ClaimsIdentity.UserIdClaimType = OpenIddictConstants.Claims.Subject;
-                                             o.ClaimsIdentity.RoleClaimType = OpenIddictConstants.Claims.Role;
-                                             o.User.RequireUniqueEmail = false; // disables user needs email to create
-                                         })
-                .AddEntityFrameworkStores<Context>()
-                .AddDefaultTokenProviders();
+        services.AddUserIdentity();
 
         services.AddAuthentication(o =>
                                    {
@@ -132,29 +97,10 @@ public class Startup
 
         // Db Queries
         // TheResistanceOnline.Data
-        services.AddTransient<IUserByUserIdDbQuery, UserByUserIdDbQuery>();
+        services.AddSharedDbQueries();
 
-        var assemblies = new[]
-                         {
-                             // TheResistanceOnline.Hubs
-                             typeof(CreateLobbyHandler).Assembly
-                         };
-        // MediatR
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
-
-        // AutoMapper
-        //services.AddAutoMapper(assemblies);
-
-        // FluentValidation
-        foreach(var assembly in assemblies)
-        {
-            services.AddValidatorsFromAssembly(assembly);
-        }
-
-        // Services
-        services.AddSingleton<LobbyHubPersistedProperties>();
-        services.AddSingleton<StreamHubPersistedProperties>();
-        services.AddSingleton<ResistanceHubPersistedProperties>();
+        // TheResistanceOnline.Hubs
+        services.AddHubServices();
     }
 
     #endregion

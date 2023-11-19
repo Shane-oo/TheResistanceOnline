@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using TheResistanceOnline.Core.Exceptions;
-using TheResistanceOnline.Users.Users.GetUser;
-using TheResistanceOnline.Users.Users.UpdateUser;
+using TheResistanceOnline.Users.Users;
+
 
 namespace TheResistanceOnline.Web.Controllers;
 

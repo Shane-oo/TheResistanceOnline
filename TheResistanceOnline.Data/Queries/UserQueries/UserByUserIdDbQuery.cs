@@ -9,7 +9,7 @@ public interface IUserByUserIdDbQuery: IDbQuery<User>
 
     IUserByUserIdDbQuery WithNoTracking();
 
-    IUserByUserIdDbQuery WithParams(Guid userId);
+    IUserByUserIdDbQuery WithParams(UserId userId);
 }
 
 public class UserByUserIdDbQuery: IUserByUserIdDbQuery
@@ -20,7 +20,7 @@ public class UserByUserIdDbQuery: IUserByUserIdDbQuery
 
     private readonly Context _context;
     private string[] _include;
-    private Guid _userId;
+    private UserId _userId;
 
     #endregion
 
@@ -37,7 +37,7 @@ public class UserByUserIdDbQuery: IUserByUserIdDbQuery
 
     public async Task<User> ExecuteAsync(CancellationToken cancellationToken)
     {
-        var query = _context.Users.Where(u => u.Id.Equals(_userId));
+        var query = _context.Users.Where(u => u.Id == _userId);
 
         if (_include != null)
         {
@@ -64,7 +64,7 @@ public class UserByUserIdDbQuery: IUserByUserIdDbQuery
         return this;
     }
 
-    public IUserByUserIdDbQuery WithParams(Guid userId)
+    public IUserByUserIdDbQuery WithParams(UserId userId)
     {
         _userId = userId;
         return this;

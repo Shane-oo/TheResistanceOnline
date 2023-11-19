@@ -1,6 +1,6 @@
 using TheResistanceOnline.GamePlay;
 
-namespace TheResistanceOnline.Games.Lobbies.ReadyUp;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
 public class StartGameModel
 {

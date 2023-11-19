@@ -1,7 +1,7 @@
 using MediatR;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.Queries.UserQueries;
+using TheResistanceOnline.Data.Entities;
+using TheResistanceOnline.Data.Queries;
 
 namespace TheResistanceOnline.Authentications.OpenIds;
 

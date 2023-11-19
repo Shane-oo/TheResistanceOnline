@@ -1,10 +1,8 @@
 using FluentValidation;
 using TheResistanceOnline.Core.Requests.Commands;
 using TheResistanceOnline.GamePlay;
-using TheResistanceOnline.Games;
-using TheResistanceOnline.Hubs.Resistance.Common;
 
-namespace TheResistanceOnline.Hubs.Resistance.StartGame;
+namespace TheResistanceOnline.Hubs.Resistance;
 
 public class StartGameCommand: CommandBase<bool>
 {
@@ -14,6 +12,8 @@ public class StartGameCommand: CommandBase<bool>
 
     public bool BotsAllowed { get; set; }
 
+    public GameDetails GameDetails { get; set; }
+
     public string LobbyId { get; set; }
 
     public int TotalPlayers { get; set; }
@@ -21,8 +21,6 @@ public class StartGameCommand: CommandBase<bool>
     public GameType Type { get; set; }
 
     public List<string> UserNames { get; set; }
-
-    public GameDetails GameDetails { get; set; }
 
     #endregion
 }

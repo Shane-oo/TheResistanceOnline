@@ -1,7 +1,7 @@
 using MediatR;
-using TheResistanceOnline.Hubs.Lobbies.Common;
+using TheResistanceOnline.Hubs.Lobbies;
 
-namespace TheResistanceOnline.Hubs.Lobbies.GetLobbies;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
 public class GetLobbiesHandler: IRequestHandler<GetLobbiesQuery, List<LobbyDetailsModel>>
 {

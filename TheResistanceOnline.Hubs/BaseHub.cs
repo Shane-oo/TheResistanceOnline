@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using OpenIddict.Abstractions;
 using TheResistanceOnline.Core.Requests;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Hubs;
 
@@ -11,10 +11,10 @@ public class BaseHub<T>: Hub<T> where T : class
 {
     #region Properties
 
-    private Guid UserId => Context.User?.Identity is { IsAuthenticated: true }
-                           && Guid.TryParse(Context.User.FindFirstValue(OpenIddictConstants.Claims.Subject), out var userId)
-                               ? userId
-                               : Guid.Empty;
+    private UserId UserId => Context.User?.Identity is { IsAuthenticated: true }
+                             && Guid.TryParse(Context.User.FindFirstValue(OpenIddictConstants.Claims.Subject), out var userId)
+                                 ? new UserId(userId)
+                                 : null;
 
     #endregion
 

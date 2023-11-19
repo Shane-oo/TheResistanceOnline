@@ -15,9 +15,10 @@
 
 
     <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="11.7.1"/>
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="7.0.10"/>
-        <PackageReference Include="OpenIddict.Abstractions" Version="4.8.0"/>
+        <PackageReference Include="FluentValidation" Version="11.8.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.0" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="7.0.13" />
+        <PackageReference Include="OpenIddict.Abstractions" Version="4.9.0" />
     </ItemGroup>
 
 

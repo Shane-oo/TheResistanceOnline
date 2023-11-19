@@ -1,8 +1,8 @@
 using MediatR;
 using TheResistanceOnline.Core.Exceptions;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Hubs.Streams.GetConnectionIds;
+namespace TheResistanceOnline.Hubs.Streams;
 
 public class GetConnectionIdsHandler: IRequestHandler<GetConnectionIdsQuery, List<string>>
 {

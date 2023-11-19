@@ -1,4 +1,5 @@
 using TheResistanceOnline.Core.Requests.Commands;
+using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Authentications.OpenIds;
 
@@ -6,10 +7,12 @@ public class AuthenticateUserWithCodeGrantCommand: CommandBase<AuthenticationRes
 {
     #region Construction
 
-    public AuthenticateUserWithCodeGrantCommand(Guid userId)
+    public AuthenticateUserWithCodeGrantCommand(UserId userId)
     {
         UserId = userId;
     }
+
+    // todo fluent validation
 
     #endregion
 }

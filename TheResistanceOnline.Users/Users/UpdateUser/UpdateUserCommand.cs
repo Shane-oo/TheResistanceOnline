@@ -2,7 +2,7 @@ using FluentValidation;
 using MediatR;
 using TheResistanceOnline.Core.Requests.Commands;
 
-namespace TheResistanceOnline.Users.Users.UpdateUser;
+namespace TheResistanceOnline.Users.Users;
 
 public class UpdateUserCommand: CommandBase<Unit>
 {

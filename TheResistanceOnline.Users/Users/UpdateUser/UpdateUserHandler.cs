@@ -3,10 +3,10 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.Queries.UserQueries;
+using TheResistanceOnline.Data.Entities;
+using TheResistanceOnline.Data.Queries;
 
-namespace TheResistanceOnline.Users.Users.UpdateUser;
+namespace TheResistanceOnline.Users.Users;
 
 public class UpdateUserHandler: IRequestHandler<UpdateUserCommand, Unit>
 {

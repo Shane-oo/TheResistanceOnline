@@ -1,7 +1,7 @@
 using TheResistanceOnline.Core.Requests.Commands;
 using TheResistanceOnline.GamePlay.GameModels;
 
-namespace TheResistanceOnline.Hubs.Resistance.SelectMissionTeamPlayer;
+namespace TheResistanceOnline.Hubs.Resistance;
 
 public class SelectMissionTeamPlayerCommand: CommandBase
 {

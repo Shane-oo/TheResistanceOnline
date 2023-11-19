@@ -3,11 +3,10 @@ using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Queries.UserQueries;
+using TheResistanceOnline.Data.Queries;
 using TheResistanceOnline.Hubs.Common;
-using TheResistanceOnline.Hubs.Lobbies.Common;
 
-namespace TheResistanceOnline.Hubs.Lobbies.CreateLobby;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
 public class CreateLobbyHandler: IRequestHandler<CreateLobbyCommand, string>
 {

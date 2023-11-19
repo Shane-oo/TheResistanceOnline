@@ -1,4 +1,4 @@
-namespace TheResistanceOnline.Users.Users.GetUser;
+namespace TheResistanceOnline.Users.Users;
 
 public class UserDetailsModel
 {

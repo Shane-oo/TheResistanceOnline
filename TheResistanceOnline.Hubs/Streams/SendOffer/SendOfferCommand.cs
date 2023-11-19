@@ -1,8 +1,7 @@
 using MediatR;
 using TheResistanceOnline.Core.Requests.Commands;
-using TheResistanceOnline.Hubs.Streams.Common;
 
-namespace TheResistanceOnline.Hubs.Streams.SendOffer;
+namespace TheResistanceOnline.Hubs.Streams;
 
 public class SendOfferCommand: CommandBase<Unit>
 {

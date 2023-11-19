@@ -2,13 +2,10 @@ using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.Queries.UserQueries;
-using TheResistanceOnline.Games.Lobbies;
+using TheResistanceOnline.Data.Queries;
 using TheResistanceOnline.Hubs.Common;
-using TheResistanceOnline.Hubs.Lobbies.Common;
 
-namespace TheResistanceOnline.Hubs.Lobbies.JoinLobby;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
 public class JoinLobbyHandler: IRequestHandler<JoinLobbyCommand, string>
 {

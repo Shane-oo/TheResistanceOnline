@@ -1,11 +1,10 @@
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TheResistanceOnline.Data.Configurations;
 using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Data;
 
-public class Context: IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
+public class Context: DbContext
 {
     #region Properties
 
@@ -23,9 +22,19 @@ public class Context: IdentityDbContext<User, Role, Guid, UserClaim, UserRole, U
 
     public DbSet<PlayerStatistic> PlayerStatistics { get; set; }
 
+    public DbSet<RoleClaim> RoleClaims { get; set; }
+
+    public DbSet<Role> Roles { get; set; }
+
     public DbSet<Scope> Scopes { get; set; }
 
     public DbSet<Token> Tokens { get; set; }
+
+    public DbSet<UserClaim> UserClaims { get; set; }
+
+    public DbSet<UserRole> UserRoles { get; set; }
+
+    public DbSet<User> Users { get; set; }
 
     #endregion
 
@@ -48,10 +57,7 @@ public class Context: IdentityDbContext<User, Role, Guid, UserClaim, UserRole, U
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new RoleClaimConfiguration());
         modelBuilder.ApplyConfiguration(new UserClaimConfiguration());
-        modelBuilder.ApplyConfiguration(new UserLoginConfiguration());
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
-        modelBuilder.ApplyConfiguration(new UserTokenConfiguration());
-        modelBuilder.ApplyConfiguration(new UserSettingConfiguration());
         // External Identities
         modelBuilder.ApplyConfiguration(new MicrosoftUserConfiguration());
         modelBuilder.ApplyConfiguration(new GoogleUserConfiguration());

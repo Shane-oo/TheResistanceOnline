@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using TheResistanceOnline.Hubs.Resistance.Common;
 
 namespace TheResistanceOnline.Hubs.Resistance;
 

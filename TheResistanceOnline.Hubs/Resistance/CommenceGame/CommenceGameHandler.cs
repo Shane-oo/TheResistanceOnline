@@ -4,7 +4,7 @@ using TheResistanceOnline.GamePlay;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.GamePlay.GameModels;
 
-namespace TheResistanceOnline.Hubs.Resistance.CommenceGame;
+namespace TheResistanceOnline.Hubs.Resistance;
 
 public class CommenceGameHandler: IRequestHandler<CommenceGameCommand, Unit>
 {
@@ -29,7 +29,7 @@ public class CommenceGameHandler: IRequestHandler<CommenceGameCommand, Unit>
     {
         // in case of case where commenceGameCommand is sent twice 
         // immediately commence game and hopefully in the other thread game has been commenced
-       if (command.GameDetails.GameCommenced) return default;
+        if (command.GameDetails.GameCommenced) return default;
 
         command.GameDetails.GameCommenced = true;
 

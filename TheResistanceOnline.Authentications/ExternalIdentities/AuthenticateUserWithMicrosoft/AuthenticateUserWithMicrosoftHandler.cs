@@ -4,12 +4,11 @@ using Microsoft.Extensions.Options;
 using TheResistanceOnline.Common.Extensions;
 using TheResistanceOnline.Core;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
-public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateUserWithMicrosoftCommand, AuthenticationResult<Guid>>
+public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateUserWithMicrosoftCommand, AuthenticationResult<UserId>>
 {
     #region Fields
 
@@ -35,17 +34,10 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
 
     #region Private Methods
 
-    private async Task<AuthenticationResult<Guid>> CreateUser(AuthenticateUserWithMicrosoftCommand command)
+    private async Task<AuthenticationResult<UserId>> CreateUser(AuthenticateUserWithMicrosoftCommand command, CancellationToken cancellationToken)
     {
-        var user = new User
-                   {
-                       UserName = "User" + Ulid.NewUlid(),
-                       MicrosoftUser = new MicrosoftUser
-                                       {
-                                           ObjectId = command.ObjectId
-                                       },
-                       UserSetting = new UserSetting()
-                   };
+        var user = MicrosoftUser.Create(command.MicrosoftId).User;
+
         var result = await _userManager.CreateAsync(user);
 
         if (!result.Succeeded)
@@ -56,23 +48,23 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
 
         await _userManager.AddToRoleAsync(user, Roles.User.ToString());
 
-        return AuthenticationResult<Guid>.Accept(user.Id);
+        return AuthenticationResult<UserId>.Accept(user.Id);
     }
 
-    private static AuthenticationResult<Guid> Reject(string reason)
+    private static AuthenticationResult<UserId> Reject(string reason)
     {
-        return AuthenticationResult<Guid>.Reject(reason);
+        return AuthenticationResult<UserId>.Reject(reason);
     }
 
     #endregion
 
     #region Public Methods
 
-    public async Task<AuthenticationResult<Guid>> Handle(AuthenticateUserWithMicrosoftCommand command, CancellationToken cancellationToken)
+    public async Task<AuthenticationResult<UserId>> Handle(AuthenticateUserWithMicrosoftCommand command, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        if (!command.ObjectId.HasValue())
+        if (command.MicrosoftId == null || !command.MicrosoftId.Value.HasValue())
         {
             return Reject("Missing Microsoft Identifier.");
         }
@@ -86,16 +78,16 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
         }
 
         var microsoftUser = await _dataContext.Query<IMicrosoftUserByObjectIdDbQuery>()
-                                              .WithParams(command.ObjectId)
+                                              .WithParams(command.MicrosoftId)
                                               .WithNoTracking()
                                               .ExecuteAsync(cancellationToken);
 
         if (microsoftUser != null)
         {
-            return AuthenticationResult<Guid>.Accept(microsoftUser.UserId);
+            return AuthenticationResult<UserId>.Accept(microsoftUser.UserId);
         }
 
-        return await CreateUser(command);
+        return await CreateUser(command, cancellationToken);
     }
 
     #endregion

@@ -1,5 +1,5 @@
 using MediatR;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Core.Requests.Commands;
 
@@ -15,7 +15,7 @@ public class CommandBase<TResponse>: ICommand<TResponse>
 
     public string ConnectionId { get; set; }
 
-    public Guid UserId { get; set; }
+    public UserId UserId { get; set; }
 
     public Roles UserRole { get; set; }
 
@@ -28,13 +28,13 @@ public class CommandBase<TResponse>: ICommand<TResponse>
         CommandId = Guid.NewGuid();
     }
 
-    public CommandBase(Guid userId, Roles userRole)
+    public CommandBase(UserId userId, Roles userRole)
     {
         UserId = userId;
         UserRole = userRole;
     }
 
-    public CommandBase(Guid userId, Roles userRole, string connectionId)
+    public CommandBase(UserId userId, Roles userRole, string connectionId)
     {
         UserId = userId;
         UserRole = userRole;
@@ -48,11 +48,11 @@ public class CommandBase: CommandBase<Unit> // for commands that return default 
 {
     #region Construction
 
-    public CommandBase(Guid userId, Roles userRole): base(userId, userRole)
+    public CommandBase(UserId userId, Roles userRole): base(userId, userRole)
     {
     }
 
-    public CommandBase(Guid userId, Roles userRole, string connectionId): base(userId, userRole, connectionId)
+    public CommandBase(UserId userId, Roles userRole, string connectionId): base(userId, userRole, connectionId)
     {
     }
 

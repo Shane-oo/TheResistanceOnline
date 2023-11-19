@@ -1,9 +1,8 @@
 using System.Collections.Concurrent;
 using FluentValidation;
 using TheResistanceOnline.Core.Requests.Queries;
-using TheResistanceOnline.Hubs.Lobbies.Common;
 
-namespace TheResistanceOnline.Hubs.Lobbies.GetLobby;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
 public class GetLobbyQuery: QueryBase<LobbyDetailsModel>
 {

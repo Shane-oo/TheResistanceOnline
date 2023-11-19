@@ -12,6 +12,7 @@ public class GameConfiguration: IEntityTypeConfiguration<Game>
     {
         builder.HasKey(us => us.Id)
                .HasName("PK_Games");
+
         builder.HasMany(g => g.PlayerStatistics)
                .WithOne()
                .HasForeignKey(ps => ps.GameId);
