@@ -1,4 +1,4 @@
-namespace TheResistanceOnline.Core.NewCommandAndQueries;
+namespace TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
 public class Result
 {

@@ -110,6 +110,7 @@ public class Startup
                                o.Cookie.Name = AuthorizationsController.COOKIE_NAME;
                                o.SlidingExpiration = false;
                            });
+        services.AddMediatrBehaviours();
 
         // TheResistanceOnline.Data
         services.AddSharedDbQueries();

@@ -30,8 +30,11 @@ public class MicrosoftUser: Entity<MicrosoftId>
 
     public static MicrosoftUser Create(MicrosoftId microsoftId)
     {
-        var microsoftUser = new MicrosoftUser(microsoftId);
-        User.Create(microsoftUser);
+        var microsoftUser = new MicrosoftUser();
+        var user = User.Create();
+        microsoftUser.User = user;
+        user.MicrosoftUser = new MicrosoftUser(microsoftId);
+
         return microsoftUser;
     }
 

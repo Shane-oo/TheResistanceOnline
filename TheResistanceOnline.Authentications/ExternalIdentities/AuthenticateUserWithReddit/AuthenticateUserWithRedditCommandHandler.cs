@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using TheResistanceOnline.Core;
-using TheResistanceOnline.Core.NewCommandAndQueries;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithReddit;
+namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
 public class AuthenticateUserWithRedditCommandHandler: ICommandHandler<AuthenticateUserWithRedditCommand, UserId>
 {
@@ -30,6 +31,27 @@ public class AuthenticateUserWithRedditCommandHandler: ICommandHandler<Authentic
 
     #endregion
 
+    #region Private Methods
+
+    private async Task<Result<UserId>> CreateUser(AuthenticateUserWithRedditCommand command, CancellationToken cancellationToken)
+    {
+        var user = RedditUser.Create(command.RedditId).User;
+
+        var result = await _userManager.CreateAsync(user);
+
+        if (!result.Succeeded)
+        {
+            var identityError = result.Errors.FirstOrDefault();
+            return Result.Failure<UserId>(identityError != null ? new Error(identityError.Code, identityError.Description) : Error.Unknown);
+        }
+
+        await _userManager.AddToRoleAsync(user, Roles.User.ToString());
+
+        return Result.Success(user.Id);
+    }
+
+    #endregion
+
     #region Public Methods
 
     public async Task<Result<UserId>> Handle(AuthenticateUserWithRedditCommand command, CancellationToken cancellationToken)
@@ -39,23 +61,21 @@ public class AuthenticateUserWithRedditCommandHandler: ICommandHandler<Authentic
             return Result.Failure<UserId>(Error.NullValue);
         }
 
-        if (command.RedditId == null || 
-            !string.IsNullOrEmpty(command.RedditId.Value) ||
-            command.Audience != _redditSettings.ClientId)
+        if (command.Audience != _redditSettings.ClientId)
         {
             return Result.Failure<UserId>(ExternalIdentityErrors.MissingIdentifier);
         }
 
         var redditUser = await _dataContext.Query<IRedditUserByIdDbQuery>()
                                            .WithParams(command.RedditId)
+                                           .WithNoTracking()
                                            .ExecuteAsync(cancellationToken);
-        // todo 
-        // continue implementing the authenticateUserWithReddit following the newly implemented results pattern
-        // create reddit user in dabasebase (id looks like this [23] = {Claim} id: f08moxny)
-        // after this implement the courses implementeation of queries
-        // then update all handlers to follow the results pattern
-        // dont forget the generic pipeline fluent validation
-        // 
+        if (redditUser != null)
+        {
+            return Result.Success(redditUser.UserId);
+        }
+
+        return await CreateUser(command, cancellationToken);
     }
 
     #endregion

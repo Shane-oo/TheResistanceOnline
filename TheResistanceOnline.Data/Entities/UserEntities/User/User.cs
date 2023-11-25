@@ -36,6 +36,8 @@ public sealed class User: Entity<UserId>, IAuditableEntity
 
     public UserRole UserRole { get; set; }
 
+    public RedditUser RedditUser { get; set; }
+
     #endregion
 
     #region Construction
@@ -85,26 +87,6 @@ public sealed class User: Entity<UserId>, IAuditableEntity
     {
         var user = new User(UserId.New(), NewUserName());
 
-        return user;
-    }
-
-    public static User Create(MicrosoftUser microsoftUser)
-    {
-        var user = new User(UserId.New(), NewUserName())
-                   {
-                       MicrosoftUser = microsoftUser
-                   };
-        microsoftUser.User = user;
-        return user;
-    }
-
-    public static User Create(GoogleUser googleUser)
-    {
-        var user = new User(UserId.New(), NewUserName())
-                   {
-                       GoogleUser = googleUser
-                   };
-        googleUser.User = user;
         return user;
     }
 

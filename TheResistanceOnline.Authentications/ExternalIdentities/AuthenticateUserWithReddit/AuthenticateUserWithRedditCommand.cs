@@ -1,29 +1,32 @@
 using FluentValidation;
-using TheResistanceOnline.Core.NewCommandAndQueries;
+using JetBrains.Annotations;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data.Entities;
-using TheResistanceOnline.Data.Entities.Reddit;
 
-namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithReddit;
+namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
 public sealed class AuthenticateUserWithRedditCommand: Command<UserId>
 {
     #region Properties
 
-    public RedditId RedditId { get; set; }
+    public string Audience { get; }
 
-    public string Audience { get; set; }
+    public RedditId RedditId { get; }
 
     #endregion
 
     #region Construction
 
-    public AuthenticateUserWithRedditCommand(UserId userId, Roles userRole): base(userId, userRole)
+    public AuthenticateUserWithRedditCommand(RedditId redditId, string audience)
     {
+        RedditId = redditId;
+        Audience = audience;
     }
 
     #endregion
 }
 
+[UsedImplicitly]
 public class AuthenticateUserWithRedditCommandValidator: AbstractValidator<AuthenticateUserWithRedditCommand>
 {
     #region Construction
@@ -32,6 +35,7 @@ public class AuthenticateUserWithRedditCommandValidator: AbstractValidator<Authe
     {
         RuleFor(c => c.RedditId).NotNull();
         RuleFor(c => c.RedditId.Value).NotEmpty();
+        RuleFor(c => c.Audience).NotEmpty();
     }
 
     #endregion

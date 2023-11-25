@@ -6,11 +6,11 @@ public class UserAuthenticationPayload
 {
     #region Properties
 
-    public string Role { get; set; }
+    public string Role { get; init; }
 
-    public UserId UserId { get; set; }
+    public UserId UserId { get; init; }
 
-    public string UserName { get; set; }
+    public string UserName { get; init; }
 
     #endregion
 }

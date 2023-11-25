@@ -7,12 +7,18 @@ using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities;
 using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Users.Users;
+using TheResistanceOnline.Web.Behaviours;
 
 namespace TheResistanceOnline.Web;
 
 public static class DependencyInjection
 {
     #region Private Methods
+
+    public static void AddMediatrBehaviours(this IServiceCollection services)
+    {
+        services.AddMediatR(configuration => { configuration.AddOpenBehavior(typeof(ValidationBehaviour<,>)); });
+    }
 
     private static X509Certificate2 LoadCertificate(string thumbprint)
     {

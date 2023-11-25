@@ -1,7 +1,7 @@
 using MediatR;
 using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Core.NewCommandAndQueries;
+namespace TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
 public interface ICommand: IRequest<Result>, IBaseCommand
 {
@@ -27,10 +27,19 @@ public class Command<TResponse>: ICommand<TResponse>
 
     #region Construction
 
-    public Command(UserId userId, Roles userRole)
+    protected Command(UserId userId, Roles userRole)
     {
         UserId = userId;
         UserRole = userRole;
+    }
+
+    protected Command(UserId userId)
+    {
+        UserId = userId;
+    }
+
+    protected Command()
+    {
     }
 
     #endregion

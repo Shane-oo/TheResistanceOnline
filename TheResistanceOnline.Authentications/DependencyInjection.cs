@@ -1,7 +1,6 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using TheResistanceOnline.Authentications.ExternalIdentities;
-using TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithReddit;
 
 namespace TheResistanceOnline.Authentications;
 

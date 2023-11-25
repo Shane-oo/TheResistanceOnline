@@ -1,4 +1,4 @@
-using MediatR;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities;
 using TheResistanceOnline.Data.Queries;
@@ -6,7 +6,7 @@ using TheResistanceOnline.Data.Queries;
 namespace TheResistanceOnline.Authentications.OpenIds;
 
 public class AuthenticateUserWithCodeGrantHandler:
-    IRequestHandler<AuthenticateUserWithCodeGrantCommand, AuthenticationResult<UserAuthenticationPayload>>
+    ICommandHandler<AuthenticateUserWithCodeGrantCommand, UserAuthenticationPayload>
 {
     #region Fields
 
@@ -23,20 +23,14 @@ public class AuthenticateUserWithCodeGrantHandler:
 
     #endregion
 
-    #region Private Methods
-
-    private static AuthenticationResult<UserAuthenticationPayload> Reject(string reason)
-    {
-        return AuthenticationResult<UserAuthenticationPayload>.Reject(reason);
-    }
-
-    #endregion
-
     #region Public Methods
 
-    public async Task<AuthenticationResult<UserAuthenticationPayload>> Handle(AuthenticateUserWithCodeGrantCommand command, CancellationToken cancellationToken)
+    public async Task<Result<UserAuthenticationPayload>> Handle(AuthenticateUserWithCodeGrantCommand command, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(command);
+        if (command == null)
+        {
+            return Result.Failure<UserAuthenticationPayload>(Error.NullValue);
+        }
 
         var user = await _context.Query<IUserByUserIdDbQuery>()
                                  .Include($"{nameof(User.UserRole)}.{nameof(UserRole.Role)}")
@@ -45,7 +39,7 @@ public class AuthenticateUserWithCodeGrantHandler:
 
         if (user is null)
         {
-            return Reject("Invalid User.");
+            return Result.Failure<UserAuthenticationPayload>(OpenIdErrors.UserNotFound);
         }
 
         user.LoginOn = DateTimeOffset.UtcNow;
@@ -58,7 +52,7 @@ public class AuthenticateUserWithCodeGrantHandler:
                          UserName = user.UserName,
                          Role = user.UserRole.Role.Name
                      };
-        return AuthenticationResult<UserAuthenticationPayload>.Accept(result);
+        return Result.Success(result);
     }
 
     #endregion

@@ -1,15 +1,17 @@
-using TheResistanceOnline.Core.Requests.Commands;
+using FluentValidation;
+using JetBrains.Annotations;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
-public class AuthenticateUserWithGoogleCommand: CommandBase<AuthenticationResult<UserId>>
+public class AuthenticateUserWithGoogleCommand: Command<UserId>
 {
     #region Properties
 
-    public string Audience { get; set; }
+    public string Audience { get; }
 
-    public GoogleId GoogleId { get; set; }
+    public GoogleId GoogleId { get; }
 
     #endregion
 
@@ -21,6 +23,20 @@ public class AuthenticateUserWithGoogleCommand: CommandBase<AuthenticationResult
         GoogleId = googleId;
     }
 
-    // todo fluent validation
+    #endregion
+}
+
+[UsedImplicitly]
+public class AuthenticateUserWithGoogleCommandValidator: AbstractValidator<AuthenticateUserWithGoogleCommand>
+{
+    #region Construction
+
+    public AuthenticateUserWithGoogleCommandValidator()
+    {
+        RuleFor(c => c.GoogleId).NotNull();
+        RuleFor(c => c.GoogleId.Value).NotEmpty();
+        RuleFor(c => c.Audience).NotEmpty();
+    }
+
     #endregion
 }

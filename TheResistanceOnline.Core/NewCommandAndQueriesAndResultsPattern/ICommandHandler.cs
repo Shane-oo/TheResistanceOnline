@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace TheResistanceOnline.Core.NewCommandAndQueries;
+namespace TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
 public interface ICommandHandler<in TCommand>: IRequestHandler<TCommand, Result>
     where TCommand : ICommand

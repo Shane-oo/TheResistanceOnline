@@ -1,18 +1,31 @@
-using TheResistanceOnline.Core.Requests.Commands;
+using FluentValidation;
+using JetBrains.Annotations;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Authentications.OpenIds;
 
-public class AuthenticateUserWithCodeGrantCommand: CommandBase<AuthenticationResult<UserAuthenticationPayload>>
+public class AuthenticateUserWithCodeGrantCommand: Command<UserAuthenticationPayload>
 {
     #region Construction
 
-    public AuthenticateUserWithCodeGrantCommand(UserId userId)
+    public AuthenticateUserWithCodeGrantCommand(UserId userId): base(userId)
     {
-        UserId = userId;
     }
 
-    // todo fluent validation
+    #endregion
+}
+
+[UsedImplicitly]
+public class AuthenticateUserWithCodeGrantCommandValidator: AbstractValidator<AuthenticateUserWithCodeGrantCommand>
+{
+    #region Construction
+
+    public AuthenticateUserWithCodeGrantCommandValidator()
+    {
+        RuleFor(c => c.UserId).NotNull();
+        RuleFor(c => c.UserId.Value).NotEmpty();
+    }
 
     #endregion
 }

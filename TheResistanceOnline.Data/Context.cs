@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using TheResistanceOnline.Data.Configurations;
 using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Data;
@@ -21,6 +20,8 @@ public class Context: DbContext
     public DbSet<MicrosoftUser> MicrosoftUsers { get; set; }
 
     public DbSet<PlayerStatistic> PlayerStatistics { get; set; }
+
+    public DbSet<RedditUser> RedditUsers { get; set; }
 
     public DbSet<RoleClaim> RoleClaims { get; set; }
 
@@ -51,26 +52,7 @@ public class Context: DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        // Users
-        modelBuilder.ApplyConfiguration(new UserConfiguration());
-        modelBuilder.ApplyConfiguration(new RoleConfiguration());
-        modelBuilder.ApplyConfiguration(new RoleClaimConfiguration());
-        modelBuilder.ApplyConfiguration(new UserClaimConfiguration());
-        modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
-        // External Identities
-        modelBuilder.ApplyConfiguration(new MicrosoftUserConfiguration());
-        modelBuilder.ApplyConfiguration(new GoogleUserConfiguration());
-        // Games
-        modelBuilder.ApplyConfiguration(new GameConfiguration());
-        modelBuilder.ApplyConfiguration(new GamePlayerValueConfiguration());
-        // Player Statistics
-        modelBuilder.ApplyConfiguration(new PlayerStatisticConfiguration());
-        // Authorizations
-        modelBuilder.ApplyConfiguration(new ApplicationConfiguration());
-        modelBuilder.ApplyConfiguration(new AuthorizationConfiguration());
-        modelBuilder.ApplyConfiguration(new TokenConfiguration());
-        modelBuilder.ApplyConfiguration(new ScopeConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(Context).Assembly);
     }
 
     #endregion

@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Client.AspNetCore;
 using OpenIddict.Server.AspNetCore;
-using TheResistanceOnline.Authentications;
 using TheResistanceOnline.Authentications.ExternalIdentities;
 using TheResistanceOnline.Authentications.OpenIds;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data.Entities;
 using OpenIddictErrors = OpenIddict.Abstractions.OpenIddictConstants.Errors;
 using OpenIddictClaims = OpenIddict.Abstractions.OpenIddictConstants.Claims;
@@ -62,7 +62,7 @@ public class AuthorizationsController: Controller
                       AUTH_SCHEME);
     }
 
-    private async Task<IActionResult> ProcessAuthorizationCodeAuth(OpenIddictRequest request)
+    private async Task<IActionResult> ProcessAuthorizationCodeAuth(OpenIddictRequest request, CancellationToken cancellationToken)
     {
         // Retrieve the claims principal stored in the authorization code
         var principal = (await HttpContext.AuthenticateAsync(AUTH_SCHEME)).Principal;
@@ -77,54 +77,58 @@ public class AuthorizationsController: Controller
             return Forbid(OpenIddictErrors.InvalidRequestObject, "Required Claim Not Found");
         }
 
-        var authResult = await _mediator.Send(new AuthenticateUserWithCodeGrantCommand(new UserId(userId)));
+        var result = await _mediator.Send(new AuthenticateUserWithCodeGrantCommand(new UserId(userId)), cancellationToken);
 
-        return !authResult.IsAuthenticated ? Forbid(OpenIddictErrors.InvalidGrant, authResult.Reason) : SignInUser(request, authResult.Payload);
+        return result.IsFailure ? Forbid(OpenIddictErrors.InvalidGrant, result.Error.Description) : SignInUser(request, result.Value);
     }
 
-    private async Task<IActionResult> ProcessGoogleAuthorization(ClaimsIdentity claimsIdentity)
+    private async Task<IActionResult> ProcessGoogleAuthorization(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
     {
         //authenticate User With Google 
         var command = new AuthenticateUserWithGoogleCommand(claimsIdentity.GetClaim(CustomClaims.GoogleClaims.AUDIENCE),
                                                             new GoogleId(claimsIdentity.GetClaim(CustomClaims.GoogleClaims.SUBJECT)));
 
-        var authResult = await _mediator.Send(command);
+        var result = await _mediator.Send(command, cancellationToken);
 
-        return SignInExternalAuthorization(authResult);
-    }
-
-    private async Task<IActionResult> ProcessRedditAuthorization(ClaimsIdentity claimsIdentity)
-    {
-        // authenticate User with Reddit
-        var command = new 
+        return SignInExternalAuthorization(result);
     }
 
 
-    private async Task<IActionResult> ProcessMicrosoftAuthorization(ClaimsIdentity claimsIdentity)
+    private async Task<IActionResult> ProcessMicrosoftAuthorization(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
     {
         //authenticate User With Microsoft 
         var command = new AuthenticateUserWithMicrosoftCommand(claimsIdentity.GetClaim(CustomClaims.AzureADClaims.AUDIENCE),
                                                                Guid.TryParse(claimsIdentity.GetClaim(CustomClaims.AzureADClaims.OBJECT_ID), out var objectId)
                                                                    ? new MicrosoftId(objectId)
                                                                    : null);
-        var authResult = await _mediator.Send(command);
+        var result = await _mediator.Send(command, cancellationToken);
 
-        return SignInExternalAuthorization(authResult);
+        return SignInExternalAuthorization(result);
     }
 
-    private IActionResult SignInExternalAuthorization(AuthenticationResult<UserId> authResult)
+    private async Task<IActionResult> ProcessRedditAuthorization(ClaimsIdentity claimsIdentity, CancellationToken cancellationToken)
     {
-        if (!authResult.IsAuthenticated)
+        // authenticate User with Reddit
+        var command = new AuthenticateUserWithRedditCommand(new RedditId(claimsIdentity.GetClaim(CustomClaims.RedditClaims.ID)),
+                                                            claimsIdentity.GetClaim(CustomClaims.RedditClaims.AUDIENCE));
+        var result = await _mediator.Send(command, cancellationToken);
+
+        return SignInExternalAuthorization(result);
+    }
+
+    private IActionResult SignInExternalAuthorization(Result<UserId> result)
+    {
+        if (result.IsFailure)
         {
             HttpContext.Response.Cookies.Delete(COOKIE_NAME);
-            return Forbid(OpenIddictErrors.AccessDenied, authResult.Reason);
+            return Forbid(OpenIddictErrors.AccessDenied, result.Error.Description);
         }
-
-        var userId = authResult.Payload;
 
         var identity = new ClaimsIdentity(AUTH_SCHEME);
 
-        identity.AddClaim(OpenIddictClaims.Subject, userId.Value.ToString() ?? string.Empty);
+        identity.AddClaim(OpenIddictClaims.Subject, result
+                                                    .Value
+                                                    .Value.ToString());
 
         var principal = new ClaimsPrincipal(identity);
 
@@ -166,7 +170,7 @@ public class AuthorizationsController: Controller
 
     [HttpGet("~/authorize")]
     [HttpPost("~/authorize")]
-    public async Task<IActionResult> Authorize()
+    public async Task<IActionResult> Authorize(CancellationToken cancellationToken)
     {
         var request = HttpContext.GetOpenIddictServerRequest();
 
@@ -201,24 +205,18 @@ public class AuthorizationsController: Controller
             return Challenge(properties, OI_CLIENT_AUTH_SCHEME);
         }
 
-        switch(principal.Identity?.AuthenticationType)
+        return principal.Identity?.AuthenticationType switch
         {
-            case OpenIddictWebProviders.Microsoft:
-                return await ProcessMicrosoftAuthorization(principal.Identity as ClaimsIdentity);
-            case OpenIddictWebProviders.Google:
-                return await ProcessGoogleAuthorization(principal.Identity as ClaimsIdentity);
-            case OpenIddictWebProviders.Reddit:
-                //
-                return await ProcessRedditAuthorization(principal.Identity as ClaimsIdentity);
-        }
-
-
-        return Forbid(OpenIddictErrors.AccessDenied, "Provider Not Supported");
+            OpenIddictWebProviders.Microsoft => await ProcessMicrosoftAuthorization(principal.Identity as ClaimsIdentity, cancellationToken),
+            OpenIddictWebProviders.Google => await ProcessGoogleAuthorization(principal.Identity as ClaimsIdentity, cancellationToken),
+            OpenIddictWebProviders.Reddit => await ProcessRedditAuthorization(principal.Identity as ClaimsIdentity, cancellationToken),
+            _ => Forbid(OpenIddictErrors.AccessDenied, "Provider Not Supported")
+        };
     }
 
     [HttpPost("~/token")]
     [Produces("application/json")]
-    public async Task<IActionResult> Exchange()
+    public async Task<IActionResult> Exchange(CancellationToken cancellationToken)
     {
         var request = HttpContext.GetOpenIddictServerRequest();
 
@@ -230,7 +228,7 @@ public class AuthorizationsController: Controller
 
         if (request.IsAuthorizationCodeGrantType())
         {
-            return await ProcessAuthorizationCodeAuth(request);
+            return await ProcessAuthorizationCodeAuth(request, cancellationToken);
         }
 
         if (request.IsRefreshTokenGrantType())
@@ -332,8 +330,9 @@ public static class CustomClaims
     {
         #region Constants
 
-        public const string ID = "id";
         public const string AUDIENCE = "oauth_client_id";
+
+        public const string ID = "id";
 
         #endregion
     }

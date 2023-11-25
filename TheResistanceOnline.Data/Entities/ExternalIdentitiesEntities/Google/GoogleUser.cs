@@ -12,11 +12,15 @@ public class GoogleUser: Entity<GoogleId>
 
     #region Construction
 
-    private GoogleUser(GoogleId googleId): base(googleId)
+    public GoogleUser()
     {
     }
 
-    public GoogleUser()
+    #endregion
+
+    #region Construction
+
+    private GoogleUser(GoogleId googleId): base(googleId)
     {
     }
 
@@ -27,7 +31,9 @@ public class GoogleUser: Entity<GoogleId>
     public static GoogleUser Create(GoogleId googleId)
     {
         var googleUser = new GoogleUser(googleId);
-        User.Create(googleUser);
+        var user = User.Create();
+        googleUser.User = user;
+        user.GoogleUser = googleUser;
 
         return googleUser;
     }

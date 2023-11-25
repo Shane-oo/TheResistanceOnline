@@ -1,12 +1,14 @@
-namespace TheResistanceOnline.Core.NewCommandAndQueries;
+namespace TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
-public record Error(string Code, string Name)
+public record Error(string Code, string Description)
 {
     #region Fields
 
     public static readonly Error None = new Error(string.Empty, string.Empty);
 
-    public static readonly Error NullValue = new Error("Error.NullValue", "Null value was provided");
+    public static readonly Error NullValue = new Error("Error.NullValue", "Value cannot be null");
+
+    public static readonly Error Unknown = new Error("Error", "Something went wrong");
 
     #endregion
 }

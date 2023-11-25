@@ -1,20 +1,19 @@
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using TheResistanceOnline.Common.Extensions;
 using TheResistanceOnline.Core;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
-public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateUserWithMicrosoftCommand, AuthenticationResult<UserId>>
+public class AuthenticateUserWithMicrosoftHandler: ICommandHandler<AuthenticateUserWithMicrosoftCommand, UserId>
 {
     #region Fields
 
-    private readonly MicrosoftSettings _microsoftSettings;
-
     private readonly IDataContext _dataContext;
+
+    private readonly MicrosoftSettings _microsoftSettings;
     private readonly UserManager<User> _userManager;
 
     #endregion
@@ -34,7 +33,7 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
 
     #region Private Methods
 
-    private async Task<AuthenticationResult<UserId>> CreateUser(AuthenticateUserWithMicrosoftCommand command, CancellationToken cancellationToken)
+    private async Task<Result<UserId>> CreateUser(AuthenticateUserWithMicrosoftCommand command, CancellationToken cancellationToken)
     {
         var user = MicrosoftUser.Create(command.MicrosoftId).User;
 
@@ -42,39 +41,31 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
 
         if (!result.Succeeded)
         {
-            var errorDescription = result.Errors.FirstOrDefault()?.Description;
-            return Reject(errorDescription);
+            var identityError = result.Errors.FirstOrDefault();
+            return Result.Failure<UserId>(identityError != null ? new Error(identityError.Code, identityError.Description) : Error.Unknown);
         }
 
         await _userManager.AddToRoleAsync(user, Roles.User.ToString());
 
-        return AuthenticationResult<UserId>.Accept(user.Id);
-    }
-
-    private static AuthenticationResult<UserId> Reject(string reason)
-    {
-        return AuthenticationResult<UserId>.Reject(reason);
+        return Result.Success(user.Id);
     }
 
     #endregion
 
     #region Public Methods
 
-    public async Task<AuthenticationResult<UserId>> Handle(AuthenticateUserWithMicrosoftCommand command, CancellationToken cancellationToken)
+    public async Task<Result<UserId>> Handle(AuthenticateUserWithMicrosoftCommand command, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(command);
-
-        if (command.MicrosoftId == null || !command.MicrosoftId.Value.HasValue())
+        if (command == null)
         {
-            return Reject("Missing Microsoft Identifier.");
+            return Result.Failure<UserId>(Error.NullValue);
         }
 
         // Validate the audience
         // the aud claim identifies the intended audience of the token, the audience must be client ID of the App
-
         if (command.Audience != _microsoftSettings.ClientId)
         {
-            return Reject("Unauthorized audience.");
+            return Result.Failure<UserId>(ExternalIdentityErrors.MissingIdentifier);
         }
 
         var microsoftUser = await _dataContext.Query<IMicrosoftUserByObjectIdDbQuery>()
@@ -84,7 +75,7 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
 
         if (microsoftUser != null)
         {
-            return AuthenticationResult<UserId>.Accept(microsoftUser.UserId);
+            return Result.Success(microsoftUser.UserId);
         }
 
         return await CreateUser(command, cancellationToken);
