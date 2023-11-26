@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using TheResistanceOnline.Data.Entities.GameEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.Queries.Games;
+namespace TheResistanceOnline.Data.Queries;
 
 //todo this probs shouldnt be here its not shared
 public interface IAllGamePlayerValuesDbQuery: IDbQuery<List<GamePlayerValue>>

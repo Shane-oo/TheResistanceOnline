@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
+using TheResistanceOnline.Data.Entities;
 using TheResistanceOnline.Data.Queries;
 
-namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
+namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
 public interface IMicrosoftUserByObjectIdDbQuery: IDbQuery<MicrosoftUser>
 {
@@ -11,7 +11,7 @@ public interface IMicrosoftUserByObjectIdDbQuery: IDbQuery<MicrosoftUser>
 
     IMicrosoftUserByObjectIdDbQuery WithNoTracking();
 
-    IMicrosoftUserByObjectIdDbQuery WithParams(Guid objectId);
+    IMicrosoftUserByObjectIdDbQuery WithParams(MicrosoftId microsoftId);
 }
 
 public class MicrosoftUserByObjectIdDbQuery: IMicrosoftUserByObjectIdDbQuery
@@ -23,7 +23,7 @@ public class MicrosoftUserByObjectIdDbQuery: IMicrosoftUserByObjectIdDbQuery
     private readonly Context _context;
     private string[] _include;
 
-    private Guid _objectId;
+    private MicrosoftId _microsoftId;
 
     #endregion
 
@@ -40,7 +40,8 @@ public class MicrosoftUserByObjectIdDbQuery: IMicrosoftUserByObjectIdDbQuery
 
     public async Task<MicrosoftUser> ExecuteAsync(CancellationToken cancellationToken)
     {
-        var query = _context.MicrosoftUsers.Where(m => m.ObjectId.Equals(_objectId));
+        var query = _context.MicrosoftUsers.Where(m => m.Id == _microsoftId);
+
         if (_include != null)
         {
             query = _include.Aggregate(query, (current, expression) => current.Include(expression));
@@ -66,9 +67,9 @@ public class MicrosoftUserByObjectIdDbQuery: IMicrosoftUserByObjectIdDbQuery
         return this;
     }
 
-    public IMicrosoftUserByObjectIdDbQuery WithParams(Guid objectId)
+    public IMicrosoftUserByObjectIdDbQuery WithParams(MicrosoftId microsoftId)
     {
-        _objectId = objectId;
+        _microsoftId = microsoftId;
         return this;
     }
 

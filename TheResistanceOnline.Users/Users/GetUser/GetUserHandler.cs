@@ -1,46 +1,55 @@
-using AutoMapper;
-using MediatR;
-using TheResistanceOnline.Core.Exceptions;
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.Queries.UserQueries;
+using TheResistanceOnline.Data.Queries;
 
-namespace TheResistanceOnline.Users.Users.GetUser;
+namespace TheResistanceOnline.Users.Users;
 
-public class GetUserHandler: IRequestHandler<GetUserQuery, UserDetailsModel>
+public class GetUserHandler: IQueryHandler<GetUserQuery, UserDetailsModel>
 {
     #region Fields
 
     private readonly IDataContext _context;
 
-    private readonly IMapper _mapper;
-
     #endregion
 
     #region Construction
 
-    public GetUserHandler(IDataContext context, IMapper mapper)
+    public GetUserHandler(IDataContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     #endregion
 
     #region Public Methods
 
-    public async Task<UserDetailsModel> Handle(GetUserQuery query, CancellationToken cancellationToken)
+    public async Task<Result<UserDetailsModel>> Handle(GetUserQuery query, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(query);
+        if (query == null)
+        {
+            return Result.Failure<UserDetailsModel>(Error.NullValue);
+        }
 
         var user = await _context.Query<IUserByUserIdDbQuery>()
                                  .WithParams(query.UserId)
                                  .WithNoTracking()
                                  .ExecuteAsync(cancellationToken);
 
-        NotFoundException.ThrowIfNull(user);
+        var notFoundResult = NotFoundError.FailIfNull(user);
+        if (notFoundResult.IsFailure)
+        {
+            return Result.Failure<UserDetailsModel>(notFoundResult.Error);
+        }
 
-        return _mapper.Map<UserDetailsModel>(user);
+        var userDetailsModel = new UserDetailsModel
+                               {
+                                   CreatedOn = user.CreatedOn,
+                                   ModifiedOn = user.ModifiedOn,
+                                   UserName = user.UserName
+                               };
+
+        return userDetailsModel;
     }
 
     #endregion

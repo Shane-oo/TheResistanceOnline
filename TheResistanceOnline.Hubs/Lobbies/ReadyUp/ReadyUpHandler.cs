@@ -1,14 +1,11 @@
-using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using TheResistanceOnline.Core.Exceptions;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.GamePlay;
-using TheResistanceOnline.Games.Lobbies;
-using TheResistanceOnline.Games.Lobbies.ReadyUp;
 
-namespace TheResistanceOnline.Hubs.Lobbies.ReadyUp;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
-public class ReadyUpHandler: IRequestHandler<ReadyUpCommand, Unit>
+public class ReadyUpHandler: ICommandHandler<ReadyUpCommand>
 {
     #region Fields
 
@@ -27,21 +24,27 @@ public class ReadyUpHandler: IRequestHandler<ReadyUpCommand, Unit>
 
     #region Public Methods
 
-    public async Task<Unit> Handle(ReadyUpCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(ReadyUpCommand command, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(command);
+        if (command == null)
+        {
+            return Result.Failure<string>(Error.NullValue);
+        }
 
         if (!command.GroupNamesToLobby.TryGetValue(command.LobbyId, out var lobbyDetails))
         {
-            throw new DomainException("Lobby With That Id Was Not Found");
+            return Result.Failure<string>(NotFoundError.NotFound(command.LobbyId));
         }
 
         var connection = lobbyDetails.Connections.FirstOrDefault(c => c.ConnectionId == command.ConnectionId);
-        if (connection is null) throw new NotFoundException();
+        if (connection == null)
+        {
+            return Result.Failure<string>(NotFoundError.NotFound(command.ConnectionId));
+        }
 
         if (connection.IsReady)
         {
-            return default; // connection has already readied up
+            return Result.Success(); // connection has already readied up
         }
 
         connection.IsReady = true;
@@ -51,7 +54,6 @@ public class ReadyUpHandler: IRequestHandler<ReadyUpCommand, Unit>
             case false when lobbyDetails.Connections.Count(c => c.IsReady) >= 5:
             {
                 // if its all real players only start game when min player count reached
-
                 var startGame = new StartGameModel
                                 {
                                     LobbyId = Guid.NewGuid().ToString(), // send lobby id as guid so never to have two games going with same id
@@ -83,7 +85,7 @@ public class ReadyUpHandler: IRequestHandler<ReadyUpCommand, Unit>
                 break;
         }
 
-        return default;
+        return Result.Success();
     }
 
     #endregion

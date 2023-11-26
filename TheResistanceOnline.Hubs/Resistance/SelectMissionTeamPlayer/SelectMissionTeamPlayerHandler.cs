@@ -1,9 +1,10 @@
-using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
-namespace TheResistanceOnline.Hubs.Resistance.SelectMissionTeamPlayer;
+namespace TheResistanceOnline.Hubs.Resistance;
 
-public class SelectMissionTeamPlayerHandler: IRequestHandler<SelectMissionTeamPlayerCommand, Unit>
+public class SelectMissionTeamPlayerHandler: ICommandHandler<SelectMissionTeamPlayerCommand>
 {
     #region Fields
 
@@ -22,9 +23,13 @@ public class SelectMissionTeamPlayerHandler: IRequestHandler<SelectMissionTeamPl
 
     #region Public Methods
 
-    public async Task<Unit> Handle(SelectMissionTeamPlayerCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(SelectMissionTeamPlayerCommand command, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(command);
+        if (command == null)
+        {
+            return Result.Failure<string>(Error.NullValue);
+        }
+
         var gameModel = command.GameModel;
 
         var player = gameModel.GetPlayerModel(command.CallerPlayerName);
@@ -53,10 +58,10 @@ public class SelectMissionTeamPlayerHandler: IRequestHandler<SelectMissionTeamPl
         }
         else
         {
-            await _resistanceHubContext.Clients.Client(command.ConnectionId).Error("Mission Team Full");
+            return Result.Failure(new Error("SelectionMissionTeamMember.FullTeam", "Mission Team is Full"));
         }
 
-        return default;
+        return Result.Success();
     }
 
     #endregion

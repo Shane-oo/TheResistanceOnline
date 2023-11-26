@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.Configurations.ExternalIdentitiesConfigurations;
+namespace TheResistanceOnline.Data.Configurations;
 
 public class MicrosoftUserConfiguration: IEntityTypeConfiguration<MicrosoftUser>
 {
@@ -12,13 +12,19 @@ public class MicrosoftUserConfiguration: IEntityTypeConfiguration<MicrosoftUser>
     {
         builder.HasKey(e => e.Id);
 
-        builder.Property(e => e.ObjectId)
-               .IsRequired();
+        builder.Property(e => e.Id)
+               .HasConversion(id => id.Value, value => new MicrosoftId(value))
+               .ValueGeneratedNever();
 
         builder.Property(e => e.UserId)
                .IsRequired();
 
-        builder.HasIndex(e => new { e.ObjectId, e.UserId })
+        builder.HasOne(m => m.User)
+               .WithOne(u => u.MicrosoftUser)
+               .HasForeignKey<MicrosoftUser>(m => m.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(e => new { e.Id, e.UserId })
                .IsUnique();
     }
 

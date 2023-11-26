@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using TheResistanceOnline.Hubs.Lobbies.Common;
 
 namespace TheResistanceOnline.Hubs.Lobbies;
 

@@ -2,7 +2,7 @@ using TheResistanceOnline.GamePlay;
 using TheResistanceOnline.GamePlay.GameModels;
 using TheResistanceOnline.Hubs.Common;
 
-namespace TheResistanceOnline.Hubs.Resistance.Common;
+namespace TheResistanceOnline.Hubs.Resistance;
 
 public class GameDetails
 {

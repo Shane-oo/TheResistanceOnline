@@ -1,15 +1,18 @@
-using MediatR;
-using TheResistanceOnline.Hubs.Lobbies.Common;
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
-namespace TheResistanceOnline.Hubs.Lobbies.GetLobbies;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
-public class GetLobbiesHandler: IRequestHandler<GetLobbiesQuery, List<LobbyDetailsModel>>
+public class GetLobbiesHandler: IQueryHandler<GetLobbiesQuery, List<LobbyDetailsModel>>
 {
     #region Public Methods
 
-    public async Task<List<LobbyDetailsModel>> Handle(GetLobbiesQuery query, CancellationToken cancellationToken)
+    public async Task<Result<List<LobbyDetailsModel>>> Handle(GetLobbiesQuery query, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(query);
+        if (query == null)
+        {
+            return Result.Failure<List<LobbyDetailsModel>>(Error.NullValue);
+        }
 
         var lobbies = query.GroupNamesToLobby.Values
                            .Where(l => !l.IsPrivate)

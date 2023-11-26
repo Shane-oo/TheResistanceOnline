@@ -1,6 +1,4 @@
-using TheResistanceOnline.Data.PlayerStatistics;
-
-namespace TheResistanceOnline.Data.Entities.GameEntities;
+namespace TheResistanceOnline.Data.Entities;
 
 public class Game: IAuditableEntity
 {

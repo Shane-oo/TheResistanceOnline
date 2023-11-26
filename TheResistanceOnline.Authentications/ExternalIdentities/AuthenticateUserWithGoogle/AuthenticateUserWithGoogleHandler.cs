@@ -1,20 +1,20 @@
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using TheResistanceOnline.Common.Extensions;
 using TheResistanceOnline.Core;
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithGoogle;
+namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
-public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUserWithGoogleCommand, AuthenticationResult<Guid>>
+public class AuthenticateUserWithGoogleHandler: ICommandHandler<AuthenticateUserWithGoogleCommand, UserId>
 {
     #region Fields
 
-    private readonly AppSettings _appSettings;
     private readonly IDataContext _context;
+
+    private readonly GoogleSettings _googleSettings;
 
     private readonly UserManager<User> _userManager;
 
@@ -28,71 +28,56 @@ public class AuthenticateUserWithGoogleHandler: IRequestHandler<AuthenticateUser
     {
         _context = context;
         _userManager = userManager;
-        _appSettings = appSettings.Value;
+        _googleSettings = appSettings.Value.AuthServerSettings.GoogleSettings;
     }
 
     #endregion
 
     #region Private Methods
 
-    private async Task<AuthenticationResult<Guid>> CreateUser(AuthenticateUserWithGoogleCommand command)
+    private async Task<Result<UserId>> CreateUser(AuthenticateUserWithGoogleCommand command)
     {
-        var user = new User
-                   {
-                       UserName = "User" + Ulid.NewUlid(),
-                       GoogleUser = new GoogleUser
-                                    {
-                                        Subject = command.Subject
-                                    },
-                       UserSetting = new UserSetting()
-                   };
+        var user = GoogleUser.Create(command.GoogleId).User;
 
         var result = await _userManager.CreateAsync(user);
 
         if (!result.Succeeded)
         {
-            var errorDescription = result.Errors.FirstOrDefault()?.Description;
-            return Reject(errorDescription);
+            var identityError = result.Errors.FirstOrDefault();
+            return Result.Failure<UserId>(identityError != null ? new Error(identityError.Code, identityError.Description) : Error.Unknown);
         }
 
         await _userManager.AddToRoleAsync(user, Roles.User.ToString());
 
-        return AuthenticationResult<Guid>.Accept(user.Id);
-    }
-
-    private static AuthenticationResult<Guid> Reject(string reason)
-    {
-        return AuthenticationResult<Guid>.Reject(reason);
+        return user.Id;
     }
 
     #endregion
 
     #region Public Methods
 
-    public async Task<AuthenticationResult<Guid>> Handle(AuthenticateUserWithGoogleCommand command, CancellationToken cancellationToken)
+    public async Task<Result<UserId>> Handle(AuthenticateUserWithGoogleCommand command, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(command);
-        if (string.IsNullOrEmpty(command.Subject))
+        if (command == null)
         {
-            return Reject("Missing Google Identifier.");
+            return Result.Failure<UserId>(Error.NullValue);
         }
 
         // Validate the audience
         // the aud claim identifies the intended audience of the token, the audience must be client ID of the App
-
-        if (command.Audience != _appSettings.AuthServerSettings.GoogleSettings.ClientId)
+        if (command.Audience != _googleSettings.ClientId)
         {
-            return Reject("Unauthorized Audience.");
+            return Result.Failure<UserId>(ExternalIdentityErrors.MissingIdentifier);
         }
 
         var googleUser = await _context.Query<IGoogleUserBySubjectDbQuery>()
-                                       .WithParams(command.Subject)
+                                       .WithParams(command.GoogleId)
                                        .WithNoTracking()
                                        .ExecuteAsync(cancellationToken);
 
         if (googleUser != null)
         {
-            return AuthenticationResult<Guid>.Accept(googleUser.UserId);
+            return googleUser.UserId;
         }
 
         return await CreateUser(command);

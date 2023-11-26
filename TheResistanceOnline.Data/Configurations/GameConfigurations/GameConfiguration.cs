@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TheResistanceOnline.Data.Entities.GameEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.Configurations.GameConfigurations;
+namespace TheResistanceOnline.Data.Configurations;
 
 public class GameConfiguration: IEntityTypeConfiguration<Game>
 {
@@ -12,6 +12,7 @@ public class GameConfiguration: IEntityTypeConfiguration<Game>
     {
         builder.HasKey(us => us.Id)
                .HasName("PK_Games");
+
         builder.HasMany(g => g.PlayerStatistics)
                .WithOne()
                .HasForeignKey(ps => ps.GameId);

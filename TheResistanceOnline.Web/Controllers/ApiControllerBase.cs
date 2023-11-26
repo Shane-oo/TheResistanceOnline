@@ -2,8 +2,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
-using TheResistanceOnline.Core.Requests;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
+using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Web.Controllers;
 
@@ -12,18 +12,30 @@ public class ApiControllerBase: ControllerBase
 {
     #region Properties
 
-    private Guid UserId => User.Identity is { IsAuthenticated: true }
-                           && Guid.TryParse(User.FindFirstValue(OpenIddictConstants.Claims.Subject), out var userId)
-                               ? userId
-                               : Guid.Empty;
+    private UserId UserId => User.Identity is { IsAuthenticated: true }
+                             && Guid.TryParse(User.FindFirstValue(OpenIddictConstants.Claims.Subject), out var userIdGuid)
+                                 ? new UserId(userIdGuid)
+                                 : null;
+
+    private Roles UserRole => User.Identity is { IsAuthenticated: true }
+                              && Enum.TryParse(User.FindFirstValue(OpenIddictConstants.Claims.Role), out Roles userRole)
+                                  ? userRole
+                                  : Roles.None;
 
     #endregion
 
     #region Private Methods
 
-    protected void SetRequest(IRequestBase request)
+    protected void SetCommand(IBaseCommand command)
     {
-        request.UserId = UserId;
+        command.UserId = UserId;
+        command.UserRole = UserRole;
+    }
+
+    protected void SetQuery<T>(Query<T> query)
+    {
+        query.UserId = UserId;
+        query.UserRole = UserRole;
     }
 
     #endregion

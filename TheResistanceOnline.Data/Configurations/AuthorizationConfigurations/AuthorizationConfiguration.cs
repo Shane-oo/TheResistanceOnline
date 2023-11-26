@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TheResistanceOnline.Data.Entities.AuthorizationEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.Configurations.AuthorizationConfigurations;
+namespace TheResistanceOnline.Data.Configurations;
 
 public class AuthorizationConfiguration: IEntityTypeConfiguration<Authorization>
 {
@@ -17,12 +17,11 @@ public class AuthorizationConfiguration: IEntityTypeConfiguration<Authorization>
         builder.Property(e => e.Subject).HasMaxLength(400);
         builder.Property(e => e.Type).HasMaxLength(50);
 
-        builder.HasMany(e => e.Tokens)
-               .WithOne(t => t.Authorization)
-               .HasForeignKey(t => t.AuthorizationId)
+        builder.HasOne(e => e.Application)
+               .WithMany(a => a.Authorizations)
+               .HasForeignKey(e => e.ApplicationId)
                .IsRequired(false)
-               .HasConstraintName("FK_Tokens_Authorizations_AuthorizationId");
-
+               .HasConstraintName("FK_Authorizations_Applications_ApplicationId");
 
         builder.HasIndex(e => new { e.ApplicationId, e.Status, e.Subject, e.Type });
     }

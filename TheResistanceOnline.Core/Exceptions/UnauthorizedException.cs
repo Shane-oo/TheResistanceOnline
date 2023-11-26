@@ -1,7 +1,3 @@
-using TheResistanceOnline.Common.Extensions;
-using TheResistanceOnline.Core.Requests;
-using TheResistanceOnline.Data.Entities.UserEntities;
-
 namespace TheResistanceOnline.Core.Exceptions;
 
 public class UnauthorizedException: Exception

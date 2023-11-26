@@ -1,10 +1,11 @@
 using FluentValidation;
+using JetBrains.Annotations;
 using MediatR;
-using TheResistanceOnline.Core.Requests.Commands;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
-namespace TheResistanceOnline.Users.Users.UpdateUser;
+namespace TheResistanceOnline.Users.Users;
 
-public class UpdateUserCommand: CommandBase<Unit>
+public class UpdateUserCommand: Command
 {
     #region Properties
 
@@ -13,6 +14,7 @@ public class UpdateUserCommand: CommandBase<Unit>
     #endregion
 }
 
+[UsedImplicitly]
 public class UpdateUserCommandValidator: AbstractValidator<UpdateUserCommand>
 {
     #region Construction

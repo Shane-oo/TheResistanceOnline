@@ -1,6 +1,6 @@
 using TheResistanceOnline.Hubs.Common;
 
-namespace TheResistanceOnline.Hubs.Lobbies.Common;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
 public class LobbyDetailsModel
 {

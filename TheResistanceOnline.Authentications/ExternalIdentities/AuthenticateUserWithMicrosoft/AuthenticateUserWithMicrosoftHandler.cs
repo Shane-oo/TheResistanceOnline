@@ -1,21 +1,20 @@
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using TheResistanceOnline.Common.Extensions;
 using TheResistanceOnline.Core;
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
+namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
-public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateUserWithMicrosoftCommand, AuthenticationResult<Guid>>
+public class AuthenticateUserWithMicrosoftHandler: ICommandHandler<AuthenticateUserWithMicrosoftCommand, UserId>
 {
     #region Fields
 
-    private readonly AppSettings _appSettings;
-
     private readonly IDataContext _dataContext;
+
+    private readonly MicrosoftSettings _microsoftSettings;
     private readonly UserManager<User> _userManager;
 
     #endregion
@@ -28,74 +27,59 @@ public class AuthenticateUserWithMicrosoftHandler: IRequestHandler<AuthenticateU
     {
         _dataContext = dataContext;
         _userManager = userManager;
-        _appSettings = appSettings.Value;
+        _microsoftSettings = appSettings.Value.AuthServerSettings.MicrosoftSettings;
     }
 
     #endregion
 
     #region Private Methods
 
-    private async Task<AuthenticationResult<Guid>> CreateUser(AuthenticateUserWithMicrosoftCommand command)
+    private async Task<Result<UserId>> CreateUser(AuthenticateUserWithMicrosoftCommand command, CancellationToken cancellationToken)
     {
-        var user = new User
-                   {
-                       UserName = "User" + Ulid.NewUlid(),
-                       MicrosoftUser = new MicrosoftUser
-                                       {
-                                           ObjectId = command.ObjectId
-                                       },
-                       UserSetting = new UserSetting()
-                   };
+        var user = MicrosoftUser.Create(command.MicrosoftId).User;
+
         var result = await _userManager.CreateAsync(user);
 
         if (!result.Succeeded)
         {
-            var errorDescription = result.Errors.FirstOrDefault()?.Description;
-            return Reject(errorDescription);
+            var identityError = result.Errors.FirstOrDefault();
+            return Result.Failure<UserId>(identityError != null ? new Error(identityError.Code, identityError.Description) : Error.Unknown);
         }
 
         await _userManager.AddToRoleAsync(user, Roles.User.ToString());
 
-        return AuthenticationResult<Guid>.Accept(user.Id);
-    }
-
-    private static AuthenticationResult<Guid> Reject(string reason)
-    {
-        return AuthenticationResult<Guid>.Reject(reason);
+        return user.Id;
     }
 
     #endregion
 
     #region Public Methods
 
-    public async Task<AuthenticationResult<Guid>> Handle(AuthenticateUserWithMicrosoftCommand command, CancellationToken cancellationToken)
+    public async Task<Result<UserId>> Handle(AuthenticateUserWithMicrosoftCommand command, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(command);
-
-        if (!command.ObjectId.HasValue())
+        if (command == null)
         {
-            return Reject("Missing Microsoft Identifier.");
+            return Result.Failure<UserId>(Error.NullValue);
         }
 
         // Validate the audience
         // the aud claim identifies the intended audience of the token, the audience must be client ID of the App
-
-        if (command.Audience != _appSettings.AuthServerSettings.MicrosoftSettings.ClientId)
+        if (command.Audience != _microsoftSettings.ClientId)
         {
-            return Reject("Unauthorized audience.");
+            return Result.Failure<UserId>(ExternalIdentityErrors.MissingIdentifier);
         }
 
         var microsoftUser = await _dataContext.Query<IMicrosoftUserByObjectIdDbQuery>()
-                                              .WithParams(command.ObjectId)
+                                              .WithParams(command.MicrosoftId)
                                               .WithNoTracking()
                                               .ExecuteAsync(cancellationToken);
 
         if (microsoftUser != null)
         {
-            return AuthenticationResult<Guid>.Accept(microsoftUser.UserId);
+            return microsoftUser.UserId;
         }
 
-        return await CreateUser(command);
+        return await CreateUser(command, cancellationToken);
     }
 
     #endregion

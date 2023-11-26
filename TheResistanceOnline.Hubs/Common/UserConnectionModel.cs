@@ -1,6 +1,11 @@
 namespace TheResistanceOnline.Hubs.Common;
 
-public class ConnectionModel
+public interface IConnectionModel
+{
+    public string ConnectionId { get; set; }
+}
+
+public class ConnectionModel: IConnectionModel
 {
     #region Properties
 
