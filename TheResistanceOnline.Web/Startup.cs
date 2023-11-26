@@ -65,7 +65,9 @@ public class Startup
         // Validate app settings
         ValidateObjectPropertiesHelper.ValidateAllObjectProperties(appSettings,
                                                                    appSettings.AuthServerSettings,
-                                                                   appSettings.AuthServerSettings.MicrosoftSettings);
+                                                                   appSettings.AuthServerSettings.MicrosoftSettings,
+                                                                   appSettings.AuthServerSettings.GoogleSettings,
+                                                                   appSettings.AuthServerSettings.RedditSettings);
         services.Configure<AppSettings>(appSettingsSection);
 
         services.AddCors(o =>
