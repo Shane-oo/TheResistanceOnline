@@ -28,7 +28,6 @@ export class SwalContainerService {
     // close a previous alert
     this.resetSwal();
 
-
     switch (type) {
       case SwalTypes.Error:
         this.container.instance.isError = true;

@@ -47,7 +47,7 @@ public class StartGameHandler: IRequestHandler<StartGameCommand, bool>
                                  .WithNoTracking()
                                  .ExecuteAsync(cancellationToken);
 
-        NotFoundException.ThrowIfNull(user);
+        NotFoundException.FailIfNull(user);
 
         var connection = new ConnectionModel
                          {

@@ -47,6 +47,8 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
 
+        app.UseCustomExceptionHandler();
+
         app.UseEndpoints(endpoints =>
                          {
                              endpoints.MapControllerRoute("default", "{controller}/{action=index}/{id?}");
@@ -110,7 +112,6 @@ public class Startup
                                o.Cookie.Name = AuthorizationsController.COOKIE_NAME;
                                o.SlidingExpiration = false;
                            });
-        services.AddMediatrBehaviours();
 
         // TheResistanceOnline.Data
         services.AddSharedDbQueries();
@@ -121,6 +122,8 @@ public class Startup
 
         // TheResistanceOnline.Users
         services.AddUserServices();
+
+        services.AddMediatrBehaviours();
     }
 
     #endregion

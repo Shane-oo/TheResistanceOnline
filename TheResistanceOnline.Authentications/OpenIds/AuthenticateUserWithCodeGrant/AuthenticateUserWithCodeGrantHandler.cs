@@ -1,3 +1,4 @@
+using TheResistanceOnline.Core.Errors;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities;

@@ -8,6 +8,7 @@ using TheResistanceOnline.Data.Entities;
 using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Users.Users;
 using TheResistanceOnline.Web.Behaviours;
+using TheResistanceOnline.Web.Middleware;
 
 namespace TheResistanceOnline.Web;
 
@@ -17,7 +18,13 @@ public static class DependencyInjection
 
     public static void AddMediatrBehaviours(this IServiceCollection services)
     {
-        services.AddMediatR(configuration => { configuration.AddOpenBehavior(typeof(ValidationBehaviour<,>)); });
+        var assembly = typeof(DependencyInjection).Assembly;
+        services.AddMediatR(configuration =>
+                            {
+                                configuration.RegisterServicesFromAssembly(assembly);
+
+                                configuration.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+                            });
     }
 
     private static X509Certificate2 LoadCertificate(string thumbprint)
@@ -120,6 +127,12 @@ public static class DependencyInjection
                                    o.UseLocalServer();
                                    o.UseAspNetCore();
                                });
+    }
+
+
+    public static void UseCustomExceptionHandler(this IApplicationBuilder app)
+    {
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
     }
 
     #endregion

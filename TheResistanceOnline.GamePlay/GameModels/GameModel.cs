@@ -190,7 +190,7 @@ public abstract class GameModel: IGameModelSubject
     public PlayerModel GetPlayerModel(string name)
     {
         var player = Players.FirstOrDefault(p => p.Key == name).Value;
-        NotFoundException.ThrowIfNull(player);
+        NotFoundException.FailIfNull(player);
 
         return player;
     }

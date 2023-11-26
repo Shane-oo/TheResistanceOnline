@@ -1,3 +1,5 @@
+using TheResistanceOnline.Core.Errors;
+
 namespace TheResistanceOnline.Core.Exceptions;
 
 public class ValidationException: Exception

@@ -1,3 +1,5 @@
+using TheResistanceOnline.Core.Errors;
+
 namespace TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
 public class Result

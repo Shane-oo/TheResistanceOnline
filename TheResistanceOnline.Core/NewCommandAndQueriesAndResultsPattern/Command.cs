@@ -13,6 +13,9 @@ public interface ICommand<TResponse>: IRequest<Result<TResponse>>, IBaseCommand
 
 public interface IBaseCommand
 {
+    public UserId UserId { get; set; }
+
+    public Roles UserRole { get; set; }
 }
 
 public class Command<TResponse>: ICommand<TResponse>
@@ -45,11 +48,30 @@ public class Command<TResponse>: ICommand<TResponse>
     #endregion
 }
 
-public class Command: Command<Unit>
+public class Command: ICommand
 {
+    #region Properties
+
+    public UserId UserId { get; set; }
+
+    public Roles UserRole { get; set; }
+
+    #endregion
+
     #region Construction
 
-    public Command(UserId userId, Roles userRole): base(userId, userRole)
+    protected Command(UserId userId, Roles userRole)
+    {
+        UserId = userId;
+        UserRole = userRole;
+    }
+
+    protected Command(UserId userId)
+    {
+        UserId = userId;
+    }
+
+    protected Command()
     {
     }
 

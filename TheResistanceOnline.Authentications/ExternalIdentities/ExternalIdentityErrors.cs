@@ -1,3 +1,4 @@
+using TheResistanceOnline.Core.Errors;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
 namespace TheResistanceOnline.Authentications.ExternalIdentities;

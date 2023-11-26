@@ -47,7 +47,7 @@ public class JoinLobbyHandler: IRequestHandler<JoinLobbyCommand, string>
                                  .WithNoTracking()
                                  .ExecuteAsync(cancellationToken);
 
-        NotFoundException.ThrowIfNull(user);
+        NotFoundException.FailIfNull(user);
 
         if (lobbyDetails.Connections.Any(c => c.UserName == user.UserName))
         {

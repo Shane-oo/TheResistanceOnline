@@ -48,7 +48,7 @@ public class CreateLobbyHandler: IRequestHandler<CreateLobbyCommand, string>
                                  .WithNoTracking()
                                  .ExecuteAsync(cancellationToken);
 
-        NotFoundException.ThrowIfNull(user);
+        NotFoundException.FailIfNull(user);
 
         await _lobbyHubContext.Groups.AddToGroupAsync(command.ConnectionId, command.Id, cancellationToken);
 

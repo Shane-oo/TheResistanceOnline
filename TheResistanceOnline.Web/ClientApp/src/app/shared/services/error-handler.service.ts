@@ -33,22 +33,44 @@ export class ErrorHandlerService implements HttpInterceptor {
 
     return "";
   };
-
   private handleNotFound = (error: HttpErrorResponse): string => {
     const errorMessage = error.error;
-    this.swalService.showSwal(SwalTypes.Error, errorMessage);
+    this.swalService.showSwal(SwalTypes.Error, errorMessage.description);
     return errorMessage;
   };
 
-  private handleBadRequest = (error: HttpErrorResponse): string => {
-    const errorMessage = error.error;
-    this.swalService.showSwal(SwalTypes.Error, errorMessage);
+
+  private handleBadRequest = (httpErrorResponse: HttpErrorResponse): string => {
+    const errorMessage = httpErrorResponse.error;
+    if (errorMessage.type === "ValidationFailure") {
+      const errorsByProperty: any = {};
+
+      for (const validationError of errorMessage.errors) {
+        const propertyName = validationError.propertyName;
+        const errorMessageText = validationError.errorMessage;
+
+        if (!errorsByProperty[propertyName]) {
+          errorsByProperty[propertyName] = [];
+        }
+
+        errorsByProperty[propertyName].push(errorMessageText);
+      }
+
+      const concatenatedErrors = Object.keys(errorsByProperty)
+        .map(propertyName => `${propertyName} - ${errorsByProperty[propertyName].join(', ')}`)
+        .join('<br>');
+      this.swalService.showSwal(SwalTypes.Error, concatenatedErrors);
+
+    } else {
+      this.swalService.showSwal(SwalTypes.Error, errorMessage.description);
+    }
+
     return errorMessage;
   };
 
   private handleInternalServerError = (error: HttpErrorResponse): string => {
-    const errorMessage = error.error.detail;
-    this.swalService.showSwal(SwalTypes.Error, errorMessage);
+    const errorMessage = error.error;
+    this.swalService.showSwal(SwalTypes.Error, errorMessage.description);
     return errorMessage;
   }
 }

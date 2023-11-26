@@ -1,5 +1,6 @@
 using FluentValidation;
 using MediatR;
+using TheResistanceOnline.Core.Errors;
 using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using ValidationException = TheResistanceOnline.Core.Exceptions.ValidationException;
