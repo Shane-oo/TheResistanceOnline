@@ -1,9 +1,11 @@
-using MediatR;
-using TheResistanceOnline.Core.Requests.Commands;
+using FluentValidation;
+using JetBrains.Annotations;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
+using TheResistanceOnline.Hubs.Lobbies;
 
 namespace TheResistanceOnline.Hubs.Resistance;
 
-public class CommenceGameCommand: CommandBase<Unit>
+public class CommenceGameCommand: Command
 
 {
     #region Properties
@@ -11,6 +13,20 @@ public class CommenceGameCommand: CommandBase<Unit>
     public GameDetails GameDetails { get; set; }
 
     public string LobbyId { get; set; }
+
+    #endregion
+}
+
+[UsedImplicitly]
+public class CommenceGameCommandValidator: AbstractValidator<CommenceGameCommand>
+{
+    #region Construction
+
+    public CommenceGameCommandValidator()
+    {
+        RuleFor(c => c.LobbyId)
+            .NotEmpty();
+    }
 
     #endregion
 }

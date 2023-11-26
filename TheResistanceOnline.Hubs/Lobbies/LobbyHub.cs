@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using TheResistanceOnline.Hubs.Common;
 
 namespace TheResistanceOnline.Hubs.Lobbies;
@@ -43,7 +44,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
 
     #region Construction
 
-    public LobbyHub(IMediator mediator, LobbyHubPersistedProperties properties)
+    public LobbyHub(IMediator mediator, LobbyHubPersistedProperties properties, ILogger<LobbyHub> logger): base(logger)
     {
         _mediator = mediator;
         _properties = properties;
@@ -76,7 +77,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
     #region Public Methods
 
     [UsedImplicitly]
-    public async Task<LobbyDetailsModel> CreateLobby(CreateLobbyCommand command, CancellationToken cancellationToken = default)
+    public async Task<LobbyDetailsModel> CreateLobby(CreateLobbyCommand command)
     {
         SetRequest(command);
         SetCommand(command);
@@ -85,7 +86,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
 
         try
         {
-            var result = await _mediator.Send(command, cancellationToken);
+            var result = await _mediator.Send(command);
             if (result.IsFailure)
             {
                 await Clients.Caller.Error(result.Error);
@@ -106,7 +107,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
     }
 
     [UsedImplicitly]
-    public async Task<List<LobbyDetailsModel>> GetLobbies(CancellationToken cancellationToken = default)
+    public async Task<List<LobbyDetailsModel>> GetLobbies()
     {
         var query = new GetLobbiesQuery();
         SetQuery(query);
@@ -115,7 +116,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
 
         try
         {
-            var result = await _mediator.Send(query, cancellationToken);
+            var result = await _mediator.Send(query);
             if (result.IsFailure)
             {
                 await Clients.Caller.Error(result.Error);
@@ -133,14 +134,14 @@ public class LobbyHub: BaseHub<ILobbyHub>
 
 
     [UsedImplicitly]
-    public async Task<LobbyDetailsModel> GetLobby(GetLobbyQuery query, CancellationToken cancellationToken = default)
+    public async Task<LobbyDetailsModel> GetLobby(GetLobbyQuery query)
     {
         SetQuery(query);
         query.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
         {
-            var result = await _mediator.Send(query, cancellationToken);
+            var result = await _mediator.Send(query);
             if (result.IsFailure)
             {
                 await Clients.Caller.Error(result.Error);
@@ -157,7 +158,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
     }
 
     [UsedImplicitly]
-    public async Task<LobbyDetailsModel> JoinLobby(JoinLobbyCommand command, CancellationToken cancellationToken = default)
+    public async Task<LobbyDetailsModel> JoinLobby(JoinLobbyCommand command)
     {
         SetRequest(command);
         SetCommand(command);
@@ -165,7 +166,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
 
         try
         {
-            var result = await _mediator.Send(command, cancellationToken);
+            var result = await _mediator.Send(command);
             if (result.IsFailure)
             {
                 await Clients.Caller.Error(result.Error);
@@ -176,7 +177,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
                                 {
                                     Id = result.Value,
                                 };
-            return await GetLobby(getLobbyQuery, cancellationToken);
+            return await GetLobby(getLobbyQuery);
         }
         catch(Exception ex)
         {
@@ -219,7 +220,11 @@ public class LobbyHub: BaseHub<ILobbyHub>
 
         try
         {
-            await _mediator.Send(command);
+            var result = await _mediator.Send(command);
+            if (result.IsFailure)
+            {
+                await Clients.Caller.Error(result.Error);
+            }
         }
         catch(Exception ex)
         {

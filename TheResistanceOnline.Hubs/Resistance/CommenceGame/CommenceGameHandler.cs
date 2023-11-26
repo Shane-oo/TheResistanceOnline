@@ -1,16 +1,20 @@
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using TheResistanceOnline.Common;
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.GamePlay;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.GamePlay.GameModels;
 
 namespace TheResistanceOnline.Hubs.Resistance;
 
-public class CommenceGameHandler: IRequestHandler<CommenceGameCommand, Unit>
+public class CommenceGameHandler: ICommandHandler<CommenceGameCommand>
 {
     #region Fields
 
     private readonly IHubContext<ResistanceHub, IResistanceHub> _resistanceHubContext;
+    private static readonly SemaphoreLocker _locker = new SemaphoreLocker();
 
     #endregion
 
@@ -25,46 +29,54 @@ public class CommenceGameHandler: IRequestHandler<CommenceGameCommand, Unit>
 
     #region Public Methods
 
-    public async Task<Unit> Handle(CommenceGameCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CommenceGameCommand command, CancellationToken cancellationToken)
     {
-        // in case of case where commenceGameCommand is sent twice 
-        // immediately commence game and hopefully in the other thread game has been commenced
-        if (command.GameDetails.GameCommenced) return default;
-
-        command.GameDetails.GameCommenced = true;
-
-        if (command.GameDetails.GameType == GameType.ResistanceClassic)
+        if (command == null)
         {
-            command.GameDetails.GameModel = new ResistanceClassicGameModel();
+            return Result.Failure<string>(Error.NullValue);
         }
 
-        command.GameDetails.GameModel.SetupGame(command.GameDetails.Connections
-                                                       .Select(c => c.UserName)
-                                                       .ToList(),
-                                                command.GameDetails.InitialBotCount);
+        return await _locker.LockAsync(async () =>
+                                       {
+                                           // in case of case where commenceGameCommand is sent twice 
+                                           // immediately commence game and hopefully in the other thread game has been commenced
+                                           if (command.GameDetails.GameCommenced) return Result.Success();
 
-        foreach(var connection in command.GameDetails.Connections)
-        {
-            var playerDetails = command.GameDetails.GameModel.Players[connection.UserName];
-            var commenceGameModel = new CommenceGameModel
-                                    {
-                                        Team = playerDetails.Team,
-                                        TeamMates = playerDetails.Team == Team.Spy
-                                                        ? command.GameDetails.GameModel.Players
-                                                                 .Where(p => p.Value.Team == Team.Spy && p.Key != connection.UserName)
-                                                                 .Select(p => p.Key)
-                                                                 .ToList()
-                                                        : null,
-                                        MissionLeader = command.GameDetails.GameModel.MissionLeader,
-                                        Phase = command.GameDetails.GameModel.Phase,
-                                        Players = command.GameDetails.GameModel.PlayerNames
-                                    };
-            commenceGameModel.IsMissionLeader = commenceGameModel.MissionLeader == playerDetails.Name;
+                                           command.GameDetails.GameCommenced = true;
 
-            await _resistanceHubContext.Clients.Client(connection.ConnectionId).CommenceGame(commenceGameModel);
-        }
+                                           if (command.GameDetails.GameType == GameType.ResistanceClassic)
+                                           {
+                                               command.GameDetails.GameModel = new ResistanceClassicGameModel();
+                                           }
 
-        return default;
+                                           command.GameDetails.GameModel.SetupGame(command.GameDetails.Connections
+                                                                                          .Select(c => c.UserName)
+                                                                                          .ToList(),
+                                                                                   command.GameDetails.InitialBotCount);
+
+                                           foreach(var connection in command.GameDetails.Connections)
+                                           {
+                                               var playerDetails = command.GameDetails.GameModel.Players[connection.UserName];
+                                               var commenceGameModel = new CommenceGameModel
+                                                                       {
+                                                                           Team = playerDetails.Team,
+                                                                           TeamMates = playerDetails.Team == Team.Spy
+                                                                                           ? command.GameDetails.GameModel.Players
+                                                                                                    .Where(p => p.Value.Team == Team.Spy && p.Key != connection.UserName)
+                                                                                                    .Select(p => p.Key)
+                                                                                                    .ToList()
+                                                                                           : null,
+                                                                           MissionLeader = command.GameDetails.GameModel.MissionLeader,
+                                                                           Phase = command.GameDetails.GameModel.Phase,
+                                                                           Players = command.GameDetails.GameModel.PlayerNames
+                                                                       };
+                                               commenceGameModel.IsMissionLeader = commenceGameModel.MissionLeader == playerDetails.Name;
+
+                                               await _resistanceHubContext.Clients.Client(connection.ConnectionId).CommenceGame(commenceGameModel);
+                                           }
+
+                                           return Result.Success();
+                                       });
     }
 
     #endregion

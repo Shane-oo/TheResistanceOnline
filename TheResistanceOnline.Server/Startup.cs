@@ -51,7 +51,7 @@ public class Startup
         app.UseEndpoints(endpoints =>
                          {
                              endpoints.MapHub<LobbyHub>("/lobby");
-                             endpoints.MapHub<StreamHub>("/stream");
+                             //endpoints.MapHub<StreamHub>("/stream"); // stream not supported right now -> will revisit this later
                              endpoints.MapHub<ResistanceHub>("/resistance");
                          });
     }
@@ -101,6 +101,8 @@ public class Startup
 
         // TheResistanceOnline.Hubs
         services.AddHubServices();
+
+        services.AddMediatrBehaviours();
     }
 
     #endregion

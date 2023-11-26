@@ -1,11 +1,10 @@
 using FluentValidation;
 using MediatR;
 using TheResistanceOnline.Core.Errors;
-using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using ValidationException = TheResistanceOnline.Core.Exceptions.ValidationException;
 
-namespace TheResistanceOnline.Web.Behaviours;
+namespace TheResistanceOnline.Core.Behaviours;
 
 // Pipeline Behaviour for validating commands using Fluent Validation with every mediatr command handler
 public class ValidationBehaviour<TRequest, TResponse>: IPipelineBehavior<TRequest, TResponse>

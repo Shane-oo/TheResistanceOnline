@@ -36,14 +36,9 @@ public class BaseHub<THub>: Hub<THub> where THub : class, IErrorHub
 
     #region Construction
 
-    public BaseHub(ILogger<BaseHub<THub>> logger)
+    protected BaseHub(ILogger<BaseHub<THub>> logger)
     {
         _logger = logger;
-    }
-
-    public BaseHub()
-    {
-        
     }
 
     #endregion
@@ -59,9 +54,9 @@ public class BaseHub<THub>: Hub<THub> where THub : class, IErrorHub
         }
 
 
-        if (exceptionDetails.Errors != null && exceptionDetails.Errors.Any())
+        if (exceptionDetails.Error != null)
         {
-            await Clients.Caller.Error(exceptionDetails.Errors);
+            await Clients.Caller.Error(exceptionDetails.Error);
         }
         else
         {
@@ -88,21 +83,31 @@ public class BaseHub<THub>: Hub<THub> where THub : class, IErrorHub
 
     private static ExceptionDetails GetExceptionDetails(Exception exception)
     {
-        return exception switch
+        switch(exception)
         {
-            ValidationException validationException => new ExceptionDetails(
-                                                                            StatusCodes.Status400BadRequest,
-                                                                            "ValidationFailure",
-                                                                            "Validation error",
-                                                                            "One or more validation errors has occured",
-                                                                            validationException.Errors),
-            _ => new ExceptionDetails(StatusCodes.Status500InternalServerError, "ServerError", "Server Error", "An unexpected error has occured", null)
-        };
+            case ValidationException validationException:
+                var error = validationException.Errors.FirstOrDefault();
+                return new ExceptionDetails(
+                                            StatusCodes.Status400BadRequest,
+                                            "ValidationFailure",
+                                            "Validation error",
+                                            "One or more validation errors has occurred",
+                                            new Error(error?.PropertyName ?? "Validation", error?.ErrorMessage ?? "Something was wrong")
+                                           );
+            default:
+                return new ExceptionDetails(
+                                            StatusCodes.Status500InternalServerError,
+                                            "ServerError",
+                                            "Server Error",
+                                            "An unexpected error has occurred",
+                                            null
+                                           );
+        }
     }
 
     #endregion
 
-    private record ExceptionDetails(int Status, string Type, string Title, string Detail, IEnumerable<object> Errors);
+    private record ExceptionDetails(int Status, string Type, string Title, string Detail, Error Error);
 }
 
 public class AuthorizeRoles: AuthorizeAttribute

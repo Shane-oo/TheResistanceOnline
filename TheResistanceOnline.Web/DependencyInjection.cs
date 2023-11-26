@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
 using TheResistanceOnline.Core;
+using TheResistanceOnline.Core.Behaviours;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities;
 using TheResistanceOnline.Data.Interceptors;
 using TheResistanceOnline.Users.Users;
-using TheResistanceOnline.Web.Behaviours;
 using TheResistanceOnline.Web.Middleware;
 
 namespace TheResistanceOnline.Web;

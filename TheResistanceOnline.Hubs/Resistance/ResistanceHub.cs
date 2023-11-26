@@ -1,6 +1,9 @@
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.Hubs.Common;
 
@@ -21,6 +24,7 @@ public class ResistanceHub: BaseHub<IResistanceHub>
 {
     #region Constants
 
+
     private const int GAME_TIME_TO_LIVE_MINUTES = 60;
 
     #endregion
@@ -34,7 +38,7 @@ public class ResistanceHub: BaseHub<IResistanceHub>
 
     #region Construction
 
-    public ResistanceHub(IMediator mediator, ResistanceHubPersistedProperties properties)
+    public ResistanceHub(IMediator mediator, ResistanceHubPersistedProperties properties, ILogger<ResistanceHub> logger): base(logger)
     {
         _mediator = mediator;
         _properties = properties;
@@ -67,26 +71,31 @@ public class ResistanceHub: BaseHub<IResistanceHub>
         return gameDetails.Connections.FirstOrDefault(c => c.ConnectionId == Context.ConnectionId)?.UserName;
     }
 
-    private GameDetails GetGameDetails(string lobbyId)
+    private Result<GameDetails> GetGameDetails(string lobbyId)
     {
-        if (!string.IsNullOrEmpty(lobbyId))
-        {
-            return _properties._groupNamesToGameModels.TryGetValue(lobbyId, out var gameDetails) ? gameDetails : null;
-        }
+        _properties._groupNamesToGameModels.TryGetValue(lobbyId, out var gameDetails);
 
-        return null;
+        var notFoundResult = NotFoundError.FailIfNull(lobbyId);
+        return notFoundResult.IsFailure ? Result.Failure<GameDetails>(notFoundResult.Error) : Result.Success(gameDetails);
     }
 
-    private string GetLobbyId()
+    private Result<string> GetLobbyId()
     {
-        return _properties._connectionIdsToGroupNames.TryGetValue(Context.ConnectionId, out var lobbyId) ? lobbyId : null;
+        _properties._connectionIdsToGroupNames.TryGetValue(Context.ConnectionId, out var lobbyId);
+        var notFoundResult = NotFoundError.FailIfNull(lobbyId);
+        return notFoundResult.IsFailure ? Result.Failure<string>(notFoundResult.Error) : Result.Success(lobbyId);
     }
 
     private async Task MissionTeamPlayerSelected(SelectMissionTeamPlayerCommand command)
     {
         SetRequest(command);
+        SetCommand(command);
 
-        await _mediator.Send(command);
+        var result = await _mediator.Send(command);
+        if (result.IsFailure)
+        {
+            await Clients.Caller.Error(result.Error);
+        }
     }
 
     #endregion
@@ -96,36 +105,50 @@ public class ResistanceHub: BaseHub<IResistanceHub>
     [UsedImplicitly]
     public async Task ObjectSelected(string name)
     {
-        var lobbyId = GetLobbyId();
-        var gameDetails = GetGameDetails(lobbyId);
-        if (gameDetails == null)
+        try
         {
-            await Clients.Caller.Error("Game Not Found");
-            return;
-        }
+            var lobbyId = GetLobbyId();
+            if (lobbyId.IsFailure)
+            {
+                await Clients.Caller.Error(lobbyId.Error);
+                return;
+            }
 
-        switch(gameDetails.GameModel.Phase)
+            var gameDetails = GetGameDetails(lobbyId.Value);
+            if (gameDetails.IsFailure)
+            {
+                await Clients.Caller.Error(gameDetails.Error);
+                return;
+            }
+
+            switch(gameDetails.Value.GameModel.Phase)
+            {
+                case Phase.MissionBuild:
+                    var command = new SelectMissionTeamPlayerCommand
+                                  {
+                                      SelectedPlayerName = name,
+                                      GameModel = gameDetails.Value.GameModel,
+                                      LobbyId = lobbyId.Value,
+                                      CallerPlayerName = GetCallerPlayerName(gameDetails.Value)
+                                  };
+                    await MissionTeamPlayerSelected(command);
+                    break;
+                case Phase.Vote:
+                    break;
+                case Phase.VoteResults:
+                    break;
+                case Phase.Mission:
+                    break;
+                case Phase.MissionResults:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        catch(Exception ex)
         {
-            case Phase.MissionBuild:
-                var command = new SelectMissionTeamPlayerCommand
-                              {
-                                  SelectedPlayerName = name,
-                                  GameModel = gameDetails.GameModel,
-                                  LobbyId = lobbyId,
-                                  CallerPlayerName = GetCallerPlayerName(gameDetails)
-                              };
-                await MissionTeamPlayerSelected(command);
-                break;
-            case Phase.Vote:
-                break;
-            case Phase.VoteResults:
-                break;
-            case Phase.Mission:
-                break;
-            case Phase.MissionResults:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
+            await HandleError(ex);
+            throw;
         }
     }
 
@@ -184,25 +207,30 @@ public class ResistanceHub: BaseHub<IResistanceHub>
     public async Task StartGame(StartGameCommand command)
     {
         var gameDetails = GetGameDetails(command.LobbyId);
-        if (gameDetails == null)
+        if (gameDetails.IsFailure)
         {
-            await Clients.Caller.Error("Game Not Found");
+            await Clients.Caller.Error(gameDetails.Error);
             return;
         }
 
         SetRequest(command);
-        command.GameDetails = gameDetails;
+        SetCommand(command);
+        command.GameDetails = gameDetails.Value;
         try
         {
             var canCommenceGame = await _mediator.Send(command);
-            if (canCommenceGame)
+            if (canCommenceGame.IsSuccess && canCommenceGame.Value)
             {
                 var commenceGameCommand = new CommenceGameCommand
                                           {
                                               LobbyId = command.LobbyId,
-                                              GameDetails = gameDetails
+                                              GameDetails = gameDetails.Value
                                           };
-                await _mediator.Send(commenceGameCommand);
+                var result = await _mediator.Send(commenceGameCommand);
+                if (result.IsFailure)
+                {
+                    await Clients.Caller.Error(result.Error);
+                }
             }
             // else{}
             // todo set a timer where if game hasnt commenced within like 2 minutes then its
@@ -212,7 +240,7 @@ public class ResistanceHub: BaseHub<IResistanceHub>
         }
         catch(Exception ex)
         {
-            await Clients.Caller.Error(ex.Message);
+            await HandleError(ex);
             throw;
         }
     }

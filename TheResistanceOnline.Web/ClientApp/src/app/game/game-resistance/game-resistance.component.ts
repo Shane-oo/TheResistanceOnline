@@ -9,6 +9,7 @@ import {environment} from "../../../environments/environment";
 import {SwalContainerService, SwalTypes} from "../../../ui/swal/swal-container.service";
 import {CommenceGameModel, Team} from "./game-resistance.models";
 import {GameType, StartGameCommand} from "../game.models";
+import {CustomError} from "../../shared/models/error.models";
 
 
 @Component({
@@ -91,12 +92,8 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
           // add required initial listeners
           this.addRequiredListeners();
 
-          // my monstrosity of a hack to hopefully stop two people from sending startGame at the same time
-          // so that commenceGame isnt done twice
-          setTimeout(() => {
-            this.swalService.showSwal(SwalTypes.Info, "Waiting For Game To Start...")
-            this.startGame();
-          }, Math.floor(Math.random() * 9000))
+          this.swalService.showSwal(SwalTypes.Info, "Waiting For Game To Start...")
+          this.startGame();
 
         });
       } catch (err) {
@@ -118,8 +115,8 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   private addReceiveErrorMessageListener = () => {
-    this.resistanceHubConnection.on("Error", (errorMessage: string) => {
-      this.swalService.showSwal(SwalTypes.Error, errorMessage);
+    this.resistanceHubConnection.on("Error", (errorMessage: CustomError) => {
+      this.swalService.showSwal(SwalTypes.Error, errorMessage.description);
     });
   }
 
