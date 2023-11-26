@@ -10,9 +10,9 @@ import {
   JoinLobbyCommand,
   LobbyDetails,
   ReadyUpCommand,
-  SearchLobbyQuery,
 } from "./game-lobby.models";
 import {StartGameModel} from "../game.models";
+import {CustomError} from "../../shared/models/error.models";
 
 
 @Component({
@@ -93,13 +93,6 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
     });
   };
 
-  searchLobby(query: SearchLobbyQuery) {
-    this.lobbyHubConnection.invoke('SearchLobby', query).then((lobbyDetails: LobbyDetails) => {
-      this.setCurrentLobby(lobbyDetails);
-    }).catch(err => {
-
-    });
-  }
 
   joinLobby(command: JoinLobbyCommand) {
     this.lobbyHubConnection.invoke('JoinLobby', command).then((lobbyDetails: LobbyDetails) => {
@@ -208,8 +201,8 @@ export class GameLobbyComponent implements OnInit, OnDestroy {
 
 
   private addReceiveErrorMessageListener = () => {
-    this.lobbyHubConnection.on("Error", (errorMessage: string) => {
-      this.swalService.showSwal(SwalTypes.Error, errorMessage);
+    this.lobbyHubConnection.on("Error", (errorMessage: CustomError) => {
+      this.swalService.showSwal(SwalTypes.Error, errorMessage.description);
     });
   }
 

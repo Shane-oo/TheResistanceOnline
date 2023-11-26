@@ -1,4 +1,5 @@
 using TheResistanceOnline.GamePlay.Common;
+using TheResistanceOnline.GamePlay.PlayerModels;
 
 namespace TheResistanceOnline.GamePlay.ObserverPattern;
 
@@ -15,4 +16,10 @@ public interface IGameModelSubject: ISubject
     public Phase Phase { get; }
 
     public List<string> PlayerNames { get; }
+
+    public void AddMissionTeamMember(string playerName);
+
+    public void RemoveMissionTeamMember(string playerName);
+
+
 }

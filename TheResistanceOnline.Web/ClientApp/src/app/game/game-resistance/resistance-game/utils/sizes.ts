@@ -2,14 +2,12 @@ import {Subject} from "rxjs";
 
 export class Sizes {
   resizeSubject: Subject<void> = new Subject<void>();
-  private readonly widthOffset = 1.33;
-  private readonly heightOffset = 1.66;
   private resizeTimeout: any;
 
   constructor() {
     // Setup
-    this._width = window.innerWidth / this.widthOffset;
-    this._height = window.innerHeight / this.heightOffset;
+    this._width = window.innerWidth;
+    this._height = window.innerHeight;
     this._pixelRatio = Math.min(window.devicePixelRatio, 2);
 
     // Resize event
@@ -44,8 +42,8 @@ export class Sizes {
     }
 
     this.resizeTimeout = setTimeout(() => {
-      this._width = window.innerWidth / this.widthOffset;
-      this._height = window.innerHeight / this.heightOffset;
+      this._width = window.innerWidth;
+      this._height = window.innerHeight;
       this._pixelRatio = Math.min(window.devicePixelRatio, 2);
       this.resizeSubject.next();
     }, 100)

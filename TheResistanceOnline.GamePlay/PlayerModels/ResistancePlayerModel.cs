@@ -1,10 +1,12 @@
+using TheResistanceOnline.GamePlay.ObserverPattern;
+
 namespace TheResistanceOnline.GamePlay.PlayerModels;
 
 public class ResistancePlayerModel: PlayerModel
 {
     #region Construction
 
-    public ResistancePlayerModel(string name): base(name)
+    public ResistancePlayerModel(string name, IGameModelSubject gameModel): base(name, gameModel)
     {
     }
 
@@ -12,18 +14,13 @@ public class ResistancePlayerModel: PlayerModel
 
     #region Construction
 
-    protected ResistancePlayerModel(string name, bool isBot): base(name, isBot)
+    protected ResistancePlayerModel(string name, IGameModelSubject gameModelSubject, bool isBot): base(name, gameModelSubject, isBot)
     {
     }
 
     #endregion
 
     #region Public Methods
-
-    public override List<string> PickTeam(List<string> chosenPlayers = null)
-    {
-        return chosenPlayers;
-    }
 
     public override bool Vote()
     {

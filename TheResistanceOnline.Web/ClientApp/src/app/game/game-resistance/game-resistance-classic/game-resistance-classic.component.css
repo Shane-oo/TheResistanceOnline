@@ -1,10 +1,19 @@
+/*.webgl {*/
+/*  position: absolute; !* Change this to absolute positioning *!*/
+/*  width: 100%; !* Make the canvas width 100% of the container *!*/
+/*  height: 100%; !* Make the canvas height 100% of the container *!*/
+/*  outline: none;*/
+/*  top: 60%;*/
+/*  left: 50%;*/
+/*  transform: translate(-50%, -60%);*/
+/*  border: white solid 1px;*/
+/*}*/
+
 .webgl {
-  position: absolute; /* Change this to absolute positioning */
-  width: 100%; /* Make the canvas width 100% of the container */
-  height: 100%; /* Make the canvas height 100% of the container */
+
+  position: fixed;
+  top: 0; /*top:57px*/
+  left: 0;
   outline: none;
-  top: 60%;
-  left: 50%;
-  transform: translate(-50%, -60%);
-  border: white solid 1px;
+
 }

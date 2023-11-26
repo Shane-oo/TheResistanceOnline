@@ -1,15 +1,8 @@
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using TheResistanceOnline.Games.Lobbies.ReadyUp;
+using Microsoft.Extensions.Logging;
 using TheResistanceOnline.Hubs.Common;
-using TheResistanceOnline.Hubs.Lobbies.Common;
-using TheResistanceOnline.Hubs.Lobbies.CreateLobby;
-using TheResistanceOnline.Hubs.Lobbies.GetLobbies;
-using TheResistanceOnline.Hubs.Lobbies.JoinLobby;
-using TheResistanceOnline.Hubs.Lobbies.ReadyUp;
-using TheResistanceOnline.Hubs.Lobbies.RemoveConnection;
-using TheResistanceOnline.Hubs.Lobbies.SearchLobby;
 
 namespace TheResistanceOnline.Hubs.Lobbies;
 
@@ -51,7 +44,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
 
     #region Construction
 
-    public LobbyHub(IMediator mediator, LobbyHubPersistedProperties properties)
+    public LobbyHub(IMediator mediator, LobbyHubPersistedProperties properties, ILogger<LobbyHub> logger): base(logger)
     {
         _mediator = mediator;
         _properties = properties;
@@ -87,15 +80,28 @@ public class LobbyHub: BaseHub<ILobbyHub>
     public async Task<LobbyDetailsModel> CreateLobby(CreateLobbyCommand command)
     {
         SetRequest(command);
+        SetCommand(command);
+
         command.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
         {
-            return await _mediator.Send(command);
+            var result = await _mediator.Send(command);
+            if (result.IsFailure)
+            {
+                await Clients.Caller.Error(result.Error);
+                return null;
+            }
+
+            var getLobbyQuery = new GetLobbyQuery
+                                {
+                                    Id = result.Value,
+                                };
+            return await GetLobby(getLobbyQuery);
         }
         catch(Exception ex)
         {
-            await Clients.Caller.Error(ex.Message);
+            await HandleError(ex);
             throw;
         }
     }
@@ -104,16 +110,49 @@ public class LobbyHub: BaseHub<ILobbyHub>
     public async Task<List<LobbyDetailsModel>> GetLobbies()
     {
         var query = new GetLobbiesQuery();
-        SetRequest(query);
+        SetQuery(query);
+
         query.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
         {
-            return await _mediator.Send(query);
+            var result = await _mediator.Send(query);
+            if (result.IsFailure)
+            {
+                await Clients.Caller.Error(result.Error);
+                return null;
+            }
+
+            return result.Value;
         }
         catch(Exception ex)
         {
-            await Clients.Caller.Error(ex.Message);
+            await HandleError(ex);
+            throw;
+        }
+    }
+
+
+    [UsedImplicitly]
+    public async Task<LobbyDetailsModel> GetLobby(GetLobbyQuery query)
+    {
+        SetQuery(query);
+        query.GroupNamesToLobby = _properties._groupNamesToLobby;
+
+        try
+        {
+            var result = await _mediator.Send(query);
+            if (result.IsFailure)
+            {
+                await Clients.Caller.Error(result.Error);
+                return null;
+            }
+
+            return result.Value;
+        }
+        catch(Exception ex)
+        {
+            await HandleError(ex);
             throw;
         }
     }
@@ -122,15 +161,27 @@ public class LobbyHub: BaseHub<ILobbyHub>
     public async Task<LobbyDetailsModel> JoinLobby(JoinLobbyCommand command)
     {
         SetRequest(command);
+        SetCommand(command);
         command.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
         {
-            return await _mediator.Send(command);
+            var result = await _mediator.Send(command);
+            if (result.IsFailure)
+            {
+                await Clients.Caller.Error(result.Error);
+                return null;
+            }
+
+            var getLobbyQuery = new GetLobbyQuery
+                                {
+                                    Id = result.Value,
+                                };
+            return await GetLobby(getLobbyQuery);
         }
         catch(Exception ex)
         {
-            await Clients.Caller.Error(ex.Message);
+            await HandleError(ex);
             throw;
         }
     }
@@ -164,38 +215,20 @@ public class LobbyHub: BaseHub<ILobbyHub>
     public async Task ReadyUp(ReadyUpCommand command)
     {
         SetRequest(command);
+        SetCommand(command);
         command.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
         {
-            await _mediator.Send(command);
+            var result = await _mediator.Send(command);
+            if (result.IsFailure)
+            {
+                await Clients.Caller.Error(result.Error);
+            }
         }
         catch(Exception ex)
         {
-            await Clients.Caller.Error(ex.Message);
-            throw;
-        }
-    }
-
-    [UsedImplicitly]
-    public async Task<LobbyDetailsModel> SearchLobby(SearchLobbyQuery query)
-    {
-        SetRequest(query);
-        query.GroupNamesToLobby = _properties._groupNamesToLobby;
-        try
-        {
-            var foundLobbyId = await _mediator.Send(query);
-            var command = new JoinLobbyCommand
-                          {
-                              LobbyId = foundLobbyId,
-                              GroupNamesToLobby = _properties._groupNamesToLobby
-                          };
-            SetRequest(command);
-            return await JoinLobby(command);
-        }
-        catch(Exception ex)
-        {
-            await Clients.Caller.Error(ex.Message);
+            await HandleError(ex);
             throw;
         }
     }

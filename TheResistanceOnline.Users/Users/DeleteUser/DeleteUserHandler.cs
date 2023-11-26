@@ -1,4 +1,4 @@
-namespace TheResistanceOnline.Users.Users.DeleteUser;
+namespace TheResistanceOnline.Users.Users;
 
 public class DeleteUserHandler
 {

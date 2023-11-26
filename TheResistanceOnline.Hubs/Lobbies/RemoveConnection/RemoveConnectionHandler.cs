@@ -1,10 +1,9 @@
-using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using TheResistanceOnline.Games.Lobbies;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
-namespace TheResistanceOnline.Hubs.Lobbies.RemoveConnection;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
-public class RemoveConnectionHandler: IRequestHandler<RemoveConnectionCommand, Unit>
+public class RemoveConnectionHandler: ICommandHandler<RemoveConnectionCommand>
 {
     #region Fields
 
@@ -23,7 +22,7 @@ public class RemoveConnectionHandler: IRequestHandler<RemoveConnectionCommand, U
 
     #region Public Methods
 
-    public async Task<Unit> Handle(RemoveConnectionCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(RemoveConnectionCommand command, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(command);
 
@@ -74,7 +73,7 @@ public class RemoveConnectionHandler: IRequestHandler<RemoveConnectionCommand, U
             }
         }
 
-        return default;
+        return Result.Success();
     }
 
     #endregion

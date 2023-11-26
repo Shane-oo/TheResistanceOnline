@@ -14,17 +14,15 @@ export const sources: Resource[] = [
     textureType: TextureType.NormalMap
   },
   {
-    name: 'resistanceGameBoard',
+    name: 'missionTeamPiece',
     type: ResourceType.GltfModel,
-    path: 'assets/models/ResistanceGame/ResistanceGame.glb',
+    path: 'assets/models/ResistanceGame/MissionTeamPiece.glb',
     textureType: null
   },
   {
-    name: 'missionLeaderPiece',
-    type: ResourceType.GltfModel,
-    path: 'assets/models/ResistanceGame/MissionLeaderPiece.glb',
+    name: 'ethnocentricFont',
+    type: ResourceType.Font,
+    path: 'assets/fonts/ethnocentric_font.json',
     textureType: null
   }
 ];
-
-

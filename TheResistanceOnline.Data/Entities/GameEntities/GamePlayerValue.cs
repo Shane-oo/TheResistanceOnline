@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace TheResistanceOnline.Data.Entities.GameEntities;
+namespace TheResistanceOnline.Data.Entities;
 
 
 public class GamePlayerValue

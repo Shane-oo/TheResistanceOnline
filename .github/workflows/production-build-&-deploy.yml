@@ -1,5 +1,5 @@
 name: production - build and deploy pipeline
-on:
+on: 
   pull_request:
     branches: ["main"]
   workflow_dispatch:

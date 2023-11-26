@@ -1,3 +1,4 @@
+using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.GamePlay.ObserverPattern;
 using TheResistanceOnline.GamePlay.PlayerModels;
@@ -20,7 +21,7 @@ public abstract class GameModel: IGameModelSubject
 
     public int MissionSize => GetMissionSize();
 
-    public List<string> MissionTeam { get; private set; }
+    public List<string> MissionTeam { get; set; } = new();
 
     public Phase Phase { get; private set; } = Phase.MissionBuild;
 
@@ -52,6 +53,13 @@ public abstract class GameModel: IGameModelSubject
         return playerSetupModels;
     }
 
+    protected void SubmitMissionTeam()
+    {
+        if (!MissionTeamFull())
+        {
+        }
+    }
+
 
     protected void UpdateMission(int mission)
     {
@@ -66,12 +74,6 @@ public abstract class GameModel: IGameModelSubject
             playerModel.IsMissionLeader = missionLeaderName == playerModel.Name;
         }
 
-        NotifyObservers();
-    }
-
-    protected void UpdateMissionTeam(List<string> missionTeam)
-    {
-        MissionTeam = missionTeam;
         NotifyObservers();
     }
 
@@ -171,6 +173,30 @@ public abstract class GameModel: IGameModelSubject
 
     #region Public Methods
 
+    public void AddMissionTeamMember(string player)
+    {
+        ArgumentNullException.ThrowIfNull(player);
+
+        if (MissionTeamFull())
+        {
+            return;
+        }
+
+        MissionTeam.Add(player);
+
+        NotifyObservers();
+    }
+
+    public PlayerModel GetPlayerModel(string name)
+    {
+        return Players.FirstOrDefault(p => p.Key == name).Value;
+    }
+
+    public bool MissionTeamFull()
+    {
+        return MissionTeam.Count == GetMissionSize();
+    }
+
     public void NotifyObservers()
     {
         foreach(var observer in _observers)
@@ -182,6 +208,15 @@ public abstract class GameModel: IGameModelSubject
     public void RegisterObserver(IObserver observer)
     {
         _observers.Add(observer);
+    }
+
+    public void RemoveMissionTeamMember(string player)
+    {
+        ArgumentNullException.ThrowIfNull(player);
+
+        MissionTeam.Remove(player);
+
+        NotifyObservers();
     }
 
     public void RemoveObserver(IObserver observer)

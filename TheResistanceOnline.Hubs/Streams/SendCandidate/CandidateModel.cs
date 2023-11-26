@@ -1,4 +1,4 @@
-namespace TheResistanceOnline.Hubs.Streams.SendCandidate;
+namespace TheResistanceOnline.Hubs.Streams;
 
 public class CandidateModel
 {

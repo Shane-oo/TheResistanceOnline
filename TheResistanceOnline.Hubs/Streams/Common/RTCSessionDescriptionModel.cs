@@ -1,4 +1,4 @@
-namespace TheResistanceOnline.Hubs.Streams.Common;
+namespace TheResistanceOnline.Hubs.Streams;
 
 public class RTCSessionDescriptionModel
 {

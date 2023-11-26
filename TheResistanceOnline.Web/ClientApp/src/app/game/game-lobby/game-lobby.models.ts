@@ -18,10 +18,6 @@ export interface JoinLobbyCommand {
   lobbyId: string
 }
 
-export interface SearchLobbyQuery {
-  id: string
-}
-
 export interface SearchLobbyFormModel {
   id: FormControl<string>
 }

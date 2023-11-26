@@ -1,23 +1,41 @@
-using TheResistanceOnline.Core.Requests.Commands;
+using FluentValidation;
+using JetBrains.Annotations;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Authentications.ExternalIdentities.AuthenticateUserWithMicrosoft;
+namespace TheResistanceOnline.Authentications.ExternalIdentities;
 
-public class AuthenticateUserWithMicrosoftCommand: CommandBase<AuthenticationResult<Guid>>
+public class AuthenticateUserWithMicrosoftCommand: Command<UserId>
 {
     #region Properties
 
-    public string Audience { get; set; }
+    public string Audience { get; }
 
-    public Guid ObjectId { get; set; }
+    public MicrosoftId MicrosoftId { get; }
 
     #endregion
 
     #region Construction
 
-    public AuthenticateUserWithMicrosoftCommand(string audience, Guid objectId)
+    public AuthenticateUserWithMicrosoftCommand(string audience, MicrosoftId microsoftId)
     {
         Audience = audience;
-        ObjectId = objectId;
+        MicrosoftId = microsoftId;
+    }
+
+    #endregion
+}
+
+[UsedImplicitly]
+public class AuthenticateUserWithMicrosoftCommandValidator: AbstractValidator<AuthenticateUserWithMicrosoftCommand>
+{
+    #region Construction
+
+    public AuthenticateUserWithMicrosoftCommandValidator()
+    {
+        RuleFor(c => c.MicrosoftId).NotNull();
+        RuleFor(c => c.MicrosoftId.Value).NotEmpty();
+        RuleFor(c => c.Audience).NotEmpty();
     }
 
     #endregion

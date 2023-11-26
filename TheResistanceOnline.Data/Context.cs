@@ -1,19 +1,9 @@
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TheResistanceOnline.Data.Configurations.AuthorizationConfigurations;
-using TheResistanceOnline.Data.Configurations.ExternalIdentitiesConfigurations;
-using TheResistanceOnline.Data.Configurations.GameConfigurations;
-using TheResistanceOnline.Data.Configurations.PlayerStatisticConfigurations;
-using TheResistanceOnline.Data.Configurations.UserConfigurations;
-using TheResistanceOnline.Data.Entities.AuthorizationEntities;
-using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
-using TheResistanceOnline.Data.Entities.GameEntities;
-using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.PlayerStatistics;
+using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Data;
 
-public class Context: IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
+public class Context: DbContext
 {
     #region Properties
 
@@ -31,9 +21,21 @@ public class Context: IdentityDbContext<User, Role, Guid, UserClaim, UserRole, U
 
     public DbSet<PlayerStatistic> PlayerStatistics { get; set; }
 
+    public DbSet<RedditUser> RedditUsers { get; set; }
+
+    public DbSet<RoleClaim> RoleClaims { get; set; }
+
+    public DbSet<Role> Roles { get; set; }
+
     public DbSet<Scope> Scopes { get; set; }
 
     public DbSet<Token> Tokens { get; set; }
+
+    public DbSet<UserClaim> UserClaims { get; set; }
+
+    public DbSet<UserRole> UserRoles { get; set; }
+
+    public DbSet<User> Users { get; set; }
 
     #endregion
 
@@ -50,29 +52,7 @@ public class Context: IdentityDbContext<User, Role, Guid, UserClaim, UserRole, U
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        // Users
-        modelBuilder.ApplyConfiguration(new UserConfiguration());
-        modelBuilder.ApplyConfiguration(new RoleConfiguration());
-        modelBuilder.ApplyConfiguration(new RoleClaimConfiguration());
-        modelBuilder.ApplyConfiguration(new UserClaimConfiguration());
-        modelBuilder.ApplyConfiguration(new UserLoginConfiguration());
-        modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
-        modelBuilder.ApplyConfiguration(new UserTokenConfiguration());
-        modelBuilder.ApplyConfiguration(new UserSettingConfiguration());
-        // External Identities
-        modelBuilder.ApplyConfiguration(new MicrosoftUserConfiguration());
-        modelBuilder.ApplyConfiguration(new GoogleUserConfiguration());
-        // Games
-        modelBuilder.ApplyConfiguration(new GameConfiguration());
-        modelBuilder.ApplyConfiguration(new GamePlayerValueConfiguration());
-        // Player Statistics
-        modelBuilder.ApplyConfiguration(new PlayerStatisticConfiguration());
-        // Authorizations
-        modelBuilder.ApplyConfiguration(new ApplicationConfiguration());
-        modelBuilder.ApplyConfiguration(new AuthorizationConfiguration());
-        modelBuilder.ApplyConfiguration(new TokenConfiguration());
-        modelBuilder.ApplyConfiguration(new ScopeConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(Context).Assembly);
     }
 
     #endregion

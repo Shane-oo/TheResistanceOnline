@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using JetBrains.Annotations;
-using TheResistanceOnline.Data.Entities.GameEntities;
-using TheResistanceOnline.Data.Entities.UserEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.PlayerStatistics;
+namespace TheResistanceOnline.Data.Entities;
 
 [UsedImplicitly]
 [Table("PlayerStatistics")]
@@ -13,7 +12,7 @@ public class PlayerStatistic
 
     public int Id { get; set; }
 
-    public Guid UserId { get; set; }
+    public UserId UserId { get; set; }
 
     public User User { get; set; }
 

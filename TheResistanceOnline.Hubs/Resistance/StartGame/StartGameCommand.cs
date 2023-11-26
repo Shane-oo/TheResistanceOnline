@@ -1,18 +1,22 @@
 using FluentValidation;
-using TheResistanceOnline.Core.Requests.Commands;
+using JetBrains.Annotations;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.GamePlay;
-using TheResistanceOnline.Games;
-using TheResistanceOnline.Hubs.Resistance.Common;
+using TheResistanceOnline.Hubs.Common;
 
-namespace TheResistanceOnline.Hubs.Resistance.StartGame;
+namespace TheResistanceOnline.Hubs.Resistance;
 
-public class StartGameCommand: CommandBase<bool>
+public class StartGameCommand: Command<bool>, IConnectionModel
 {
     #region Properties
 
     public int Bots { get; set; }
 
     public bool BotsAllowed { get; set; }
+
+    public string ConnectionId { get; set; }
+
+    public GameDetails GameDetails { get; set; }
 
     public string LobbyId { get; set; }
 
@@ -22,11 +26,10 @@ public class StartGameCommand: CommandBase<bool>
 
     public List<string> UserNames { get; set; }
 
-    public GameDetails GameDetails { get; set; }
-
     #endregion
 }
 
+[UsedImplicitly]
 public class StartGameCommandValidator: AbstractValidator<StartGameCommand>
 {
     #region Construction
@@ -34,8 +37,7 @@ public class StartGameCommandValidator: AbstractValidator<StartGameCommand>
     public StartGameCommandValidator()
     {
         RuleFor(c => c.LobbyId)
-            .NotEmpty()
-            .NotNull();
+            .NotEmpty();
 
         RuleFor(c => c.TotalPlayers)
             .NotNull()
@@ -47,7 +49,9 @@ public class StartGameCommandValidator: AbstractValidator<StartGameCommand>
             .When(c => !c.BotsAllowed);
 
         RuleFor(c => c.UserNames)
-            .NotNull()
+            .NotEmpty();
+
+        RuleFor(c => c.ConnectionId)
             .NotEmpty();
     }
 

@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TheResistanceOnline.Data.Entities.ExternalIdentitiesEntities;
+using TheResistanceOnline.Data.Entities;
 
-namespace TheResistanceOnline.Data.Configurations.ExternalIdentitiesConfigurations;
+namespace TheResistanceOnline.Data.Configurations;
 
 public class GoogleUserConfiguration: IEntityTypeConfiguration<GoogleUser>
 {
@@ -12,14 +12,22 @@ public class GoogleUserConfiguration: IEntityTypeConfiguration<GoogleUser>
     {
         builder.HasKey(e => e.Id);
 
-        builder.Property(e => e.Subject)
-               .HasMaxLength(255)
-               .IsRequired();
+        builder.Property(e => e.Id)
+               .HasConversion(id => id.Value, value => new GoogleId(value))
+               .ValueGeneratedNever();
+
+        builder.Property(e => e.Id)
+               .HasMaxLength(255);
 
         builder.Property(e => e.UserId)
                .IsRequired();
 
-        builder.HasIndex(e => new { e.Subject, e.UserId })
+        builder.HasOne(g => g.User)
+               .WithOne(u => u.GoogleUser)
+               .HasForeignKey<GoogleUser>(g => g.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(e => new { e.Id, e.UserId })
                .IsUnique();
     }
 

@@ -1,50 +1,49 @@
-using FluentValidation;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
-using TheResistanceOnline.Core.Exceptions;
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.Queries.UserQueries;
+using TheResistanceOnline.Data.Entities;
+using TheResistanceOnline.Data.Queries;
 
-namespace TheResistanceOnline.Users.Users.UpdateUser;
+namespace TheResistanceOnline.Users.Users;
 
-public class UpdateUserHandler: IRequestHandler<UpdateUserCommand, Unit>
+public class UpdateUserHandler: ICommandHandler<UpdateUserCommand>
 {
     #region Fields
 
     private readonly IDataContext _context;
     private readonly UserManager<User> _userManager;
-    private readonly IValidator<UpdateUserCommand> _validator;
 
     #endregion
 
     #region Construction
 
-    public UpdateUserHandler(IDataContext context, UserManager<User> userManager, IValidator<UpdateUserCommand> validator)
+    public UpdateUserHandler(IDataContext context, UserManager<User> userManager)
     {
         _context = context;
         _userManager = userManager;
-        _validator = validator;
     }
 
     #endregion
 
     #region Public Methods
 
-    public async Task<Unit> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(command);
-
-        UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
-
-        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
-        if (!validationResult.IsValid) throw new DomainException(validationResult.Errors.First().ErrorMessage);
+        if (command == null)
+        {
+            return Result.Failure(Error.NullValue);
+        }
 
         var user = await _context.Query<IUserByUserIdDbQuery>()
                                  .WithParams(command.UserId)
                                  .ExecuteAsync(cancellationToken);
 
-        NotFoundException.ThrowIfNull(user);
+        var notFoundResult = NotFoundError.FailIfNull(user);
+        if (notFoundResult.IsFailure)
+        {
+            return notFoundResult;
+        }
 
         user.UserName = command.UserName.Trim();
 
@@ -52,11 +51,11 @@ public class UpdateUserHandler: IRequestHandler<UpdateUserCommand, Unit>
 
         if (!result.Succeeded)
         {
-            var errorDescription = result.Errors.FirstOrDefault()?.Description;
-            throw new DomainException(errorDescription);
+            var identityError = result.Errors.FirstOrDefault();
+            return Result.Failure(identityError != null ? new Error(identityError.Code, identityError.Description) : Error.Unknown);
         }
 
-        return default;
+        return Result.Success();
     }
 
     #endregion

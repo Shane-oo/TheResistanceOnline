@@ -1,12 +1,15 @@
 import {AfterViewInit, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {GameType, StartGameCommand} from "../game.models";
+import {Subject} from "rxjs";
+
 import * as signalR from "@microsoft/signalr";
 import {IHttpConnectionOptions} from "@microsoft/signalr";
+
 import {AuthenticationService} from "../../shared/services/authentication/authentication.service";
 import {environment} from "../../../environments/environment";
 import {SwalContainerService, SwalTypes} from "../../../ui/swal/swal-container.service";
 import {CommenceGameModel, Team} from "./game-resistance.models";
-import {Subject} from "rxjs";
+import {GameType, StartGameCommand} from "../game.models";
+import {CustomError} from "../../shared/models/error.models";
 
 
 @Component({
@@ -16,6 +19,9 @@ import {Subject} from "rxjs";
 })
 export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit {
   public gameCommenced: Subject<CommenceGameModel> = new Subject<CommenceGameModel>();
+  public newMissionTeamMember: Subject<string> = new Subject<string>();
+  public removeMissionTeamMember: Subject<string> = new Subject<string>();
+  public showMissionTeamSubmit: boolean = false;
 
   @Input() startGameCommand!: StartGameCommand;
   protected readonly GameType = GameType;
@@ -51,6 +57,24 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
 
   async ngOnDestroy() {
     await this.stop();
+
+    this.gameCommenced.complete();
+    this.newMissionTeamMember.complete();
+    this.removeMissionTeamMember.complete();
+  }
+
+  objectClickedEvent(name: string) {
+    this.resistanceHubConnection.invoke("ObjectSelected", name)
+      .catch(err => {
+      });
+  }
+
+  private addRequiredListeners() {
+    this.addReceiveErrorMessageListener();
+    this.addReceiveCommenceGameModelListener();
+    this.addReceiveNewMissionTeamMember();
+    this.addReceiveRemoveMissionTeamMember();
+    this.addReceiveShowMissionTeamSubmit();
   }
 
   private async start() {
@@ -66,15 +90,10 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
 
           // add Required Listeners
           // add required initial listeners
-          this.addReceiveErrorMessageListener();
-          this.addReceiveCommenceGameModelListener();
+          this.addRequiredListeners();
 
-          // my monstrosity of a hack to hopefully stop two people from sending startGame at the same time
-          // so that commenceGame isnt done twice
-          setTimeout(() => {
-            this.swalService.showSwal(SwalTypes.Info, "Waiting For Game To Start...")
-            this.startGame();
-          }, Math.floor(Math.random() * 9000))
+          this.swalService.showSwal(SwalTypes.Info, "Waiting For Game To Start...")
+          this.startGame();
 
         });
       } catch (err) {
@@ -96,8 +115,8 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   private addReceiveErrorMessageListener = () => {
-    this.resistanceHubConnection.on("Error", (errorMessage: string) => {
-      this.swalService.showSwal(SwalTypes.Error, errorMessage);
+    this.resistanceHubConnection.on("Error", (errorMessage: CustomError) => {
+      this.swalService.showSwal(SwalTypes.Error, errorMessage.description);
     });
   }
 
@@ -112,6 +131,24 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
       this.gameCommenced.next(commenceGameModel);
       // CommenceGame only called once
       this.resistanceHubConnection.off("CommenceGame");
-    })
+    });
+  }
+
+  private addReceiveNewMissionTeamMember = () => {
+    this.resistanceHubConnection.on("NewMissionTeamMember", (selectedPlayerName: string) => {
+      this.newMissionTeamMember.next(selectedPlayerName);
+    });
+  }
+
+  private addReceiveRemoveMissionTeamMember = () => {
+    this.resistanceHubConnection.on("RemoveMissionTeamMember", (selectedPlayerName: string) => {
+      this.removeMissionTeamMember.next(selectedPlayerName);
+    });
+  }
+
+  private addReceiveShowMissionTeamSubmit = () => {
+    this.resistanceHubConnection.on("ShowMissionTeamSubmit", (show: boolean) => {
+      this.showMissionTeamSubmit = show;
+    });
   }
 }

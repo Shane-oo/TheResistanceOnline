@@ -1,6 +1,6 @@
 using TheResistanceOnline.GamePlay.Common;
 
-namespace TheResistanceOnline.Hubs.Resistance.CommenceGame;
+namespace TheResistanceOnline.Hubs.Resistance;
 
 // The Initial Details for everyone to start game
 public class CommenceGameModel

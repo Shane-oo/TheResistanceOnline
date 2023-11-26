@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {SearchLobbyFormModel, SearchLobbyQuery} from "../game-lobby.models";
+import {JoinLobbyCommand, SearchLobbyFormModel} from "../game-lobby.models";
 
 @Component({
   selector: 'app-game-lobby-search',
@@ -9,7 +9,7 @@ import {SearchLobbyFormModel, SearchLobbyQuery} from "../game-lobby.models";
 })
 export class GameLobbySearchComponent {
   public searchLobbyForm: FormGroup<SearchLobbyFormModel>;
-  @Output() searchLobbyEvent = new EventEmitter<SearchLobbyQuery>();
+  @Output() searchLobbyEvent = new EventEmitter<JoinLobbyCommand>();
 
   constructor() {
     this.searchLobbyForm = new FormGroup<SearchLobbyFormModel>({
@@ -25,11 +25,11 @@ export class GameLobbySearchComponent {
 
   searchLobby(searchLobbyFormValue: any) {
     const formValues = {...searchLobbyFormValue};
-    const searchLobbyQuery: SearchLobbyQuery = {
-      id: formValues.id,
+    const joinLobbyCommand: JoinLobbyCommand = {
+      lobbyId: formValues.id
     };
 
-    this.searchLobbyEvent.emit(searchLobbyQuery);
+    this.searchLobbyEvent.emit(joinLobbyCommand);
   }
 
   validateControl = (controlName: string) => {

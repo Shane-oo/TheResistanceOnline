@@ -1,51 +1,46 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using TheResistanceOnline.Core.Errors;
 using TheResistanceOnline.Core.Exceptions;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Data.Entities.UserEntities;
-using TheResistanceOnline.Data.Queries.UserQueries;
-using TheResistanceOnline.Games.Lobbies;
+using TheResistanceOnline.Data.Queries;
 using TheResistanceOnline.Hubs.Common;
-using TheResistanceOnline.Hubs.Lobbies.Common;
 
-namespace TheResistanceOnline.Hubs.Lobbies.CreateLobby;
+namespace TheResistanceOnline.Hubs.Lobbies;
 
-public class CreateLobbyHandler: IRequestHandler<CreateLobbyCommand, LobbyDetailsModel>
+public class CreateLobbyHandler: ICommandHandler<CreateLobbyCommand, string>
 {
     #region Fields
 
     private readonly IDataContext _context;
     private readonly IHubContext<LobbyHub, ILobbyHub> _lobbyHubContext;
-    private readonly IValidator<CreateLobbyCommand> _validator;
 
     #endregion
 
     #region Construction
 
-    public CreateLobbyHandler(IDataContext context, IHubContext<LobbyHub, ILobbyHub> lobbyHubContext, IValidator<CreateLobbyCommand> validator)
+    public CreateLobbyHandler(IDataContext context, IHubContext<LobbyHub, ILobbyHub> lobbyHubContext)
     {
         _context = context;
         _lobbyHubContext = lobbyHubContext;
-        _validator = validator;
     }
 
     #endregion
 
     #region Public Methods
 
-    public async Task<LobbyDetailsModel> Handle(CreateLobbyCommand command, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(CreateLobbyCommand command, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(command);
-
-        UnauthorizedException.ThrowIfUserIsNotAllowedAccess(command, Roles.User);
-
-        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
-        if (!validationResult.IsValid) throw new DomainException(validationResult.Errors.First().ErrorMessage);
+        if (command == null)
+        {
+            return Result.Failure<string>(Error.NullValue);
+        }
 
         if (command.GroupNamesToLobby.ContainsKey(command.Id))
         {
-            throw new DomainException("Lobby Already Exists With That Id");
+            return Result.Failure<string>(new Error("CreateLobby.AlreadyExists", $"{command.Id} Already Exists"));
         }
 
         var user = await _context.Query<IUserByUserIdDbQuery>()
@@ -53,7 +48,11 @@ public class CreateLobbyHandler: IRequestHandler<CreateLobbyCommand, LobbyDetail
                                  .WithNoTracking()
                                  .ExecuteAsync(cancellationToken);
 
-        NotFoundException.ThrowIfNull(user);
+        var notFoundResult = NotFoundError.FailIfNull(user);
+        if (notFoundResult.IsFailure)
+        {
+            return Result.Failure<string>(notFoundResult.Error);
+        }
 
         await _lobbyHubContext.Groups.AddToGroupAsync(command.ConnectionId, command.Id, cancellationToken);
 
@@ -86,7 +85,7 @@ public class CreateLobbyHandler: IRequestHandler<CreateLobbyCommand, LobbyDetail
             await _lobbyHubContext.Clients.AllExcept(allConnectionsInLobbies).NewPublicLobby(lobbyDetails);
         }
 
-        return lobbyDetails;
+        return lobbyDetails.Id;
     }
 
     #endregion

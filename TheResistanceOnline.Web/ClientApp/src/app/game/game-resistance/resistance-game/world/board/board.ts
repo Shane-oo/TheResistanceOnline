@@ -1,34 +1,42 @@
-import {Group, Mesh, Scene} from "three";
-import {ModelResource, Resources} from "../../utils/resources";
+import {Scene} from "three";
+import {Resources} from "../../utils/resources";
 import GUI from "lil-gui";
-import {PlayerPiece} from "./player-piece";
+import {PlayerPiece} from "./pieces/player-piece";
 import {ResistanceGame} from "../../resistance-game";
-import {Sizes} from "../../utils/sizes";
-import {MissionLeaderPiece} from "./mission-leader-piece";
+import {MissionLeaderPiece} from "./pieces/mission-leader-piece";
+import {MissionTeamPiece} from "./pieces/mission-team-piece";
+import {MissionRoundPiece} from "./pieces/rounds/mission-round-piece";
+import {getMissionTeamCount} from "../../utils/helpers";
 
 export class Board {
-
   private readonly playerPositions: { x: number, z: number }[] = [
-    {x: -2, z: -1}, // top left
-    {x: 0, z: -1}, // top middle
-    {x: 2, z: -1}, // top right
+    {x: -2, z: -1.25}, // top left
+    {x: 0, z: -1.25}, // top middle
+    {x: 2, z: -1.25}, // top right
 
     {x: 2.75, z: 0.5}, // right top
     {x: 2.75, z: -0.5}, // right bottom
 
-    {x: 2, z: 1}, // bottom right
-    {x: 0, z: 1}, // bottom middle
-    {x: -2, z: 1}, // bottom left
+    {x: 2, z: 1.25}, // bottom right
+    {x: 0, z: 1.25}, // bottom middle
+    {x: -2, z: 1.25}, // bottom left
 
     {x: -2.75, z: 0.5}, // left bottom
     {x: -2.75, z: -0.5} // left top
   ];
 
+  private readonly missionRoundPositions: { x: number, z: number }[] = [
+    {x: -1.5, z: 0},
+    {x: -0.75, z: 0},
+    {x: 0, z: 0},
+    {x: 0.75, z: 0},
+    {x: 1.5, z: 0}
+  ]
+
   private readonly scene: Scene;
-  private readonly modelResource: ModelResource;
-  private readonly model: Group;
-  private playerPieces?: PlayerPiece[];
   private readonly missionLeaderPiece: MissionLeaderPiece;
+  private missionRoundsPieces?: MissionRoundPiece[];
+  private missionTeamPieces: { playerPiece: PlayerPiece, missionTeamPiece: MissionTeamPiece }[] = [];
   // Utils
   private readonly resources: Resources;
   // Debug
@@ -39,12 +47,6 @@ export class Board {
 
     this.scene = resistanceGame.scene;
     this.resources = resistanceGame.resources;
-
-    // Board
-    this.modelResource = this.resources.getModelResourceByName('resistanceGameBoard');
-    this.model = this.modelResource.gltf.scene;
-    this.configureModel();
-    this.scene.add(this.model);
 
     // Mission Leader
     this.missionLeaderPiece = new MissionLeaderPiece();
@@ -57,59 +59,87 @@ export class Board {
     }
   }
 
+  private _playerPieces?: PlayerPiece[];
+
+  get playerPieces(): PlayerPiece[] | undefined {
+    return this._playerPieces;
+  }
+
   createPlayerPieces(players: string[]) {
     const playerPieces: PlayerPiece[] = [];
-
     for (let i = 0; i < players.length; i++) {
       const piece = new PlayerPiece(players[i], this.playerPositions[i]);
       playerPieces.push(piece);
     }
 
-    this.playerPieces = playerPieces;
+    this._playerPieces = playerPieces;
   }
 
   moveLeaderPiece(player: string) {
-    const playerPiece = this.playerPieces?.find(p => p.name === player);
+    const playerPiece = this.getPlayerPieceByName(player);
     if (playerPiece) {
-      console.log(playerPiece,"is the mission leader")
-      this.missionLeaderPiece.movePiece(playerPiece.mesh.position);
+      const position = playerPiece.mesh.position.clone();
+      position.setZ(position.z - 0.15); // above the player piece
+
+      this.missionLeaderPiece.movePiece(position);
+    }
+  }
+
+  addMissionTeamMemberPieceToPlayer(player: string) {
+    const playerPiece = this.getPlayerPieceByName(player);
+    if (playerPiece) {
+      const missionTeamPiece = new MissionTeamPiece();
+
+      const position = playerPiece.mesh.position.clone();
+      position.setZ(position.z + 0.15); // below the player piece
+      missionTeamPiece.movePiece(position);
+
+      this.missionTeamPieces.push({
+        playerPiece: playerPiece,
+        missionTeamPiece: missionTeamPiece
+      });
+    }
+  }
+
+  removeMissionTeamMemberPieceFromPlayer(player: string) {
+    const playerPiece = this.getPlayerPieceByName(player);
+    if (playerPiece) {
+      const missionTeamPiece = this.missionTeamPieces.find(p => p.playerPiece === playerPiece);
+      if (missionTeamPiece) {
+        this.scene.remove(missionTeamPiece.missionTeamPiece.mesh);
+        missionTeamPiece?.missionTeamPiece.destroy();
+
+        this.missionTeamPieces = this.missionTeamPieces.filter(p => p !== missionTeamPiece);
+      }
     }
   }
 
   destroy() {
-    if (this.playerPieces) {
-      for (const piece of this.playerPieces) {
+    if (this._playerPieces) {
+      for (const piece of this._playerPieces) {
         piece.destroy();
       }
     }
+    this.missionLeaderPiece.destroy();
   }
 
-  private configureModel() {
-    this.model.scale.set(0.143, 0.05, 0.143);
-    this.model.traverse((child) => {
-      if (child instanceof Mesh) {
-        child.castShadow = true;
-      }
-    });
+  createMissionRoundPieces(playerCount: number) {
+    const rounds = [];
+
+    for (let i = 1; i < 6; i++) {
+      rounds.push(new MissionRoundPiece(i, getMissionTeamCount(i, playerCount), this.missionRoundPositions[i - 1]));
+    }
+
+    this.missionRoundsPieces = rounds;
+  }
+
+  private getPlayerPieceByName(name: string) {
+    return this._playerPieces?.find(p => p.name === name);
   }
 
   private configureDebug() {
     if (this.debugFolder) {
-      this.debugFolder.add(this.model.scale, 'x')
-        .name('scaleX')
-        .min(0)
-        .max(2)
-        .step(0.001)
-      this.debugFolder.add(this.model.scale, 'y')
-        .name('scaley')
-        .min(0)
-        .max(2)
-        .step(0.001)
-      this.debugFolder.add(this.model.scale, 'z')
-        .name('scalez')
-        .min(0)
-        .max(2)
-        .step(0.001)
+
     }
   }
 

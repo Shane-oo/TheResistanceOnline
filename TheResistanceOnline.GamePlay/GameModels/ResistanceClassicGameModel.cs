@@ -1,7 +1,7 @@
 using TheResistanceOnline.Common.Extensions;
-using TheResistanceOnline.GamePlay.BotModels.BotFactories;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.GamePlay.PlayerModels;
+using TheResistanceOnline.GamePlay.PlayerModels.BotModels.BotFactories;
 
 namespace TheResistanceOnline.GamePlay.GameModels;
 
@@ -58,7 +58,7 @@ public class ResistanceClassicGameModel: GameModel
         {
             var player = resistancePlayer.IsBot
                              ? botFactory.CreateResistanceBot(resistancePlayer.Name, this)
-                             : new ResistancePlayerModel(resistancePlayer.Name);
+                             : new ResistancePlayerModel(resistancePlayer.Name, this);
             player.Team = Team.Resistance;
             Players.Add(player.Name, player);
         }
@@ -67,7 +67,7 @@ public class ResistanceClassicGameModel: GameModel
         {
             var player = spyPlayer.IsBot
                              ? botFactory.CreateSpyBot(spyPlayer.Name, this)
-                             : new SpyPlayerModel(spyPlayer.Name);
+                             : new SpyPlayerModel(spyPlayer.Name, this);
             player.Team = Team.Spy;
             Players.Add(player.Name, player);
         }
@@ -80,11 +80,19 @@ public class ResistanceClassicGameModel: GameModel
     public override void SetupGame(List<string> playerUserNames, int botCount)
     {
         AssignTeams(playerUserNames, botCount);
-        var missionLeader = Players.First();
+        // var missionLeader = Players.First();
+
+        //todo remove
+        var missionLeader = Players.First(p => !p.Value.IsBot);
+
         UpdateMissionLeader(missionLeader.Key);
         if (missionLeader.Value.IsBot)
         {
-            UpdateMissionTeam(missionLeader.Value.PickTeam());
+            for(var i = 0; i < MissionSize; i++)
+            {
+                missionLeader.Value.PickMissionTeamMember();
+            }
+
             UpdatePhase(Phase.Vote);
         }
     }

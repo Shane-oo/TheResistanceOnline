@@ -1,21 +1,29 @@
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
+using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.Hubs.Common;
-using TheResistanceOnline.Hubs.Resistance.CommenceGame;
-using TheResistanceOnline.Hubs.Resistance.Common;
-using TheResistanceOnline.Hubs.Resistance.StartGame;
 
 namespace TheResistanceOnline.Hubs.Resistance;
 
 public interface IResistanceHub: IErrorHub
 {
     public Task CommenceGame(CommenceGameModel commenceGameModel);
+
+    public Task NewMissionTeamMember(string playerName);
+
+    public Task RemoveMissionTeamMember(string playerName);
+
+    public Task ShowMissionTeamSubmit(bool show);
 }
 
 public class ResistanceHub: BaseHub<IResistanceHub>
 {
     #region Constants
+
 
     private const int GAME_TIME_TO_LIVE_MINUTES = 60;
 
@@ -30,7 +38,7 @@ public class ResistanceHub: BaseHub<IResistanceHub>
 
     #region Construction
 
-    public ResistanceHub(IMediator mediator, ResistanceHubPersistedProperties properties)
+    public ResistanceHub(IMediator mediator, ResistanceHubPersistedProperties properties, ILogger<ResistanceHub> logger): base(logger)
     {
         _mediator = mediator;
         _properties = properties;
@@ -58,9 +66,91 @@ public class ResistanceHub: BaseHub<IResistanceHub>
         }
     }
 
+    private string GetCallerPlayerName(GameDetails gameDetails)
+    {
+        return gameDetails.Connections.FirstOrDefault(c => c.ConnectionId == Context.ConnectionId)?.UserName;
+    }
+
+    private Result<GameDetails> GetGameDetails(string lobbyId)
+    {
+        _properties._groupNamesToGameModels.TryGetValue(lobbyId, out var gameDetails);
+
+        var notFoundResult = NotFoundError.FailIfNull(lobbyId);
+        return notFoundResult.IsFailure ? Result.Failure<GameDetails>(notFoundResult.Error) : Result.Success(gameDetails);
+    }
+
+    private Result<string> GetLobbyId()
+    {
+        _properties._connectionIdsToGroupNames.TryGetValue(Context.ConnectionId, out var lobbyId);
+        var notFoundResult = NotFoundError.FailIfNull(lobbyId);
+        return notFoundResult.IsFailure ? Result.Failure<string>(notFoundResult.Error) : Result.Success(lobbyId);
+    }
+
+    private async Task MissionTeamPlayerSelected(SelectMissionTeamPlayerCommand command)
+    {
+        SetRequest(command);
+        SetCommand(command);
+
+        var result = await _mediator.Send(command);
+        if (result.IsFailure)
+        {
+            await Clients.Caller.Error(result.Error);
+        }
+    }
+
     #endregion
 
     #region Public Methods
+
+    [UsedImplicitly]
+    public async Task ObjectSelected(string name)
+    {
+        try
+        {
+            var lobbyId = GetLobbyId();
+            if (lobbyId.IsFailure)
+            {
+                await Clients.Caller.Error(lobbyId.Error);
+                return;
+            }
+
+            var gameDetails = GetGameDetails(lobbyId.Value);
+            if (gameDetails.IsFailure)
+            {
+                await Clients.Caller.Error(gameDetails.Error);
+                return;
+            }
+
+            switch(gameDetails.Value.GameModel.Phase)
+            {
+                case Phase.MissionBuild:
+                    var command = new SelectMissionTeamPlayerCommand
+                                  {
+                                      SelectedPlayerName = name,
+                                      GameModel = gameDetails.Value.GameModel,
+                                      LobbyId = lobbyId.Value,
+                                      CallerPlayerName = GetCallerPlayerName(gameDetails.Value)
+                                  };
+                    await MissionTeamPlayerSelected(command);
+                    break;
+                case Phase.Vote:
+                    break;
+                case Phase.VoteResults:
+                    break;
+                case Phase.Mission:
+                    break;
+                case Phase.MissionResults:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        catch(Exception ex)
+        {
+            await HandleError(ex);
+            throw;
+        }
+    }
 
     public override async Task OnConnectedAsync()
     {
@@ -98,10 +188,10 @@ public class ResistanceHub: BaseHub<IResistanceHub>
         {
             // todo let players know someone left, or just replace with bot idk yet
             //await Clients.Group(lobbyId).RemoveConnectionId(Context.ConnectionId);
-            if (_properties._groupNamesToGameModels.TryGetValue(lobbyId, out var gameModel))
+            if (_properties._groupNamesToGameModels.TryGetValue(lobbyId, out var gameDetails))
             {
-                gameModel.Connections.RemoveAll(c => c.ConnectionId == Context.ConnectionId);
-                if (!gameModel.Connections.Any())
+                gameDetails.Connections.RemoveAll(c => c.ConnectionId == Context.ConnectionId);
+                if (!gameDetails.Connections.Any())
                 {
                     _properties._groupNamesToGameModels.Remove(lobbyId, out _);
                 }
@@ -116,37 +206,42 @@ public class ResistanceHub: BaseHub<IResistanceHub>
     [UsedImplicitly]
     public async Task StartGame(StartGameCommand command)
     {
-        SetRequest(command);
-        if (_properties._groupNamesToGameModels.TryGetValue(command.LobbyId, out var gameModel))
+        var gameDetails = GetGameDetails(command.LobbyId);
+        if (gameDetails.IsFailure)
         {
-            command.GameDetails = gameModel;
-            try
-            {
-                var commenceGame = await _mediator.Send(command);
-                if (commenceGame)
-                {
-                    var commenceGameCommand = new CommenceGameCommand
-                                              {
-                                                  LobbyId = command.LobbyId,
-                                                  GameDetails = gameModel
-                                              };
-                    await _mediator.Send(commenceGameCommand);
-                }
-                // else{}
-                // todo set a timer where if game hasnt commenced within like 2 minutes then its
-                // a dead game and delete the details from all the maps too bad everyone
-                // also set a timer on client side where if they havent got a commence game in 3 minutes
-                // then refresh page as its a dead lobby
-            }
-            catch(Exception ex)
-            {
-                await Clients.Caller.Error(ex.Message);
-                throw;
-            }
+            await Clients.Caller.Error(gameDetails.Error);
+            return;
         }
-        else
+
+        SetRequest(command);
+        SetCommand(command);
+        command.GameDetails = gameDetails.Value;
+        try
         {
-            await Clients.Caller.Error($"Game Not Found for {command.LobbyId}");
+            var canCommenceGame = await _mediator.Send(command);
+            if (canCommenceGame.IsSuccess && canCommenceGame.Value)
+            {
+                var commenceGameCommand = new CommenceGameCommand
+                                          {
+                                              LobbyId = command.LobbyId,
+                                              GameDetails = gameDetails.Value
+                                          };
+                var result = await _mediator.Send(commenceGameCommand);
+                if (result.IsFailure)
+                {
+                    await Clients.Caller.Error(result.Error);
+                }
+            }
+            // else{}
+            // todo set a timer where if game hasnt commenced within like 2 minutes then its
+            // a dead game and delete the details from all the maps too bad everyone
+            // also set a timer on client side where if they havent got a commence game in 3 minutes
+            // then refresh page as its a dead lobby
+        }
+        catch(Exception ex)
+        {
+            await HandleError(ex);
+            throw;
         }
     }
 
