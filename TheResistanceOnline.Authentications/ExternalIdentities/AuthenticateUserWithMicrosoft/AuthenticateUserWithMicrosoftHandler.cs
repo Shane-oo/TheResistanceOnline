@@ -48,7 +48,7 @@ public class AuthenticateUserWithMicrosoftHandler: ICommandHandler<AuthenticateU
 
         await _userManager.AddToRoleAsync(user, Roles.User.ToString());
 
-        return Result.Success(user.Id);
+        return user.Id;
     }
 
     #endregion
@@ -76,7 +76,7 @@ public class AuthenticateUserWithMicrosoftHandler: ICommandHandler<AuthenticateU
 
         if (microsoftUser != null)
         {
-            return Result.Success(microsoftUser.UserId);
+            return microsoftUser.UserId;
         }
 
         return await CreateUser(command, cancellationToken);

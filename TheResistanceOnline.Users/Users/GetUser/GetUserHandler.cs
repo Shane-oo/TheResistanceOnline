@@ -1,7 +1,4 @@
-using AutoMapper;
-using MediatR;
 using TheResistanceOnline.Core.Errors;
-using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Queries;
@@ -14,16 +11,13 @@ public class GetUserHandler: IQueryHandler<GetUserQuery, UserDetailsModel>
 
     private readonly IDataContext _context;
 
-    private readonly IMapper _mapper;
-
     #endregion
 
     #region Construction
 
-    public GetUserHandler(IDataContext context, IMapper mapper)
+    public GetUserHandler(IDataContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     #endregion
@@ -55,7 +49,7 @@ public class GetUserHandler: IQueryHandler<GetUserQuery, UserDetailsModel>
                                    UserName = user.UserName
                                };
 
-        return Result.Success(userDetailsModel);
+        return userDetailsModel;
     }
 
     #endregion

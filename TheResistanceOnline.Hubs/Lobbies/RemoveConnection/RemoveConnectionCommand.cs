@@ -1,12 +1,14 @@
 using System.Collections.Concurrent;
-using MediatR;
-using TheResistanceOnline.Core.Requests.Commands;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
+using TheResistanceOnline.Hubs.Common;
 
 namespace TheResistanceOnline.Hubs.Lobbies;
 
-public class RemoveConnectionCommand: CommandBase<Unit>
+public class RemoveConnectionCommand: Command, IConnectionModel
 {
     #region Properties
+
+    public string ConnectionId { get; set; }
 
     public ConcurrentDictionary<string, LobbyDetailsModel> GroupNamesToLobby { get; set; }
 

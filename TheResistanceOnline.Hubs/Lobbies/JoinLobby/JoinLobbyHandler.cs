@@ -1,13 +1,13 @@
-using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using TheResistanceOnline.Core.Exceptions;
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Queries;
 using TheResistanceOnline.Hubs.Common;
 
 namespace TheResistanceOnline.Hubs.Lobbies;
 
-public class JoinLobbyHandler: IRequestHandler<JoinLobbyCommand, string>
+public class JoinLobbyHandler: ICommandHandler<JoinLobbyCommand, string>
 {
     #region Fields
 
@@ -28,18 +28,21 @@ public class JoinLobbyHandler: IRequestHandler<JoinLobbyCommand, string>
 
     #region Public Methods
 
-    public async Task<string> Handle(JoinLobbyCommand command, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(JoinLobbyCommand command, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(command);
+        if (command == null)
+        {
+            return Result.Failure<string>(Error.NullValue);
+        }
 
         if (!command.GroupNamesToLobby.TryGetValue(command.LobbyId, out var lobbyDetails))
         {
-            throw new DomainException("Lobby With That Id Was Not Found");
+            return Result.Failure<string>(NotFoundError.NotFound(command.LobbyId));
         }
 
         if (lobbyDetails.Connections.Count == lobbyDetails.MaxPlayers)
         {
-            throw new DomainException("Lobby Is Full");
+            return Result.Failure<string>(new Error("JoinLobby.Full", $"{command.LobbyId} Is Full"));
         }
 
         var user = await _context.Query<IUserByUserIdDbQuery>()
@@ -47,12 +50,17 @@ public class JoinLobbyHandler: IRequestHandler<JoinLobbyCommand, string>
                                  .WithNoTracking()
                                  .ExecuteAsync(cancellationToken);
 
-        NotFoundException.FailIfNull(user);
+        var notFoundResult = NotFoundError.FailIfNull(user);
+        if (notFoundResult.IsFailure)
+        {
+            return Result.Failure<string>(notFoundResult.Error);
+        }
 
         if (lobbyDetails.Connections.Any(c => c.UserName == user.UserName))
         {
-            throw new DomainException("You're Already In This Lobby");
+            return Result.Failure<string>(new Error("JoinLobby.AlreadyJoined", $"You Already Joined {command.LobbyId}"));
         }
+
 
         await _lobbyHubContext.Groups.AddToGroupAsync(command.ConnectionId, lobbyDetails.Id, cancellationToken);
 

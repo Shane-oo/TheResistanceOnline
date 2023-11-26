@@ -76,81 +76,111 @@ public class LobbyHub: BaseHub<ILobbyHub>
     #region Public Methods
 
     [UsedImplicitly]
-    public async Task<LobbyDetailsModel> CreateLobby(CreateLobbyCommand command)
+    public async Task<LobbyDetailsModel> CreateLobby(CreateLobbyCommand command, CancellationToken cancellationToken = default)
     {
         SetRequest(command);
+        SetCommand(command);
+
         command.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
         {
-            var lobbyId = await _mediator.Send(command);
+            var result = await _mediator.Send(command, cancellationToken);
+            if (result.IsFailure)
+            {
+                await Clients.Caller.Error(result.Error);
+                return null;
+            }
+
             var getLobbyQuery = new GetLobbyQuery
                                 {
-                                    Id = lobbyId,
+                                    Id = result.Value,
                                 };
             return await GetLobby(getLobbyQuery);
         }
         catch(Exception ex)
         {
-            await Clients.Caller.Error(ex.Message);
+            await HandleError(ex);
             throw;
         }
     }
 
     [UsedImplicitly]
-    public async Task<List<LobbyDetailsModel>> GetLobbies()
+    public async Task<List<LobbyDetailsModel>> GetLobbies(CancellationToken cancellationToken = default)
     {
         var query = new GetLobbiesQuery();
-        SetRequest(query);
+        SetQuery(query);
+
         query.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
         {
-            return await _mediator.Send(query);
+            var result = await _mediator.Send(query, cancellationToken);
+            if (result.IsFailure)
+            {
+                await Clients.Caller.Error(result.Error);
+                return null;
+            }
+
+            return result.Value;
         }
         catch(Exception ex)
         {
-            await Clients.Caller.Error(ex.Message);
+            await HandleError(ex);
             throw;
         }
     }
 
 
     [UsedImplicitly]
-    public async Task<LobbyDetailsModel> GetLobby(GetLobbyQuery query)
+    public async Task<LobbyDetailsModel> GetLobby(GetLobbyQuery query, CancellationToken cancellationToken = default)
     {
-        SetRequest(query);
+        SetQuery(query);
         query.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
         {
-            return await _mediator.Send(query);
+            var result = await _mediator.Send(query, cancellationToken);
+            if (result.IsFailure)
+            {
+                await Clients.Caller.Error(result.Error);
+                return null;
+            }
+
+            return result.Value;
         }
         catch(Exception ex)
         {
-            await Clients.Caller.Error(ex.Message);
+            await HandleError(ex);
             throw;
         }
     }
 
     [UsedImplicitly]
-    public async Task<LobbyDetailsModel> JoinLobby(JoinLobbyCommand command)
+    public async Task<LobbyDetailsModel> JoinLobby(JoinLobbyCommand command, CancellationToken cancellationToken = default)
     {
         SetRequest(command);
+        SetCommand(command);
         command.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
         {
-            var lobbyId = await _mediator.Send(command);
+            var result = await _mediator.Send(command, cancellationToken);
+            if (result.IsFailure)
+            {
+                await Clients.Caller.Error(result.Error);
+                return null;
+            }
+
             var getLobbyQuery = new GetLobbyQuery
                                 {
-                                    Id = lobbyId,
+                                    Id = result.Value,
                                 };
-            return await GetLobby(getLobbyQuery);
+            return await GetLobby(getLobbyQuery, cancellationToken);
         }
         catch(Exception ex)
         {
-            await Clients.Caller.Error(ex.Message);
+            await HandleError(ex);
             throw;
         }
     }
@@ -184,6 +214,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
     public async Task ReadyUp(ReadyUpCommand command)
     {
         SetRequest(command);
+        SetCommand(command);
         command.GroupNamesToLobby = _properties._groupNamesToLobby;
 
         try
@@ -192,7 +223,7 @@ public class LobbyHub: BaseHub<ILobbyHub>
         }
         catch(Exception ex)
         {
-            await Clients.Caller.Error(ex.Message);
+            await HandleError(ex);
             throw;
         }
     }

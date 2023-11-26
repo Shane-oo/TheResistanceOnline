@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
-using TheResistanceOnline.Core.Requests.Queries;
+using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
 namespace TheResistanceOnline.Hubs.Lobbies;
 
-public class GetLobbiesQuery: QueryBase<List<LobbyDetailsModel>>
+public class GetLobbiesQuery: Query<List<LobbyDetailsModel>>
 {
     #region Properties
 

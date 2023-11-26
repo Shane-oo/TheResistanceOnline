@@ -48,7 +48,7 @@ public class AuthenticateUserWithRedditCommandHandler: ICommandHandler<Authentic
 
         await _userManager.AddToRoleAsync(user, Roles.User.ToString());
 
-        return Result.Success(user.Id);
+        return user.Id;
     }
 
     #endregion
@@ -73,7 +73,7 @@ public class AuthenticateUserWithRedditCommandHandler: ICommandHandler<Authentic
                                            .ExecuteAsync(cancellationToken);
         if (redditUser != null)
         {
-            return Result.Success(redditUser.UserId);
+            return redditUser.UserId;
         }
 
         return await CreateUser(command, cancellationToken);

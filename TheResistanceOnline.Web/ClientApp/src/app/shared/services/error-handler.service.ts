@@ -70,7 +70,7 @@ export class ErrorHandlerService implements HttpInterceptor {
 
   private handleInternalServerError = (error: HttpErrorResponse): string => {
     const errorMessage = error.error;
-    this.swalService.showSwal(SwalTypes.Error, errorMessage.description);
+    this.swalService.showSwal(SwalTypes.Error, errorMessage.detail);
     return errorMessage;
   }
 }

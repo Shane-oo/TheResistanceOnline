@@ -47,13 +47,12 @@ public class AuthenticateUserWithCodeGrantHandler:
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        var result = new UserAuthenticationPayload
-                     {
-                         UserId = user.Id,
-                         UserName = user.UserName,
-                         Role = user.UserRole.Role.Name
-                     };
-        return Result.Success(result);
+        return new UserAuthenticationPayload
+               {
+                   UserId = user.Id,
+                   UserName = user.UserName,
+                   Role = user.UserRole.Role.Name
+               };
     }
 
     #endregion

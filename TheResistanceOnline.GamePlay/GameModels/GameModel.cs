@@ -189,10 +189,7 @@ public abstract class GameModel: IGameModelSubject
 
     public PlayerModel GetPlayerModel(string name)
     {
-        var player = Players.FirstOrDefault(p => p.Key == name).Value;
-        NotFoundException.FailIfNull(player);
-
-        return player;
+        return Players.FirstOrDefault(p => p.Key == name).Value;
     }
 
     public bool MissionTeamFull()

@@ -49,7 +49,7 @@ public class AuthenticateUserWithGoogleHandler: ICommandHandler<AuthenticateUser
 
         await _userManager.AddToRoleAsync(user, Roles.User.ToString());
 
-        return Result.Success(user.Id);
+        return user.Id;
     }
 
     #endregion
@@ -77,7 +77,7 @@ public class AuthenticateUserWithGoogleHandler: ICommandHandler<AuthenticateUser
 
         if (googleUser != null)
         {
-            return Result.Success(googleUser.UserId);
+            return googleUser.UserId;
         }
 
         return await CreateUser(command);
