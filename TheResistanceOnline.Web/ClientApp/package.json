@@ -29,7 +29,6 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@microsoft/signalr": "^6.0.25",
-    "@ng-bootstrap/ng-bootstrap": "^15.1.2",
     "@popperjs/core": "^2.11.8",
     "@sweetalert2/ngx-sweetalert2": "^11.0.0",
     "@types/three": "^0.159.0",

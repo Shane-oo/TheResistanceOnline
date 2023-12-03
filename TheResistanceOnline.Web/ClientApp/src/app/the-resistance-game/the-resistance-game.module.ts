@@ -11,7 +11,6 @@ import { GameChatBoxComponent } from './game/game-chat-box/game-chat-box.compone
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CountdownModule } from 'ngx-countdown';
-import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
     declarations: [
@@ -32,11 +31,7 @@ import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from
         ReactiveFormsModule,
         FormsModule,
         FontAwesomeModule,
-        CountdownModule,
-        NgbDropdown,
-        NgbDropdownMenu,
-        NgbDropdownItem,
-        NgbDropdownToggle
+        CountdownModule
     ]
 })
 export class TheResistanceGameModule {}
