@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>Disable</Nullable>
         <RootNamespace>TheResistanceOnline.Hubs</RootNamespace>
@@ -15,10 +15,10 @@
 
 
     <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="11.8.0" />
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.0" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="7.0.13" />
-        <PackageReference Include="OpenIddict.Abstractions" Version="4.9.0" />
+        <PackageReference Include="FluentValidation" Version="11.8.1" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.8.1" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.0" />
+        <PackageReference Include="OpenIddict.Abstractions" Version="4.10.1" />
     </ItemGroup>
 
 
