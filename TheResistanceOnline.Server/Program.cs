@@ -1,24 +1,83 @@
-using Microsoft.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
+using TheResistanceOnline.Common.ValidationHelpers;
+using TheResistanceOnline.Core;
+using TheResistanceOnline.Data;
+using TheResistanceOnline.Hubs;
+using TheResistanceOnline.Hubs.Lobbies;
+using TheResistanceOnline.Hubs.Resistance;
+using TheResistanceOnline.Server;
+using TheResistanceOnline.Users;
 
-namespace TheResistanceOnline.Server;
+var builder = WebApplication.CreateBuilder(args);
 
-public class Program
+builder.Services.AddApplicationInsightsTelemetry();
+
+var appSettingsSection = builder.Configuration.GetSection(nameof(AppSettings));
+var appSettings = appSettingsSection.Get<AppSettings>();
+// Validate app settings
+ValidateObjectPropertiesHelper.ValidateAllObjectProperties(appSettings, appSettings.SocketServerSettings);
+builder.Services.Configure<AppSettings>(appSettingsSection);
+
+builder.Services.AddCors(o =>
+                         {
+                             o.AddPolicy("CorsPolicy", p =>
+                                                       {
+                                                           p.AllowAnyMethod()
+                                                            .AllowAnyHeader()
+                                                            .AllowCredentials()
+                                                            .WithOrigins(appSettings.ClientUrls);
+                                                       });
+                         });
+
+builder.Services.AddSignalR();
+
+builder.Services.AddDataContext(builder.Configuration);
+
+builder.Services.AddOpenIddictIntrospection(appSettings, builder.Environment);
+
+builder.Services.AddUserIdentity();
+
+builder.Services.AddAuthentication(o =>
+                                   {
+                                       o.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                                       o.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                                       o.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                                   });
+
+// Data Context
+builder.Services.AddScoped<IDataContext, DataContext>();
+
+// Db Queries
+// TheResistanceOnline.Data
+builder.Services.AddSharedDbQueries();
+
+// TheResistanceOnline.Hubs
+builder.Services.AddHubServices();
+
+builder.Services.AddMediatrBehaviours();
+
+// App
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
 {
-    #region Private Methods
-
-    private static IWebHostBuilder CreateWebHostBuilder(string[] args)
-    {
-        return WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
-    }
-
-    #endregion
-
-    #region Public Methods
-
-    public static void Main(string[] args)
-    {
-        CreateWebHostBuilder(args).Build().Run();
-    }
-
-    #endregion
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseCors("CorsPolicy");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+                 {
+                     endpoints.MapHub<LobbyHub>("/lobby");
+                     //endpoints.MapHub<StreamHub>("/stream"); // stream not supported right now -> will revisit this later
+                     endpoints.MapHub<ResistanceHub>("/resistance");
+                 });
+
+app.Run();
