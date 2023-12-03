@@ -1,7 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-# Default port in .net 8 changed to 8080 instead of 80
-EXPOSE 8080 
+# Default port in .net 8 changed to 8080 instead of 80 
+# however if using WebHost.CreateDefaultBuilder() default port will be 5000
+EXPOSE 5000 
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
