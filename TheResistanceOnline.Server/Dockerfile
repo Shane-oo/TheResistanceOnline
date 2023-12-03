@@ -1,9 +1,10 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 80
+# Default port in .net 8 changed to 8080 instead of 80
+EXPOSE 8080 
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["TheResistanceOnline.Server/TheResistanceOnline.Server.csproj", "TheResistanceOnline.Server/"]
 RUN dotnet restore "TheResistanceOnline.Server/TheResistanceOnline.Server.csproj"
