@@ -4,7 +4,6 @@ import {FormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 import {AppComponent} from './app.component';
 import {NavMenuComponent} from './nav-menu/nav-menu.component';
@@ -60,8 +59,7 @@ import {AuthenticationInterceptor} from "./shared/services/authentication/authen
                 canActivate: [authorizationGuard]
             }
         ], {initialNavigation: 'enabledBlocking'}),
-        SweetAlert2Module.forRoot(),
-        NgbModule,
+        SweetAlert2Module.forRoot()
     ],
   providers: [
     {
