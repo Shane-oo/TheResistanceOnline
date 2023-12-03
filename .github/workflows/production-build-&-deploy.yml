@@ -11,7 +11,7 @@ env:
   THERESTISTANCEONLINE_SERVER_CONTAINER_NAME: "theresistanceonlineserver"
   THERESISTANCEONLINE_SERVER_APP_NAME: "the-resistance-online-server"
   RESOURCE_GROUP: "rsg-the-resistance-online"
-  DOTNET_VERSION: 7.0.x
+  DOTNET_VERSION: 8.0.x
 
 jobs:
   build-and-push-the-resistance-online-web-and-server-to-container:
@@ -53,7 +53,7 @@ jobs:
 
     - name: 'Install dotnet-ef Tools and Update Database'
       run: |
-        dotnet tool install --global dotnet-ef --version 7.0.13
+        dotnet tool install --global dotnet-ef --version 8.0.0
         dotnet tool restore
         dotnet ef database update --project TheResistanceOnline.Infrastructure.Data.Migrations
       env:
