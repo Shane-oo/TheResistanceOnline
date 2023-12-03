@@ -43,7 +43,7 @@
     "popper.js": "^1.16.1",
     "run-script-os": "^1.1.6",
     "rxjs": "~7.5.5",
-    "sweetalert2": "^11.10.1",
+    "sweetalert2": "^11.6.13",
     "three": "^0.159.0",
     "tslib": "^2.6.2",
     "zone.js": "^0.14.2"
