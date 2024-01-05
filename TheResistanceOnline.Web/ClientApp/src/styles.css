@@ -439,7 +439,7 @@ code {
 
 /*Accent = #d48325*/
 .text-color {
-  color: #f8e9d8;
+  color: #ffffff;
 }
 
 .background {
@@ -449,20 +449,20 @@ code {
 }
 
 .main-background-color {
-  background-color: #180d02;
+  background-color: #0a0b0c;
 
 }
 
 .backup-background-color {
-  background-color: #1f1608;
+  background-color: #2c2f33;
 }
 
 .primary-background-color {
-  background-color: #57350f;
+  background-color: red;
 }
 
 .secondary-background-color {
-  background-color: #271807;
+  background-color: #2c2f33;
 }
 
 .accent-background-color {
@@ -488,13 +488,15 @@ body {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #180d02;
+  background: #0a0b0c;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #f8e9d8;
+  background: #2c2f33;
   border-radius: 1px;
+  box-shadow: 0 0 0.9rem 0 #fc0114;
+
 }
 
 
@@ -503,24 +505,26 @@ body {
 .swal-text {
   font-family: inconsolata, serif;
   font-size: 15px;
-  color: #f8e9d8;
+  color: white;
   text-align: left;
   text-transform: capitalize;
 }
 
 .swal2-popup {
   margin-top: 100px;
-  border: solid 1px #d48325 !important;
+  /*border: solid 1px #fc0114 !important;*/
   border-radius: 1px !important;
+  /*box-shadow: 0 0 0.275rem 0 #fc0114 !important;*/
+
 }
 
 
 /*Buttons*/
 .primary-button {
   text-align: center;
-  background-color: #57350f;
+  background-color: #2c2f33;
   border: none;
-  color: #f8e9d8;
+  color: white;
   width: auto;
   margin: 10px;
   padding: 1em 2em;
@@ -535,6 +539,6 @@ body {
 
 .primary-button:hover {
   transform: translate(0, -3px);
-  box-shadow: 0 2px 10px -1px #57350f;
+  box-shadow: 0 2px 10px -1px #367bee;
 }
 

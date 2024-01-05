@@ -11,6 +11,7 @@ using OpenIddict.Client.AspNetCore;
 using OpenIddict.Server.AspNetCore;
 using TheResistanceOnline.Authentications.ExternalIdentities;
 using TheResistanceOnline.Authentications.OpenIds;
+using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data.Entities;
 using OpenIddictErrors = OpenIddict.Abstractions.OpenIddictConstants.Errors;

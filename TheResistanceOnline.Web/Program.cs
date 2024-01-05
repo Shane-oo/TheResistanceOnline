@@ -101,10 +101,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseCustomExceptionHandler();
-app.UseEndpoints(endpoints =>
-                 {
-                     endpoints.MapControllerRoute("default", "{controller}/{action=index}/{id?}");
-                     endpoints.MapFallbackToFile("index.html"); // must have this for angular spa to work
-                 });
+
+app.MapControllerRoute("default", "{controller}/{action=index}/{id?}");
+app.MapFallbackToFile("index.html"); // must have this for angular spa to work
+
 
 app.Run();

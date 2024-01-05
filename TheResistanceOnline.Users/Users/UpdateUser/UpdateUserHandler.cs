@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities;

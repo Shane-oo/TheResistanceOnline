@@ -1,42 +1,51 @@
 
 .navbar {
-    background: #271807;
-    position: sticky;
-    width: auto;
-    height: auto;
-    box-shadow: 0 0 0.275rem 0 #d48325;
-    top: 0;
+  background: #181a1c;
+  position: sticky;
+  width: auto;
+  height: auto;
+  box-shadow: 0 0 0.275rem 0 #fc0114;
+  top: 0;
 
 }
 
 
 .logo {
-    margin-left: 1.5rem;
-    font-size: 15px;
-    font-weight: 900;
-    width: 75px;
-    font-family: ethnocentric, serif;
-    padding: 10px;
-    height: 50px;
-    top: 0;
-    text-decoration: none;
-
+  margin-left: 1.5rem;
+  font-size: 15px;
+  font-weight: 900;
+  width: 75px;
+  font-family: ethnocentric, serif;
+  padding: 10px;
+  height: 50px;
+  top: 0;
+  color: white;
+  border-right: solid #367bee;
+  animation: border-pulsate 2s infinite;
 }
+
+@keyframes border-pulsate {
+  0%   { border-color: rgba(54,123,238, 1); }
+  50%  { border-color: rgba(0, 255, 255, 0); }
+  100% { border-color: rgba(54,123,238, 1); }
+}
+
 
 
 .navbar-nav {
-    list-style: none;
-    padding: 0.938rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    flex-direction: row; /* Change to a horizontal layout */
-    justify-content: flex-start; /* Align items at the top */
-    height: auto; /* Allow content to expand */
-    overflow-x: scroll;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  list-style: none;
+  padding: 0.938rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-direction: row; /* Change to a horizontal layout */
+  justify-content: flex-start; /* Align items at the top */
+  height: auto; /* Allow content to expand */
+  overflow-x: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
 }
+
 /* Hide horizontal scroll bar*/
 .navbar-nav::-webkit-scrollbar { /* WebKit */
   width: 0;
@@ -44,36 +53,36 @@
 }
 
 .navbar-nav-item {
-    width: 100%;
-    margin-right: 0.625rem; /* Add spacing between navigation items */
+  width: 100%;
+  margin-right: 0.625rem; /* Add spacing between navigation items */
 }
 
 .navbar-nav-link {
-    display: flex;
-    align-items: center;
-    color: #f8e9d8;
-    text-decoration: none;
-    font-family: inconsolata, serif;
-    font-size: 18px;
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  text-decoration: none;
+  font-family: inconsolata, serif;
+  font-size: 18px;
 }
 
 .navbar-link-icon {
-    width: 2rem;
-    min-width: 2rem;
-    margin: 0 0.5rem;
-    text-align: center;
+  width: 2rem;
+  min-width: 2rem;
+  margin: 0 0.5rem;
+  text-align: center;
 }
 
 .navbar-link-text {
-    margin-left: 1rem;
+  margin-left: 1rem;
 }
 
 
 .active {
-    color: #fefcf9;
-    text-decoration: #d48325 underline;
+  color: #ffffff;
+  text-decoration: #367bee underline;
 }
 
 .logout:hover {
-    cursor: pointer;
+  cursor: pointer;
 }

@@ -1,4 +1,4 @@
-import {CineonToneMapping, PCFSoftShadowMap, Scene, SRGBColorSpace, WebGLRenderer} from "three";
+import {ACESFilmicToneMapping, CineonToneMapping, PCFSoftShadowMap, Scene, SRGBColorSpace, WebGLRenderer} from "three";
 import {Sizes} from "./utils/sizes";
 import {ResistanceGameCamera} from "./resistance-game-camera";
 import {ResistanceGame} from "./resistance-game";
@@ -43,11 +43,11 @@ export class ResistanceGameRenderer {
 
   private configureRenderer() {
     this.renderer.outputColorSpace = SRGBColorSpace;
-    this.renderer.toneMapping = CineonToneMapping;
-    this.renderer.toneMappingExposure = 1.75;
+    this.renderer.toneMapping = ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = PCFSoftShadowMap;
-    this.renderer.setClearColor('#180d02');
+    this.renderer.setClearColor('#0a0b0c');
     this.renderer.setSize(this.sizes.width, this.sizes.height);
     this.renderer.setPixelRatio(this.sizes.pixelRatio);
   }

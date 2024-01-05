@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
 namespace TheResistanceOnline.Core.Errors;

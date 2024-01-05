@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.Core.Errors;
 using TheResistanceOnline.Core.Exceptions;
+using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Queries;

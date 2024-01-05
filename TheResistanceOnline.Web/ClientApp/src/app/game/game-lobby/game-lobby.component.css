@@ -11,7 +11,7 @@
 .game-lobby-lobbies {
   grid-area: game-lobby-lobbies;
   margin: 7px;
-  background-color: #1f1608;
+  background: #181a1c;
   text-align: left;
   border-radius: 10px;
   padding: 20px;
@@ -21,7 +21,7 @@
 .game-lobby-search {
   grid-area: game-lobby-search;
   margin: 7px;
-  background-color: #1f1608;
+  background: #181a1c;
   text-align: left;
   border-radius: 10px;
   padding: 20px;
@@ -31,10 +31,11 @@
 .game-lobby-create {
   grid-area: game-lobby-create;
   margin: 7px;
-  background-color: #1f1608;
+  background: #181a1c;
   text-align: left;
   border-radius: 10px;
   padding: 20px;
+
 }
 
 @media only screen and (max-width: 500px) {

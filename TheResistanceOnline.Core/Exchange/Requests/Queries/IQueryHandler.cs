@@ -1,4 +1,5 @@
 using MediatR;
+using TheResistanceOnline.Core.Exchange.Responses;
 
 namespace TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 

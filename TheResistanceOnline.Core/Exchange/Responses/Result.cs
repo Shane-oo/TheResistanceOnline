@@ -1,6 +1,6 @@
 using TheResistanceOnline.Core.Errors;
 
-namespace TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
+namespace TheResistanceOnline.Core.Exchange.Responses;
 
 public class Result
 {
