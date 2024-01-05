@@ -11,7 +11,7 @@
 .game-lobby-lobbies {
   grid-area: game-lobby-lobbies;
   margin: 7px;
-  background: #181a1c;
+  background: rgb(30, 30, 30);
   text-align: left;
   border-radius: 10px;
   padding: 20px;
@@ -21,7 +21,7 @@
 .game-lobby-search {
   grid-area: game-lobby-search;
   margin: 7px;
-  background: #181a1c;
+  background: rgb(30, 30, 30);
   text-align: left;
   border-radius: 10px;
   padding: 20px;
@@ -31,7 +31,7 @@
 .game-lobby-create {
   grid-area: game-lobby-create;
   margin: 7px;
-  background: #181a1c;
+  background: rgb(30, 30, 30);
   text-align: left;
   border-radius: 10px;
   padding: 20px;

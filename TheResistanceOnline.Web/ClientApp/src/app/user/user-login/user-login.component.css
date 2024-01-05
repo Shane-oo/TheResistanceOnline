@@ -12,7 +12,7 @@
 .login-box {
   width: 500px;
   height: 390px;
-  background-color: #181a1c;
+  background: rgb(30, 30, 30);
   text-align: center;
   border-radius: 10px;
   padding: 20px;

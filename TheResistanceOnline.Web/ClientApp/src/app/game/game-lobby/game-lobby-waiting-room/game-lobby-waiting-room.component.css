@@ -12,7 +12,7 @@
 .game-lobby-waiting-room-details {
   grid-area: game-lobby-waiting-room-details;
   margin: 7px;
-  background: #181a1c;
+  background: rgb(30, 30, 30);
   text-align: left;
   border-radius: 10px;
   padding: 20px;
@@ -22,7 +22,7 @@
 .game-lobby-waiting-room-players {
   grid-area: game-lobby-waiting-room-players;
   margin: 7px;
-  background: #181a1c;
+  background: rgb(30, 30, 30);
   text-align: left;
   border-radius: 10px;
   padding: 20px;
