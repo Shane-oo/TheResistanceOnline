@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.Exchange.Requests;
 using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
@@ -34,7 +35,6 @@ public class SelectMissionTeamPlayerHandler: ICommandHandler<SelectMissionTeamPl
         var gameModel = command.GameModel;
 
         var player = gameModel.GetPlayerModel(command.CallerPlayerName);
-
 
         // Player selected a new team member
         if (gameModel.MissionTeam.All(p => p != command.SelectedPlayerName) && !gameModel.MissionTeamFull())

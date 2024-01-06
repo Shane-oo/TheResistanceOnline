@@ -140,7 +140,7 @@ public class AuthorizationsController: Controller
         return SignIn(principal, AUTH_SCHEME);
     }
 
-    private IActionResult SignInUser(OpenIddictRequest request, UserAuthenticationPayload payload)
+    private SignInResult SignInUser(OpenIddictRequest request, UserAuthenticationPayload payload)
     {
         var identity = new ClaimsIdentity(AUTH_SCHEME, OpenIddictClaims.Name, OpenIddictClaims.Role);
 

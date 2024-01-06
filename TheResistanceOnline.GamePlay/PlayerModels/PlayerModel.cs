@@ -54,15 +54,11 @@ public abstract class PlayerModel: IObserver
 
     public virtual void PickMissionTeamMember(string selectedPlayerName = null)
     {
-        ArgumentException.ThrowIfNullOrEmpty(selectedPlayerName);
-
         _gameModel.AddMissionTeamMember(selectedPlayerName);
     }
 
     public virtual void RemoveMissionTeamMember(string selectedPlayerName = null)
     {
-        ArgumentException.ThrowIfNullOrEmpty(selectedPlayerName);
-
         _gameModel.RemoveMissionTeamMember(selectedPlayerName);
     }
 

@@ -2,6 +2,10 @@ import {GLTF, GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {Texture, TextureLoader} from "three";
 import {Subject} from "rxjs";
 import {Font, FontLoader} from "three/examples/jsm/loaders/FontLoader";
+import {RGBELoader} from "three/examples/jsm/loaders/RGBELoader";
+import {texture} from "three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements";
+import {Dispose} from "./dispose";
+import {EXRLoader} from "three/examples/jsm/loaders/EXRLoader";
 
 export enum ResourceType {
   CubeTexture,
@@ -12,7 +16,8 @@ export enum ResourceType {
 
 export enum TextureType {
   DiffuseMap,
-  NormalMap
+  NormalMap,
+  HDREnvironmentMap
 }
 
 export interface TextureResource {
@@ -34,16 +39,17 @@ export interface FontResource {
 export interface Resource {
   name: string,
   type: ResourceType,
-  path: string | string[],
+  path: string,
   textureType: TextureType | null
 }
 
 export class Resources {
   loadedSubject: Subject<void> = new Subject<void>();
   private readonly loaders: {
-    gltfLoader: GLTFLoader,
+    GLTFLoader: GLTFLoader,
     textureLoader: TextureLoader,
-    fontLoader: FontLoader
+    fontLoader: FontLoader,
+    EXRLoader: EXRLoader
   };
   private readonly sources: Resource[];
   private readonly toLoad: number;
@@ -57,9 +63,10 @@ export class Resources {
     this.loaded = 0;
 
     this.loaders = {
-      gltfLoader: new GLTFLoader(),
+      GLTFLoader: new GLTFLoader(),
       textureLoader: new TextureLoader(),
-      fontLoader: new FontLoader()
+      fontLoader: new FontLoader(),
+      EXRLoader: new EXRLoader()
     };
 
     this.startLoading();
@@ -111,6 +118,11 @@ export class Resources {
     for (const texture of this._textures) {
       texture.texture.dispose();
     }
+    for (const model of this._models) {
+      model.gltf.scene.traverse((child) => {
+        Dispose.disposeOfChild(child);
+      });
+    }
 
     this._textures = [];
     this._models = [];
@@ -121,19 +133,25 @@ export class Resources {
     for (const source of this.sources) {
       switch (source.type) {
         case ResourceType.GltfModel:
-          this.loaders.gltfLoader.load(<string>source.path,
+          this.loaders.GLTFLoader.load(source.path,
             (gltf: GLTF) => {
               this.modelLoaded(source, gltf);
             });
           break;
         case ResourceType.Texture:
-          this.loaders.textureLoader.load(<string>source.path,
-            (texture: Texture) => {
+          if (source.textureType === TextureType.HDREnvironmentMap) {
+            this.loaders.EXRLoader.load(source.path, (texture: Texture) => {
               this.textureLoaded(source, texture);
-            });
+            })
+          } else {
+            this.loaders.textureLoader.load(source.path,
+              (texture: Texture) => {
+                this.textureLoaded(source, texture);
+              });
+          }
           break;
         case ResourceType.Font:
-          this.loaders.fontLoader.load(<string>source.path,
+          this.loaders.fontLoader.load(source.path,
             (font: Font) => {
               this.fontLoaded(source, font);
             });

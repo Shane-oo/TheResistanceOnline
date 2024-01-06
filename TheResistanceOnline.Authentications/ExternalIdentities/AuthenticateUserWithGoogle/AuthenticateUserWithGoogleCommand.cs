@@ -1,5 +1,6 @@
 using FluentValidation;
 using JetBrains.Annotations;
+using TheResistanceOnline.Core.Exchange.Requests;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data.Entities;
 

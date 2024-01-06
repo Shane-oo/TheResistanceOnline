@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using OpenIddict.Abstractions;
 using TheResistanceOnline.Core.Errors;
 using TheResistanceOnline.Core.Exceptions;
+using TheResistanceOnline.Core.Exchange.Requests;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data.Entities;
 using TheResistanceOnline.Hubs.Common;
@@ -52,7 +53,6 @@ public class BaseHub<THub>: Hub<THub> where THub : class, IErrorHub
         {
             _logger.LogError(ex, "Internal Server Error occured: {Message}", ex.Message);
         }
-
 
         if (exceptionDetails.Error != null)
         {

@@ -1,7 +1,7 @@
 using TheResistanceOnline.Common;
 using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.Exchange.Requests;
 using TheResistanceOnline.Core.Exchange.Responses;
-using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Queries;
 using TheResistanceOnline.Hubs.Common;

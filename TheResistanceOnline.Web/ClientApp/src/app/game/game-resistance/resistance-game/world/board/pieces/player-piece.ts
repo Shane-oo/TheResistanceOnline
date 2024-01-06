@@ -28,6 +28,9 @@ export class PlayerPiece extends Piece {
   createMesh(): Mesh<BufferGeometry, MeshStandardMaterial> {
     const geometry = new BoxGeometry(0.125, 0.125, 0.125);
     const mesh = new Mesh(geometry, new MeshStandardMaterial({color: 'purple'}));
+    mesh.material.envMapIntensity = 1;
+    mesh.material.roughness = 0.2;
+    mesh.material.metalness = 1.0;
     mesh.name = this.name;
 
     return mesh;

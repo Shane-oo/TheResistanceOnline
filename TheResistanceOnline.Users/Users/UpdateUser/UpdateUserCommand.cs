@@ -1,7 +1,7 @@
 using FluentValidation;
 using JetBrains.Annotations;
 using MediatR;
-using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
+using TheResistanceOnline.Core.Exchange.Requests;
 
 namespace TheResistanceOnline.Users.Users;
 

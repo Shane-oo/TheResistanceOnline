@@ -1,7 +1,6 @@
 using FluentValidation;
 using JetBrains.Annotations;
-using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
-using TheResistanceOnline.Hubs.Lobbies;
+using TheResistanceOnline.Core.Exchange.Requests;
 
 namespace TheResistanceOnline.Hubs.Resistance;
 

@@ -6,12 +6,14 @@ import {Board} from "./board/board";
 import {ResistanceGame} from "../resistance-game";
 import {RayCasting} from "./raycasting";
 import {takeUntil} from "rxjs";
+import {Floor} from "./floor";
 
 export class World {
 
   private readonly scene: Scene;
   private readonly environment: Environment;
   private readonly board: Board;
+  private readonly floor: Floor;
   // Utils
   private readonly resources: Resources;
   private readonly debug: Debug;
@@ -28,6 +30,7 @@ export class World {
 
     // Add all children of World
     this.board = new Board();
+    this.floor = new Floor();
 
     this.environment = new Environment();
 
@@ -40,6 +43,7 @@ export class World {
     this.environment.destroy();
     this.rayCasting.destroy();
     this.board.destroy();
+    this.floor.destroy();
   }
 
   setPlayers(players: string[]) {
@@ -51,11 +55,11 @@ export class World {
     this.board.moveLeaderPiece(player);
   }
 
-  addMissionTeamMember(player: string){
+  addMissionTeamMember(player: string) {
     this.board.addMissionTeamMemberPieceToPlayer(player);
   }
 
-  removeMissionTeamMember(player:string){
+  removeMissionTeamMember(player: string) {
     this.board.removeMissionTeamMemberPieceFromPlayer(player);
   }
 

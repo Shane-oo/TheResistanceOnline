@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using TheResistanceOnline.Core.Errors;
 using TheResistanceOnline.Core.Exchange.Responses;
-using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.Hubs.Common;
 
@@ -19,12 +18,15 @@ public interface IResistanceHub: IErrorHub
     public Task RemoveMissionTeamMember(string playerName);
 
     public Task ShowMissionTeamSubmit(bool show);
+
+    public Task VoteForMissionTeam(IEnumerable<string> missionTeamMembers);
+
+    public Task VoteSubmitted(string playerName, bool accepted);
 }
 
 public class ResistanceHub: BaseHub<IResistanceHub>
 {
     #region Constants
-
 
     private const int GAME_TIME_TO_LIVE_MINUTES = 60;
 
@@ -192,7 +194,7 @@ public class ResistanceHub: BaseHub<IResistanceHub>
             if (_properties._groupNamesToGameModels.TryGetValue(lobbyId, out var gameDetails))
             {
                 gameDetails.Connections.RemoveAll(c => c.ConnectionId == Context.ConnectionId);
-                if (!gameDetails.Connections.Any())
+                if (gameDetails.Connections.Count == 0)
                 {
                     _properties._groupNamesToGameModels.Remove(lobbyId, out _);
                 }
@@ -207,20 +209,28 @@ public class ResistanceHub: BaseHub<IResistanceHub>
     [UsedImplicitly]
     public async Task StartGame(StartGameCommand command)
     {
-        var gameDetails = GetGameDetails(command.LobbyId);
-        if (gameDetails.IsFailure)
-        {
-            await Clients.Caller.Error(gameDetails.Error);
-            return;
-        }
-
-        SetRequest(command);
-        SetCommand(command);
-        command.GameDetails = gameDetails.Value;
         try
         {
-            var canCommenceGame = await _mediator.Send(command);
-            if (canCommenceGame.IsSuccess && canCommenceGame.Value)
+            var gameDetails = GetGameDetails(command.LobbyId);
+            if (gameDetails.IsFailure)
+            {
+                await Clients.Caller.Error(gameDetails.Error);
+                return;
+            }
+
+            SetRequest(command);
+            SetCommand(command);
+            command.GameDetails = gameDetails.Value;
+
+            var commenceGameResult = await _mediator.Send(command);
+            if (commenceGameResult.IsFailure)
+            {
+                await Clients.Caller.Error(commenceGameResult.Error);
+                return;
+            }
+
+            var commenceGame = commenceGameResult.Value;
+            if (commenceGame)
             {
                 var commenceGameCommand = new CommenceGameCommand
                                           {
@@ -238,6 +248,39 @@ public class ResistanceHub: BaseHub<IResistanceHub>
             // a dead game and delete the details from all the maps too bad everyone
             // also set a timer on client side where if they havent got a commence game in 3 minutes
             // then refresh page as its a dead lobby
+        }
+        catch(Exception ex)
+        {
+            await HandleError(ex);
+            throw;
+        }
+    }
+
+    [UsedImplicitly]
+    public async Task SubmitMissionTeam()
+    {
+        try
+        {
+            var lobbyId = GetLobbyId();
+            if (lobbyId.IsFailure)
+            {
+                await Clients.Caller.Error(lobbyId.Error);
+                return;
+            }
+
+            var gameDetails = GetGameDetails(lobbyId.Value);
+            if (gameDetails.IsFailure)
+            {
+                await Clients.Caller.Error(gameDetails.Error);
+                return;
+            }
+
+            var command = new SubmitMissionTeamCommand(lobbyId.Value, gameDetails.Value.GameModel);
+            var result = await _mediator.Send(command);
+            if (result.IsFailure)
+            {
+                await Clients.Caller.Error(result.Error);
+            }
         }
         catch(Exception ex)
         {

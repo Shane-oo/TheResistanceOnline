@@ -1,7 +1,7 @@
 
 .navbar {
   background: rgb(30, 30, 30);
-  position: sticky;
+  position: relative;
   width: auto;
   height: auto;
   box-shadow: 0 0 0.275rem 0 #fc0114;
@@ -21,15 +21,20 @@
   top: 0;
   color: white;
   border-right: solid #367bee;
-  animation: border-pulsate 2s infinite;
+  animation: border-pulsate 3s infinite;
 }
 
 @keyframes border-pulsate {
-  0%   { border-color: rgba(54,123,238, 1); }
-  50%  { border-color: rgba(0, 255, 255, 0); }
-  100% { border-color: rgba(54,123,238, 1); }
+  0% {
+    border-color: rgba(54, 123, 238, 1);
+  }
+  50% {
+    border-color: rgba(252, 1, 20, 1);
+  }
+  100% {
+    border-color: rgba(54, 123, 238, 1);
+  }
 }
-
 
 
 .navbar-nav {

@@ -1,4 +1,3 @@
-using TheResistanceOnline.Core.Exceptions;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.GamePlay.ObserverPattern;
 using TheResistanceOnline.GamePlay.PlayerModels;
@@ -14,6 +13,10 @@ public abstract class GameModel: IGameModelSubject
     #endregion
 
     #region Properties
+
+    public List<PlayerModel> Bots => Players.Where(p => p.Value.IsBot)
+                                            .Select(kv => kv.Value)
+                                            .ToList();
 
     public int Mission { get; private set; } = 1;
 
@@ -53,13 +56,6 @@ public abstract class GameModel: IGameModelSubject
         return playerSetupModels;
     }
 
-    protected void SubmitMissionTeam()
-    {
-        if (!MissionTeamFull())
-        {
-        }
-    }
-
 
     protected void UpdateMission(int mission)
     {
@@ -74,12 +70,6 @@ public abstract class GameModel: IGameModelSubject
             playerModel.IsMissionLeader = missionLeaderName == playerModel.Name;
         }
 
-        NotifyObservers();
-    }
-
-    protected void UpdatePhase(Phase phase)
-    {
-        Phase = phase;
         NotifyObservers();
     }
 
@@ -169,6 +159,12 @@ public abstract class GameModel: IGameModelSubject
         return missionSize;
     }
 
+    private void UpdatePhase(Phase phase)
+    {
+        Phase = phase;
+        NotifyObservers();
+    }
+
     #endregion
 
     #region Public Methods
@@ -187,6 +183,11 @@ public abstract class GameModel: IGameModelSubject
         NotifyObservers();
     }
 
+    public IEnumerable<string> GetMissionTeam()
+    {
+        return MissionTeam;
+    }
+
     public PlayerModel GetPlayerModel(string name)
     {
         return Players.FirstOrDefault(p => p.Key == name).Value;
@@ -194,7 +195,7 @@ public abstract class GameModel: IGameModelSubject
 
     public bool MissionTeamFull()
     {
-        return MissionTeam.Count == GetMissionSize();
+        return MissionTeam.Count == MissionSize;
     }
 
     public void NotifyObservers()
@@ -225,6 +226,14 @@ public abstract class GameModel: IGameModelSubject
     }
 
     public abstract void SetupGame(List<string> playerUserNames, int botCount);
+
+    public void SubmitMissionTeam()
+    {
+        if (MissionTeam.Count == MissionSize)
+        {
+            UpdatePhase(Phase.Vote);
+        }
+    }
 
     #endregion
 }

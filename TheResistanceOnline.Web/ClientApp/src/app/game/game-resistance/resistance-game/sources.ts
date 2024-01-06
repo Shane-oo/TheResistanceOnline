@@ -24,5 +24,11 @@ export const sources: Resource[] = [
     type: ResourceType.Font,
     path: 'assets/fonts/ethnocentric_font.json',
     textureType: null
-  }
+  },
+  // {
+  //   name: 'broadwayEnvironmentMap',
+  //   type: ResourceType.Texture,
+  //   path: "assets/textures/environment-maps/cyberpunkEnv.jpg",
+  //   textureType: TextureType.DiffuseMap
+  // }
 ];
