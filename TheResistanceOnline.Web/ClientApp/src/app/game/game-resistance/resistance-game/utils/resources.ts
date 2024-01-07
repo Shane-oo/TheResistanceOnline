@@ -2,8 +2,6 @@ import {GLTF, GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {Texture, TextureLoader} from "three";
 import {Subject} from "rxjs";
 import {Font, FontLoader} from "three/examples/jsm/loaders/FontLoader";
-import {RGBELoader} from "three/examples/jsm/loaders/RGBELoader";
-import {texture} from "three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements";
 import {Dispose} from "./dispose";
 import {EXRLoader} from "three/examples/jsm/loaders/EXRLoader";
 

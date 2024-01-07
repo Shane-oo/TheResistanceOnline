@@ -17,8 +17,8 @@
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
-        <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="4.10.1" />
-        <PackageReference Include="OpenIddict.EntityFrameworkCore.Models" Version="4.10.1" />
+        <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="5.0.1" />
+        <PackageReference Include="OpenIddict.EntityFrameworkCore.Models" Version="5.0.1" />
         <PackageReference Include="Ulid" Version="1.3.3" />
 
 
