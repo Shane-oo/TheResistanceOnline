@@ -1,5 +1,6 @@
 using TheResistanceOnline.Core.Errors;
-using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
+using TheResistanceOnline.Core.Exchange.Requests;
+using TheResistanceOnline.Core.Exchange.Responses;
 
 namespace TheResistanceOnline.Hubs.Lobbies;
 

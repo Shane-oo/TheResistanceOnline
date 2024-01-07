@@ -1,6 +1,6 @@
 using FluentValidation;
 using JetBrains.Annotations;
-using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
+using TheResistanceOnline.Core.Exchange.Requests;
 using TheResistanceOnline.Data.Entities;
 
 namespace TheResistanceOnline.Authentications.ExternalIdentities;

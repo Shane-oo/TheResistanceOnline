@@ -19,14 +19,4 @@ public class ResistancePlayerModel: PlayerModel
     }
 
     #endregion
-
-    #region Public Methods
-
-    public override bool Vote()
-    {
-        Console.WriteLine("this is the reistance player voting");
-        return true;
-    }
-
-    #endregion
 }

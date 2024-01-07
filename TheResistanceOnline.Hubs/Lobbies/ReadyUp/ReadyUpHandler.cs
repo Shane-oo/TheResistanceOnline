@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.Exchange.Requests;
+using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.GamePlay;
 

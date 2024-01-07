@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
+using TheResistanceOnline.Core.Exchange.Requests;
+using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 
 namespace TheResistanceOnline.Hubs.Lobbies;

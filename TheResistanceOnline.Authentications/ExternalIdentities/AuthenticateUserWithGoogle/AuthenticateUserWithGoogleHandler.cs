@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using TheResistanceOnline.Core;
 using TheResistanceOnline.Core.Errors;
-using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
+using TheResistanceOnline.Core.Exchange.Requests;
+using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities;
 

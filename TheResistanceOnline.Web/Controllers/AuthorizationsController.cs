@@ -11,6 +11,7 @@ using OpenIddict.Client.AspNetCore;
 using OpenIddict.Server.AspNetCore;
 using TheResistanceOnline.Authentications.ExternalIdentities;
 using TheResistanceOnline.Authentications.OpenIds;
+using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data.Entities;
 using OpenIddictErrors = OpenIddict.Abstractions.OpenIddictConstants.Errors;
@@ -139,7 +140,7 @@ public class AuthorizationsController: Controller
         return SignIn(principal, AUTH_SCHEME);
     }
 
-    private IActionResult SignInUser(OpenIddictRequest request, UserAuthenticationPayload payload)
+    private SignInResult SignInUser(OpenIddictRequest request, UserAuthenticationPayload payload)
     {
         var identity = new ClaimsIdentity(AUTH_SCHEME, OpenIddictClaims.Name, OpenIddictClaims.Role);
 

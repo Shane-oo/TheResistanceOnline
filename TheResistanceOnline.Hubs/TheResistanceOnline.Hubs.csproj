@@ -32,11 +32,6 @@
     </ItemGroup>
 
 
-    <ItemGroup>
-      <Folder Include="Resistance\SubmitMissonTeam\" />
-    </ItemGroup>
-
-
 
 
 </Project>

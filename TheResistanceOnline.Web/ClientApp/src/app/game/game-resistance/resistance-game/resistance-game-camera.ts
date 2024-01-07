@@ -25,17 +25,12 @@ export class ResistanceGameCamera {
     this.canvas = canvas;
 
     // Perspective Camera
-    this._perspectiveCamera = new PerspectiveCamera(this.fov,
-      this.sizes.width / this.sizes.height,
-      0.1,
-      100);
-    this.configureCamera();
+    this._perspectiveCamera = this.createCamera();
+    this.resize();
     this.scene.add(this._perspectiveCamera);
 
     // Orbit Controls
-    this.orbitControls = new OrbitControls(this._perspectiveCamera, this.canvas);
-    //this.orbitControls.enableDamping = true;
-    this.orbitControls.enabled = false;
+    this.orbitControls = this.createOrbitControls();
 
     // Debug
     if (resistanceGame.debug.gui) {
@@ -76,9 +71,21 @@ export class ResistanceGameCamera {
     this.orbitControls.dispose();
   }
 
-  private configureCamera() {
-    this._perspectiveCamera.position.set(0, 3.5, 0);
-    this.resize();
+  private createCamera(): PerspectiveCamera {
+    const camera = new PerspectiveCamera(this.fov,
+      this.sizes.width / this.sizes.height,
+      0.1,
+      100);
+    camera.position.set(0, 3.5, 0);
+    return camera;
+  }
+
+  private createOrbitControls(): OrbitControls {
+    const controls = new OrbitControls(this._perspectiveCamera, this.canvas);
+    //this.orbitControls.enableDamping = true;
+    controls.enabled = false;
+
+    return controls;
   }
 
   // Debug
