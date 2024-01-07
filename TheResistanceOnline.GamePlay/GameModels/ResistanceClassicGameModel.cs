@@ -93,7 +93,7 @@ public class ResistanceClassicGameModel: GameModel
                 missionLeader.Value.PickMissionTeamMember();
             }
 
-            UpdatePhase(Phase.Vote);
+            SubmitMissionTeam();
         }
     }
 

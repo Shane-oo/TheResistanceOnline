@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild} from '@angular/core';
 import {first, Subject, takeUntil} from "rxjs";
 import {ResistanceGame} from "../resistance-game/resistance-game";
-import {CommenceGameModel, Phase} from "../game-resistance.models";
+import {CommenceGameModel, Phase, VoteSubmittedModel} from "../game-resistance.models";
 
 
 @Component({
@@ -13,9 +13,13 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
   @Input() gameCommenced!: Subject<CommenceGameModel>;
   @Input() newMissionTeamMember!: Subject<string>;
   @Input() removeMissionTeamMember!: Subject<string>;
+  @Input() moveToVotingPhase!: Subject<string[]>;
+  @Input() playerSubmittedVote!: Subject<VoteSubmittedModel>;
+
   @Input() showMissionTeamSubmit: boolean = false;
 
   @Output() objectClickedEventEmitter = new EventEmitter<string>();
+  @Output() submitMissionTeamEventEmitter = new EventEmitter<void>();
 
   private resistanceGame!: ResistanceGame;
   private readonly destroyed = new Subject<void>();
@@ -54,6 +58,18 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
       .subscribe(((selectedPlayerName: string) => {
         this.deleteMissionTeamMember(selectedPlayerName);
       }));
+
+    this.moveToVotingPhase
+      .pipe(takeUntil(this.destroyed))
+      .subscribe((missionTeamMembers: string[]) => {
+        this.startVotePhase(missionTeamMembers);
+      });
+
+    this.playerSubmittedVote
+      .pipe(takeUntil(this.destroyed))
+      .subscribe((playerVote:VoteSubmittedModel)=>{
+        this.playerVoted(playerVote);
+      })
   }
 
   ngOnDestroy(): void {
@@ -89,12 +105,24 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
     }
   }
 
+  submitMissionTeam() {
+    this.submitMissionTeamEventEmitter.emit();
+  }
+
   private addMissionTeamMember(playerName: string) {
     this.resistanceGame.addMissionTeamMember(playerName);
   }
 
   private deleteMissionTeamMember(playerName: string) {
     this.resistanceGame.removeMissionTeamMember(playerName);
+  }
+
+  private startVotePhase(missionTeamMembers: string[]) {
+    this.resistanceGame.startVotePhase(missionTeamMembers);
+  }
+
+  private playerVoted(playerVote:VoteSubmittedModel){
+    this.resistanceGame.playerVoted(playerVote);
   }
 
 }

@@ -1,6 +1,6 @@
 using FluentValidation;
 using JetBrains.Annotations;
-using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
+using TheResistanceOnline.Core.Exchange.Requests;
 using TheResistanceOnline.GamePlay;
 using TheResistanceOnline.Hubs.Common;
 

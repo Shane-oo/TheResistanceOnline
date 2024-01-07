@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
+using TheResistanceOnline.Core.Exchange.Requests;
 using TheResistanceOnline.Core.NewCommandAndQueriesAndResultsPattern;
 using TheResistanceOnline.Data.Entities;
 

@@ -25,11 +25,10 @@ public class DumbResistanceBotModel: ResistancePlayerModel, IResistanceBotModel
         throw new NotImplementedException();
     }
 
-    public override bool Vote()
+    public override void Vote(bool decision = true)
     {
-        Console.WriteLine("THis is the dumb resistance bot voting");
-        DoABotThing();
-        return true;
+        Console.WriteLine("THis is the dum resistance bot voting");
+        VoteChoice = true;
     }
 
     #endregion

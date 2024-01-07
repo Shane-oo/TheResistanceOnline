@@ -1,5 +1,6 @@
 <canvas class="webgl" #canvas id="canvas"></canvas>
 
-<div *ngIf="showMissionTeamSubmit" style="position: absolute;">
-  SUBMIT MISSION TEAM?
+<div *ngIf="showMissionTeamSubmit" class="submitMissionTeam">
+  <button class="primary-button" (click)="submitMissionTeam()">Submit Mission Team</button>
 </div>
+

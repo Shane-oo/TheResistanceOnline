@@ -11,26 +11,29 @@
 .user-details-edit {
   grid-area: main-left;
   margin: 7px;
-  background-color:#1f1608;
+  background: rgb(30, 30, 30);
   text-align: left;
   border-radius: 10px;
   padding: 20px;
 
 }
+
 .user-details-friends {
   grid-area: main-right;
   margin: 7px;
-  background-color: #1f1608;
+  background: rgb(30, 30, 30);
   text-align: left;
   border-radius: 10px;
   padding: 20px;
 
 }
+
 .user-details-interactions {
   grid-area: footer;
   margin: 7px;
-  background-color: #1f1608;
+  background: rgb(30, 30, 30);
   text-align: left;
   border-radius: 10px;
   padding: 20px;
+
 }

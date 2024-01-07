@@ -19,14 +19,4 @@ public class SpyPlayerModel: PlayerModel
     }
 
     #endregion
-
-    #region Public Methods
-
-    public override bool Vote()
-    {
-        Console.WriteLine("This is the spy player voting");
-        return true;
-    }
-
-    #endregion
 }

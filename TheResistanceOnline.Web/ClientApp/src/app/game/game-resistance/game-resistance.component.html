@@ -3,8 +3,11 @@
   <app-game-resistance-classic [gameCommenced]="gameCommenced"
                                [newMissionTeamMember]="newMissionTeamMember"
                                [removeMissionTeamMember]="removeMissionTeamMember"
-                               [showMissionTeamSubmit] ="showMissionTeamSubmit"
-                               (objectClickedEventEmitter)="objectClickedEvent($event)">
+                               [showMissionTeamSubmit]="showMissionTeamSubmit"
+                               [moveToVotingPhase]="moveToVotingPhase"
+                               [playerSubmittedVote]="playerSubmittedVote"
+                               (objectClickedEventEmitter)="objectClickedEvent($event)"
+                               (submitMissionTeamEventEmitter)="submitMissionTeam()">
   </app-game-resistance-classic>
 
 </div>

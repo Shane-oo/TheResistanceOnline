@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
             html="<span class=swal-text>{{ message }}</span>"
             [swalFireOnInit]="true"
             (didClose)="isSwalVisible = false;isError = false"
-            background='#271807'
+            background='#2c2f33'
             (didOpen)="swalDidOpen($event)"
       >
       </swal>
@@ -29,7 +29,7 @@ import Swal from 'sweetalert2';
             html="<span class=swal-text>{{ message }}</span>"
             [swalFireOnInit]="true"
             (didClose)="isSwalVisible = false;isSuccess = false"
-            background='#271807'
+            background='#2c2f33'
             (didOpen)="swalDidOpen($event)">
       </swal>
       <!--Warning Component -->
@@ -42,7 +42,7 @@ import Swal from 'sweetalert2';
             html="<span class=swal-text>{{ message }}</span>"
             [swalFireOnInit]="true"
             (didClose)="isSwalVisible = false;isWarning = false"
-            background='#271807'
+            background='#2c2f33'
             (didOpen)="swalDidOpen($event)">
       </swal>
       <!--Info Component -->
@@ -55,7 +55,7 @@ import Swal from 'sweetalert2';
             html="<span class=swal-text>{{ message }}</span>"
             [swalFireOnInit]="true"
             (didClose)="isSwalVisible = false;isInfo = false"
-            background='#271807'
+            background='#2c2f33'
             (didOpen)="swalDidOpen($event)">
       </swal>
   `,

@@ -24,3 +24,8 @@ export enum Team {
 export interface GameModel {
 
 }
+
+export interface VoteSubmittedModel {
+  playerName: string;
+  accepted: boolean;
+}
