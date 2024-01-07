@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {DOCUMENT} from "@angular/common";
 import {Subject, takeUntil} from "rxjs";
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import {AuthenticationService} from "../../shared/services/authentication/authentication.service";
 import {AuthenticationModel} from "../../shared/models/authentication.models";
 import {StateService} from "../../shared/services/state/state.service";
@@ -63,7 +63,7 @@ export class UserLoginComponent implements OnInit {
         .pipe(takeUntil(this.destroyed))
         .subscribe({
           next: (response: AuthenticationModel) => {
-            const idTokenDecoded = jwt_decode<AuthenticationModel>(response.id_token);
+            const idTokenDecoded = jwtDecode<AuthenticationModel>(response.id_token);
             response.role = idTokenDecoded.role;
 
             this.authService.authenticationData = response;
