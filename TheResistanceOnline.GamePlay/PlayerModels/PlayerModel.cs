@@ -23,6 +23,8 @@ public abstract class PlayerModel: IObserver
 
     public Team Team { get; set; }
 
+    public bool VoteChoice { get; set; }
+
     protected int MissionSize { get; set; }
 
     protected List<string> MissionTeamMembers { get; set; }
@@ -57,7 +59,7 @@ public abstract class PlayerModel: IObserver
         _gameModel.AddMissionTeamMember(selectedPlayerName);
     }
 
-    public virtual void RemoveMissionTeamMember(string selectedPlayerName = null)
+    public void RemoveMissionTeamMember(string selectedPlayerName = null)
     {
         _gameModel.RemoveMissionTeamMember(selectedPlayerName);
     }
@@ -70,7 +72,11 @@ public abstract class PlayerModel: IObserver
         MissionLeader = _gameModel.MissionLeader;
     }
 
-    public abstract bool Vote();
+
+    public virtual void Vote(bool decision = true)
+    {
+        VoteChoice = decision;
+    }
 
     #endregion
 }

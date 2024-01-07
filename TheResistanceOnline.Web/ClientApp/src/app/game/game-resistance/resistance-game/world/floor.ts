@@ -24,7 +24,7 @@ export class Floor {
 
 
     this.floorMesh = this.createFloorMesh();
-    this.scene.add(this.floorMesh);
+    //this.scene.add(this.floorMesh);
   }
 
   destroy() {

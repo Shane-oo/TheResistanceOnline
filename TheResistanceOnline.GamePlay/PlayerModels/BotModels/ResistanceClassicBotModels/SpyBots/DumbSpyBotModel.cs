@@ -26,10 +26,10 @@ public class DumbSpyBotModel: SpyPlayerModel, ISpyBotModel
         throw new NotImplementedException();
     }
 
-    public override bool Vote()
+    public override void Vote(bool decision = true)
     {
         Console.WriteLine("THis is the dum spy bot voting");
-        return true;
+        VoteChoice = false;
     }
 
     #endregion

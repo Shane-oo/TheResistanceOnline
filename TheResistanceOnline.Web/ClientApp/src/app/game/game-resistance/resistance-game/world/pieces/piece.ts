@@ -1,6 +1,6 @@
 import {BufferGeometry, Mesh, MeshStandardMaterial, Scene, Vector3} from "three";
-import {ResistanceGame} from "../../../resistance-game";
-import {Resources} from "../../../utils/resources";
+import {ResistanceGame} from "../../resistance-game";
+import {Resources} from "../../utils/resources";
 import GUI from "lil-gui";
 
 export abstract class Piece {

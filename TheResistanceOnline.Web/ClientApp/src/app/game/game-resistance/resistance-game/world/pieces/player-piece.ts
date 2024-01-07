@@ -5,7 +5,7 @@ import {RejectVotePiece} from "./voting/reject-vote-piece";
 
 // there will be multiple player pieces, one for each player
 export class PlayerPiece extends Piece {
-  readonly votePieces: {
+  private readonly _votePieces: {
     approveVotePiece: ApproveVotePiece,
     rejectVotePiece: RejectVotePiece
   };
@@ -20,10 +20,23 @@ export class PlayerPiece extends Piece {
     this.movePiece(positionVector);
 
     // Vote Pieces
-    this.votePieces = this.createVotePieces();
+    this._votePieces = this.createVotePieces();
 
   }
 
+  get votePieces(): { approveVotePiece: ApproveVotePiece; rejectVotePiece: RejectVotePiece } {
+    return this._votePieces;
+  }
+
+  private _isMissionLeader: boolean = false;
+
+  get isMissionLeader(): boolean {
+    return this._isMissionLeader;
+  }
+
+  set isMissionLeader(leader: boolean) {
+    this._isMissionLeader = leader;
+  }
 
   createMesh(): Mesh<BufferGeometry, MeshStandardMaterial> {
     const geometry = new BoxGeometry(0.125, 0.125, 0.125);
@@ -36,28 +49,29 @@ export class PlayerPiece extends Piece {
     return mesh;
   }
 
+  destroy() {
+    super.destroy();
+    this._votePieces.approveVotePiece.destroy();
+    this._votePieces.rejectVotePiece.destroy();
+  }
+
+  showVotePieces() {
+    this._votePieces.approveVotePiece.setVisible();
+    this._votePieces.rejectVotePiece.setVisible();
+  }
+
   private createVotePieces(): {
     approveVotePiece: ApproveVotePiece,
     rejectVotePiece: RejectVotePiece
   } {
 
-    const approveVotePiece = new ApproveVotePiece(
-      this.name + "-ApproveVotePiece");
-    approveVotePiece.movePiece(new Vector3(this.position.x - 0.1, 0, this.position.z + 0.1));
+    const approveVotePiece = new ApproveVotePiece("ApproveVotePiece");
+    approveVotePiece.movePiece(new Vector3(this.position.x - 0.1, 0, this.position.z + 0.3));
 
-    const rejectVotePiece = new RejectVotePiece(
-      this.name + "-RejectVotePiece"
-    );
-    rejectVotePiece.movePiece(new Vector3(this.position.x + 0.1, 0, this.position.z + 0.1));
+    const rejectVotePiece = new RejectVotePiece("RejectVotePiece");
+    rejectVotePiece.movePiece(new Vector3(this.position.x + 0.1, 0, this.position.z + 0.3));
 
     return {approveVotePiece: approveVotePiece, rejectVotePiece: rejectVotePiece};
-  }
-
-
-  destroy() {
-    super.destroy();
-    this.votePieces.approveVotePiece.destroy();
-    this.votePieces.rejectVotePiece.destroy();
   }
 
 }

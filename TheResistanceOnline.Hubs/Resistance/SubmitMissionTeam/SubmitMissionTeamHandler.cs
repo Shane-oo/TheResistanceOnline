@@ -41,8 +41,7 @@ public class SubmitMissionTeamHandler: ICommandHandler<SubmitMissionTeamCommand>
 
         foreach(var bot in gameModel.Bots)
         {
-            var accepted = bot.Vote();
-            await _resistanceHubContext.Clients.Group(command.LobbyId).VoteSubmitted(bot.Name, accepted);
+             bot.Vote();
         }
 
         return Result.Success();

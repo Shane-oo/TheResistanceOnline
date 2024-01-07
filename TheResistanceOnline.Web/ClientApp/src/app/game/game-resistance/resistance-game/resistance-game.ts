@@ -11,8 +11,9 @@ import {sources} from "./sources";
 import {Debug} from "./utils/debug";
 import {Dispose} from "./utils/dispose";
 import {Metrics} from "./utils/metrics";
-import {RayCasting} from "./world/raycasting";
+import {ResistanceGameRaycasting} from "./resistance-game-raycasting";
 import {VoteSubmittedModel} from "../game-resistance.models";
+import {StateService} from "../../../shared/services/state/state.service";
 
 
 export class ResistanceGame {
@@ -24,12 +25,12 @@ export class ResistanceGame {
   private readonly _debug!: Debug;
   private readonly _resources!: Resources;
   private readonly _sizes!: Sizes;
-  private readonly _rayCasting!: RayCasting;
+  private readonly _rayCasting!: ResistanceGameRaycasting;
   private readonly destroyed = new Subject<void>();
   private readonly _gameRenderer!: ResistanceGameRenderer;
   private readonly _metrics!: Metrics;
   private readonly _time!: Time;
-
+  private readonly stateService!: StateService;
   private readonly players?: string[];
 
   constructor(canvas?: HTMLCanvasElement) {
@@ -41,6 +42,7 @@ export class ResistanceGame {
     ResistanceGame.instance = this;
 
     // Setup
+    this.stateService = new StateService();
     this._debug = new Debug();
     this._metrics = new Metrics();
 
@@ -51,7 +53,7 @@ export class ResistanceGame {
     this._resources = new Resources(sources);
     this._gameCamera = new ResistanceGameCamera(canvas!);
     this._gameRenderer = new ResistanceGameRenderer(canvas!);
-    this._rayCasting = new RayCasting();
+    this._rayCasting = new ResistanceGameRaycasting();
 
     // Events
     this._resources.loadedSubject
@@ -84,7 +86,7 @@ export class ResistanceGame {
     return this._gameCamera;
   }
 
-  get rayCasting(): RayCasting {
+  get rayCasting(): ResistanceGameRaycasting {
     return this._rayCasting;
   }
 
@@ -143,7 +145,7 @@ export class ResistanceGame {
 
   setPlayers(players: string[]) {
     // for now put a cube where the player should be
-    this._world?.setPlayers(players);
+    this._world?.createPlayerPieces(players);
   }
 
   setMissionLeader(player: string) {
@@ -154,7 +156,10 @@ export class ResistanceGame {
     // todo set a timeout and say if this user does not pick missionMembers in time
     // pick at random for them 3 minutes max
     // display timer maybe?
-    this._world?.setMissionBuildPhase(missionMembers);
+    const playerPieces = this._world!.playerPieces!.map(p => p.mesh);
+    if (playerPieces) {
+      this._rayCasting.selectableObjects = playerPieces;
+    }
   }
 
   addMissionTeamMember(player: string) {
@@ -165,18 +170,24 @@ export class ResistanceGame {
     this._world?.removeMissionTeamMember(player);
   }
 
-  //TODO
   startVotePhase(missionTeamMembers: string[]) {
-    console.log("STarting Vote Phase", missionTeamMembers);
-    // show who is on missionTeam
-    // show vote pieces, make them selectable
-
+    this.world?.showVotePieces(this.stateService.userName);
   }
 
   // TODO
   playerVoted(playerVote: VoteSubmittedModel) {
     console.log(playerVote.playerName, "Voted ", playerVote.accepted);
     // show what this player voted
+  }
+
+
+  startMissionPhase(missionTeamMembers: string[]) {
+    // remove all mission team members icons from players
+    for (const player of missionTeamMembers) {
+      this._world?.removeMissionTeamMember(player);
+    }
+    // move all mission team members to the middle
+    this._world?.movePlayersToMiddle(missionTeamMembers);
   }
 
 

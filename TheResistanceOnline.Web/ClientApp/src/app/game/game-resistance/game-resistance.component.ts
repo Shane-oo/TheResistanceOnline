@@ -84,7 +84,7 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
     this.addReceiveRemoveMissionTeamMember();
     this.addReceiveShowMissionTeamSubmit();
     this.addReceiveVoteForMissionTeam();
-    this.addReceiveVoteSubmittedFromPlayer();
+    // this.addReceiveShowVotes(); todo
   }
 
   private async start() {
@@ -164,16 +164,8 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
 
   private addReceiveVoteForMissionTeam = () => {
     this.resistanceHubConnection.on("VoteForMissionTeam", (missionTeamMembers: string[]) => {
+      this.showMissionTeamSubmit = false;
       this.moveToVotingPhase.next(missionTeamMembers);
-    });
-  }
-
-  private addReceiveVoteSubmittedFromPlayer = () => {
-    this.resistanceHubConnection.on("VoteSubmitted", (playerName: string, accepted: boolean) => {
-      this.playerSubmittedVote.next({
-        playerName: playerName,
-        accepted: accepted
-      });
     });
   }
 }

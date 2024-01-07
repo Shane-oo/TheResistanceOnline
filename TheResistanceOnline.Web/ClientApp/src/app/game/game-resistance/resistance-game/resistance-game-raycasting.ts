@@ -1,9 +1,9 @@
-import {BufferGeometry, Color, Mesh, MeshStandardMaterial, PerspectiveCamera, Raycaster, Vector2} from "three";
-import {ResistanceGame} from "../resistance-game";
-import {Sizes} from "../utils/sizes";
+import {BufferGeometry, Mesh, MeshStandardMaterial, PerspectiveCamera, Raycaster, Vector2} from "three";
+import {ResistanceGame} from "./resistance-game";
+import {Sizes} from "./utils/sizes";
 import {Subject} from "rxjs";
 
-export class RayCasting {
+export class ResistanceGameRaycasting {
   objectClickedSubject: Subject<string> = new Subject<string>();
 
   private readonly raycaster: Raycaster;
@@ -23,10 +23,10 @@ export class RayCasting {
     window.addEventListener('mousedown', this.onMouseUp);
   }
 
-  private _objectsToTest: Mesh[] = [];
+  private _selectableObjects: Mesh[] = [];
 
-  set objectsToTest(objects: Mesh[]) {
-    this._objectsToTest = objects;
+  set selectableObjects(objects: Mesh[]) {
+    this._selectableObjects = objects;
   }
 
   destroy() {
@@ -34,13 +34,13 @@ export class RayCasting {
   }
 
   private onMouseUp = (event: MouseEvent) => {
-    if (this._objectsToTest.length > 0) {
+    if (this._selectableObjects.length > 0) {
       this.mouse.x = (event.offsetX / this.sizes.width) * 2 - 1;
       this.mouse.y = -(event.offsetY / this.sizes.height) * 2 + 1;
 
       this.raycaster.setFromCamera(this.mouse, this.camera);
 
-      const intersects = this.raycaster.intersectObjects(this._objectsToTest);
+      const intersects = this.raycaster.intersectObjects(this._selectableObjects);
       const intersection = intersects[0] ?? null;
       if (intersection) {
         const mesh = intersection.object as Mesh<BufferGeometry, MeshStandardMaterial>;

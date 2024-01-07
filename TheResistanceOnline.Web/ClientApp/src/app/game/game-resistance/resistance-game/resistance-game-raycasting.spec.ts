@@ -1,4 +1,4 @@
-import { Raycasting } from './raycasting';
+import { Raycasting } from './resistance-game-raycasting';
 
 describe('Raycasting', () => {
   it('should create an instance', () => {

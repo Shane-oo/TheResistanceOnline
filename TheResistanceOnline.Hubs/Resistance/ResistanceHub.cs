@@ -21,7 +21,7 @@ public interface IResistanceHub: IErrorHub
 
     public Task VoteForMissionTeam(IEnumerable<string> missionTeamMembers);
 
-    public Task VoteSubmitted(string playerName, bool accepted);
+    //public Task ShowVotes(a list of objects with playerName and vote choice)
 }
 
 public class ResistanceHub: BaseHub<IResistanceHub>
@@ -137,6 +137,9 @@ public class ResistanceHub: BaseHub<IResistanceHub>
                     await MissionTeamPlayerSelected(command);
                     break;
                 case Phase.Vote:
+                    //todo
+                    var callerPlayerName = GetCallerPlayerName(gameDetails.Value);
+                    Console.WriteLine($"{callerPlayerName} voted: ${name}");
                     break;
                 case Phase.VoteResults:
                     break;
