@@ -1,13 +1,8 @@
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using OpenIddict.Abstractions;
 using TheResistanceOnline.Core;
 using TheResistanceOnline.Core.Behaviours;
 using TheResistanceOnline.Data;
 using TheResistanceOnline.Data.Entities;
-using TheResistanceOnline.Data.Interceptors;
-using TheResistanceOnline.Users.Users;
 using TheResistanceOnline.Web.Middleware;
 
 namespace TheResistanceOnline.Web;
@@ -15,17 +10,6 @@ namespace TheResistanceOnline.Web;
 public static class DependencyInjection
 {
     #region Private Methods
-
-    public static void AddMediatrBehaviours(this IServiceCollection services)
-    {
-        var assembly = typeof(DependencyInjection).Assembly;
-        services.AddMediatR(configuration =>
-                            {
-                                configuration.RegisterServicesFromAssembly(assembly);
-
-                                configuration.AddOpenBehavior(typeof(ValidationBehaviour<,>));
-                            });
-    }
 
     private static X509Certificate2 LoadCertificate(string thumbprint)
     {
@@ -38,6 +22,17 @@ public static class DependencyInjection
     #endregion
 
     #region Public Methods
+
+    public static void AddMediatrBehaviours(this IServiceCollection services)
+    {
+        var assembly = typeof(DependencyInjection).Assembly;
+        services.AddMediatR(configuration =>
+                            {
+                                configuration.RegisterServicesFromAssembly(assembly);
+
+                                configuration.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+                            });
+    }
 
     public static void AddOpenIddictServer(this IServiceCollection services, AppSettings appSettings, IWebHostEnvironment environment)
     {
