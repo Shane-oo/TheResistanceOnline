@@ -1,3 +1,5 @@
+using TheResistanceOnline.GamePlay.PlayerModels.BotModels;
+
 namespace TheResistanceOnline.GamePlay.BotModels;
 
 public interface ISpyBotModel: IBotModel

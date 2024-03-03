@@ -20,17 +20,17 @@ public class DumbSpyBotModel: SpyPlayerModel, ISpyBotModel
         throw new NotImplementedException();
     }
 
+    public void VoteForMissionTeam()
+    {
+        Vote(true);
+    }
+
 
     public void DoASpyBotThing()
     {
         throw new NotImplementedException();
     }
 
-    public override void Vote(bool decision = true)
-    {
-        Console.WriteLine("THis is the dum spy bot voting");
-        VoteChoice = false;
-    }
 
     #endregion
 }

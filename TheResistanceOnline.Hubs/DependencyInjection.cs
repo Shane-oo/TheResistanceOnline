@@ -15,16 +15,6 @@ public static class DependencyInjection
     //     
     // }
 
-    public static void AddHubServices(this IServiceCollection services)
-    {
-        services.AddSingleton<LobbyHubPersistedProperties>();
-        services.AddSingleton<StreamHubPersistedProperties>();
-        services.AddSingleton<ResistanceHubPersistedProperties>();
-
-        var assembly = typeof(DependencyInjection).Assembly;
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
-        services.AddValidatorsFromAssembly(assembly);
-    }
 
     #endregion
 }

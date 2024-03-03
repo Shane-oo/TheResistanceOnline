@@ -47,8 +47,6 @@ export class ResistanceGameRenderer {
 
   private configureRenderer() {
     this._renderer.outputColorSpace = SRGBColorSpace;
-    this._renderer.toneMapping = ACESFilmicToneMapping;
-    this._renderer.toneMappingExposure = 7.5;
     this._renderer.shadowMap.enabled = true;
     this._renderer.shadowMap.type = PCFSoftShadowMap;
     this._renderer.setClearColor('#0a0b0c');

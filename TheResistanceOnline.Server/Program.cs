@@ -2,10 +2,9 @@ using OpenIddict.Validation.AspNetCore;
 using TheResistanceOnline.Common.ValidationHelpers;
 using TheResistanceOnline.Core;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Hubs;
-using TheResistanceOnline.Hubs.Lobbies;
-using TheResistanceOnline.Hubs.Resistance;
 using TheResistanceOnline.Server;
+using TheResistanceOnline.Server.Lobbies;
+using TheResistanceOnline.Server.Resistance;
 using TheResistanceOnline.Users;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,11 +72,8 @@ app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-                 {
-                     endpoints.MapHub<LobbyHub>("/lobby");
-                     //endpoints.MapHub<StreamHub>("/stream"); // stream not supported right now -> will revisit this later
-                     endpoints.MapHub<ResistanceHub>("/resistance");
-                 });
+app.MapHub<LobbyHub>("/lobby");
+//app.MapHub<StreamHub>("/stream"); // stream not supported right now -> will revisit this later
+app.MapHub<ResistanceHub>("/resistance");
 
 app.Run();

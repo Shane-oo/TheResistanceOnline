@@ -1,6 +1,4 @@
-using TheResistanceOnline.GamePlay.ObserverPattern;
-
-namespace TheResistanceOnline.GamePlay.BotModels;
+namespace TheResistanceOnline.GamePlay.PlayerModels.BotModels;
 
 // this will also be an observer to GameModel Subject
 public interface IBotModel
@@ -11,5 +9,7 @@ public interface IBotModel
     public void DoABotThing();
     
     // Properties that bots must always know  and update
-    
+
+    public void VoteForMissionTeam();
+
 }

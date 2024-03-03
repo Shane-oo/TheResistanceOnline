@@ -7,7 +7,7 @@ import {IHttpConnectionOptions} from "@microsoft/signalr";
 import {AuthenticationService} from "../../shared/services/authentication/authentication.service";
 import {environment} from "../../../environments/environment";
 import {SwalContainerService, SwalTypes} from "../../../ui/swal/swal-container.service";
-import {CommenceGameModel, Team, VoteSubmittedModel} from "./game-resistance.models";
+import {CommenceGameModel, Team, VoteResultsModel} from "./game-resistance.models";
 import {GameType, StartGameCommand} from "../game.models";
 import {CustomError} from "../../shared/models/error.models";
 
@@ -22,7 +22,10 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
   public newMissionTeamMember: Subject<string> = new Subject<string>();
   public removeMissionTeamMember: Subject<string> = new Subject<string>();
   public moveToVotingPhase: Subject<string[]> = new Subject<string[]>();
-  public playerSubmittedVote: Subject<VoteSubmittedModel> = new Subject<VoteSubmittedModel>();
+  public removeVotingChoices: Subject<void> = new Subject<void>();
+  public playerSubmittedVote: Subject<string> = new Subject<string>();
+  public showVoteResults: Subject<VoteResultsModel> = new Subject<VoteResultsModel>();
+
   public showMissionTeamSubmit: boolean = false;
 
   @Input() startGameCommand!: StartGameCommand;
@@ -84,7 +87,9 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
     this.addReceiveRemoveMissionTeamMember();
     this.addReceiveShowMissionTeamSubmit();
     this.addReceiveVoteForMissionTeam();
-    // this.addReceiveShowVotes(); todo
+    this.addReceiveRemoveVotingChoices();
+    this.addReceivePlayerVoted();
+    this.addReceiveVoteResults();
   }
 
   private async start() {
@@ -166,6 +171,25 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
     this.resistanceHubConnection.on("VoteForMissionTeam", (missionTeamMembers: string[]) => {
       this.showMissionTeamSubmit = false;
       this.moveToVotingPhase.next(missionTeamMembers);
+    });
+  }
+
+  private addReceiveRemoveVotingChoices = () => {
+    this.resistanceHubConnection.on("RemoveVotingChoices", () => {
+      this.removeVotingChoices.next();
+    })
+  }
+
+  private addReceivePlayerVoted = () => {
+    this.resistanceHubConnection.on("PlayerVoted", (playerName: string) => {
+      this.playerSubmittedVote.next(playerName);
+    });
+  }
+
+  private addReceiveVoteResults = () => {
+    this.resistanceHubConnection.on("ShowVotes", (resultsModel: VoteResultsModel) => {
+      resultsModel.playerNameToVoteApproved = new Map(Object.entries(resultsModel.playerNameToVoteApproved));
+      this.showVoteResults.next(resultsModel);
     });
   }
 }
