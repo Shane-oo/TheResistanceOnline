@@ -26,14 +26,15 @@ public class SubmitMissionTeamHandler: ICommandHandler<SubmitMissionTeamCommand>
 
     public async Task<Result> Handle(SubmitMissionTeamCommand command, CancellationToken cancellationToken)
     {
-        if (command == null)
-        {
-            return Result.Failure<string>(Error.NullValue);
-        }
+        if (command is null) return Result.Failure<string>(Error.NullValue);
 
         var gameModel = command.GameModel;
 
-        gameModel.SubmitMissionTeam();
+        var submitResult = gameModel.SubmitMissionTeam();
+        if (submitResult.IsFailure)
+        {
+            return submitResult;
+        }
 
         var missionTeam = gameModel.GetMissionTeam();
 
@@ -41,7 +42,8 @@ public class SubmitMissionTeamHandler: ICommandHandler<SubmitMissionTeamCommand>
 
         foreach(var bot in gameModel.Bots)
         {
-             bot.Vote();
+            bot.BotModel.VoteForMissionTeam();
+            await _resistanceHubContext.Clients.Group(command.LobbyId).PlayerVoted(bot.Name);
         }
 
         return Result.Success();

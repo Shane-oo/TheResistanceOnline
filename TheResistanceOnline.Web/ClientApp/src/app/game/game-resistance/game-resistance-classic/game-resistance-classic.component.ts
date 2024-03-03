@@ -1,7 +1,8 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild} from '@angular/core';
 import {first, Subject, takeUntil} from "rxjs";
+
 import {ResistanceGame} from "../resistance-game/resistance-game";
-import {CommenceGameModel, Phase, VoteSubmittedModel} from "../game-resistance.models";
+import {CommenceGameModel, Phase} from "../game-resistance.models";
 
 
 @Component({
@@ -14,7 +15,8 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
   @Input() newMissionTeamMember!: Subject<string>;
   @Input() removeMissionTeamMember!: Subject<string>;
   @Input() moveToVotingPhase!: Subject<string[]>;
-  @Input() playerSubmittedVote!: Subject<VoteSubmittedModel>;
+  @Input() moveToVoteResultsPhase!: Subject<void>;
+  @Input() playerSubmittedVote!: Subject<string>;
 
   @Input() showMissionTeamSubmit: boolean = false;
 
@@ -65,11 +67,20 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
         this.startVotePhase(missionTeamMembers);
       });
 
+    this.moveToVoteResultsPhase
+      .pipe(takeUntil(this.destroyed))
+      .subscribe(() => {
+        this.startVoteResultsPhase();
+      });
+
+
     this.playerSubmittedVote
       .pipe(takeUntil(this.destroyed))
-      .subscribe((playerVote:VoteSubmittedModel)=>{
-        this.playerVoted(playerVote);
-      })
+      .subscribe((playerName: string) => {
+        this.playerVoted(playerName);
+      });
+
+
   }
 
   ngOnDestroy(): void {
@@ -121,8 +132,12 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
     this.resistanceGame.startVotePhase(missionTeamMembers);
   }
 
-  private playerVoted(playerVote:VoteSubmittedModel){
-    this.resistanceGame.playerVoted(playerVote);
+  private startVoteResultsPhase() {
+    this.resistanceGame.startVoteResultsPhase();
+  }
+
+  private playerVoted(playerName: string) {
+    this.resistanceGame.playerVoted(playerName);
   }
 
 }

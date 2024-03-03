@@ -1,7 +1,6 @@
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using TheResistanceOnline.Hubs;
 using TheResistanceOnline.Server.Common;
 
 namespace TheResistanceOnline.Server.Lobbies;

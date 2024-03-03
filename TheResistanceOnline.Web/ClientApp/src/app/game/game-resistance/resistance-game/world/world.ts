@@ -66,7 +66,6 @@ export class World {
     this.scene.add(this.axesHelper);
 
     this.environment = new Environment();
-
   }
 
   private _playerPieces?: PlayerPiece[];
@@ -155,14 +154,28 @@ export class World {
     }
   }
 
-  showVotePieces(playerName: string) {
+  showVotingPieces(playerName: string) {
     const voteMeshes: Mesh[] = [];
     const playerPiece = this.getPlayerPieceByName(playerName);
     if (playerPiece) {
-      playerPiece.showVotePieces();
+      playerPiece.showVotingPieces();
       voteMeshes.push(playerPiece.votePieces.approveVotePiece.mesh);
       voteMeshes.push(playerPiece.votePieces.rejectVotePiece.mesh);
       this.rayCasting.selectableObjects = voteMeshes;
+    }
+  }
+
+  hideVotingPieces(playerName: string) {
+    const playerPiece = this.getPlayerPieceByName(playerName);
+    if (playerPiece) {
+      playerPiece.hideVotingPieces();
+    }
+  }
+
+  showVoteResultPieces(playerName: string) {
+    const playerPiece = this.getPlayerPieceByName(playerName);
+    if (playerPiece) {
+      playerPiece.showVoteResultPieces();
     }
   }
 

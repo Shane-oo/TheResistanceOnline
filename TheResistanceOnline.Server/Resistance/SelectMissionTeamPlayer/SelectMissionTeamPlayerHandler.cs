@@ -26,18 +26,16 @@ public class SelectMissionTeamPlayerHandler: ICommandHandler<SelectMissionTeamPl
 
     public async Task<Result> Handle(SelectMissionTeamPlayerCommand command, CancellationToken cancellationToken)
     {
-        if (command == null)
-        {
-            return Result.Failure<string>(Error.NullValue);
-        }
+        if (command is null) return Result.Failure<string>(Error.NullValue);
 
         var gameModel = command.GameModel;
 
         var player = gameModel.GetPlayerModel(command.CallerPlayerName);
 
-        // Player selected a new team member
+
         if (gameModel.MissionTeam.All(p => p != command.SelectedPlayerName) && !gameModel.MissionTeamFull())
         {
+            // Player selected a new team member
             player.PickMissionTeamMember(command.SelectedPlayerName);
 
             await _resistanceHubContext.Clients.Group(command.LobbyId).NewMissionTeamMember(command.SelectedPlayerName);

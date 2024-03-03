@@ -2,12 +2,14 @@ import {BoxGeometry, BufferGeometry, Mesh, MeshStandardMaterial, Vector3} from "
 import {Piece} from "./piece";
 import {ApproveVotePiece} from "./voting/approve-vote-piece";
 import {RejectVotePiece} from "./voting/reject-vote-piece";
+import {ResultVotePiece} from "./voting/result-vote-piece";
 
 // there will be multiple player pieces, one for each player
 export class PlayerPiece extends Piece {
   private readonly _votePieces: {
     approveVotePiece: ApproveVotePiece,
-    rejectVotePiece: RejectVotePiece
+    rejectVotePiece: RejectVotePiece,
+    resultVotePiece: ResultVotePiece
   };
   private readonly position: { x: number, z: number };
 
@@ -55,23 +57,36 @@ export class PlayerPiece extends Piece {
     this._votePieces.rejectVotePiece.destroy();
   }
 
-  showVotePieces() {
-    this._votePieces.approveVotePiece.setVisible();
-    this._votePieces.rejectVotePiece.setVisible();
+  showVotingPieces() {
+    this._votePieces.approveVotePiece.setVisible(true);
+    this._votePieces.rejectVotePiece.setVisible(true);
+  }
+
+  hideVotingPieces() {
+    this._votePieces.approveVotePiece.setVisible(false);
+    this._votePieces.rejectVotePiece.setVisible(false);
+  }
+
+  showVoteResultPieces() {
+    this._votePieces.resultVotePiece.setVisible(true);
   }
 
   private createVotePieces(): {
     approveVotePiece: ApproveVotePiece,
-    rejectVotePiece: RejectVotePiece
+    rejectVotePiece: RejectVotePiece,
+    resultVotePiece: ResultVotePiece
   } {
 
-    const approveVotePiece = new ApproveVotePiece("ApproveVotePiece");
+    const approveVotePiece = new ApproveVotePiece();
     approveVotePiece.movePiece(new Vector3(this.position.x - 0.1, 0, this.position.z + 0.3));
 
-    const rejectVotePiece = new RejectVotePiece("RejectVotePiece");
+    const rejectVotePiece = new RejectVotePiece();
     rejectVotePiece.movePiece(new Vector3(this.position.x + 0.1, 0, this.position.z + 0.3));
 
-    return {approveVotePiece: approveVotePiece, rejectVotePiece: rejectVotePiece};
+    const resultVotePiece = new ResultVotePiece();
+    resultVotePiece.movePiece(new Vector3(this.position.x, 0, this.position.z - 0.3));
+
+    return {approveVotePiece: approveVotePiece, rejectVotePiece: rejectVotePiece, resultVotePiece: resultVotePiece};
   }
 
 }

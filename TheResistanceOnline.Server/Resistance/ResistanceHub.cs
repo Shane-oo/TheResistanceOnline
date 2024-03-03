@@ -5,6 +5,7 @@ using TheResistanceOnline.Core.Errors;
 using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.Server.Common;
+using TheResistanceOnline.Server.Resistance.VoteForMissionTeam;
 
 namespace TheResistanceOnline.Server.Resistance;
 
@@ -14,11 +15,18 @@ public interface IResistanceHub: IErrorHub
 
     public Task NewMissionTeamMember(string playerName);
 
+    // Show that a player has voted but do not show vote just yet until everyone has voted
+    public Task PlayerVoted(string playerName);
+
     public Task RemoveMissionTeamMember(string playerName);
 
     public Task ShowMissionTeamSubmit(bool show);
 
     public Task VoteForMissionTeam(IEnumerable<string> missionTeamMembers);
+
+    // Remove Voting choice and show when players select votes
+    public Task VoteResultsPhase();
+
 
     //public Task ShowVotes(a list of objects with playerName and vote choice)
 }
@@ -100,6 +108,18 @@ public class ResistanceHub: BaseHub<IResistanceHub>
         }
     }
 
+    private async Task VoteForMissionTeam(VoteForMissionTeamCommand command)
+    {
+        SetRequest(command);
+        SetCommand(command);
+
+        var result = await _mediator.Send(command);
+        if (result.IsFailure)
+        {
+            await Clients.Caller.Error(result.Error);
+        }
+    }
+
     #endregion
 
     #region Public Methods
@@ -109,14 +129,11 @@ public class ResistanceHub: BaseHub<IResistanceHub>
     {
         try
         {
-            var lobbyId = GetLobbyId();
-            if (lobbyId.IsFailure)
-            {
-                await Clients.Caller.Error(lobbyId.Error);
-                return;
-            }
+            var lobbyIdResult = GetLobbyId();
+            var gameDetails = lobbyIdResult.IsSuccess
+                                  ? GetGameDetails(lobbyIdResult.Value)
+                                  : Result.Failure<GameDetails>(lobbyIdResult.Error);
 
-            var gameDetails = GetGameDetails(lobbyId.Value);
             if (gameDetails.IsFailure)
             {
                 await Clients.Caller.Error(gameDetails.Error);
@@ -126,19 +143,25 @@ public class ResistanceHub: BaseHub<IResistanceHub>
             switch(gameDetails.Value.GameModel.Phase)
             {
                 case Phase.MissionBuild:
-                    var command = new SelectMissionTeamPlayerCommand
-                                  {
-                                      SelectedPlayerName = name,
-                                      GameModel = gameDetails.Value.GameModel,
-                                      LobbyId = lobbyId.Value,
-                                      CallerPlayerName = GetCallerPlayerName(gameDetails.Value)
-                                  };
-                    await MissionTeamPlayerSelected(command);
+                    var selectMissionTeamPlayerCommand = new SelectMissionTeamPlayerCommand
+                                                         {
+                                                             SelectedPlayerName = name,
+                                                             GameModel = gameDetails.Value.GameModel,
+                                                             LobbyId = lobbyIdResult.Value,
+                                                             CallerPlayerName = GetCallerPlayerName(gameDetails.Value)
+                                                         };
+                    await MissionTeamPlayerSelected(selectMissionTeamPlayerCommand);
                     break;
                 case Phase.Vote:
-                    //todo
-                    var callerPlayerName = GetCallerPlayerName(gameDetails.Value);
-                    Console.WriteLine($"{callerPlayerName} voted: ${name}");
+                    _ = Enum.TryParse(name, out VotePiece votePiece);
+                    var command = new VoteForMissionTeamCommand
+                                  {
+                                      GameModel = gameDetails.Value.GameModel,
+                                      CallerPlayerName = GetCallerPlayerName(gameDetails.Value),
+                                      VotePiece = votePiece,
+                                      LobbyId = lobbyIdResult.Value
+                                  };
+                    await VoteForMissionTeam(command);
                     break;
                 case Phase.VoteResults:
                     break;
@@ -263,21 +286,18 @@ public class ResistanceHub: BaseHub<IResistanceHub>
     {
         try
         {
-            var lobbyId = GetLobbyId();
-            if (lobbyId.IsFailure)
-            {
-                await Clients.Caller.Error(lobbyId.Error);
-                return;
-            }
+            var lobbyIdResult = GetLobbyId();
+            var gameDetails = lobbyIdResult.IsSuccess
+                                  ? GetGameDetails(lobbyIdResult.Value)
+                                  : Result.Failure<GameDetails>(lobbyIdResult.Error);
 
-            var gameDetails = GetGameDetails(lobbyId.Value);
             if (gameDetails.IsFailure)
             {
                 await Clients.Caller.Error(gameDetails.Error);
                 return;
             }
 
-            var command = new SubmitMissionTeamCommand(lobbyId.Value, gameDetails.Value.GameModel);
+            var command = new SubmitMissionTeamCommand(lobbyIdResult.Value, gameDetails.Value.GameModel);
             var result = await _mediator.Send(command);
             if (result.IsFailure)
             {

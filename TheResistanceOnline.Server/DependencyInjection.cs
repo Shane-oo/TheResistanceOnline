@@ -1,9 +1,9 @@
 using FluentValidation;
 using TheResistanceOnline.Core;
 using TheResistanceOnline.Core.Behaviours;
-using TheResistanceOnline.Hubs.Lobbies;
-using TheResistanceOnline.Hubs.Resistance;
-using TheResistanceOnline.Hubs.Streams;
+using TheResistanceOnline.Server.Lobbies;
+using TheResistanceOnline.Server.Resistance;
+using TheResistanceOnline.Server.Streams;
 
 namespace TheResistanceOnline.Server;
 

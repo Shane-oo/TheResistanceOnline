@@ -1,5 +1,6 @@
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.GamePlay.ObserverPattern;
+using TheResistanceOnline.GamePlay.PlayerModels.BotModels;
 
 namespace TheResistanceOnline.GamePlay.PlayerModels;
 
@@ -15,6 +16,8 @@ public abstract class PlayerModel: IObserver
 
     public bool IsBot { get; set; }
 
+    public IBotModel BotModel { get; set; }
+
     public bool IsMissionLeader { get; set; }
 
     public string MissionLeader { get; set; }
@@ -23,7 +26,7 @@ public abstract class PlayerModel: IObserver
 
     public Team Team { get; set; }
 
-    public bool VoteChoice { get; set; }
+    public bool? VoteChoice { get; set; }
 
     protected int MissionSize { get; set; }
 
@@ -73,8 +76,9 @@ public abstract class PlayerModel: IObserver
     }
 
 
-    public virtual void Vote(bool decision = true)
+    public void Vote(bool decision)
     {
+        // Is vote choice null here?
         VoteChoice = decision;
     }
 

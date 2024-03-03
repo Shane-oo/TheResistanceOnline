@@ -1,3 +1,5 @@
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.GamePlay.ObserverPattern;
 using TheResistanceOnline.GamePlay.PlayerModels;
@@ -227,12 +229,26 @@ public abstract class GameModel: IGameModelSubject
 
     public abstract void SetupGame(List<string> playerUserNames, int botCount);
 
-    public void SubmitMissionTeam()
+    public Result SubmitMissionTeam()
     {
-        if (MissionTeam.Count == MissionSize)
+        if (!MissionTeamFull())
         {
-            UpdatePhase(Phase.Vote);
+            return Result.Failure(new Error("Game.Error", "Mission team is not full "));
         }
+
+        UpdatePhase(Phase.Vote);
+        return Result.Success();
+    }
+
+    public Result<VoteResultsModel> GetVoteResults()
+    {
+        // Check everybody has voted
+        if (Players.All(p => p.Value.VoteChoice != null))
+        {
+            Console.WriteLine("every body has voted");
+        }
+
+        return Result.Failure<VoteResultsModel>(new Error("Game.Error", "Waiting for more votes"));
     }
 
     #endregion

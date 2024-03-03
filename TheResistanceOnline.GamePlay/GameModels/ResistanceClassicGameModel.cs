@@ -13,7 +13,7 @@ public class ResistanceClassicGameModel: GameModel
     {
         var playerSetupModels = CreatePlayerSetupModels(playerUserNames, botCount);
 
-        IBotFactory botFactory = new ResistanceClassicBotFactory();
+        var botFactory = new ResistanceClassicBotFactory();
 
         playerSetupModels.Shuffle();
         var resistancePlayers = new List<PlayerSetupModel>();
@@ -56,18 +56,38 @@ public class ResistanceClassicGameModel: GameModel
 
         foreach(var resistancePlayer in resistancePlayers)
         {
-            var player = resistancePlayer.IsBot
-                             ? botFactory.CreateResistanceBot(resistancePlayer.Name, this)
-                             : new ResistancePlayerModel(resistancePlayer.Name, this);
+            PlayerModel player;
+
+            if (resistancePlayer.IsBot)
+            {
+                var botPlayer = botFactory.CreateResistanceBot(resistancePlayer.Name, this);
+                player = botPlayer.PlayerModel;
+                player.BotModel = botPlayer.BotModel;
+            }
+            else
+            {
+                player = new ResistancePlayerModel(resistancePlayer.Name, this);
+            }
+
             player.Team = Team.Resistance;
             Players.Add(player.Name, player);
         }
 
         foreach(var spyPlayer in spyPlayers)
         {
-            var player = spyPlayer.IsBot
-                             ? botFactory.CreateSpyBot(spyPlayer.Name, this)
-                             : new SpyPlayerModel(spyPlayer.Name, this);
+            PlayerModel player;
+
+            if (spyPlayer.IsBot)
+            {
+                var botPlayer = botFactory.CreateSpyBot(spyPlayer.Name, this);
+                player = botPlayer.PlayerModel;
+                player.BotModel = botPlayer.BotModel;
+            }
+            else
+            {
+                player = new SpyPlayerModel(spyPlayer.Name, this);
+            }
+
             player.Team = Team.Spy;
             Players.Add(player.Name, player);
         }

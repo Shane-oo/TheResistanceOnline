@@ -1,18 +1,19 @@
+import {Scene} from "three";
+
+import {Subject, takeUntil} from "rxjs";
+
+
 import {Sizes} from "./utils/sizes";
 import {Time} from "./utils/time";
-import {Subject, takeUntil} from "rxjs";
 import {ResistanceGameCamera} from "./resistance-game-camera";
 import {ResistanceGameRenderer} from "./resistance-game-renderer";
-import {Scene} from "three";
 import {World} from "./world/world";
 import {Resources} from "./utils/resources";
-
 import {sources} from "./sources";
 import {Debug} from "./utils/debug";
 import {Dispose} from "./utils/dispose";
 import {Metrics} from "./utils/metrics";
 import {ResistanceGameRaycasting} from "./resistance-game-raycasting";
-import {VoteSubmittedModel} from "../game-resistance.models";
 import {StateService} from "../../../shared/services/state/state.service";
 
 
@@ -61,7 +62,7 @@ export class ResistanceGame {
       .subscribe(() => {
         // Wait for all Resources before instantiating world
         this._world = new World();
-      })
+      });
 
     this._sizes.resizeSubject
       .pipe(takeUntil(this.destroyed))
@@ -156,6 +157,7 @@ export class ResistanceGame {
     // todo set a timeout and say if this user does not pick missionMembers in time
     // pick at random for them 3 minutes max
     // display timer maybe?
+    // should that be server side tho?
     const playerPieces = this._world!.playerPieces!.map(p => p.mesh);
     if (playerPieces) {
       this._rayCasting.selectableObjects = playerPieces;
@@ -171,13 +173,18 @@ export class ResistanceGame {
   }
 
   startVotePhase(missionTeamMembers: string[]) {
-    this.world?.showVotePieces(this.stateService.userName);
+    this._world?.showVotingPieces(this.stateService.userName);
   }
 
-  // TODO
-  playerVoted(playerVote: VoteSubmittedModel) {
-    console.log(playerVote.playerName, "Voted ", playerVote.accepted);
-    // show what this player voted
+  startVoteResultsPhase() {
+    const playerName = this.stateService.userName;
+    this._world?.hideVotingPieces(playerName);
+    this._world?.showVoteResultPieces(playerName);
+    this._rayCasting.selectableObjects = [];
+  }
+
+  playerVoted(playerName: string) {
+    this._world?.showVoteResultPieces(playerName);
   }
 
 
