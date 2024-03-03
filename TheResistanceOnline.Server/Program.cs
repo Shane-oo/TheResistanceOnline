@@ -2,10 +2,9 @@ using OpenIddict.Validation.AspNetCore;
 using TheResistanceOnline.Common.ValidationHelpers;
 using TheResistanceOnline.Core;
 using TheResistanceOnline.Data;
-using TheResistanceOnline.Hubs;
-using TheResistanceOnline.Hubs.Lobbies;
-using TheResistanceOnline.Hubs.Resistance;
 using TheResistanceOnline.Server;
+using TheResistanceOnline.Server.Lobbies;
+using TheResistanceOnline.Server.Resistance;
 using TheResistanceOnline.Users;
 
 var builder = WebApplication.CreateBuilder(args);
