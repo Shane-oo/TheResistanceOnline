@@ -73,11 +73,8 @@ app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-                 {
-                     endpoints.MapHub<LobbyHub>("/lobby");
-                     //endpoints.MapHub<StreamHub>("/stream"); // stream not supported right now -> will revisit this later
-                     endpoints.MapHub<ResistanceHub>("/resistance");
-                 });
+app.MapHub<LobbyHub>("/lobby");
+//app.MapHub<StreamHub>("/stream"); // stream not supported right now -> will revisit this later
+app.MapHub<ResistanceHub>("/resistance");
 
 app.Run();
