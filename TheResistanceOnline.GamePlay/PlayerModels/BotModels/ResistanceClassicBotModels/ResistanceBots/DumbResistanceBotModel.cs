@@ -19,16 +19,15 @@ public class DumbResistanceBotModel: ResistancePlayerModel, IResistanceBotModel
         Console.WriteLine("Bot thing");
     }
 
+    public void VoteForMissionTeam()
+    {
+        Vote(true);
+    }
+
 
     public void DoAResistanceBotThing()
     {
         throw new NotImplementedException();
-    }
-
-    public override void Vote(bool decision = true)
-    {
-        Console.WriteLine("THis is the dum resistance bot voting");
-        VoteChoice = true;
     }
 
     #endregion

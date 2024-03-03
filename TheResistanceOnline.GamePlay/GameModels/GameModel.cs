@@ -1,3 +1,5 @@
+using TheResistanceOnline.Core.Errors;
+using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.GamePlay.ObserverPattern;
 using TheResistanceOnline.GamePlay.PlayerModels;
@@ -70,12 +72,6 @@ public abstract class GameModel: IGameModelSubject
             playerModel.IsMissionLeader = missionLeaderName == playerModel.Name;
         }
 
-        NotifyObservers();
-    }
-
-    protected void UpdateVoteTrack(int voteTrack)
-    {
-        VoteTrack = voteTrack;
         NotifyObservers();
     }
 
@@ -159,6 +155,22 @@ public abstract class GameModel: IGameModelSubject
         return missionSize;
     }
 
+    private bool GetVoteSuccessful()
+    {
+        return Players.Values.Count(p => p.VoteChoice == true) >= Players.Count / 2;
+    }
+
+    private void IncrementVoteTrack()
+    {
+        VoteTrack++;
+        NotifyObservers();
+    }
+
+    private void ResetVoteTrack()
+    {
+        VoteTrack = 1;
+    }
+
     private void UpdatePhase(Phase phase)
     {
         Phase = phase;
@@ -191,6 +203,31 @@ public abstract class GameModel: IGameModelSubject
     public PlayerModel GetPlayerModel(string name)
     {
         return Players.FirstOrDefault(p => p.Key == name).Value;
+    }
+
+    public Result<VoteResultsModel> GetVoteResults()
+    {
+        // Check everybody has voted
+        if (Players.All(p => p.Value.VoteChoice != null))
+        {
+            var voteSuccessful = GetVoteSuccessful();
+            if (voteSuccessful)
+            {
+                UpdatePhase(Phase.Mission);
+                ResetVoteTrack();
+            }
+            else
+            {
+                IncrementVoteTrack();
+                UpdatePhase(Phase.MissionBuild);
+            }
+
+
+            return new VoteResultsModel(Players.ToDictionary(player => player.Key, player => player.Value.VoteChoice == true),
+                                        voteSuccessful);
+        }
+
+        return Result.Failure<VoteResultsModel>(new Error("Game.Error", "Waiting for more votes"));
     }
 
     public bool MissionTeamFull()
@@ -227,12 +264,15 @@ public abstract class GameModel: IGameModelSubject
 
     public abstract void SetupGame(List<string> playerUserNames, int botCount);
 
-    public void SubmitMissionTeam()
+    public Result SubmitMissionTeam()
     {
-        if (MissionTeam.Count == MissionSize)
+        if (!MissionTeamFull())
         {
-            UpdatePhase(Phase.Vote);
+            return Result.Failure(new Error("Game.Error", "Mission team is not full "));
         }
+
+        UpdatePhase(Phase.Vote);
+        return Result.Success();
     }
 
     #endregion

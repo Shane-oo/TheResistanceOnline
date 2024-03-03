@@ -1,9 +1,9 @@
-import {VotePiece} from "./vote-piece";
 import {BoxGeometry, BufferGeometry, Mesh, MeshStandardMaterial} from "three";
+import {Piece} from "../piece";
 
-export class ApproveVotePiece extends VotePiece {
-  constructor(name: string) {
-    super(name);
+export class ApproveVotePiece extends Piece {
+  constructor() {
+    super("ApproveVotePiece");
   }
 
   createMesh(): Mesh<BufferGeometry, MeshStandardMaterial> {

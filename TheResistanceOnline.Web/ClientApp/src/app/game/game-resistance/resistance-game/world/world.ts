@@ -1,4 +1,4 @@
-import {AxesHelper, Mesh, Scene, Vector3} from "three";
+import {AxesHelper, Color, Mesh, Scene, Vector3} from "three";
 import {Environment} from "./environment/environment";
 import {Resources} from "../utils/resources";
 import {Debug} from "../utils/debug";
@@ -66,7 +66,6 @@ export class World {
     this.scene.add(this.axesHelper);
 
     this.environment = new Environment();
-
   }
 
   private _playerPieces?: PlayerPiece[];
@@ -155,14 +154,42 @@ export class World {
     }
   }
 
-  showVotePieces(playerName: string) {
+  showVotingPieces(playerName: string) {
     const voteMeshes: Mesh[] = [];
     const playerPiece = this.getPlayerPieceByName(playerName);
     if (playerPiece) {
-      playerPiece.showVotePieces();
+      playerPiece.showVotingPieces();
       voteMeshes.push(playerPiece.votePieces.approveVotePiece.mesh);
       voteMeshes.push(playerPiece.votePieces.rejectVotePiece.mesh);
       this.rayCasting.selectableObjects = voteMeshes;
+    }
+  }
+
+  hideVotingPieces(playerName: string) {
+    const playerPiece = this.getPlayerPieceByName(playerName);
+    if (playerPiece) {
+      playerPiece.hideVotingPieces();
+    }
+  }
+
+  showVoteResultPieces(playerName: string) {
+    const playerPiece = this.getPlayerPieceByName(playerName);
+    if (playerPiece) {
+      playerPiece.showVoteResultPieces();
+    }
+  }
+
+  changeVoteResultPiecesColor(playerName: string, color: Color) {
+    const playerPiece = this.getPlayerPieceByName(playerName);
+    if (playerPiece) {
+      const votePiece = playerPiece.votePieces.resultVotePiece;
+      votePiece.changeColor(color);
+    }
+  }
+
+  removeVoteResults() {
+    for (const playerPiece of this._playerPieces!) {
+      playerPiece.hideVoteResultPieces();
     }
   }
 

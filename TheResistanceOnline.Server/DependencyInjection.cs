@@ -1,11 +1,26 @@
+using FluentValidation;
 using TheResistanceOnline.Core;
 using TheResistanceOnline.Core.Behaviours;
+using TheResistanceOnline.Server.Lobbies;
+using TheResistanceOnline.Server.Resistance;
+using TheResistanceOnline.Server.Streams;
 
 namespace TheResistanceOnline.Server;
 
 public static class DependencyInjection
 {
     #region Public Methods
+
+    public static void AddHubServices(this IServiceCollection services)
+    {
+        services.AddSingleton<LobbyHubPersistedProperties>();
+        services.AddSingleton<StreamHubPersistedProperties>();
+        services.AddSingleton<ResistanceHubPersistedProperties>();
+
+        var assembly = typeof(DependencyInjection).Assembly;
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
+        services.AddValidatorsFromAssembly(assembly);
+    }
 
     public static void AddMediatrBehaviours(this IServiceCollection services)
     {

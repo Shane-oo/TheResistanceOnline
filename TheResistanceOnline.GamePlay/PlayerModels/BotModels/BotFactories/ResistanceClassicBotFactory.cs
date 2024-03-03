@@ -8,16 +8,26 @@ public class ResistanceClassicBotFactory: IBotFactory
 {
     #region Public Methods
 
-    public ResistancePlayerModel CreateResistanceBot(string name, IGameModelSubject gameModel)
+    public PlayerBotModel CreateResistanceBot(string name, IGameModelSubject gameModel)
     {
-        // Choose a ResistanceGame Resistance Bot At Random
-        return new RandomResistanceBotModel(name, gameModel);
+        // Todo Choose a ResistanceGame Resistance Bot At Random
+        var bot = new RandomResistanceBotModel(name, gameModel);
+        return new PlayerBotModel
+               {
+                   BotModel = bot,
+                   PlayerModel = bot
+               };
     }
 
-    public SpyPlayerModel CreateSpyBot(string name, IGameModelSubject gameModel)
+    public PlayerBotModel CreateSpyBot(string name, IGameModelSubject gameModel)
     {
-        // Choose a ResistanceGame Spy Bot At random
-        return new RandomSpyBotModel(name, gameModel);
+        // Todo Choose a ResistanceGame Spy Bot At random
+        var bot = new RandomSpyBotModel(name, gameModel);
+        return new PlayerBotModel
+               {
+                   BotModel = bot,
+                   PlayerModel = bot
+               };
     }
 
     #endregion

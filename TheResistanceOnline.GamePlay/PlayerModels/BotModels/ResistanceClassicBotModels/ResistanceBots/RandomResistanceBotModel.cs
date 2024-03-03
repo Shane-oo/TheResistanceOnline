@@ -25,6 +25,12 @@ public class RandomResistanceBotModel: ResistancePlayerModel, IResistanceBotMode
         throw new NotImplementedException();
     }
 
+    public void VoteForMissionTeam()
+    {
+        // ToDo random vote
+        Vote(true);
+    }
+
     public void DoAResistanceBotThing()
     {
         throw new NotImplementedException();

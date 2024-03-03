@@ -43,5 +43,11 @@ public class RandomSpyBotModel: SpyPlayerModel, ISpyBotModel
         base.PickMissionTeamMember(selectedPlayerName);
     }
 
+    public void VoteForMissionTeam()
+    {
+        // todo Random Vote
+        Vote(true);
+    }
+
     #endregion
 }

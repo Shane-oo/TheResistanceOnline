@@ -17,15 +17,17 @@ export abstract class Piece {
     const resistanceGame = new ResistanceGame();
     this.scene = resistanceGame.scene;
     this.resources = resistanceGame.resources;
+    // Debug
+    if (resistanceGame.debug.gui) {
+      this.debugFolder = resistanceGame.debug.gui.addFolder(name);
+      this.debugFolder.close();
+    }
 
     this.name = name;
     this.mesh = this.createMesh();
     this.scene.add(this.mesh);
 
-    // Debug
-    if (resistanceGame.debug.gui) {
-      this.debugFolder = resistanceGame.debug.gui.addFolder(name);
-    }
+
   }
 
   abstract createMesh(): Mesh<BufferGeometry, MeshStandardMaterial>;
@@ -40,4 +42,7 @@ export abstract class Piece {
     this.mesh.material.dispose();
   }
 
+  setVisible(visible: boolean): void {
+    this.mesh.visible = visible;
+  }
 }

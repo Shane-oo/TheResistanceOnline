@@ -4,7 +4,6 @@ public enum Phase: byte
 {
     MissionBuild,
     Vote,
-    VoteResults,
     Mission,
     MissionResults
 }
