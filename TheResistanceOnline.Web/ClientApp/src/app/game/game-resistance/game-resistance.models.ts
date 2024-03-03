@@ -21,7 +21,7 @@ export enum Team {
 }
 
 
-export interface GameModel {
-
+export interface VoteResultsModel {
+  playerNameToVoteApproved: Map<string, boolean>;
+  voteSuccessful: boolean;
 }
-

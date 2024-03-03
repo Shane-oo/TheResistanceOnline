@@ -2,7 +2,7 @@ import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Ou
 import {first, Subject, takeUntil} from "rxjs";
 
 import {ResistanceGame} from "../resistance-game/resistance-game";
-import {CommenceGameModel, Phase} from "../game-resistance.models";
+import {CommenceGameModel, Phase, VoteResultsModel} from "../game-resistance.models";
 
 
 @Component({
@@ -15,8 +15,9 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
   @Input() newMissionTeamMember!: Subject<string>;
   @Input() removeMissionTeamMember!: Subject<string>;
   @Input() moveToVotingPhase!: Subject<string[]>;
-  @Input() moveToVoteResultsPhase!: Subject<void>;
+  @Input() removeVotingChoicesSubject!: Subject<void>;
   @Input() playerSubmittedVote!: Subject<string>;
+  @Input() showVoteResultsSubject!: Subject<VoteResultsModel>;
 
   @Input() showMissionTeamSubmit: boolean = false;
 
@@ -67,10 +68,10 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
         this.startVotePhase(missionTeamMembers);
       });
 
-    this.moveToVoteResultsPhase
+    this.removeVotingChoicesSubject
       .pipe(takeUntil(this.destroyed))
       .subscribe(() => {
-        this.startVoteResultsPhase();
+        this.removeVotingChoices();
       });
 
 
@@ -80,6 +81,12 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
         this.playerVoted(playerName);
       });
 
+
+    this.showVoteResultsSubject
+      .pipe(takeUntil(this.destroyed))
+      .subscribe((results: VoteResultsModel) => {
+        this.showVoteResults(results);
+      })
 
   }
 
@@ -132,12 +139,21 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
     this.resistanceGame.startVotePhase(missionTeamMembers);
   }
 
-  private startVoteResultsPhase() {
-    this.resistanceGame.startVoteResultsPhase();
+  private removeVotingChoices() {
+    this.resistanceGame.removeVotingChoices();
   }
 
   private playerVoted(playerName: string) {
     this.resistanceGame.playerVoted(playerName);
+  }
+
+  private showVoteResults(results: VoteResultsModel) {
+    this.resistanceGame.showVoteResults(results);
+    // After 10 seconds remove vote results
+    setTimeout(() => {
+      this.resistanceGame.removeVoteResults();
+    }, 10000);
+
   }
 
 }

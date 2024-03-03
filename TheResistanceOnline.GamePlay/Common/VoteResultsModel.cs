@@ -2,7 +2,21 @@ namespace TheResistanceOnline.GamePlay.Common;
 
 public class VoteResultsModel
 {
-    public Dictionary<string, bool> PlayerNameToVoteApproved { get; set; }
+    #region Properties
 
-    //public bool VoteSuccessful { get; set; }   maybe
+    public Dictionary<string, bool> PlayerNameToVoteApproved { get; }
+
+    public bool VoteSuccessful { get; }
+
+    #endregion
+
+    #region Construction
+
+    public VoteResultsModel(Dictionary<string, bool> playerNameToVoteApproved, bool voteSuccessful)
+    {
+        PlayerNameToVoteApproved = playerNameToVoteApproved;
+        VoteSuccessful = voteSuccessful;
+    }
+
+    #endregion
 }

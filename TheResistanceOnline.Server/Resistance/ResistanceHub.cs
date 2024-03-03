@@ -24,11 +24,9 @@ public interface IResistanceHub: IErrorHub
 
     public Task VoteForMissionTeam(IEnumerable<string> missionTeamMembers);
 
-    // Remove Voting choice and show when players select votes
-    public Task VoteResultsPhase();
+    public Task RemoveVotingChoices();
 
-
-    //public Task ShowVotes(a list of objects with playerName and vote choice)
+    public Task ShowVotes(VoteResultsModel results);
 }
 
 public class ResistanceHub: BaseHub<IResistanceHub>
@@ -162,8 +160,6 @@ public class ResistanceHub: BaseHub<IResistanceHub>
                                       LobbyId = lobbyIdResult.Value
                                   };
                     await VoteForMissionTeam(command);
-                    break;
-                case Phase.VoteResults:
                     break;
                 case Phase.Mission:
                     break;

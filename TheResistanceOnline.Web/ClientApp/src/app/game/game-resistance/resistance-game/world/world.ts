@@ -1,4 +1,4 @@
-import {AxesHelper, Mesh, Scene, Vector3} from "three";
+import {AxesHelper, Color, Mesh, Scene, Vector3} from "three";
 import {Environment} from "./environment/environment";
 import {Resources} from "../utils/resources";
 import {Debug} from "../utils/debug";
@@ -176,6 +176,20 @@ export class World {
     const playerPiece = this.getPlayerPieceByName(playerName);
     if (playerPiece) {
       playerPiece.showVoteResultPieces();
+    }
+  }
+
+  changeVoteResultPiecesColor(playerName: string, color: Color) {
+    const playerPiece = this.getPlayerPieceByName(playerName);
+    if (playerPiece) {
+      const votePiece = playerPiece.votePieces.resultVotePiece;
+      votePiece.changeColor(color);
+    }
+  }
+
+  removeVoteResults() {
+    for (const playerPiece of this._playerPieces!) {
+      playerPiece.hideVoteResultPieces();
     }
   }
 

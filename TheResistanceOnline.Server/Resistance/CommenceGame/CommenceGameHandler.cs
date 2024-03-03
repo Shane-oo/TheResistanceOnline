@@ -14,7 +14,7 @@ public class CommenceGameHandler: ICommandHandler<CommenceGameCommand>
     #region Fields
 
     private readonly IHubContext<ResistanceHub, IResistanceHub> _resistanceHubContext;
-    private static readonly SemaphoreLocker _locker = new SemaphoreLocker();
+    private static readonly SemaphoreLocker _locker = new();
 
     #endregion
 

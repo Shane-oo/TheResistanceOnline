@@ -1,4 +1,5 @@
 import {BoxGeometry, BufferGeometry, Mesh, MeshStandardMaterial, Vector3} from "three";
+
 import {Piece} from "./piece";
 import {ApproveVotePiece} from "./voting/approve-vote-piece";
 import {RejectVotePiece} from "./voting/reject-vote-piece";
@@ -26,7 +27,11 @@ export class PlayerPiece extends Piece {
 
   }
 
-  get votePieces(): { approveVotePiece: ApproveVotePiece; rejectVotePiece: RejectVotePiece } {
+  get votePieces(): {
+    approveVotePiece: ApproveVotePiece;
+    rejectVotePiece: RejectVotePiece,
+    resultVotePiece: ResultVotePiece
+  } {
     return this._votePieces;
   }
 
@@ -70,6 +75,12 @@ export class PlayerPiece extends Piece {
   showVoteResultPieces() {
     this._votePieces.resultVotePiece.setVisible(true);
   }
+
+  hideVoteResultPieces() {
+    this._votePieces.resultVotePiece.setVisible(false);
+    this._votePieces.resultVotePiece.changeColor(ResultVotePiece.defaultColor);
+  }
+
 
   private createVotePieces(): {
     approveVotePiece: ApproveVotePiece,

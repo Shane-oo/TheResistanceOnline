@@ -1,4 +1,4 @@
-import {Scene} from "three";
+import {Color, Scene} from "three";
 
 import {Subject, takeUntil} from "rxjs";
 
@@ -15,6 +15,7 @@ import {Dispose} from "./utils/dispose";
 import {Metrics} from "./utils/metrics";
 import {ResistanceGameRaycasting} from "./resistance-game-raycasting";
 import {StateService} from "../../../shared/services/state/state.service";
+import {VoteResultsModel} from "../game-resistance.models";
 
 
 export class ResistanceGame {
@@ -176,15 +177,25 @@ export class ResistanceGame {
     this._world?.showVotingPieces(this.stateService.userName);
   }
 
-  startVoteResultsPhase() {
+  removeVotingChoices() {
     const playerName = this.stateService.userName;
     this._world?.hideVotingPieces(playerName);
-    this._world?.showVoteResultPieces(playerName);
     this._rayCasting.selectableObjects = [];
   }
 
   playerVoted(playerName: string) {
     this._world?.showVoteResultPieces(playerName);
+  }
+
+  showVoteResults(results: VoteResultsModel) {
+    for (let [playerName, approved] of results.playerNameToVoteApproved) {
+      const color = new Color(approved ? 'green' : 'red');
+      this._world?.changeVoteResultPiecesColor(playerName, color);
+    }
+  }
+
+  removeVoteResults(){
+    this._world?.removeVoteResults();
   }
 
 

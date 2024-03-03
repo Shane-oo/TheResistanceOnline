@@ -75,12 +75,6 @@ public abstract class GameModel: IGameModelSubject
         NotifyObservers();
     }
 
-    protected void UpdateVoteTrack(int voteTrack)
-    {
-        VoteTrack = voteTrack;
-        NotifyObservers();
-    }
-
 
     private int GetMissionSize()
     {
@@ -161,6 +155,22 @@ public abstract class GameModel: IGameModelSubject
         return missionSize;
     }
 
+    private bool GetVoteSuccessful()
+    {
+        return Players.Values.Count(p => p.VoteChoice == true) >= Players.Count / 2;
+    }
+
+    private void IncrementVoteTrack()
+    {
+        VoteTrack++;
+        NotifyObservers();
+    }
+
+    private void ResetVoteTrack()
+    {
+        VoteTrack = 1;
+    }
+
     private void UpdatePhase(Phase phase)
     {
         Phase = phase;
@@ -193,6 +203,31 @@ public abstract class GameModel: IGameModelSubject
     public PlayerModel GetPlayerModel(string name)
     {
         return Players.FirstOrDefault(p => p.Key == name).Value;
+    }
+
+    public Result<VoteResultsModel> GetVoteResults()
+    {
+        // Check everybody has voted
+        if (Players.All(p => p.Value.VoteChoice != null))
+        {
+            var voteSuccessful = GetVoteSuccessful();
+            if (voteSuccessful)
+            {
+                UpdatePhase(Phase.Mission);
+                ResetVoteTrack();
+            }
+            else
+            {
+                IncrementVoteTrack();
+                UpdatePhase(Phase.MissionBuild);
+            }
+
+
+            return new VoteResultsModel(Players.ToDictionary(player => player.Key, player => player.Value.VoteChoice == true),
+                                        voteSuccessful);
+        }
+
+        return Result.Failure<VoteResultsModel>(new Error("Game.Error", "Waiting for more votes"));
     }
 
     public bool MissionTeamFull()
@@ -238,17 +273,6 @@ public abstract class GameModel: IGameModelSubject
 
         UpdatePhase(Phase.Vote);
         return Result.Success();
-    }
-
-    public Result<VoteResultsModel> GetVoteResults()
-    {
-        // Check everybody has voted
-        if (Players.All(p => p.Value.VoteChoice != null))
-        {
-            Console.WriteLine("every body has voted");
-        }
-
-        return Result.Failure<VoteResultsModel>(new Error("Game.Error", "Waiting for more votes"));
     }
 
     #endregion

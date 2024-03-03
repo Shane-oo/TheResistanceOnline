@@ -35,15 +35,33 @@ public class VoteForMissionTeamHandler: ICommandHandler<VoteForMissionTeamComman
         var approved = command.VotePiece == VotePiece.ApproveVotePiece;
         player.Vote(approved);
 
-        await _resistanceHubContext.Clients.Client(command.ConnectionId).VoteResultsPhase();
+        await _resistanceHubContext.Clients.Client(command.ConnectionId).RemoveVotingChoices();
 
         await _resistanceHubContext.Clients.Group(command.LobbyId).PlayerVoted(command.CallerPlayerName);
-        
+
         var voteOverResult = gameModel.GetVoteResults();
 
-        if (voteOverResult.IsSuccess)
+        if (!voteOverResult.IsSuccess)
         {
-            // todo return to all in group the VoteResults
+            // still waiting for everyone's votes
+            return Result.Success();
+        }
+
+        var results = voteOverResult.Value;
+
+        await _resistanceHubContext.Clients.Group(command.LobbyId).ShowVotes(results);
+
+        // todo dododo I am here
+
+        if (results.VoteSuccessful)
+        {
+            // start mission phase
+        }
+        else
+        {
+            // start mission build phase again
+            // dont forget to send vote track
+            // potentially overlaps with CommendGame so some refactoring may need to be done
         }
 
         return Result.Success();
