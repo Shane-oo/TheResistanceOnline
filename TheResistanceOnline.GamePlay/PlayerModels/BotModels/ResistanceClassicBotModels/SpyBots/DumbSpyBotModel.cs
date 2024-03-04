@@ -25,12 +25,19 @@ public class DumbSpyBotModel: SpyPlayerModel, ISpyBotModel
         Vote(true);
     }
 
+    public void SelectAMissionTeam()
+    {
+        var selectedPlayerNames = Players.Take(MissionSize);
+        foreach(var selectedPlayerName in selectedPlayerNames)
+        {
+            PickMissionTeamMember(selectedPlayerName);
+        }
+    }
 
     public void DoASpyBotThing()
     {
         throw new NotImplementedException();
     }
-
 
     #endregion
 }

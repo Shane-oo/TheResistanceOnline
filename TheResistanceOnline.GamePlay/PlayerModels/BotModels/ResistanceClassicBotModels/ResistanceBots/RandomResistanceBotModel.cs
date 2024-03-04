@@ -31,21 +31,23 @@ public class RandomResistanceBotModel: ResistancePlayerModel, IResistanceBotMode
         Vote(true);
     }
 
+    public void SelectAMissionTeam()
+    {
+        var selectedPlayerNames = Players
+                                  .Select(player => new { player, i = _random.Next() })
+                                  .OrderBy(x => x.i)
+                                  .Take(MissionSize)
+                                  .Select(x => x.player);
+
+        foreach(var selectedPlayerName in selectedPlayerNames)
+        {
+            PickMissionTeamMember(selectedPlayerName);
+        }
+    }
+
     public void DoAResistanceBotThing()
     {
         throw new NotImplementedException();
-    }
-
-    // Override the PickMissionTeamMember and select random mission member
-    public override void PickMissionTeamMember(string selectedPlayerName = null)
-    {
-        selectedPlayerName = Players
-                             .Where(p => !MissionTeamMembers.Contains(p))
-                             .Select(player => new { player, i = _random.Next() })
-                             .OrderBy(x => x.i).Take(MissionSize)
-                             .Select(x => x.player).First();
-
-        base.PickMissionTeamMember(selectedPlayerName);
     }
 
     #endregion

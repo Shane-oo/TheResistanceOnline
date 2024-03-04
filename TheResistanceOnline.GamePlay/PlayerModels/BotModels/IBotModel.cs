@@ -12,4 +12,6 @@ public interface IBotModel
 
     public void VoteForMissionTeam();
 
+    public void SelectAMissionTeam();
+
 }

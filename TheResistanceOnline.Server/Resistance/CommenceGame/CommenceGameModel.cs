@@ -1,13 +1,12 @@
 using TheResistanceOnline.GamePlay.Common;
 
-namespace TheResistanceOnline.Server.Resistance;
+namespace TheResistanceOnline.Server.Resistance.CommenceGame;
 
 // The Initial Details for everyone to start game
 public class CommenceGameModel
 {
     #region Properties
 
-    public bool IsMissionLeader { get; set; }
 
     public string MissionLeader { get; set; }
 

@@ -12,6 +12,7 @@ import {CommenceGameModel, Phase, VoteResultsModel} from "../game-resistance.mod
 })
 export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy {
   @Input() gameCommenced!: Subject<CommenceGameModel>;
+  @Input() startMissionBuildPhase!: Subject<void>;
   @Input() newMissionTeamMember!: Subject<string>;
   @Input() removeMissionTeamMember!: Subject<string>;
   @Input() moveToVotingPhase!: Subject<string[]>;
@@ -49,6 +50,12 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
       .subscribe(c => {
         this.commenceGame(c);
       });
+
+    this.startMissionBuildPhase
+      .pipe(takeUntil(this.destroyed))
+      .subscribe(c => {
+        this.setMissionBuildPhase();
+      })
 
     this.newMissionTeamMember
       .pipe(takeUntil(this.destroyed))
@@ -96,31 +103,14 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
     this.resistanceGame.destroy();
   }
 
+  //
   commenceGame(gameCommenced: CommenceGameModel) {
     this.resistanceGame.setPlayers(gameCommenced.players);
     this.resistanceGame.setMissionLeader(gameCommenced.missionLeader);
+  }
 
-    switch (gameCommenced.phase) {
-      case Phase.MissionBuild:
-        if (gameCommenced.isMissionLeader) {
-          let missionMembers = 0;
-          switch (gameCommenced.players.length) {
-            case 5:
-            case 6:
-            case 7:
-              missionMembers = 2;
-              break;
-            case 8:
-            case 9:
-            case 10:
-              missionMembers = 3;
-              break;
-          }
-          this.resistanceGame.setMissionBuildPhase(missionMembers);
-        }
-
-        break;
-    }
+  setMissionBuildPhase() {
+    this.resistanceGame.setMissionBuildPhase();
   }
 
   submitMissionTeam() {

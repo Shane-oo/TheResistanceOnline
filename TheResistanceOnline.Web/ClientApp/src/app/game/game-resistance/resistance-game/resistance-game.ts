@@ -154,14 +154,14 @@ export class ResistanceGame {
     this._world?.setMissionLeader(player);
   }
 
-  setMissionBuildPhase(missionMembers: number) {
+  setMissionBuildPhase() {
     // todo set a timeout and say if this user does not pick missionMembers in time
     // pick at random for them 3 minutes max
     // display timer maybe?
     // should that be server side tho?
-    const playerPieces = this._world!.playerPieces!.map(p => p.mesh);
-    if (playerPieces) {
-      this._rayCasting.selectableObjects = playerPieces;
+    const playerMeshes = this._world!.playerPieces!.map(p => p.mesh);
+    if (playerMeshes) {
+      this._rayCasting.selectableObjects = playerMeshes;
     }
   }
 

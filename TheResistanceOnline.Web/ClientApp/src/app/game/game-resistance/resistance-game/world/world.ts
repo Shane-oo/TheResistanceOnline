@@ -102,7 +102,6 @@ export class World {
       position.setZ(position.z - 0.15); // above the player piece
 
       this.missionLeaderPiece.movePiece(position);
-
     }
   }
 

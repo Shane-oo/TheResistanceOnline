@@ -208,26 +208,26 @@ public abstract class GameModel: IGameModelSubject
     public Result<VoteResultsModel> GetVoteResults()
     {
         // Check everybody has voted
-        if (Players.All(p => p.Value.VoteChoice != null))
+        if (Players.Any(p => p.Value.VoteChoice == null))
         {
-            var voteSuccessful = GetVoteSuccessful();
-            if (voteSuccessful)
-            {
-                UpdatePhase(Phase.Mission);
-                ResetVoteTrack();
-            }
-            else
-            {
-                IncrementVoteTrack();
-                UpdatePhase(Phase.MissionBuild);
-            }
-
-
-            return new VoteResultsModel(Players.ToDictionary(player => player.Key, player => player.Value.VoteChoice == true),
-                                        voteSuccessful);
+            return Result.Failure<VoteResultsModel>(new Error("Game.Error", "Waiting for more votes"));
         }
 
-        return Result.Failure<VoteResultsModel>(new Error("Game.Error", "Waiting for more votes"));
+        var voteSuccessful = GetVoteSuccessful();
+        if (voteSuccessful)
+        {
+            UpdatePhase(Phase.Mission);
+            ResetVoteTrack();
+        }
+        else
+        {
+            IncrementVoteTrack();
+            UpdatePhase(Phase.MissionBuild);
+        }
+
+
+        return new VoteResultsModel(Players.ToDictionary(player => player.Key, player => player.Value.VoteChoice == true),
+                                    voteSuccessful);
     }
 
     public bool MissionTeamFull()

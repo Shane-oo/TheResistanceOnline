@@ -6,6 +6,7 @@ using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.GamePlay;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.GamePlay.GameModels;
+using TheResistanceOnline.Server.Resistance.CommenceGame;
 
 namespace TheResistanceOnline.Server.Resistance;
 
@@ -13,8 +14,9 @@ public class CommenceGameHandler: ICommandHandler<CommenceGameCommand>
 {
     #region Fields
 
-    private readonly IHubContext<ResistanceHub, IResistanceHub> _resistanceHubContext;
     private static readonly SemaphoreLocker _locker = new();
+
+    private readonly IHubContext<ResistanceHub, IResistanceHub> _resistanceHubContext;
 
     #endregion
 
@@ -38,41 +40,68 @@ public class CommenceGameHandler: ICommandHandler<CommenceGameCommand>
 
         return await _locker.LockAsync(async () =>
                                        {
+                                           var gameDetails = command.GameDetails;
                                            // in case of case where commenceGameCommand is sent twice 
                                            // immediately commence game and hopefully in the other thread game has been commenced
-                                           if (command.GameDetails.GameCommenced) return Result.Success();
+                                           if (gameDetails.GameCommenced) return Result.Success();
 
-                                           command.GameDetails.GameCommenced = true;
+                                           gameDetails.GameCommenced = true;
 
-                                           if (command.GameDetails.GameType == GameType.ResistanceClassic)
+                                           if (gameDetails.GameType == GameType.ResistanceClassic)
                                            {
-                                               command.GameDetails.GameModel = new ResistanceClassicGameModel();
+                                               gameDetails.GameModel = new ResistanceClassicGameModel();
                                            }
 
-                                           command.GameDetails.GameModel.SetupGame(command.GameDetails.Connections
-                                                                                          .Select(c => c.UserName)
-                                                                                          .ToList(),
-                                                                                   command.GameDetails.InitialBotCount);
+                                           var gameModel = gameDetails.GameModel;
 
-                                           foreach(var connection in command.GameDetails.Connections)
+                                           gameModel.SetupGame(gameDetails.Connections
+                                                                          .Select(c => c.UserName)
+                                                                          .ToList(),
+                                                               gameDetails.InitialBotCount);
+
+                                           foreach(var connection in gameDetails.Connections)
                                            {
-                                               var playerDetails = command.GameDetails.GameModel.Players[connection.UserName];
+                                               var playerDetails = gameModel.Players[connection.UserName];
                                                var commenceGameModel = new CommenceGameModel
                                                                        {
                                                                            Team = playerDetails.Team,
                                                                            TeamMates = playerDetails.Team == Team.Spy
-                                                                                           ? command.GameDetails.GameModel.Players
-                                                                                                    .Where(p => p.Value.Team == Team.Spy && p.Key != connection.UserName)
-                                                                                                    .Select(p => p.Key)
-                                                                                                    .ToList()
+                                                                                           ? gameModel.Players
+                                                                                                      .Where(p => p.Value.Team == Team.Spy && p.Key != connection.UserName)
+                                                                                                      .Select(p => p.Key)
+                                                                                                      .ToList()
                                                                                            : null,
-                                                                           MissionLeader = command.GameDetails.GameModel.MissionLeader,
-                                                                           Phase = command.GameDetails.GameModel.Phase,
-                                                                           Players = command.GameDetails.GameModel.PlayerNames
+                                                                           MissionLeader = gameModel.MissionLeader,
+                                                                           Phase = gameModel.Phase,
+                                                                           Players = gameModel.PlayerNames
                                                                        };
-                                               commenceGameModel.IsMissionLeader = commenceGameModel.MissionLeader == playerDetails.Name;
-
                                                await _resistanceHubContext.Clients.Client(connection.ConnectionId).CommenceGame(commenceGameModel);
+                                           }
+
+                                           switch(gameModel.Phase)
+                                           {
+                                               case Phase.MissionBuild:
+                                                   var missionLeaderConnection = gameDetails.Connections.FirstOrDefault(p => p.UserName == gameModel.MissionLeader);
+                                                   if (missionLeaderConnection != null)
+                                                   {
+                                                       await _resistanceHubContext.Clients.Client(missionLeaderConnection.ConnectionId).StartMissionBuildPhase();
+                                                   }
+
+                                                   break;
+                                               case Phase.Vote:
+                                                   var missionTeam = gameModel.GetMissionTeam();
+                                                   await _resistanceHubContext.Clients.Group(command.LobbyId).VoteForMissionTeam(missionTeam);
+
+                                                   foreach(var bot in gameModel.Bots)
+                                                   {
+                                                       await _resistanceHubContext.Clients.Group(command.LobbyId).PlayerVoted(bot.Name);
+                                                   }
+
+                                                   break;
+                                               case Phase.Mission:
+                                               case Phase.MissionResults:
+                                               default:
+                                                   throw new ArgumentOutOfRangeException();
                                            }
 
                                            return Result.Success();

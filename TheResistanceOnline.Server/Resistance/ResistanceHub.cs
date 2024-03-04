@@ -5,6 +5,7 @@ using TheResistanceOnline.Core.Errors;
 using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.Server.Common;
+using TheResistanceOnline.Server.Resistance.CommenceGame;
 using TheResistanceOnline.Server.Resistance.VoteForMissionTeam;
 
 namespace TheResistanceOnline.Server.Resistance;
@@ -12,6 +13,8 @@ namespace TheResistanceOnline.Server.Resistance;
 public interface IResistanceHub: IErrorHub
 {
     public Task CommenceGame(CommenceGameModel commenceGameModel);
+
+    public Task StartMissionBuildPhase();
 
     public Task NewMissionTeamMember(string playerName);
 

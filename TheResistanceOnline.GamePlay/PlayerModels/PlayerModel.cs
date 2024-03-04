@@ -57,12 +57,12 @@ public abstract class PlayerModel: IObserver
 
     #region Public Methods
 
-    public virtual void PickMissionTeamMember(string selectedPlayerName = null)
+    public void PickMissionTeamMember(string selectedPlayerName)
     {
         _gameModel.AddMissionTeamMember(selectedPlayerName);
     }
 
-    public void RemoveMissionTeamMember(string selectedPlayerName = null)
+    public void RemoveMissionTeamMember(string selectedPlayerName)
     {
         _gameModel.RemoveMissionTeamMember(selectedPlayerName);
     }

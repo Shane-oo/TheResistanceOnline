@@ -41,19 +41,17 @@ public class VoteForMissionTeamHandler: ICommandHandler<VoteForMissionTeamComman
 
         var voteOverResult = gameModel.GetVoteResults();
 
-        if (!voteOverResult.IsSuccess)
+        if (voteOverResult.IsFailure)
         {
             // still waiting for everyone's votes
             return Result.Success();
         }
 
-        var results = voteOverResult.Value;
+        var voteResults = voteOverResult.Value;
 
-        await _resistanceHubContext.Clients.Group(command.LobbyId).ShowVotes(results);
+        await _resistanceHubContext.Clients.Group(command.LobbyId).ShowVotes(voteResults);
 
-        // todo dododo I am here
-
-        if (results.VoteSuccessful)
+        if (voteResults.VoteSuccessful)
         {
             // start mission phase
         }
@@ -62,6 +60,7 @@ public class VoteForMissionTeamHandler: ICommandHandler<VoteForMissionTeamComman
             // start mission build phase again
             // dont forget to send vote track
             // potentially overlaps with CommendGame so some refactoring may need to be done
+            //await _resistanceHubContext.Clients.Group(command.LobbyId).VoteF
         }
 
         return Result.Success();

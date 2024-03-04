@@ -106,14 +106,16 @@ public class ResistanceClassicGameModel: GameModel
         var missionLeader = Players.First(p => !p.Value.IsBot);
 
         UpdateMissionLeader(missionLeader.Key);
+
         if (missionLeader.Value.IsBot)
         {
-            for(var i = 0; i < MissionSize; i++)
-            {
-                missionLeader.Value.PickMissionTeamMember();
-            }
-
+            missionLeader.Value.BotModel.SelectAMissionTeam();
             SubmitMissionTeam();
+
+            foreach(var bot in Bots)
+            {
+                bot.BotModel.VoteForMissionTeam();
+            }
         }
     }
 

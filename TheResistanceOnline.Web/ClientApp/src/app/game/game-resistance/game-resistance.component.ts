@@ -18,13 +18,14 @@ import {CustomError} from "../../shared/models/error.models";
   styleUrls: ['./game-resistance.component.css']
 })
 export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit {
-  public gameCommenced: Subject<CommenceGameModel> = new Subject<CommenceGameModel>();
-  public newMissionTeamMember: Subject<string> = new Subject<string>();
-  public removeMissionTeamMember: Subject<string> = new Subject<string>();
-  public moveToVotingPhase: Subject<string[]> = new Subject<string[]>();
-  public removeVotingChoices: Subject<void> = new Subject<void>();
-  public playerSubmittedVote: Subject<string> = new Subject<string>();
-  public showVoteResults: Subject<VoteResultsModel> = new Subject<VoteResultsModel>();
+  public readonly gameCommenced: Subject<CommenceGameModel> = new Subject<CommenceGameModel>();
+  public readonly startMissionBuildPhase: Subject<void> = new Subject<void>();
+  public readonly newMissionTeamMember: Subject<string> = new Subject<string>();
+  public readonly removeMissionTeamMember: Subject<string> = new Subject<string>();
+  public readonly moveToVotingPhase: Subject<string[]> = new Subject<string[]>();
+  public readonly removeVotingChoices: Subject<void> = new Subject<void>();
+  public readonly playerSubmittedVote: Subject<string> = new Subject<string>();
+  public readonly showVoteResults: Subject<VoteResultsModel> = new Subject<VoteResultsModel>();
 
   public showMissionTeamSubmit: boolean = false;
 
@@ -83,6 +84,7 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
   private addRequiredListeners() {
     this.addReceiveErrorMessageListener();
     this.addReceiveCommenceGameModelListener();
+    this.addReceiveStartMissionBuildPhase();
     this.addReceiveNewMissionTeamMember();
     this.addReceiveRemoveMissionTeamMember();
     this.addReceiveShowMissionTeamSubmit();
@@ -146,6 +148,12 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
       this.gameCommenced.next(commenceGameModel);
       // CommenceGame only called once
       this.resistanceHubConnection.off("CommenceGame");
+    });
+  }
+
+  private addReceiveStartMissionBuildPhase = () => {
+    this.resistanceHubConnection.on("StartMissionBuildPhase", () => {
+      this.startMissionBuildPhase.next();
     });
   }
 

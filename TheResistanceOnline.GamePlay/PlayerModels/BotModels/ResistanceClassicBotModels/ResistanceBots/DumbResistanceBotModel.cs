@@ -24,6 +24,15 @@ public class DumbResistanceBotModel: ResistancePlayerModel, IResistanceBotModel
         Vote(true);
     }
 
+    public void SelectAMissionTeam()
+    {
+        var selectedPlayerNames = Players.Take(MissionSize);
+        foreach(var selectedPlayerName in selectedPlayerNames)
+        {
+            PickMissionTeamMember(selectedPlayerName);
+        }
+    }
+
 
     public void DoAResistanceBotThing()
     {
