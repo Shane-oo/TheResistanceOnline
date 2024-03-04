@@ -33,6 +33,11 @@ public class DumbResistanceBotModel: ResistancePlayerModel, IResistanceBotModel
         }
     }
 
+    public void DecideMissionOutcome()
+    {
+        SubmitMissionOutcome(true);
+    }
+
 
     public void DoAResistanceBotThing()
     {

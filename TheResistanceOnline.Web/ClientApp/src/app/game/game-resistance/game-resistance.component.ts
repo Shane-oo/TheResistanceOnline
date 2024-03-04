@@ -26,6 +26,7 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
   public readonly removeVotingChoices: Subject<void> = new Subject<void>();
   public readonly playerSubmittedVote: Subject<string> = new Subject<string>();
   public readonly showVoteResults: Subject<VoteResultsModel> = new Subject<VoteResultsModel>();
+  public readonly showMissionCards: Subject<boolean> = new Subject<boolean>();
 
   public showMissionTeamSubmit: boolean = false;
 
@@ -92,6 +93,7 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
     this.addReceiveRemoveVotingChoices();
     this.addReceivePlayerVoted();
     this.addReceiveVoteResults();
+    this.addReceiveShowMissionCards();
   }
 
   private async start() {
@@ -199,5 +201,11 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
       resultsModel.playerNameToVoteApproved = new Map(Object.entries(resultsModel.playerNameToVoteApproved));
       this.showVoteResults.next(resultsModel);
     });
+  }
+
+  private addReceiveShowMissionCards = () => {
+    this.resistanceHubConnection.on("ShowMissionCards", (showSuccessAndFail: boolean) => {
+      this.showMissionCards.next(showSuccessAndFail);
+    })
   }
 }

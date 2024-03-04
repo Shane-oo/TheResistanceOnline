@@ -71,38 +71,14 @@ public class CommenceGameHandler: ICommandHandler<CommenceGameCommand>
                                                                                                       .Select(p => p.Key)
                                                                                                       .ToList()
                                                                                            : null,
-                                                                           MissionLeader = gameModel.MissionLeader,
+                                                                           MissionLeader = gameModel.MissionLeader.Name,
                                                                            Phase = gameModel.Phase,
                                                                            Players = gameModel.PlayerNames
                                                                        };
                                                await _resistanceHubContext.Clients.Client(connection.ConnectionId).CommenceGame(commenceGameModel);
                                            }
 
-                                           switch(gameModel.Phase)
-                                           {
-                                               case Phase.MissionBuild:
-                                                   var missionLeaderConnection = gameDetails.Connections.FirstOrDefault(p => p.UserName == gameModel.MissionLeader);
-                                                   if (missionLeaderConnection != null)
-                                                   {
-                                                       await _resistanceHubContext.Clients.Client(missionLeaderConnection.ConnectionId).StartMissionBuildPhase();
-                                                   }
-
-                                                   break;
-                                               case Phase.Vote:
-                                                   var missionTeam = gameModel.GetMissionTeam();
-                                                   await _resistanceHubContext.Clients.Group(command.LobbyId).VoteForMissionTeam(missionTeam);
-
-                                                   foreach(var bot in gameModel.Bots)
-                                                   {
-                                                       await _resistanceHubContext.Clients.Group(command.LobbyId).PlayerVoted(bot.Name);
-                                                   }
-
-                                                   break;
-                                               case Phase.Mission:
-                                               case Phase.MissionResults:
-                                               default:
-                                                   throw new ArgumentOutOfRangeException();
-                                           }
+                                           await PhaseHandler.HandleNextPhase(_resistanceHubContext, gameModel, gameDetails, command.LobbyId);
 
                                            return Result.Success();
                                        });

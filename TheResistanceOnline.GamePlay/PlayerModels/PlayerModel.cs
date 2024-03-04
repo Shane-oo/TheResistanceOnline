@@ -28,6 +28,8 @@ public abstract class PlayerModel: IObserver
 
     public bool? VoteChoice { get; set; }
 
+    public bool? MissionChoice { get; set; }
+
     protected int MissionSize { get; set; }
 
     protected List<string> MissionTeamMembers { get; set; }
@@ -69,10 +71,10 @@ public abstract class PlayerModel: IObserver
 
     public void Update()
     {
-        MissionTeamMembers = _gameModel.MissionTeam;
+        MissionTeamMembers = _gameModel.MissionTeam.Select(p => p.Name).ToList();
         Players = _gameModel.PlayerNames;
         MissionSize = _gameModel.MissionSize;
-        MissionLeader = _gameModel.MissionLeader;
+        MissionLeader = _gameModel.MissionLeader.Name;
     }
 
 
@@ -80,6 +82,11 @@ public abstract class PlayerModel: IObserver
     {
         // Is vote choice null here?
         VoteChoice = decision;
+    }
+
+    public virtual void SubmitMissionOutcome(bool decision)
+    {
+        MissionChoice = decision;
     }
 
     #endregion

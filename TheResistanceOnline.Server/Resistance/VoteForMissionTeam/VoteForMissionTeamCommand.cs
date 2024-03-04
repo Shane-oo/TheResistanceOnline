@@ -15,7 +15,7 @@ public class VoteForMissionTeamCommand: Command, IConnectionModel
 
     public string ConnectionId { get; set; }
 
-    public GameModel GameModel { get; set; }
+    public GameDetails GameDetails { get; set; }
 
     public VotePiece VotePiece { get; set; }
 
@@ -31,7 +31,7 @@ public class VoteForMissionTeamCommandValidator: AbstractValidator<VoteForMissio
 
     public VoteForMissionTeamCommandValidator()
     {
-        RuleFor(c => c.GameModel)
+        RuleFor(c => c.GameDetails)
             .NotNull();
 
         RuleFor(c => c.CallerPlayerName)

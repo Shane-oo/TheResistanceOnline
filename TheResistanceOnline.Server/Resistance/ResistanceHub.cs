@@ -14,8 +14,6 @@ public interface IResistanceHub: IErrorHub
 {
     public Task CommenceGame(CommenceGameModel commenceGameModel);
 
-    public Task StartMissionBuildPhase();
-
     public Task NewMissionTeamMember(string playerName);
 
     // Show that a player has voted but do not show vote just yet until everyone has voted
@@ -23,13 +21,19 @@ public interface IResistanceHub: IErrorHub
 
     public Task RemoveMissionTeamMember(string playerName);
 
-    public Task ShowMissionTeamSubmit(bool show);
-
-    public Task VoteForMissionTeam(IEnumerable<string> missionTeamMembers);
-
     public Task RemoveVotingChoices();
 
+    public Task ShowMissionResults(MissionResultsModel results); // todo front end
+
+    public Task ShowMissionCards(bool showSuccessAndFail);
+
+    public Task ShowMissionTeamSubmit(bool show);
+
     public Task ShowVotes(VoteResultsModel results);
+
+    public Task StartMissionBuildPhase();
+
+    public Task VoteForMissionTeam(IEnumerable<string> missionTeamMembers);
 }
 
 public class ResistanceHub: BaseHub<IResistanceHub>
@@ -157,7 +161,7 @@ public class ResistanceHub: BaseHub<IResistanceHub>
                     _ = Enum.TryParse(name, out VotePiece votePiece);
                     var command = new VoteForMissionTeamCommand
                                   {
-                                      GameModel = gameDetails.Value.GameModel,
+                                      GameDetails = gameDetails.Value,
                                       CallerPlayerName = GetCallerPlayerName(gameDetails.Value),
                                       VotePiece = votePiece,
                                       LobbyId = lobbyIdResult.Value
@@ -165,8 +169,6 @@ public class ResistanceHub: BaseHub<IResistanceHub>
                     await VoteForMissionTeam(command);
                     break;
                 case Phase.Mission:
-                    break;
-                case Phase.MissionResults:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

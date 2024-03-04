@@ -7,11 +7,11 @@ public interface IGameModelSubject: ISubject
 {
     public int Mission { get; }
 
-    public string MissionLeader { get; }
+    public PlayerModel MissionLeader { get; }
 
     public int MissionSize { get; }
 
-    public List<string> MissionTeam { get; }
+    public List<PlayerModel> MissionTeam { get; }
 
     public Phase Phase { get; }
 

@@ -38,7 +38,7 @@ public class SubmitMissionTeamHandler: ICommandHandler<SubmitMissionTeamCommand>
 
         var missionTeam = gameModel.GetMissionTeam();
 
-        await _resistanceHubContext.Clients.Group(command.LobbyId).VoteForMissionTeam(missionTeam);
+        await _resistanceHubContext.Clients.Group(command.LobbyId).VoteForMissionTeam(missionTeam.Select(p=>p.Name));
 
         foreach(var bot in gameModel.Bots)
         {

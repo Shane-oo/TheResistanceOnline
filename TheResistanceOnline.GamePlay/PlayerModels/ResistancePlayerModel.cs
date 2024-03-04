@@ -18,5 +18,12 @@ public class ResistancePlayerModel: PlayerModel
     {
     }
 
+
+    public override void SubmitMissionOutcome(bool decision)
+    {
+        // Resistance can only vote yes
+        base.SubmitMissionOutcome(true);
+    }
+
     #endregion
 }

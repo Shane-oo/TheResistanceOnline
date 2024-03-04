@@ -28,7 +28,7 @@ public class VoteForMissionTeamHandler: ICommandHandler<VoteForMissionTeamComman
     {
         if (command is null) return Result.Failure(Error.NullValue);
 
-        var gameModel = command.GameModel;
+        var gameModel = command.GameDetails.GameModel;
 
         var player = gameModel.GetPlayerModel(command.CallerPlayerName);
 
@@ -51,17 +51,19 @@ public class VoteForMissionTeamHandler: ICommandHandler<VoteForMissionTeamComman
 
         await _resistanceHubContext.Clients.Group(command.LobbyId).ShowVotes(voteResults);
 
-        if (voteResults.VoteSuccessful)
+        // wait for 10 seconds before removing voteResults
+        Thread.Sleep(10000);
+
+        // if mission was full of bots then they have already completed mission
+        var missionOverResult = gameModel.GetMissionResults();
+        if (missionOverResult.IsSuccess)
         {
-            // start mission phase
+            await _resistanceHubContext.Clients.Group(command.LobbyId).ShowMissionResults(missionOverResult.Value);
+            // wait for 10 seconds before removing missionResults
+            Thread.Sleep(10000);
         }
-        else
-        {
-            // start mission build phase again
-            // dont forget to send vote track
-            // potentially overlaps with CommendGame so some refactoring may need to be done
-            //await _resistanceHubContext.Clients.Group(command.LobbyId).VoteF
-        }
+
+        await PhaseHandler.HandleNextPhase(_resistanceHubContext, gameModel, command.GameDetails, command.LobbyId);
 
         return Result.Success();
     }

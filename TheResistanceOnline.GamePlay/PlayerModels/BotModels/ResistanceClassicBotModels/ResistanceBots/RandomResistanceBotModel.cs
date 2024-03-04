@@ -20,15 +20,19 @@ public class RandomResistanceBotModel: ResistancePlayerModel, IResistanceBotMode
 
     #region Public Methods
 
+    public void DecideMissionOutcome()
+    {
+        SubmitMissionOutcome(true);
+    }
+
     public void DoABotThing()
     {
         throw new NotImplementedException();
     }
 
-    public void VoteForMissionTeam()
+    public void DoAResistanceBotThing()
     {
-        // ToDo random vote
-        Vote(true);
+        throw new NotImplementedException();
     }
 
     public void SelectAMissionTeam()
@@ -45,9 +49,10 @@ public class RandomResistanceBotModel: ResistancePlayerModel, IResistanceBotMode
         }
     }
 
-    public void DoAResistanceBotThing()
+    public void VoteForMissionTeam()
     {
-        throw new NotImplementedException();
+        // ToDo random vote
+        Vote(true);
     }
 
     #endregion

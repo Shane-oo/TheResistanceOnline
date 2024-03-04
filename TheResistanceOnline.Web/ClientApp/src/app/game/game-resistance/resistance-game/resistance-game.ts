@@ -194,8 +194,15 @@ export class ResistanceGame {
     }
   }
 
-  removeVoteResults(){
+  removeVoteResults() {
     this._world?.removeVoteResults();
+  }
+
+  showMissionCards(showSuccessAndFail: boolean) {
+    console.log("Show Success card");
+    if (showSuccessAndFail) {
+      console.log("Show Fail Card");
+    }
   }
 
 

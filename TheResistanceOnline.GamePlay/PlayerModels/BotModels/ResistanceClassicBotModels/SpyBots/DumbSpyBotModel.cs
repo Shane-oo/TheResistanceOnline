@@ -34,6 +34,11 @@ public class DumbSpyBotModel: SpyPlayerModel, ISpyBotModel
         }
     }
 
+    public void DecideMissionOutcome()
+    {
+        SubmitMissionOutcome(false);
+    }
+
     public void DoASpyBotThing()
     {
         throw new NotImplementedException();

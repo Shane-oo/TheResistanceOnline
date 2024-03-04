@@ -22,11 +22,11 @@ public abstract class GameModel: IGameModelSubject
 
     public int Mission { get; private set; } = 1;
 
-    public string MissionLeader => Players.First(c => c.Value.IsMissionLeader).Key;
+    public PlayerModel MissionLeader => Players.First(c => c.Value.IsMissionLeader).Value;
 
     public int MissionSize => GetMissionSize();
 
-    public List<string> MissionTeam { get; set; } = new();
+    public List<PlayerModel> MissionTeam { get; set; } = new();
 
     public Phase Phase { get; private set; } = Phase.MissionBuild;
 
@@ -41,6 +41,31 @@ public abstract class GameModel: IGameModelSubject
     #endregion
 
     #region Private Methods
+
+    protected void CheckBotNeedsToPickMissionTeam()
+    {
+        var missionLeader = MissionLeader;
+
+        if (missionLeader.IsBot)
+        {
+            missionLeader.BotModel.SelectAMissionTeam();
+            SubmitMissionTeam();
+
+            foreach(var bot in Bots)
+            {
+                bot.BotModel.VoteForMissionTeam();
+            }
+        }
+    }
+
+    // private void CheckBotsCompletedMission()
+    // {
+    //     if (MissionTeam.Any(p => p.MissionChoice == null)) return;
+    //
+    //     // All bots have chosen what the mission outcome is
+    //     UpdatePhase(Phase.MissionBuild);
+    //     CheckBotNeedsToPickMissionTeam();
+    // }
 
     protected static List<PlayerSetupModel> CreatePlayerSetupModels(List<string> userNames, int botCount)
     {
@@ -58,6 +83,36 @@ public abstract class GameModel: IGameModelSubject
         return playerSetupModels;
     }
 
+    protected void MoveMissionLeaderClockwise()
+    {
+        var playerList = Players.Values.ToList();
+
+        var missionLeader = playerList.FirstOrDefault(c => c.IsMissionLeader);
+        if (missionLeader != null)
+        {
+            missionLeader.IsMissionLeader = false;
+
+            var index = playerList.IndexOf(missionLeader);
+
+            // was the last person in array
+            if (index == playerList.Count)
+            {
+                playerList[0].IsMissionLeader = true;
+            }
+            else
+            {
+                playerList[index + 1].IsMissionLeader = true;
+            }
+        }
+        else
+        {
+            // Mission Leader has not been set yet
+            playerList[0].IsMissionLeader = true;
+        }
+
+        NotifyObservers();
+    }
+
 
     protected void UpdateMission(int mission)
     {
@@ -65,14 +120,16 @@ public abstract class GameModel: IGameModelSubject
         NotifyObservers();
     }
 
-    protected void UpdateMissionLeader(string missionLeaderName)
+    private void CheckBotsNeedToDecideMissionOutcome()
     {
-        foreach(var playerModel in Players.Values)
+        var missionBots = Players.Values.Where(p => MissionTeam.Contains(p) && p.IsBot);
+
+        foreach(var missionBot in missionBots)
         {
-            playerModel.IsMissionLeader = missionLeaderName == playerModel.Name;
+            missionBot.BotModel.DecideMissionOutcome();
         }
 
-        NotifyObservers();
+        // CheckBotsCompletedMission();
     }
 
 
@@ -155,15 +212,40 @@ public abstract class GameModel: IGameModelSubject
         return missionSize;
     }
 
+    private bool GetMissionSuccessful()
+    {
+        // in games of 7 or more, mission 4 requires two fail cards
+        var missionFailedCardsRequired = Players.Count >= 7 && Mission == 4 ? 2 : 1;
+
+        return Players.Values.Count(p => p.MissionChoice == false) >= missionFailedCardsRequired;
+    }
+
     private bool GetVoteSuccessful()
     {
-        return Players.Values.Count(p => p.VoteChoice == true) >= Players.Count / 2;
+        // note: A tied vote is a fail
+        return Players.Values.Count(p => p.VoteChoice == true) > Players.Count / 2;
     }
 
     private void IncrementVoteTrack()
     {
         VoteTrack++;
         NotifyObservers();
+    }
+
+    private void ResetPlayerMissionChoices()
+    {
+        foreach(var player in Players.Values)
+        {
+            player.MissionChoice = null;
+        }
+    }
+
+    private void ResetPlayerVotes()
+    {
+        foreach(var player in Players.Values)
+        {
+            player.VoteChoice = null;
+        }
     }
 
     private void ResetVoteTrack()
@@ -190,12 +272,43 @@ public abstract class GameModel: IGameModelSubject
             return;
         }
 
-        MissionTeam.Add(player);
+        var playerModel = Players.Values.FirstOrDefault(p => p.Name == player);
+
+        MissionTeam.Add(playerModel);
 
         NotifyObservers();
     }
 
-    public IEnumerable<string> GetMissionTeam()
+    public Result<MissionResultsModel> GetMissionResults()
+    {
+        // Check everybody has submitted mission results
+        if (MissionTeam.Any(p => p.MissionChoice == null))
+        {
+            return Result.Failure<MissionResultsModel>(new Error("Game.Error", "Waiting for more mission outcomes"));
+        }
+
+        var missionSuccessChoices = Players.Values.Count(p => p.MissionChoice == true);
+        var missionFailureChoices = Players.Values.Count(p => p.MissionChoice == false);
+
+        var missionSuccessful = GetMissionSuccessful();
+        ResetPlayerMissionChoices();
+
+        // todo need to update rounds and keep score!!!
+        if (missionSuccessful)
+        {
+        }
+        else
+        {
+        }
+
+        UpdatePhase(Phase.MissionBuild);
+        MoveMissionLeaderClockwise();
+        CheckBotNeedsToPickMissionTeam();
+
+        return Result.Success(new MissionResultsModel(missionSuccessChoices, missionFailureChoices, missionSuccessful));
+    }
+
+    public IEnumerable<PlayerModel> GetMissionTeam()
     {
         return MissionTeam;
     }
@@ -213,20 +326,26 @@ public abstract class GameModel: IGameModelSubject
             return Result.Failure<VoteResultsModel>(new Error("Game.Error", "Waiting for more votes"));
         }
 
+        var playerNameToVoteApproved = Players.ToDictionary(player => player.Key, player => player.Value.VoteChoice == true);
         var voteSuccessful = GetVoteSuccessful();
+        ResetPlayerVotes();
+
         if (voteSuccessful)
         {
             UpdatePhase(Phase.Mission);
             ResetVoteTrack();
+            CheckBotsNeedToDecideMissionOutcome();
         }
         else
         {
+            // todo handle vote track hitting 5 and failing mission
             IncrementVoteTrack();
             UpdatePhase(Phase.MissionBuild);
+            MoveMissionLeaderClockwise();
+            CheckBotNeedsToPickMissionTeam();
         }
 
-
-        return new VoteResultsModel(Players.ToDictionary(player => player.Key, player => player.Value.VoteChoice == true),
+        return new VoteResultsModel(playerNameToVoteApproved,
                                     voteSuccessful);
     }
 
@@ -252,7 +371,9 @@ public abstract class GameModel: IGameModelSubject
     {
         ArgumentNullException.ThrowIfNull(player);
 
-        MissionTeam.Remove(player);
+        var playerModel = Players.Values.FirstOrDefault(p => p.Name == player);
+
+        MissionTeam.Remove(playerModel);
 
         NotifyObservers();
     }

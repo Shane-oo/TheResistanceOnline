@@ -21,6 +21,12 @@ public class RandomSpyBotModel: SpyPlayerModel, ISpyBotModel
 
     #region Public Methods
 
+    public void DecideMissionOutcome()
+    {
+        // todo random mission choice
+        SubmitMissionOutcome(false);
+    }
+
     public void DoABotThing()
     {
         throw new NotImplementedException();
