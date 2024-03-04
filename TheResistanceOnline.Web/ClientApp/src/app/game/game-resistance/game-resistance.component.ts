@@ -7,7 +7,7 @@ import {IHttpConnectionOptions} from "@microsoft/signalr";
 import {AuthenticationService} from "../../shared/services/authentication/authentication.service";
 import {environment} from "../../../environments/environment";
 import {SwalContainerService, SwalTypes} from "../../../ui/swal/swal-container.service";
-import {CommenceGameModel, Team, VoteResultsModel} from "./game-resistance.models";
+import {CommenceGameModel, MissionResultsModel, Team, VoteResultsModel} from "./game-resistance.models";
 import {GameType, StartGameCommand} from "../game.models";
 import {CustomError} from "../../shared/models/error.models";
 
@@ -18,6 +18,7 @@ import {CustomError} from "../../shared/models/error.models";
   styleUrls: ['./game-resistance.component.css']
 })
 export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit {
+  public readonly setMissionLeader: Subject<string> = new Subject<string>();
   public readonly gameCommenced: Subject<CommenceGameModel> = new Subject<CommenceGameModel>();
   public readonly startMissionBuildPhase: Subject<void> = new Subject<void>();
   public readonly newMissionTeamMember: Subject<string> = new Subject<string>();
@@ -26,7 +27,9 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
   public readonly removeVotingChoices: Subject<void> = new Subject<void>();
   public readonly playerSubmittedVote: Subject<string> = new Subject<string>();
   public readonly showVoteResults: Subject<VoteResultsModel> = new Subject<VoteResultsModel>();
-  public readonly showMissionCards: Subject<boolean> = new Subject<boolean>();
+  public readonly showMissionResults: Subject<MissionResultsModel> = new Subject<MissionResultsModel>();
+  public readonly showMissionChoices: Subject<boolean> = new Subject<boolean>();
+  public readonly removeMissionChoices: Subject<void> = new Subject<void>();
 
   public showMissionTeamSubmit: boolean = false;
 
@@ -85,6 +88,7 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
   private addRequiredListeners() {
     this.addReceiveErrorMessageListener();
     this.addReceiveCommenceGameModelListener();
+    this.addReceiveSetMissionLeader();
     this.addReceiveStartMissionBuildPhase();
     this.addReceiveNewMissionTeamMember();
     this.addReceiveRemoveMissionTeamMember();
@@ -93,7 +97,9 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
     this.addReceiveRemoveVotingChoices();
     this.addReceivePlayerVoted();
     this.addReceiveVoteResults();
-    this.addReceiveShowMissionCards();
+    this.addReceiveShowMissionChoices();
+    this.addReceiveRemoveMissionChoices();
+    this.addReceiveMissionResults();
   }
 
   private async start() {
@@ -153,6 +159,12 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
     });
   }
 
+  private addReceiveSetMissionLeader = () => {
+    this.resistanceHubConnection.on("SetMissionLeader", (playerName: string) => {
+      this.setMissionLeader.next(playerName);
+    })
+  }
+
   private addReceiveStartMissionBuildPhase = () => {
     this.resistanceHubConnection.on("StartMissionBuildPhase", () => {
       this.startMissionBuildPhase.next();
@@ -197,15 +209,28 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   private addReceiveVoteResults = () => {
-    this.resistanceHubConnection.on("ShowVotes", (resultsModel: VoteResultsModel) => {
-      resultsModel.playerNameToVoteApproved = new Map(Object.entries(resultsModel.playerNameToVoteApproved));
-      this.showVoteResults.next(resultsModel);
+    this.resistanceHubConnection.on("ShowVotes", (voteResults: VoteResultsModel) => {
+      voteResults.playerNameToVoteApproved = new Map(Object.entries(voteResults.playerNameToVoteApproved));
+      this.showVoteResults.next(voteResults);
     });
   }
 
-  private addReceiveShowMissionCards = () => {
-    this.resistanceHubConnection.on("ShowMissionCards", (showSuccessAndFail: boolean) => {
-      this.showMissionCards.next(showSuccessAndFail);
-    })
+  private addReceiveShowMissionChoices = () => {
+    this.resistanceHubConnection.on("ShowMissionChoices", (showSuccessAndFail: boolean) => {
+      this.showMissionChoices.next(showSuccessAndFail);
+    });
+  }
+
+  private addReceiveRemoveMissionChoices = () => {
+    this.resistanceHubConnection.on("RemoveMissionChoices", () => {
+      this.removeMissionChoices.next();
+    });
+  }
+
+
+  private addReceiveMissionResults = () => {
+    this.resistanceHubConnection.on("ShowMissionResults", (missionResults: MissionResultsModel) => {
+      this.showMissionResults.next(missionResults);
+    });
   }
 }

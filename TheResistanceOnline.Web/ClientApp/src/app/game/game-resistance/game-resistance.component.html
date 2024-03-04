@@ -1,6 +1,7 @@
 <h1>Game Resistance</h1>
 <div *ngIf="startGameCommand.type === GameType.ResistanceClassic">
   <app-game-resistance-classic [gameCommenced]="gameCommenced"
+                               [setMissionLeaderSubject]="setMissionLeader"
                                [startMissionBuildPhase]="startMissionBuildPhase"
                                [newMissionTeamMember]="newMissionTeamMember"
                                [removeMissionTeamMember]="removeMissionTeamMember"
@@ -9,7 +10,9 @@
                                [playerSubmittedVote]="playerSubmittedVote"
                                [removeVotingChoicesSubject] = "removeVotingChoices"
                                [showVoteResultsSubject] = "showVoteResults"
-                               [showMissionCardsSubject]="showMissionCards"
+                               [showMissionResultsSubject]="showMissionResults"
+                               [showMissionChoicesSubject]="showMissionChoices"
+                               [removeMissionChoicesSubject]="removeMissionChoices"
                                (objectClickedEventEmitter)="objectClickedEvent($event)"
                                (submitMissionTeamEventEmitter)="submitMissionTeam()">
   </app-game-resistance-classic>

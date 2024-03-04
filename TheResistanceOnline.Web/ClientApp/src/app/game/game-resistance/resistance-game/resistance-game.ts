@@ -15,7 +15,7 @@ import {Dispose} from "./utils/dispose";
 import {Metrics} from "./utils/metrics";
 import {ResistanceGameRaycasting} from "./resistance-game-raycasting";
 import {StateService} from "../../../shared/services/state/state.service";
-import {VoteResultsModel} from "../game-resistance.models";
+import {MissionResultsModel, VoteResultsModel} from "../game-resistance.models";
 
 
 export class ResistanceGame {
@@ -183,6 +183,11 @@ export class ResistanceGame {
     this._rayCasting.selectableObjects = [];
   }
 
+  removeMissionChoices() {
+    this._world?.hideMissionChoices(this.stateService.userName);
+    this._rayCasting.selectableObjects = [];
+  }
+
   playerVoted(playerName: string) {
     this._world?.showVoteResultPieces(playerName);
   }
@@ -198,23 +203,18 @@ export class ResistanceGame {
     this._world?.removeVoteResults();
   }
 
-  showMissionCards(showSuccessAndFail: boolean) {
-    console.log("Show Success card");
-    if (showSuccessAndFail) {
-      console.log("Show Fail Card");
-    }
+  showMissionResults(results: MissionResultsModel) {
+    console.log("show these results TODO", results);
   }
 
-
-  startMissionPhase(missionTeamMembers: string[]) {
-    // remove all mission team members icons from players
-    for (const player of missionTeamMembers) {
-      this._world?.removeMissionTeamMember(player);
-    }
-    // move all mission team members to the middle
-    this._world?.movePlayersToMiddle(missionTeamMembers);
+  removeMissionResults() {
+    console.log("yo remove mission results and also clear mission team pieces TODO");
+    this._world?.clearMissionTeamPieces();
   }
 
+  showMissionChoices(showSuccessAndFail: boolean) {
+    this._world?.showMissionChoicePieces(showSuccessAndFail, this.stateService.userName);
+  }
 
   private resize() {
     this._gameCamera.resize();

@@ -71,7 +71,6 @@ public class CommenceGameHandler: ICommandHandler<CommenceGameCommand>
                                                                                                       .Select(p => p.Key)
                                                                                                       .ToList()
                                                                                            : null,
-                                                                           MissionLeader = gameModel.MissionLeader.Name,
                                                                            Phase = gameModel.Phase,
                                                                            Players = gameModel.PlayerNames
                                                                        };

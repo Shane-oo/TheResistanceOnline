@@ -10,6 +10,7 @@ public static class PhaseHandler
 
     public static async Task HandleNextPhase(IHubContext<ResistanceHub, IResistanceHub> resistanceHubContext, GameModel gameModel, GameDetails gameDetails, string lobbyId)
     {
+        await resistanceHubContext.Clients.Group(lobbyId).SetMissionLeader(gameModel.MissionLeader.Name);
         switch(gameModel.Phase)
         {
             case Phase.MissionBuild:
@@ -40,10 +41,13 @@ public static class PhaseHandler
                 foreach(var missionTeamConnection in missionTeamConnections)
                 {
                     var team = gameModel.GetPlayerModel(missionTeamConnection.UserName).Team;
-                    await resistanceHubContext.Clients.Client(missionTeamConnection.ConnectionId).ShowMissionCards(team == Team.Spy);
+                    await resistanceHubContext.Clients.Client(missionTeamConnection.ConnectionId).ShowMissionChoices(team == Team.Spy);
                 }
 
                 break;
+
+            case Phase.GameOver:
+            // todo send game over!
             default:
                 throw new ArgumentOutOfRangeException();
         }

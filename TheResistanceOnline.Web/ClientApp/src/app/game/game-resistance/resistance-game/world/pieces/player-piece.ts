@@ -4,6 +4,8 @@ import {Piece} from "./piece";
 import {ApproveVotePiece} from "./voting/approve-vote-piece";
 import {RejectVotePiece} from "./voting/reject-vote-piece";
 import {ResultVotePiece} from "./voting/result-vote-piece";
+import {MissionSuccessPiece} from "./mission-choices/mission-success-piece";
+import {MissionSabotagePiece} from "./mission-choices/mission-sabotage-piece";
 
 // there will be multiple player pieces, one for each player
 export class PlayerPiece extends Piece {
@@ -12,6 +14,11 @@ export class PlayerPiece extends Piece {
     rejectVotePiece: RejectVotePiece,
     resultVotePiece: ResultVotePiece
   };
+  private readonly _missionChoicePieces: {
+    missionSuccessPiece: MissionSuccessPiece,
+    missionSabotagePiece: MissionSabotagePiece
+  };
+
   private readonly position: { x: number, z: number };
 
   constructor(name: string, position: { x: number, z: number }) {
@@ -24,7 +31,8 @@ export class PlayerPiece extends Piece {
 
     // Vote Pieces
     this._votePieces = this.createVotePieces();
-
+    // Mission Choice Pieces
+    this._missionChoicePieces = this.createMissionChoicePieces();
   }
 
   get votePieces(): {
@@ -33,6 +41,13 @@ export class PlayerPiece extends Piece {
     resultVotePiece: ResultVotePiece
   } {
     return this._votePieces;
+  }
+
+  get missionChoicePieces(): {
+    missionSuccessPiece: MissionSuccessPiece,
+    missionSabotagePiece: MissionSabotagePiece
+  } {
+    return this._missionChoicePieces;
   }
 
   private _isMissionLeader: boolean = false;
@@ -72,6 +87,20 @@ export class PlayerPiece extends Piece {
     this._votePieces.rejectVotePiece.setVisible(false);
   }
 
+  showMissionSuccessPiece() {
+    this._missionChoicePieces.missionSuccessPiece.setVisible(true);
+  }
+
+  showMissionSabotagePiece() {
+    this._missionChoicePieces.missionSabotagePiece.setVisible(true);
+  }
+
+  hideMissionChoicePieces() {
+    this._missionChoicePieces.missionSabotagePiece.setVisible(false);
+    this._missionChoicePieces.missionSuccessPiece.setVisible(false);
+  }
+
+
   showVoteResultPieces() {
     this._votePieces.resultVotePiece.setVisible(true);
   }
@@ -82,6 +111,7 @@ export class PlayerPiece extends Piece {
   }
 
 
+  // hmm i am creating unnecessary pieces for everyone on the table when really only need to create once for the client player
   private createVotePieces(): {
     approveVotePiece: ApproveVotePiece,
     rejectVotePiece: RejectVotePiece,
@@ -98,6 +128,20 @@ export class PlayerPiece extends Piece {
     resultVotePiece.movePiece(new Vector3(this.position.x, 0, this.position.z - 0.3));
 
     return {approveVotePiece: approveVotePiece, rejectVotePiece: rejectVotePiece, resultVotePiece: resultVotePiece};
+  }
+
+  private createMissionChoicePieces(): {
+    missionSuccessPiece: MissionSuccessPiece,
+    missionSabotagePiece: MissionSabotagePiece
+  } {
+
+    const missionSuccessPiece = new MissionSuccessPiece();
+    missionSuccessPiece.movePiece(new Vector3(this.position.x - 0.1, 0, this.position.z + 0.3));
+
+    const missionSabotagePiece = new MissionSabotagePiece();
+    missionSabotagePiece.movePiece(new Vector3(this.position.x + 0.1, 0, this.position.z + 0.3));
+
+    return {missionSuccessPiece: missionSuccessPiece, missionSabotagePiece: missionSabotagePiece};
   }
 
 }

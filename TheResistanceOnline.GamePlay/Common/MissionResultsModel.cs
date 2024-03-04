@@ -4,7 +4,7 @@ public class MissionResultsModel
 {
     #region Properties
 
-    public int FailureChoices { get; }
+    public int SabotageChoices { get; }
 
     public int SuccessChoices { get; }
     
@@ -14,10 +14,10 @@ public class MissionResultsModel
 
     #region Construction
 
-    public MissionResultsModel(int successChoices, int failureChoices, bool missionSuccessful)
+    public MissionResultsModel(int successChoices, int sabotageChoices, bool missionSuccessful)
     {
         SuccessChoices = successChoices;
-        FailureChoices = failureChoices;
+        SabotageChoices = sabotageChoices;
         MissionSuccessful = missionSuccessful;
     }
 

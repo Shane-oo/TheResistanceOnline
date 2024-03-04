@@ -1,7 +1,4 @@
 using System.Collections.Concurrent;
-using Microsoft.AspNetCore.SignalR;
-using TheResistanceOnline.GamePlay.Common;
-using TheResistanceOnline.GamePlay.GameModels;
 
 namespace TheResistanceOnline.Server.Resistance;
 
@@ -15,4 +12,3 @@ public class ResistanceHubPersistedProperties
 
     #endregion
 }
-

@@ -1,6 +1,5 @@
 export interface CommenceGameModel {
   isMissionLeader: boolean;
-  missionLeader: string;
   phase: Phase;
   players: string[];
   team: Team;
@@ -24,4 +23,10 @@ export enum Team {
 export interface VoteResultsModel {
   playerNameToVoteApproved: Map<string, boolean>;
   voteSuccessful: boolean;
+}
+
+export interface MissionResultsModel {
+  successChoices: number;
+  sabotageChoices: number;
+  missionSuccessful: boolean;
 }

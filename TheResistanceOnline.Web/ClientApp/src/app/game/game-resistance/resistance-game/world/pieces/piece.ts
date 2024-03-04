@@ -25,6 +25,8 @@ export abstract class Piece {
 
     this.name = name;
     this.mesh = this.createMesh();
+    this.mesh.name = this.name;
+
     this.scene.add(this.mesh);
 
 

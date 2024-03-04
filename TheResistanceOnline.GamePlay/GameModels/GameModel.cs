@@ -26,7 +26,7 @@ public abstract class GameModel: IGameModelSubject
 
     public int MissionSize => GetMissionSize();
 
-    public List<PlayerModel> MissionTeam { get; set; } = new();
+    public List<PlayerModel> MissionTeam { get; private set; } = new();
 
     public Phase Phase { get; private set; } = Phase.MissionBuild;
 
@@ -58,14 +58,6 @@ public abstract class GameModel: IGameModelSubject
         }
     }
 
-    // private void CheckBotsCompletedMission()
-    // {
-    //     if (MissionTeam.Any(p => p.MissionChoice == null)) return;
-    //
-    //     // All bots have chosen what the mission outcome is
-    //     UpdatePhase(Phase.MissionBuild);
-    //     CheckBotNeedsToPickMissionTeam();
-    // }
 
     protected static List<PlayerSetupModel> CreatePlayerSetupModels(List<string> userNames, int botCount)
     {
@@ -128,8 +120,6 @@ public abstract class GameModel: IGameModelSubject
         {
             missionBot.BotModel.DecideMissionOutcome();
         }
-
-        // CheckBotsCompletedMission();
     }
 
 
@@ -217,7 +207,9 @@ public abstract class GameModel: IGameModelSubject
         // in games of 7 or more, mission 4 requires two fail cards
         var missionFailedCardsRequired = Players.Count >= 7 && Mission == 4 ? 2 : 1;
 
-        return Players.Values.Count(p => p.MissionChoice == false) >= missionFailedCardsRequired;
+        var missionFailed = MissionTeam.Count(p => p.MissionChoice == false) >= missionFailedCardsRequired;
+
+        return !missionFailed;
     }
 
     private bool GetVoteSuccessful()
@@ -238,6 +230,11 @@ public abstract class GameModel: IGameModelSubject
         {
             player.MissionChoice = null;
         }
+    }
+
+    private void ClearMissionTeam()
+    {
+        MissionTeam = [];
     }
 
     private void ResetPlayerVotes()
@@ -287,11 +284,13 @@ public abstract class GameModel: IGameModelSubject
             return Result.Failure<MissionResultsModel>(new Error("Game.Error", "Waiting for more mission outcomes"));
         }
 
-        var missionSuccessChoices = Players.Values.Count(p => p.MissionChoice == true);
-        var missionFailureChoices = Players.Values.Count(p => p.MissionChoice == false);
-
+        var missionSuccessChoices = MissionTeam.Count(p => p.MissionChoice == true);
+        var missionFailureChoices = MissionTeam.Count(p => p.MissionChoice == false);
         var missionSuccessful = GetMissionSuccessful();
+
+        // Cleanup
         ResetPlayerMissionChoices();
+        ClearMissionTeam();
 
         // todo need to update rounds and keep score!!!
         if (missionSuccessful)

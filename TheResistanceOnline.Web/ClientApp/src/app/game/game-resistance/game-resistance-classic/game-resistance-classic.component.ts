@@ -2,7 +2,7 @@ import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Ou
 import {first, Subject, takeUntil} from "rxjs";
 
 import {ResistanceGame} from "../resistance-game/resistance-game";
-import {CommenceGameModel, VoteResultsModel} from "../game-resistance.models";
+import {CommenceGameModel, MissionResultsModel, VoteResultsModel} from "../game-resistance.models";
 
 
 @Component({
@@ -12,6 +12,7 @@ import {CommenceGameModel, VoteResultsModel} from "../game-resistance.models";
 })
 export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy {
   @Input() gameCommenced!: Subject<CommenceGameModel>;
+  @Input() setMissionLeaderSubject!: Subject<string>;
   @Input() startMissionBuildPhase!: Subject<void>;
   @Input() newMissionTeamMember!: Subject<string>;
   @Input() removeMissionTeamMember!: Subject<string>;
@@ -19,7 +20,9 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
   @Input() removeVotingChoicesSubject!: Subject<void>;
   @Input() playerSubmittedVote!: Subject<string>;
   @Input() showVoteResultsSubject!: Subject<VoteResultsModel>;
-  @Input() showMissionCardsSubject!: Subject<boolean>;
+  @Input() showMissionResultsSubject!: Subject<MissionResultsModel>;
+  @Input() showMissionChoicesSubject!: Subject<boolean>;
+  @Input() removeMissionChoicesSubject!: Subject<void>;
 
   @Input() showMissionTeamSubmit: boolean = false;
 
@@ -51,6 +54,12 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
       .subscribe(c => {
         this.commenceGame(c);
       });
+
+    this.setMissionLeaderSubject
+      .pipe(takeUntil(this.destroyed))
+      .subscribe((playerName: string) => {
+        this.setMissionLeader(playerName);
+      })
 
     this.startMissionBuildPhase
       .pipe(takeUntil(this.destroyed))
@@ -96,11 +105,23 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
         this.showVoteResults(results);
       });
 
-    this.showMissionCardsSubject
+    this.showMissionChoicesSubject
       .pipe(takeUntil(this.destroyed))
-      .subscribe((showSuccessAndFail: boolean)=>{
-        this.showMissionCards(showSuccessAndFail);
-      })
+      .subscribe((showSuccessAndFail: boolean) => {
+        this.showMissionChoices(showSuccessAndFail);
+      });
+
+    this.removeMissionChoicesSubject
+      .pipe(takeUntil(this.destroyed))
+      .subscribe(() => {
+        this.removeMissionChoices();
+      });
+
+    this.showMissionResultsSubject
+      .pipe(takeUntil(this.destroyed))
+      .subscribe((missionResults: MissionResultsModel) => {
+        this.showMissionResults(missionResults);
+      });
 
   }
 
@@ -113,7 +134,10 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
   //
   commenceGame(gameCommenced: CommenceGameModel) {
     this.resistanceGame.setPlayers(gameCommenced.players);
-    this.resistanceGame.setMissionLeader(gameCommenced.missionLeader);
+  }
+
+  setMissionLeader(playerName: string) {
+    this.resistanceGame.setMissionLeader(playerName);
   }
 
   setMissionBuildPhase() {
@@ -140,6 +164,10 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
     this.resistanceGame.removeVotingChoices();
   }
 
+  private removeMissionChoices() {
+    this.resistanceGame.removeMissionChoices();
+  }
+
   private playerVoted(playerName: string) {
     this.resistanceGame.playerVoted(playerName);
   }
@@ -152,8 +180,16 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
     }, 9000);
   }
 
-  private showMissionCards(showSuccessAndFail: boolean){
-    this.resistanceGame.showMissionCards(showSuccessAndFail);
+  private showMissionResults(results: MissionResultsModel) {
+    this.resistanceGame.showMissionResults(results);
+    // After 9 seconds remove mission results can't be bothered putting this on the server
+    setTimeout(() => {
+      this.resistanceGame.removeMissionResults();
+    }, 9000);
+  }
+
+  private showMissionChoices(showSuccessAndFail: boolean) {
+    this.resistanceGame.showMissionChoices(showSuccessAndFail);
   }
 
 }

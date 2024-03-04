@@ -7,9 +7,6 @@ public class CommenceGameModel
 {
     #region Properties
 
-
-    public string MissionLeader { get; set; }
-
     public Phase Phase { get; set; }
 
     public List<string> Players { get; set; }
