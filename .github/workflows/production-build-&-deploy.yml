@@ -1,8 +1,5 @@
 name: production - build and deploy pipeline
 on: 
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
