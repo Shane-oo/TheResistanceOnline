@@ -5,6 +5,8 @@ using TheResistanceOnline.Core.Errors;
 using TheResistanceOnline.Core.Exchange.Responses;
 using TheResistanceOnline.GamePlay.Common;
 using TheResistanceOnline.Server.Common;
+using TheResistanceOnline.Server.Resistance.CommenceGame;
+using TheResistanceOnline.Server.Resistance.MissionChoice;
 using TheResistanceOnline.Server.Resistance.VoteForMissionTeam;
 
 namespace TheResistanceOnline.Server.Resistance;
@@ -18,15 +20,25 @@ public interface IResistanceHub: IErrorHub
     // Show that a player has voted but do not show vote just yet until everyone has voted
     public Task PlayerVoted(string playerName);
 
+    public Task RemoveMissionChoices();
+
     public Task RemoveMissionTeamMember(string playerName);
-
-    public Task ShowMissionTeamSubmit(bool show);
-
-    public Task VoteForMissionTeam(IEnumerable<string> missionTeamMembers);
 
     public Task RemoveVotingChoices();
 
+    public Task SetMissionLeader(string missionLeaderName);
+
+    public Task ShowMissionChoices(bool showSuccessAndFail);
+
+    public Task ShowMissionResults(MissionResultsModel results); // todo front end
+
+    public Task ShowMissionTeamSubmit(bool show);
+
     public Task ShowVotes(VoteResultsModel results);
+
+    public Task StartMissionBuildPhase();
+
+    public Task VoteForMissionTeam(IEnumerable<string> missionTeamMembers);
 }
 
 public class ResistanceHub: BaseHub<IResistanceHub>
@@ -94,6 +106,18 @@ public class ResistanceHub: BaseHub<IResistanceHub>
         return notFoundResult.IsFailure ? Result.Failure<string>(notFoundResult.Error) : Result.Success(lobbyId);
     }
 
+    private async Task MissionChoice(MissionChoiceCommand command)
+    {
+        SetRequest(command);
+        SetCommand(command);
+
+        var result = await _mediator.Send(command);
+        if (result.IsFailure)
+        {
+            await Clients.Caller.Error(result.Error);
+        }
+    }
+
     private async Task MissionTeamPlayerSelected(SelectMissionTeamPlayerCommand command)
     {
         SetRequest(command);
@@ -152,18 +176,25 @@ public class ResistanceHub: BaseHub<IResistanceHub>
                     break;
                 case Phase.Vote:
                     _ = Enum.TryParse(name, out VotePiece votePiece);
-                    var command = new VoteForMissionTeamCommand
-                                  {
-                                      GameModel = gameDetails.Value.GameModel,
-                                      CallerPlayerName = GetCallerPlayerName(gameDetails.Value),
-                                      VotePiece = votePiece,
-                                      LobbyId = lobbyIdResult.Value
-                                  };
-                    await VoteForMissionTeam(command);
+                    var voteForMissionTeamCommand = new VoteForMissionTeamCommand
+                                                    {
+                                                        GameDetails = gameDetails.Value,
+                                                        CallerPlayerName = GetCallerPlayerName(gameDetails.Value),
+                                                        VotePiece = votePiece,
+                                                        LobbyId = lobbyIdResult.Value
+                                                    };
+                    await VoteForMissionTeam(voteForMissionTeamCommand);
                     break;
                 case Phase.Mission:
-                    break;
-                case Phase.MissionResults:
+                    _ = Enum.TryParse(name, out MissionChoicePiece missionChoicePiece);
+                    var missionChoiceCommand = new MissionChoiceCommand
+                                               {
+                                                   GameDetails = gameDetails.Value,
+                                                   CallerPlayerName = GetCallerPlayerName(gameDetails.Value),
+                                                   MissionChoice = missionChoicePiece,
+                                                   LobbyId = lobbyIdResult.Value
+                                               };
+                    await MissionChoice(missionChoiceCommand);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

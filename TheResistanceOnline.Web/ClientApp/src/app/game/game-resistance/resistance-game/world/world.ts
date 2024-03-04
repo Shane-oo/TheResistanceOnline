@@ -102,7 +102,6 @@ export class World {
       position.setZ(position.z - 0.15); // above the player piece
 
       this.missionLeaderPiece.movePiece(position);
-
     }
   }
 
@@ -125,13 +124,13 @@ export class World {
   removeMissionTeamMember(player: string) {
     const playerPiece = this.getPlayerPieceByName(player);
     if (playerPiece) {
-      const missionTeamPiece = this.missionTeamPieces.find(p => p.playerPiece === playerPiece);
-      if (missionTeamPiece) {
-        this.scene.remove(missionTeamPiece.missionTeamPiece.mesh);
-        missionTeamPiece?.missionTeamPiece.destroy();
+      this.removePlayersMissionTeamPiece(playerPiece);
+    }
+  }
 
-        this.missionTeamPieces = this.missionTeamPieces.filter(p => p !== missionTeamPiece);
-      }
+  clearMissionTeamPieces() {
+    for (const playerPiece of this._playerPieces ?? []) {
+      this.removePlayersMissionTeamPiece(playerPiece);
     }
   }
 
@@ -172,6 +171,30 @@ export class World {
     }
   }
 
+  showMissionChoicePieces(showSuccessAndFail: boolean, playerName: string) {
+    const missionChoiceMeshes: Mesh[] = [];
+
+    const playerPiece = this.getPlayerPieceByName(playerName);
+    if (playerPiece) {
+      playerPiece.showMissionSuccessPiece();
+      missionChoiceMeshes.push(playerPiece.missionChoicePieces.missionSuccessPiece.mesh);
+
+      if (showSuccessAndFail) {
+        playerPiece.showMissionSabotagePiece();
+        missionChoiceMeshes.push(playerPiece.missionChoicePieces.missionSabotagePiece.mesh);
+      }
+
+      this.rayCasting.selectableObjects = missionChoiceMeshes;
+    }
+  }
+
+  hideMissionChoices(playerName: string) {
+    const playerPiece = this.getPlayerPieceByName(playerName);
+    if (playerPiece) {
+      playerPiece.hideMissionChoicePieces();
+    }
+  }
+
   showVoteResultPieces(playerName: string) {
     const playerPiece = this.getPlayerPieceByName(playerName);
     if (playerPiece) {
@@ -190,6 +213,16 @@ export class World {
   removeVoteResults() {
     for (const playerPiece of this._playerPieces!) {
       playerPiece.hideVoteResultPieces();
+    }
+  }
+
+  private removePlayersMissionTeamPiece(playerPiece: PlayerPiece) {
+    const missionTeamPiece = this.missionTeamPieces.find(p => p.playerPiece === playerPiece);
+    if (missionTeamPiece) {
+      this.scene.remove(missionTeamPiece.missionTeamPiece.mesh);
+      missionTeamPiece?.missionTeamPiece.destroy();
+
+      this.missionTeamPieces = this.missionTeamPieces.filter(p => p !== missionTeamPiece);
     }
   }
 

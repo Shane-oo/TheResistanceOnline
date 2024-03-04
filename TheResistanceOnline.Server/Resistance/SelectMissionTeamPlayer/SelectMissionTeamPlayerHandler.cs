@@ -33,7 +33,7 @@ public class SelectMissionTeamPlayerHandler: ICommandHandler<SelectMissionTeamPl
         var player = gameModel.GetPlayerModel(command.CallerPlayerName);
 
 
-        if (gameModel.MissionTeam.All(p => p != command.SelectedPlayerName) && !gameModel.MissionTeamFull())
+        if (gameModel.MissionTeam.All(p => p.Name != command.SelectedPlayerName) && !gameModel.MissionTeamFull())
         {
             // Player selected a new team member
             player.PickMissionTeamMember(command.SelectedPlayerName);
@@ -45,7 +45,7 @@ public class SelectMissionTeamPlayerHandler: ICommandHandler<SelectMissionTeamPl
                 await _resistanceHubContext.Clients.Client(command.ConnectionId).ShowMissionTeamSubmit(true);
             }
         }
-        else if (gameModel.MissionTeam.Any(p => p == command.SelectedPlayerName))
+        else if (gameModel.MissionTeam.Any(p => p.Name == command.SelectedPlayerName))
         {
             // Player wants to remove team member
             player.RemoveMissionTeamMember(command.SelectedPlayerName);

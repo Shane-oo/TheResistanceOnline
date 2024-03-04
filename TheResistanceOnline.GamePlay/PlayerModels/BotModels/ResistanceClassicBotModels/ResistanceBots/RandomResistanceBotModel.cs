@@ -20,15 +20,14 @@ public class RandomResistanceBotModel: ResistancePlayerModel, IResistanceBotMode
 
     #region Public Methods
 
+    public void DecideMissionOutcome()
+    {
+        SubmitMissionOutcome(true);
+    }
+
     public void DoABotThing()
     {
         throw new NotImplementedException();
-    }
-
-    public void VoteForMissionTeam()
-    {
-        // ToDo random vote
-        Vote(true);
     }
 
     public void DoAResistanceBotThing()
@@ -36,16 +35,24 @@ public class RandomResistanceBotModel: ResistancePlayerModel, IResistanceBotMode
         throw new NotImplementedException();
     }
 
-    // Override the PickMissionTeamMember and select random mission member
-    public override void PickMissionTeamMember(string selectedPlayerName = null)
+    public void SelectAMissionTeam()
     {
-        selectedPlayerName = Players
-                             .Where(p => !MissionTeamMembers.Contains(p))
-                             .Select(player => new { player, i = _random.Next() })
-                             .OrderBy(x => x.i).Take(MissionSize)
-                             .Select(x => x.player).First();
+        var selectedPlayerNames = Players
+                                  .Select(player => new { player, i = _random.Next() })
+                                  .OrderBy(x => x.i)
+                                  .Take(MissionSize)
+                                  .Select(x => x.player);
 
-        base.PickMissionTeamMember(selectedPlayerName);
+        foreach(var selectedPlayerName in selectedPlayerNames)
+        {
+            PickMissionTeamMember(selectedPlayerName);
+        }
+    }
+
+    public void VoteForMissionTeam()
+    {
+        // ToDo random vote
+        Vote(true);
     }
 
     #endregion

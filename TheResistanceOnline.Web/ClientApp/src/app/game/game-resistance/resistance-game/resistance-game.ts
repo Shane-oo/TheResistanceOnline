@@ -15,7 +15,7 @@ import {Dispose} from "./utils/dispose";
 import {Metrics} from "./utils/metrics";
 import {ResistanceGameRaycasting} from "./resistance-game-raycasting";
 import {StateService} from "../../../shared/services/state/state.service";
-import {VoteResultsModel} from "../game-resistance.models";
+import {MissionResultsModel, VoteResultsModel} from "../game-resistance.models";
 
 
 export class ResistanceGame {
@@ -154,14 +154,14 @@ export class ResistanceGame {
     this._world?.setMissionLeader(player);
   }
 
-  setMissionBuildPhase(missionMembers: number) {
+  setMissionBuildPhase() {
     // todo set a timeout and say if this user does not pick missionMembers in time
     // pick at random for them 3 minutes max
     // display timer maybe?
     // should that be server side tho?
-    const playerPieces = this._world!.playerPieces!.map(p => p.mesh);
-    if (playerPieces) {
-      this._rayCasting.selectableObjects = playerPieces;
+    const playerMeshes = this._world!.playerPieces!.map(p => p.mesh);
+    if (playerMeshes) {
+      this._rayCasting.selectableObjects = playerMeshes;
     }
   }
 
@@ -183,6 +183,11 @@ export class ResistanceGame {
     this._rayCasting.selectableObjects = [];
   }
 
+  removeMissionChoices() {
+    this._world?.hideMissionChoices(this.stateService.userName);
+    this._rayCasting.selectableObjects = [];
+  }
+
   playerVoted(playerName: string) {
     this._world?.showVoteResultPieces(playerName);
   }
@@ -194,20 +199,22 @@ export class ResistanceGame {
     }
   }
 
-  removeVoteResults(){
+  removeVoteResults() {
     this._world?.removeVoteResults();
   }
 
-
-  startMissionPhase(missionTeamMembers: string[]) {
-    // remove all mission team members icons from players
-    for (const player of missionTeamMembers) {
-      this._world?.removeMissionTeamMember(player);
-    }
-    // move all mission team members to the middle
-    this._world?.movePlayersToMiddle(missionTeamMembers);
+  showMissionResults(results: MissionResultsModel) {
+    console.log("show these results TODO", results);
   }
 
+  removeMissionResults() {
+    console.log("yo remove mission results and also clear mission team pieces TODO");
+    this._world?.clearMissionTeamPieces();
+  }
+
+  showMissionChoices(showSuccessAndFail: boolean) {
+    this._world?.showMissionChoicePieces(showSuccessAndFail, this.stateService.userName);
+  }
 
   private resize() {
     this._gameCamera.resize();

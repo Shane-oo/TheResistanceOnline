@@ -100,22 +100,11 @@ public class ResistanceClassicGameModel: GameModel
     public override void SetupGame(List<string> playerUserNames, int botCount)
     {
         AssignTeams(playerUserNames, botCount);
-        // var missionLeader = Players.First();
+        MoveMissionLeaderClockwise();
 
-        //todo remove
-        var missionLeader = Players.First(p => !p.Value.IsBot);
-
-        UpdateMissionLeader(missionLeader.Key);
-        if (missionLeader.Value.IsBot)
-        {
-            for(var i = 0; i < MissionSize; i++)
-            {
-                missionLeader.Value.PickMissionTeamMember();
-            }
-
-            SubmitMissionTeam();
-        }
+        CheckBotNeedsToPickMissionTeam();
     }
+    
 
     #endregion
 }

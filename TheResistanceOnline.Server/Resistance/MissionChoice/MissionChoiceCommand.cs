@@ -1,13 +1,11 @@
 using FluentValidation;
 using JetBrains.Annotations;
 using TheResistanceOnline.Core.Exchange.Requests;
-using TheResistanceOnline.GamePlay.Common;
-using TheResistanceOnline.GamePlay.GameModels;
 using TheResistanceOnline.Server.Common;
 
-namespace TheResistanceOnline.Server.Resistance.VoteForMissionTeam;
+namespace TheResistanceOnline.Server.Resistance.MissionChoice;
 
-public class VoteForMissionTeamCommand: Command, IConnectionModel
+public class MissionChoiceCommand: Command, IConnectionModel
 {
     #region Properties
 
@@ -17,19 +15,19 @@ public class VoteForMissionTeamCommand: Command, IConnectionModel
 
     public GameDetails GameDetails { get; set; }
 
-    public VotePiece VotePiece { get; set; }
-
     public string LobbyId { get; set; }
+
+    public MissionChoicePiece MissionChoice { get; set; }
 
     #endregion
 }
 
 [UsedImplicitly]
-public class VoteForMissionTeamCommandValidator: AbstractValidator<VoteForMissionTeamCommand>
+public class MissionChoiceCommandValidator: AbstractValidator<MissionChoiceCommand>
 {
     #region Construction
 
-    public VoteForMissionTeamCommandValidator()
+    public MissionChoiceCommandValidator()
     {
         RuleFor(c => c.GameDetails)
             .NotNull();
@@ -40,7 +38,7 @@ public class VoteForMissionTeamCommandValidator: AbstractValidator<VoteForMissio
         RuleFor(c => c.ConnectionId)
             .NotEmpty();
 
-        RuleFor(c => c.VotePiece)
+        RuleFor(c => c.MissionChoice)
             .NotNull()
             .IsInEnum();
 
