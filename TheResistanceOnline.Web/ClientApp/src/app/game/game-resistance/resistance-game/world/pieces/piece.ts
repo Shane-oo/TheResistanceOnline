@@ -28,8 +28,6 @@ export abstract class Piece {
     this.mesh.name = this.name;
 
     this.scene.add(this.mesh);
-
-
   }
 
   abstract createMesh(): Mesh<BufferGeometry, MeshStandardMaterial>;

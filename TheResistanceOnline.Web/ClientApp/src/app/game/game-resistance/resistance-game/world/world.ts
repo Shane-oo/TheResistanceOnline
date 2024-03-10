@@ -10,6 +10,12 @@ import {getMissionTeamCount} from "../utils/helpers";
 import {MissionLeaderPiece} from "./pieces/mission-leader-piece";
 import {MissionTeamPiece} from "./pieces/mission-team-piece";
 import {ResistanceGameRaycasting} from "../resistance-game-raycasting";
+import {MissionResultsModel} from "../../game-resistance.models";
+import {Piece} from "./pieces/piece";
+import {MissionSuccessResultPiece} from "./pieces/missions/mission-results/mission-success-result-piece";
+import {MissionFailResultPiece} from "./pieces/missions/mission-results/mission-fail-result-piece";
+import {MissionSabotagePiece} from "./pieces/missions/mission-choices/mission-sabotage-piece";
+import {MissionSuccessPiece} from "./pieces/missions/mission-choices/mission-success-piece";
 
 export class World {
   private readonly playerPositions: { x: number, z: number }[] = [
@@ -40,6 +46,7 @@ export class World {
   private readonly environment: Environment;
   private missionRoundsPieces?: MissionRoundPiece[];
   private readonly missionLeaderPiece: MissionLeaderPiece;
+  private missionResultPieces: Piece[] = [];
   private missionTeamPieces: { playerPiece: PlayerPiece, missionTeamPiece: MissionTeamPiece }[] = [];
 
   private readonly floor: Floor;
@@ -134,6 +141,14 @@ export class World {
     }
   }
 
+  clearMissionResults() {
+    for (const missionResultPiece of this.missionResultPieces) {
+      this.scene.remove(missionResultPiece.mesh);
+      missionResultPiece.destroy();
+    }
+    this.missionResultPieces = [];
+  }
+
   movePlayersToMiddle(missionMembers: string[]) {
     const position = new Vector3(0, 0, -0.75);
     for (let i = 0; i < missionMembers.length; i++) {
@@ -214,6 +229,36 @@ export class World {
     for (const playerPiece of this._playerPieces!) {
       playerPiece.hideVoteResultPieces();
     }
+  }
+
+  showMissionResults(missionResults: MissionResultsModel) {
+    let resultPiece: Piece = missionResults.missionSuccessful ? new MissionSuccessResultPiece() : new MissionFailResultPiece();
+    resultPiece.setVisible(true);
+    resultPiece.movePiece(new Vector3(-0.75, 0, -0.75));
+
+    this.missionResultPieces.push(resultPiece);
+
+    const missionChoicePosition = new Vector3(-0.25, 0, -0.5);
+
+    for (let i = 0; i < missionResults.sabotageChoices; i++) {
+      const sabotagePiece = new MissionSabotagePiece();
+      sabotagePiece.setVisible(true);
+      sabotagePiece.movePiece(missionChoicePosition.clone());
+      missionChoicePosition.x += 0.25;
+
+      this.missionResultPieces.push(sabotagePiece);
+
+    }
+
+    for (let i = 0; i < missionResults.successChoices; i++) {
+      const successPiece = new MissionSuccessPiece();
+      successPiece.setVisible(true);
+      successPiece.movePiece(missionChoicePosition.clone());
+      missionChoicePosition.x += 0.25;
+
+      this.missionResultPieces.push(successPiece);
+    }
+
   }
 
   private removePlayersMissionTeamPiece(playerPiece: PlayerPiece) {

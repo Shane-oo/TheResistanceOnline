@@ -204,12 +204,12 @@ export class ResistanceGame {
   }
 
   showMissionResults(results: MissionResultsModel) {
-    console.log("show these results TODO", results);
+    this._world?.showMissionResults(results);
   }
 
   removeMissionResults() {
-    console.log("yo remove mission results and also clear mission team pieces TODO");
     this._world?.clearMissionTeamPieces();
+    this._world?.clearMissionResults();
   }
 
   showMissionChoices(showSuccessAndFail: boolean) {
