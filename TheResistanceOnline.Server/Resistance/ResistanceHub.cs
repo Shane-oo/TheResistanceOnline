@@ -17,7 +17,6 @@ public interface IResistanceHub: IErrorHub
 
     public Task NewMissionTeamMember(string playerName);
 
-    // Show that a player has voted but do not show vote just yet until everyone has voted
     public Task PlayerVoted(string playerName);
 
     public Task RemoveMissionChoices();
@@ -27,6 +26,8 @@ public interface IResistanceHub: IErrorHub
     public Task RemoveVotingChoices();
 
     public Task SetMissionLeader(string missionLeaderName);
+
+    public Task ShowGameOver(GameOverResultsModel results);
 
     public Task ShowMissionChoices(bool showSuccessAndFail);
 
@@ -39,8 +40,6 @@ public interface IResistanceHub: IErrorHub
     public Task StartMissionBuildPhase();
 
     public Task VoteForMissionTeam(IEnumerable<string> missionTeamMembers);
-
-    public Task ShowGameOver(GameOverResultsModel results);
 }
 
 public class ResistanceHub: BaseHub<IResistanceHub>
