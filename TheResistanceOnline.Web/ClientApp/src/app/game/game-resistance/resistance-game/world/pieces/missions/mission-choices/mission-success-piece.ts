@@ -1,5 +1,5 @@
 import {BoxGeometry, BufferGeometry, Mesh, MeshStandardMaterial} from "three";
-import {Piece} from "../piece";
+import {Piece} from "../../piece";
 
 export class MissionSuccessPiece extends Piece {
 

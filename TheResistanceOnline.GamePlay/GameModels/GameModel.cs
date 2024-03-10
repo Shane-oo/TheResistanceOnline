@@ -38,6 +38,12 @@ public abstract class GameModel: IGameModelSubject
 
     public int VoteTrack { get; set; } = 1;
 
+    public Team Winner { get; set; }
+
+    public int SpyMissionWins { get; set; } = 0;
+
+    public int ResistanceMissionWins { get; set; } = 0;
+
     #endregion
 
     #region Private Methods
@@ -120,6 +126,17 @@ public abstract class GameModel: IGameModelSubject
         {
             missionBot.BotModel.DecideMissionOutcome();
         }
+    }
+
+    private void ClearMissionTeam()
+    {
+        MissionTeam = [];
+    }
+
+    private void EndGame(Team winner)
+    {
+        UpdatePhase(Phase.GameOver);
+        Winner = winner;
     }
 
 
@@ -218,10 +235,41 @@ public abstract class GameModel: IGameModelSubject
         return Players.Values.Count(p => p.VoteChoice == true) > Players.Count / 2;
     }
 
-    private void IncrementVoteTrack()
+    private bool IncrementVoteTrack()
     {
         VoteTrack++;
+        if (VoteTrack == 6)
+        {
+            // Spies automatically win if 5 failed votes happen in a row
+            EndGame(Team.Spy);
+            return true;
+        }
+
         NotifyObservers();
+        return false;
+    }
+
+    private bool MissionOver(bool missionSuccessful)
+    {
+        Mission++;
+        if (missionSuccessful)
+        {
+            ResistanceMissionWins++;
+        }
+        else
+        {
+            SpyMissionWins++;
+        }
+
+        if (ResistanceMissionWins != 3 && SpyMissionWins != 3)
+        {
+            return false;
+        }
+
+        var winningTeam = ResistanceMissionWins == 3 ? Team.Resistance : Team.Spy;
+        EndGame(winningTeam);
+
+        return true;
     }
 
     private void ResetPlayerMissionChoices()
@@ -230,11 +278,6 @@ public abstract class GameModel: IGameModelSubject
         {
             player.MissionChoice = null;
         }
-    }
-
-    private void ClearMissionTeam()
-    {
-        MissionTeam = [];
     }
 
     private void ResetPlayerVotes()
@@ -276,6 +319,7 @@ public abstract class GameModel: IGameModelSubject
         NotifyObservers();
     }
 
+
     public Result<MissionResultsModel> GetMissionResults()
     {
         // Check everybody has submitted mission results
@@ -288,21 +332,18 @@ public abstract class GameModel: IGameModelSubject
         var missionFailureChoices = MissionTeam.Count(p => p.MissionChoice == false);
         var missionSuccessful = GetMissionSuccessful();
 
-        // Cleanup
-        ResetPlayerMissionChoices();
-        ClearMissionTeam();
+        var gameOver = MissionOver(missionSuccessful);
 
-        // todo need to update rounds and keep score!!!
-        if (missionSuccessful)
+        if (!gameOver)
         {
-        }
-        else
-        {
-        }
+            // Cleanup
+            ResetPlayerMissionChoices();
+            ClearMissionTeam();
 
-        UpdatePhase(Phase.MissionBuild);
-        MoveMissionLeaderClockwise();
-        CheckBotNeedsToPickMissionTeam();
+            UpdatePhase(Phase.MissionBuild);
+            MoveMissionLeaderClockwise();
+            CheckBotNeedsToPickMissionTeam();
+        }
 
         return Result.Success(new MissionResultsModel(missionSuccessChoices, missionFailureChoices, missionSuccessful));
     }
@@ -337,11 +378,14 @@ public abstract class GameModel: IGameModelSubject
         }
         else
         {
-            // todo handle vote track hitting 5 and failing mission
-            IncrementVoteTrack();
-            UpdatePhase(Phase.MissionBuild);
-            MoveMissionLeaderClockwise();
-            CheckBotNeedsToPickMissionTeam();
+            var gameOver = IncrementVoteTrack();
+            if (!gameOver)
+            {
+                ClearMissionTeam();
+                UpdatePhase(Phase.MissionBuild);
+                MoveMissionLeaderClockwise();
+                CheckBotNeedsToPickMissionTeam();
+            }
         }
 
         return new VoteResultsModel(playerNameToVoteApproved,

@@ -4,8 +4,8 @@ import {Piece} from "./piece";
 import {ApproveVotePiece} from "./voting/approve-vote-piece";
 import {RejectVotePiece} from "./voting/reject-vote-piece";
 import {ResultVotePiece} from "./voting/result-vote-piece";
-import {MissionSuccessPiece} from "./mission-choices/mission-success-piece";
-import {MissionSabotagePiece} from "./mission-choices/mission-sabotage-piece";
+import {MissionSuccessPiece} from "./missions/mission-choices/mission-success-piece";
+import {MissionSabotagePiece} from "./missions/mission-choices/mission-sabotage-piece";
 
 // there will be multiple player pieces, one for each player
 export class PlayerPiece extends Piece {

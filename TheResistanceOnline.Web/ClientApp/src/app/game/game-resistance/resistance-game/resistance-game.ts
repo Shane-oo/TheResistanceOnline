@@ -15,7 +15,7 @@ import {Dispose} from "./utils/dispose";
 import {Metrics} from "./utils/metrics";
 import {ResistanceGameRaycasting} from "./resistance-game-raycasting";
 import {StateService} from "../../../shared/services/state/state.service";
-import {MissionResultsModel, VoteResultsModel} from "../game-resistance.models";
+import {GameOverResultsModel, MissionResultsModel, VoteResultsModel} from "../game-resistance.models";
 
 
 export class ResistanceGame {
@@ -199,21 +199,30 @@ export class ResistanceGame {
     }
   }
 
-  removeVoteResults() {
+  removeVoteResults(voteWasSuccessful: boolean) {
     this._world?.removeVoteResults();
+    if (!voteWasSuccessful) {
+      // mission team pieces need to stay for mission
+      this._world?.clearMissionTeamPieces();
+    }
   }
 
   showMissionResults(results: MissionResultsModel) {
-    console.log("show these results TODO", results);
+    this._world?.showMissionResults(results);
   }
 
   removeMissionResults() {
-    console.log("yo remove mission results and also clear mission team pieces TODO");
     this._world?.clearMissionTeamPieces();
+    this._world?.clearMissionResults();
   }
 
   showMissionChoices(showSuccessAndFail: boolean) {
     this._world?.showMissionChoicePieces(showSuccessAndFail, this.stateService.userName);
+  }
+
+  showGameOver(gameOverResults: GameOverResultsModel) {
+    this._world?.showPlayerTeams(gameOverResults.playerNameToTeam);
+    this._world?.showWinners(gameOverResults.winners);
   }
 
   private resize() {

@@ -41,7 +41,7 @@ export class MissionRoundPiece extends Piece {
   }
 
   private createTextGeometry(value: string): TextGeometry {
-    const fontResource = this.resources.getFontByName('ethnocentricFont')
+    const fontResource = this.resources.getFontByName('ethnocentricFont');
 
     return new TextGeometry(value, {
       font: fontResource.font,

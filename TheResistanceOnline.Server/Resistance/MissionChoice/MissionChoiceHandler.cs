@@ -43,10 +43,11 @@ public class MissionChoiceHandler: ICommandHandler<MissionChoiceCommand>
             await _resistanceHubContext.Clients.Group(command.LobbyId).ShowMissionResults(missionOverResult.Value);
             // wait for 10 seconds before removing missionResults
             Thread.Sleep(10000);
+
+            await PhaseHandler.HandleNextPhase(_resistanceHubContext, gameModel, command.GameDetails, command.LobbyId);
         }
 
-        await PhaseHandler.HandleNextPhase(_resistanceHubContext, gameModel, command.GameDetails, command.LobbyId);
-
+        // still waiting for everyone's choices
         return Result.Success();
     }
 

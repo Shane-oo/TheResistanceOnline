@@ -45,9 +45,10 @@ public static class PhaseHandler
                 }
 
                 break;
-
             case Phase.GameOver:
-            // todo send game over!
+                var playerNameToTeam = gameDetails.GameModel.Players.ToDictionary(player => player.Key, player => player.Value.Team);
+                await resistanceHubContext.Clients.Group(lobbyId).ShowGameOver(new GameOverResultsModel(playerNameToTeam, gameDetails.GameModel.Winner));
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
