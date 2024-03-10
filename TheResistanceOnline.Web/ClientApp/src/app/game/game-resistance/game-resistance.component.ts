@@ -7,7 +7,13 @@ import {IHttpConnectionOptions} from "@microsoft/signalr";
 import {AuthenticationService} from "../../shared/services/authentication/authentication.service";
 import {environment} from "../../../environments/environment";
 import {SwalContainerService, SwalTypes} from "../../../ui/swal/swal-container.service";
-import {CommenceGameModel, MissionResultsModel, Team, VoteResultsModel} from "./game-resistance.models";
+import {
+  CommenceGameModel,
+  GameOverResultsModel,
+  MissionResultsModel,
+  Team,
+  VoteResultsModel
+} from "./game-resistance.models";
 import {GameType, StartGameCommand} from "../game.models";
 import {CustomError} from "../../shared/models/error.models";
 
@@ -30,6 +36,7 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
   public readonly showMissionResults: Subject<MissionResultsModel> = new Subject<MissionResultsModel>();
   public readonly showMissionChoices: Subject<boolean> = new Subject<boolean>();
   public readonly removeMissionChoices: Subject<void> = new Subject<void>();
+  public readonly showGameOverResults: Subject<GameOverResultsModel> = new Subject<GameOverResultsModel>();
 
   public showMissionTeamSubmit: boolean = false;
 
@@ -68,9 +75,19 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
   async ngOnDestroy() {
     await this.stop();
 
+    this.setMissionLeader.complete();
     this.gameCommenced.complete();
+    this.startMissionBuildPhase.complete();
     this.newMissionTeamMember.complete();
     this.removeMissionTeamMember.complete();
+    this.moveToVotingPhase.complete();
+    this.removeVotingChoices.complete();
+    this.playerSubmittedVote.complete();
+    this.showVoteResults.complete();
+    this.showMissionResults.complete();
+    this.showMissionChoices.complete();
+    this.removeMissionChoices.complete();
+    this.showGameOverResults.complete();
   }
 
   objectClickedEvent(name: string) {
@@ -100,6 +117,7 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
     this.addReceiveShowMissionChoices();
     this.addReceiveRemoveMissionChoices();
     this.addReceiveMissionResults();
+    this.addReceiveShowGameOverResults();
   }
 
   private async start() {
@@ -119,7 +137,6 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
 
           this.swalService.showSwal(SwalTypes.Info, "Waiting For Game To Start...")
           this.startGame();
-
         });
       } catch (err) {
         this.swalService.showSwal(SwalTypes.Error, 'Error Connecting To Resistance Hub');
@@ -231,6 +248,13 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
   private addReceiveMissionResults = () => {
     this.resistanceHubConnection.on("ShowMissionResults", (missionResults: MissionResultsModel) => {
       this.showMissionResults.next(missionResults);
+    });
+  }
+
+  private addReceiveShowGameOverResults = () => {
+    this.resistanceHubConnection.on("ShowGameOver", (gameOverResults: GameOverResultsModel) => {
+      gameOverResults.playerNameToTeam = new Map(Object.entries(gameOverResults.playerNameToTeam));
+      this.showGameOverResults.next(gameOverResults);
     });
   }
 }

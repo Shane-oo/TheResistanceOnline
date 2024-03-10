@@ -14,11 +14,13 @@ public abstract class PlayerModel: IObserver
 
     #region Properties
 
-    public bool IsBot { get; set; }
-
     public IBotModel BotModel { get; set; }
 
+    public bool IsBot { get; set; }
+
     public bool IsMissionLeader { get; set; }
+
+    public bool? MissionChoice { get; set; }
 
     public string MissionLeader { get; set; }
 
@@ -27,8 +29,6 @@ public abstract class PlayerModel: IObserver
     public Team Team { get; set; }
 
     public bool? VoteChoice { get; set; }
-
-    public bool? MissionChoice { get; set; }
 
     protected int MissionSize { get; set; }
 
@@ -69,6 +69,11 @@ public abstract class PlayerModel: IObserver
         _gameModel.RemoveMissionTeamMember(selectedPlayerName);
     }
 
+    public virtual void SubmitMissionOutcome(bool decision)
+    {
+        MissionChoice = decision;
+    }
+
     public void Update()
     {
         MissionTeamMembers = _gameModel.MissionTeam.Select(p => p.Name).ToList();
@@ -80,13 +85,7 @@ public abstract class PlayerModel: IObserver
 
     public void Vote(bool decision)
     {
-        // Is vote choice null here?
         VoteChoice = decision;
-    }
-
-    public virtual void SubmitMissionOutcome(bool decision)
-    {
-        MissionChoice = decision;
     }
 
     #endregion

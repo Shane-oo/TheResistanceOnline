@@ -28,8 +28,4 @@ export class ResultVotePiece extends Piece {
 
     return mesh;
   }
-
-  changeColor(color: Color) {
-    this.mesh.material.color = color;
-  }
 }

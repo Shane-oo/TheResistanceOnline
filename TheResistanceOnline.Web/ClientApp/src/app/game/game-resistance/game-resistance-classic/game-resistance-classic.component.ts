@@ -2,7 +2,12 @@ import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, Ou
 import {first, Subject, takeUntil} from "rxjs";
 
 import {ResistanceGame} from "../resistance-game/resistance-game";
-import {CommenceGameModel, MissionResultsModel, VoteResultsModel} from "../game-resistance.models";
+import {
+  CommenceGameModel,
+  GameOverResultsModel,
+  MissionResultsModel,
+  VoteResultsModel
+} from "../game-resistance.models";
 
 
 @Component({
@@ -23,6 +28,7 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
   @Input() showMissionResultsSubject!: Subject<MissionResultsModel>;
   @Input() showMissionChoicesSubject!: Subject<boolean>;
   @Input() removeMissionChoicesSubject!: Subject<void>;
+  @Input() showGameOverResultsSubject!: Subject<GameOverResultsModel>;
 
   @Input() showMissionTeamSubmit: boolean = false;
 
@@ -123,6 +129,12 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
         this.showMissionResults(missionResults);
       });
 
+
+    this.showGameOverResultsSubject
+      .pipe(takeUntil(this.destroyed))
+      .subscribe((gameOverResults: GameOverResultsModel) => {
+        this.showGameOverResults(gameOverResults);
+      })
   }
 
   ngOnDestroy(): void {
@@ -176,7 +188,7 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
     this.resistanceGame.showVoteResults(results);
     // After 9 seconds remove vote results can't be bothered putting this on the server
     setTimeout(() => {
-      this.resistanceGame.removeVoteResults();
+      this.resistanceGame.removeVoteResults(results.voteSuccessful);
     }, 9000);
   }
 
@@ -190,6 +202,10 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
 
   private showMissionChoices(showSuccessAndFail: boolean) {
     this.resistanceGame.showMissionChoices(showSuccessAndFail);
+  }
+
+  private showGameOverResults(results: GameOverResultsModel) {
+    this.resistanceGame.showGameOver(results);
   }
 
 }
