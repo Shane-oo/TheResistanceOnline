@@ -10,7 +10,7 @@ import {getMissionTeamCount} from "../utils/helpers";
 import {MissionLeaderPiece} from "./pieces/mission-leader-piece";
 import {MissionTeamPiece} from "./pieces/mission-team-piece";
 import {ResistanceGameRaycasting} from "../resistance-game-raycasting";
-import {MissionResultsModel} from "../../game-resistance.models";
+import {MissionResultsModel, Team} from "../../game-resistance.models";
 import {Piece} from "./pieces/piece";
 import {MissionSuccessResultPiece} from "./pieces/missions/mission-results/mission-success-result-piece";
 import {MissionFailResultPiece} from "./pieces/missions/mission-results/mission-fail-result-piece";
@@ -259,6 +259,22 @@ export class World {
       this.missionResultPieces.push(successPiece);
     }
 
+  }
+
+  showPlayerTeams(playerNameToTeam: Map<string, Team>) {
+    for (let [playerName, team] of playerNameToTeam) {
+      const color = new Color(team === Team.Resistance ? 'blue' : 'red');
+
+      const playerPiece = this.getPlayerPieceByName(playerName);
+      if (playerPiece) {
+        playerPiece.changeColor(color);
+      }
+    }
+  }
+
+  showWinners(winners: Team) {
+    // can't be bothered right now
+    console.log(`${winners === Team.Resistance ? 'Resistance' : 'Spies'} won!`);
   }
 
   private removePlayersMissionTeamPiece(playerPiece: PlayerPiece) {

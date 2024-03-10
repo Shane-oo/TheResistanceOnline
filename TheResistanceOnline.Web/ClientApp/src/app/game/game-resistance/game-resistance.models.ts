@@ -30,3 +30,8 @@ export interface MissionResultsModel {
   sabotageChoices: number;
   missionSuccessful: boolean;
 }
+
+export interface GameOverResultsModel {
+  playerNameToTeam: Map<string, Team>;
+  winners: Team;
+}

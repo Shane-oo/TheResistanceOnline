@@ -39,6 +39,8 @@ public interface IResistanceHub: IErrorHub
     public Task StartMissionBuildPhase();
 
     public Task VoteForMissionTeam(IEnumerable<string> missionTeamMembers);
+
+    public Task ShowGameOver(GameOverResultsModel results);
 }
 
 public class ResistanceHub: BaseHub<IResistanceHub>
