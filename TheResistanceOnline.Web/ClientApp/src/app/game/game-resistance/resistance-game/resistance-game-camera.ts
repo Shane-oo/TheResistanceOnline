@@ -2,6 +2,9 @@ import {MathUtils, PerspectiveCamera, Scene} from 'three';
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {Sizes} from "./utils/sizes";
 import GUI from "lil-gui";
+
+import {gsap} from "gsap";
+
 import {ResistanceGame} from "./resistance-game";
 
 export class ResistanceGameCamera {
@@ -61,9 +64,17 @@ export class ResistanceGameCamera {
     this._perspectiveCamera.updateProjectionMatrix();
   }
 
+  playStartGameAnimation() {
+    gsap.to(this._perspectiveCamera.position, {
+      duration: 8,
+      x: 0.009,
+      y: 2.023,
+      z: 1.5
+    });
+  }
+
   update() {
     this.orbitControls.update();
-
   }
 
   destroy() {
@@ -76,14 +87,14 @@ export class ResistanceGameCamera {
       this.sizes.width / this.sizes.height,
       0.1,
       100);
-    camera.position.set(0, 3.5, 0);
+    camera.position.set(0, 7.5, 2);
     return camera;
   }
 
   private createOrbitControls(): OrbitControls {
     const controls = new OrbitControls(this._perspectiveCamera, this.canvas);
     //this.orbitControls.enableDamping = true;
-    controls.enabled = false;
+    controls.enabled = true;
 
     return controls;
   }

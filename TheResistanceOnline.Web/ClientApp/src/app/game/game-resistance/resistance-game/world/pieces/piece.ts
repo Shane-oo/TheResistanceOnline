@@ -2,6 +2,7 @@ import {BufferGeometry, Color, Mesh, MeshStandardMaterial, Scene, Vector3} from 
 import {ResistanceGame} from "../../resistance-game";
 import {Resources} from "../../utils/resources";
 import GUI from "lil-gui";
+import {Dispose} from "../../utils/dispose";
 
 export abstract class Piece {
   readonly name: string;
@@ -33,13 +34,20 @@ export abstract class Piece {
   abstract createMesh(): Mesh<BufferGeometry, MeshStandardMaterial>;
 
   movePiece(position: Vector3) {
-    this.mesh.position.setX(position.x);
-    this.mesh.position.setZ(position.z);
+    this.mesh.position.set(position.x, position.y, position.z);
+  }
+
+  lookAt(position: Vector3) {
+    this.mesh.lookAt(position);
   }
 
   destroy() {
-    this.mesh.geometry.dispose();
-    this.mesh.material.dispose();
+    this.mesh.geometry?.dispose();
+    this.mesh.material?.dispose();
+
+    this.mesh.traverse((child) => {
+      Dispose.disposeOfChild(child)
+    })
   }
 
   setVisible(visible: boolean): void {

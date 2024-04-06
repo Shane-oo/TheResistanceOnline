@@ -1,5 +1,5 @@
 import {
-  DirectionalLight,
+  DirectionalLight, DirectionalLightShadow,
   EquirectangularReflectionMapping,
   EquirectangularRefractionMapping,
   PMREMGenerator,
@@ -46,11 +46,12 @@ export class Environment {
   private createSunLight(): DirectionalLight {
     const sunlight = new DirectionalLight('#ffffff', Math.PI);
     sunlight.castShadow = true;
-    sunlight.shadow.camera.far = 15;
+    sunlight.shadow.camera.far = 30;
     sunlight.shadow.mapSize.set(1024, 1024);
     sunlight.shadow.normalBias = 0.05;
     // 20 m high
     sunlight.position.set(0, 20, -2.25);
+
 
     return sunlight;
   }

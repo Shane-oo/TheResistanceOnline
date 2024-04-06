@@ -21,6 +21,7 @@ import {GameOverResultsModel, MissionResultsModel, VoteResultsModel} from "../ga
 export class ResistanceGame {
   private static instance: ResistanceGame | null;
   objectClickedSubject: Subject<string> = new Subject<string>();
+  loaded: Subject<void> = new Subject<void>();
 
   private readonly _gameCamera!: ResistanceGameCamera;
   private readonly _scene!: Scene;
@@ -63,6 +64,8 @@ export class ResistanceGame {
       .subscribe(() => {
         // Wait for all Resources before instantiating world
         this._world = new World();
+        this.loaded.next();
+        this._gameCamera.playStartGameAnimation();
       });
 
     this._sizes.resizeSubject

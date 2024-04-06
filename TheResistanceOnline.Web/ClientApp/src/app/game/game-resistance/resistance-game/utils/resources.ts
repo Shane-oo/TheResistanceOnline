@@ -1,5 +1,5 @@
 import {GLTF, GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
-import {Texture, TextureLoader} from "three";
+import {Texture, TextureLoader, Vector3} from "three";
 import {Subject} from "rxjs";
 import {Font, FontLoader} from "three/examples/jsm/loaders/FontLoader";
 import {Dispose} from "./dispose";
@@ -19,26 +19,27 @@ export enum TextureType {
 }
 
 export interface TextureResource {
-  name: string,
-  texture: Texture,
-  textureType: TextureType
+  name: string;
+  texture: Texture;
+  textureType: TextureType;
 }
 
 export interface ModelResource {
-  name: string,
-  gltf: GLTF
+  name: string;
+  gltf: GLTF;
 }
 
 export interface FontResource {
-  name: string,
-  font: Font
+  name: string;
+  font: Font;
 }
 
 export interface Resource {
-  name: string,
-  type: ResourceType,
-  path: string,
-  textureType: TextureType | null
+  name: string;
+  type: ResourceType;
+  path: string;
+  scale: Vector3 | null;
+  textureType: TextureType | null;
 }
 
 export class Resources {
@@ -163,6 +164,16 @@ export class Resources {
   }
 
   private modelLoaded(source: Resource, gltf: GLTF) {
+    gltf.scene.traverse((child) => {
+      child.castShadow = true;
+      child.receiveShadow = true;
+      if (source.scale) {
+        console.log('scaling', source.scale)
+        child.scale.set(source.scale.x, source.scale.y, source.scale.z);
+      }
+    });
+
+
     this._models.push({name: source.name, gltf: gltf});
     this.updateLoad();
   }

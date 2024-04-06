@@ -1,17 +1,17 @@
 import {AbstractControl, FormControl, FormGroup} from "@angular/forms";
 
 export interface UserDetailsModel {
-  userName: string,
-  createdOn: string,
-  modifiedOn: string | null
+  userName: string;
+  createdOn: string;
+  modifiedOn: string | null;
 }
 
 export interface UpdateUserCommand {
-  userName: string
+  userName: string;
 }
 
 export interface UserDetailsEditFormModel {
-  userName: FormControl<string>,
+  userName: FormControl<string>;
   // createdOn: FormControl<string>,
   // modifiedOn: FormControl<string | null>
 }
