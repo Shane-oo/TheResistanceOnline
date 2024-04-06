@@ -6,6 +6,7 @@ import {RejectVotePiece} from "./voting/reject-vote-piece";
 import {ResultVotePiece} from "./voting/result-vote-piece";
 import {MissionSuccessPiece} from "./missions/mission-choices/mission-success-piece";
 import {MissionSabotagePiece} from "./missions/mission-choices/mission-sabotage-piece";
+import {Position} from "../../resistance-game-models";
 
 // there will be multiple player pieces, one for each player
 export class PlayerPiece extends Piece {
@@ -19,14 +20,14 @@ export class PlayerPiece extends Piece {
     missionSabotagePiece: MissionSabotagePiece
   };
 
-  private readonly position: { x: number, z: number };
+  private readonly position: Position;
 
-  constructor(name: string, position: { x: number, z: number }) {
+  constructor(name: string, position: Position) {
     super(name);
 
     // Move Piece
     this.position = position;
-    const positionVector = new Vector3(this.position.x, 0, this.position.z)
+    const positionVector = new Vector3(this.position.x, this.position.y, this.position.z)
     this.movePiece(positionVector);
 
     // Vote Pieces

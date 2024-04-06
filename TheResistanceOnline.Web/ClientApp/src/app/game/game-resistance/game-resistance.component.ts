@@ -96,6 +96,10 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
       });
   }
 
+  loadedEvent() {
+    this.startGame();
+  }
+
   submitMissionTeam() {
     this.resistanceHubConnection.invoke("SubmitMissionTeam")
       .catch(err => {
@@ -136,7 +140,6 @@ export class GameResistanceComponent implements OnInit, OnDestroy, AfterViewInit
           this.addRequiredListeners();
 
           this.swalService.showSwal(SwalTypes.Info, "Waiting For Game To Start...")
-          this.startGame();
         });
       } catch (err) {
         this.swalService.showSwal(SwalTypes.Error, 'Error Connecting To Resistance Hub');

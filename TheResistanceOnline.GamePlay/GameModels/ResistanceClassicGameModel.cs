@@ -12,10 +12,11 @@ public class ResistanceClassicGameModel: GameModel
     private void AssignTeams(List<string> playerUserNames, int botCount)
     {
         var playerSetupModels = CreatePlayerSetupModels(playerUserNames, botCount);
+        playerSetupModels.Shuffle();
 
         var botFactory = new ResistanceClassicBotFactory();
 
-        playerSetupModels.Shuffle();
+
         var resistancePlayers = new List<PlayerSetupModel>();
         var spyPlayers = new List<PlayerSetupModel>();
 
@@ -104,7 +105,6 @@ public class ResistanceClassicGameModel: GameModel
 
         CheckBotNeedsToPickMissionTeam();
     }
-    
 
     #endregion
 }

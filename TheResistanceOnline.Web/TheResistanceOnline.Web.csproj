@@ -38,8 +38,8 @@
         <Folder Include="ClientApp\src\app\game\game-resistance\resistance-game\world\pieces\missions\mission-results\" />
         <Folder Include="ClientApp\src\app\shared\custom-validators\the-resistance-game" />
         <Folder Include="ClientApp\src\app\shared\services\state\" />
-        <Folder Include="ClientApp\src\assets\textures" />
         <Folder Include="ClientApp\src\assets\models" />
+        <Folder Include="ClientApp\src\assets\textures\ResistanceGame\" />
     </ItemGroup>
 
     <ItemGroup>
