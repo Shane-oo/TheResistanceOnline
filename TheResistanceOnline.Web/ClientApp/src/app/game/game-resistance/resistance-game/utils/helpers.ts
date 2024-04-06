@@ -1,3 +1,6 @@
+import {Position} from "../resistance-game-models";
+import {Vector3} from "three";
+
 export function getMissionTeamCount(roundNumber: number, playerCount: number): number {
   switch (playerCount) {
     case 5:
@@ -52,4 +55,12 @@ export function getMissionTeamCount(roundNumber: number, playerCount: number): n
       break;
   }
   return -1;
+}
+
+export function distance(position: Position, targetPosition: Position) {
+  return Math.sqrt((targetPosition.x - position.x) ^ 2 + (targetPosition.y - position.y) ^ 2 + (targetPosition.z - position.z) ^ 2);
+}
+
+export function vectorBetweenTwoPositions(position: Position, targetPosition: Position): Vector3 {
+  return new Vector3(targetPosition.x - position.x, targetPosition.y - position.y, targetPosition.z - position.z);
 }

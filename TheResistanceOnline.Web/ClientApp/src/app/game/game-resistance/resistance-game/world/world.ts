@@ -6,7 +6,7 @@ import {ResistanceGame} from "../resistance-game";
 import {Floor} from "./floor";
 import {PlayerPiece} from "./pieces/player-piece";
 import {MissionRoundPiece} from "./pieces/rounds/mission-round-piece";
-import {getMissionTeamCount} from "../utils/helpers";
+import {distance, getMissionTeamCount, vectorBetweenTwoPositions} from "../utils/helpers";
 import {MissionLeaderPiece} from "./pieces/mission-leader-piece";
 import {MissionTeamPiece} from "./pieces/mission-team-piece";
 import {ResistanceGameRaycasting} from "../resistance-game-raycasting";
@@ -16,22 +16,24 @@ import {MissionSuccessResultPiece} from "./pieces/missions/mission-results/missi
 import {MissionFailResultPiece} from "./pieces/missions/mission-results/mission-fail-result-piece";
 import {MissionSabotagePiece} from "./pieces/missions/mission-choices/mission-sabotage-piece";
 import {MissionSuccessPiece} from "./pieces/missions/mission-choices/mission-success-piece";
+import {Table} from "./table";
+import {Position} from "../resistance-game-models";
 
 export class World {
-  private readonly playerPositions: { x: number, z: number }[] = [
-    {x: -2, z: -1.25}, // top left
-    {x: 0, z: -1.25}, // top middle
-    {x: 2, z: -1.25}, // top right
+  private readonly playerPositions: Position[] = [
+    {x: -0.8, y: .5, z: -0.5}, // top left
+    {x: 0, y: .5, z: -0.5}, // top middle
+    {x: .8, y: .5, z: -0.5}, // top right
 
-    {x: 2.75, z: 0.5}, // right top
-    {x: 2.75, z: -0.5}, // right bottom
+    {x: 1.075, y: .5, z: -0.15}, // right bottom
+    {x: 1.075, y: .5, z: 0.35}, // right top
 
-    {x: 2, z: 1.25}, // bottom right
-    {x: 0, z: 1.25}, // bottom middle
-    {x: -2, z: 1.25}, // bottom left
+    {x: .8, y: .5, z: 0.725}, // bottom right
+    {x: 0, y: .5, z: 0.725}, // bottom middle
+    {x: -.8, y: .5, z: 0.725}, // bottom left
 
-    {x: -2.75, z: 0.5}, // left bottom
-    {x: -2.75, z: -0.5} // left top
+    {x: -1.175, y: .5, z: -0.15}, // left top
+    {x: -1.175, y: .5, z: 0.35} // left bottom
   ];
 
   private readonly missionRoundPositions: { x: number, z: number }[] = [
@@ -50,6 +52,7 @@ export class World {
   private missionTeamPieces: { playerPiece: PlayerPiece, missionTeamPiece: MissionTeamPiece }[] = [];
 
   private readonly floor: Floor;
+  private readonly table: Table;
   private readonly axesHelper: AxesHelper;
   // Utils
   private readonly resources: Resources;
@@ -67,6 +70,7 @@ export class World {
     this.debug = resistanceGame.debug;
 
     // Add all children of World
+    this.table = new Table();
     this.floor = new Floor();
     this.missionLeaderPiece = new MissionLeaderPiece();
     this.axesHelper = new AxesHelper(5);
@@ -118,8 +122,30 @@ export class World {
       const missionTeamPiece = new MissionTeamPiece();
 
       const position = playerPiece.mesh.position.clone();
-      position.setZ(position.z + 0.15); // below the player piece
+      const middleOfTable: Position = {
+        x: 0,
+        y: 0.5,
+        z: 0
+      };
+      // bit of a hack
+      const playerPositionIndex = this.playerPositions.findIndex(p => p.x === position.x && p.z === position.z);
+      if (playerPositionIndex <= 3) {
+        // top of board move z down
+        position.setZ(position.z + .15);
+      } else if (playerPositionIndex > 3 && playerPositionIndex <= 5) {
+        // right of board move x left
+        position.setX(position.x - .15);
+      } else if (playerPositionIndex > 5 && playerPositionIndex <= 8) {
+        //bottom of board move z up
+        position.setZ(position.z - .15);
+
+      } else {
+        // left of board move x right
+        position.setX(position.x + .15);
+      }
+
       missionTeamPiece.movePiece(position);
+      missionTeamPiece.lookAt(new Vector3(0, .5, 0));
 
       this.missionTeamPieces.push({
         playerPiece: playerPiece,

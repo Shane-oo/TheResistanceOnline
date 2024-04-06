@@ -34,6 +34,7 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
 
   @Output() objectClickedEventEmitter = new EventEmitter<string>();
   @Output() submitMissionTeamEventEmitter = new EventEmitter<void>();
+  @Output() loadedEventEmitter = new EventEmitter<void>();
 
   private resistanceGame!: ResistanceGame;
   private readonly destroyed = new Subject<void>();
@@ -49,6 +50,12 @@ export class GameResistanceClassicComponent implements AfterViewInit, OnDestroy 
     this.resistanceGame = new ResistanceGame(this.canvasElementRef.nativeElement);
 
     // Resistance Game Events
+    this.resistanceGame.loaded
+      .pipe(first())
+      .subscribe(() => {
+        this.loadedEventEmitter.emit();
+      });
+
     this.resistanceGame.objectClickedSubject
       .pipe(takeUntil(this.destroyed))
       .subscribe((name: string) => {

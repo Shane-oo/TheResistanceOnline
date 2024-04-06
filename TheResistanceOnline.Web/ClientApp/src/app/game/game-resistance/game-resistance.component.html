@@ -8,12 +8,13 @@
                                [showMissionTeamSubmit]="showMissionTeamSubmit"
                                [moveToVotingPhase]="moveToVotingPhase"
                                [playerSubmittedVote]="playerSubmittedVote"
-                               [removeVotingChoicesSubject] = "removeVotingChoices"
-                               [showVoteResultsSubject] = "showVoteResults"
+                               [removeVotingChoicesSubject]="removeVotingChoices"
+                               [showVoteResultsSubject]="showVoteResults"
                                [showMissionResultsSubject]="showMissionResults"
                                [showMissionChoicesSubject]="showMissionChoices"
                                [removeMissionChoicesSubject]="removeMissionChoices"
                                [showGameOverResultsSubject]="showGameOverResults"
+                               (loadedEventEmitter)="loadedEvent()"
                                (objectClickedEventEmitter)="objectClickedEvent($event)"
                                (submitMissionTeamEventEmitter)="submitMissionTeam()">
   </app-game-resistance-classic>
