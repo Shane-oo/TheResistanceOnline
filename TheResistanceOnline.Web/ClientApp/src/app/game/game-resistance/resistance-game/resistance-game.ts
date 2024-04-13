@@ -65,7 +65,6 @@ export class ResistanceGame {
         // Wait for all Resources before instantiating world
         this._world = new World();
         this.loaded.next();
-        this._gameCamera.playStartGameAnimation();
       });
 
     this._sizes.resizeSubject
@@ -151,6 +150,11 @@ export class ResistanceGame {
   setPlayers(players: string[]) {
     // for now put a cube where the player should be
     this._world?.createPlayerPieces(players);
+
+    const startingPosition = this?._world?.getCameraStartingPosition(this.stateService.userName);
+    if (startingPosition) {
+      this._gameCamera.playStartGameAnimation(startingPosition);
+    }
   }
 
   setMissionLeader(player: string) {

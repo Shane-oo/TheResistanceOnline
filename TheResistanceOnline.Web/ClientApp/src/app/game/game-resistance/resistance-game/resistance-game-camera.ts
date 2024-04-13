@@ -1,4 +1,4 @@
-import {MathUtils, PerspectiveCamera, Scene} from 'three';
+import {MathUtils, PerspectiveCamera, Scene, Vector3} from 'three';
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {Sizes} from "./utils/sizes";
 import GUI from "lil-gui";
@@ -6,6 +6,7 @@ import GUI from "lil-gui";
 import {gsap} from "gsap";
 
 import {ResistanceGame} from "./resistance-game";
+import {Position} from "./resistance-game-models";
 
 export class ResistanceGameCamera {
   // Constants
@@ -64,12 +65,13 @@ export class ResistanceGameCamera {
     this._perspectiveCamera.updateProjectionMatrix();
   }
 
-  playStartGameAnimation() {
+  playStartGameAnimation(playerPosition: Position) {
+    this._perspectiveCamera.lookAt(new Vector3(playerPosition.x, playerPosition.y + 1.5, playerPosition.z));
     gsap.to(this._perspectiveCamera.position, {
       duration: 8,
-      x: 0.009,
-      y: 2.023,
-      z: 1.5
+      x: playerPosition.x,
+      y: playerPosition.y + 1.5,
+      z: playerPosition.z
     });
   }
 
@@ -93,8 +95,11 @@ export class ResistanceGameCamera {
 
   private createOrbitControls(): OrbitControls {
     const controls = new OrbitControls(this._perspectiveCamera, this.canvas);
-    //this.orbitControls.enableDamping = true;
+    controls.enableDamping = true;
     controls.enabled = true;
+    controls.maxPolarAngle = Math.PI / 4;
+    controls.enableZoom = false;
+    controls.enablePan = false;
 
     return controls;
   }
