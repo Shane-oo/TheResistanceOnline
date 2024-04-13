@@ -18,9 +18,9 @@
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="7.0.10" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.32.1" />
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.34.0" />
         <PackageReference Include="SendGrid" Version="9.28.1" />
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.1" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.34.0" />
         <PackageReference Include="System.Threading.Timer" Version="4.3.0" />
     </ItemGroup>
 
