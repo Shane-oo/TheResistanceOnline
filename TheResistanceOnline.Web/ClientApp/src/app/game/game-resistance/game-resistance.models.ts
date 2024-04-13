@@ -19,6 +19,13 @@ export enum Team {
   Spy
 }
 
+export enum PositionOnBoard {
+  Top,
+  Left,
+  Right,
+  Bottom
+}
+
 
 export interface VoteResultsModel {
   playerNameToVoteApproved: Map<string, boolean>;

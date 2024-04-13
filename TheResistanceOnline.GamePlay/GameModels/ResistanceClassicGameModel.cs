@@ -16,7 +16,6 @@ public class ResistanceClassicGameModel: GameModel
 
         var botFactory = new ResistanceClassicBotFactory();
 
-
         var resistancePlayers = new List<PlayerSetupModel>();
         var spyPlayers = new List<PlayerSetupModel>();
 

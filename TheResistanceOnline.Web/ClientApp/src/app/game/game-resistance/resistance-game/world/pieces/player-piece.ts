@@ -10,6 +10,7 @@ import {Position} from "../../resistance-game-models";
 
 // there will be multiple player pieces, one for each player
 export class PlayerPiece extends Piece {
+  public readonly position: Position;
   private readonly _votePieces: {
     approveVotePiece: ApproveVotePiece,
     rejectVotePiece: RejectVotePiece,
@@ -19,8 +20,6 @@ export class PlayerPiece extends Piece {
     missionSuccessPiece: MissionSuccessPiece,
     missionSabotagePiece: MissionSabotagePiece
   };
-
-  private readonly position: Position;
 
   constructor(name: string, position: Position) {
     super(name);
@@ -120,13 +119,13 @@ export class PlayerPiece extends Piece {
   } {
 
     const approveVotePiece = new ApproveVotePiece();
-    approveVotePiece.movePiece(new Vector3(this.position.x - 0.1, 0, this.position.z + 0.3));
+    approveVotePiece.movePiece(new Vector3(this.position.x - 0.1, this.position.y, this.position.z - 0.3));
 
     const rejectVotePiece = new RejectVotePiece();
-    rejectVotePiece.movePiece(new Vector3(this.position.x + 0.1, 0, this.position.z + 0.3));
+    rejectVotePiece.movePiece(new Vector3(this.position.x + 0.1, this.position.y, this.position.z - 0.3));
 
     const resultVotePiece = new ResultVotePiece();
-    resultVotePiece.movePiece(new Vector3(this.position.x, 0, this.position.z - 0.3));
+    resultVotePiece.movePiece(new Vector3(this.position.x, this.position.y, this.position.z + 0.3));
 
     return {approveVotePiece: approveVotePiece, rejectVotePiece: rejectVotePiece, resultVotePiece: resultVotePiece};
   }
@@ -137,10 +136,10 @@ export class PlayerPiece extends Piece {
   } {
 
     const missionSuccessPiece = new MissionSuccessPiece();
-    missionSuccessPiece.movePiece(new Vector3(this.position.x - 0.1, 0, this.position.z + 0.3));
+    missionSuccessPiece.movePiece(new Vector3(this.position.x - 0.1, this.position.y, this.position.z - 0.3));
 
     const missionSabotagePiece = new MissionSabotagePiece();
-    missionSabotagePiece.movePiece(new Vector3(this.position.x + 0.1, 0, this.position.z + 0.3));
+    missionSabotagePiece.movePiece(new Vector3(this.position.x + 0.1, this.position.y, this.position.z - 0.3));
 
     return {missionSuccessPiece: missionSuccessPiece, missionSabotagePiece: missionSabotagePiece};
   }

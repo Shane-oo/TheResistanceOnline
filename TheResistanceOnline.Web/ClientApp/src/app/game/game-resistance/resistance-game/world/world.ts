@@ -6,11 +6,11 @@ import {ResistanceGame} from "../resistance-game";
 import {Floor} from "./floor";
 import {PlayerPiece} from "./pieces/player-piece";
 import {MissionRoundPiece} from "./pieces/rounds/mission-round-piece";
-import {distance, getMissionTeamCount, vectorBetweenTwoPositions} from "../utils/helpers";
+import {getMissionTeamCount} from "../utils/helpers";
 import {MissionLeaderPiece} from "./pieces/mission-leader-piece";
 import {MissionTeamPiece} from "./pieces/mission-team-piece";
 import {ResistanceGameRaycasting} from "../resistance-game-raycasting";
-import {MissionResultsModel, Team} from "../../game-resistance.models";
+import {MissionResultsModel, PositionOnBoard, Team} from "../../game-resistance.models";
 import {Piece} from "./pieces/piece";
 import {MissionSuccessResultPiece} from "./pieces/missions/mission-results/mission-success-result-piece";
 import {MissionFailResultPiece} from "./pieces/missions/mission-results/mission-fail-result-piece";
@@ -116,29 +116,37 @@ export class World {
     }
   }
 
+  private getPositionOnBoard(x: number, z: number): PositionOnBoard {
+    const playerPositionIndex = this.playerPositions.findIndex(p => p.x === x && p.z === z);
+    if (playerPositionIndex <= 2) {
+      return PositionOnBoard.Top;
+    } else if (playerPositionIndex > 2 && playerPositionIndex <= 4) {
+      return PositionOnBoard.Right;
+    } else if (playerPositionIndex > 4 && playerPositionIndex <= 7) {
+      return PositionOnBoard.Bottom;
+    } else {
+      return PositionOnBoard.Left;
+    }
+  }
+
   addMissionTeamMember(player: string) {
     const playerPiece = this.getPlayerPieceByName(player);
     if (playerPiece) {
       const missionTeamPiece = new MissionTeamPiece();
 
-      const position = playerPiece.mesh.position.clone();
-      const middleOfTable: Position = {
-        x: 0,
-        y: 0.5,
-        z: 0
-      };
+      const position = new Vector3(playerPiece.position.x, playerPiece.position.y, playerPiece.position.z);
+
       // bit of a hack
-      const playerPositionIndex = this.playerPositions.findIndex(p => p.x === position.x && p.z === position.z);
-      if (playerPositionIndex <= 3) {
+      const positionOnBoard = this.getPositionOnBoard(position.x, position.z);
+      if (positionOnBoard === PositionOnBoard.Top) {
         // top of board move z down
         position.setZ(position.z + .15);
-      } else if (playerPositionIndex > 3 && playerPositionIndex <= 5) {
+      } else if (positionOnBoard === PositionOnBoard.Right) {
         // right of board move x left
         position.setX(position.x - .15);
-      } else if (playerPositionIndex > 5 && playerPositionIndex <= 8) {
+      } else if (positionOnBoard === PositionOnBoard.Bottom) {
         //bottom of board move z up
         position.setZ(position.z - .15);
-
       } else {
         // left of board move x right
         position.setX(position.x + .15);
@@ -303,6 +311,10 @@ export class World {
     console.log(`${winners === Team.Resistance ? 'Resistance' : 'Spies'} won!`);
   }
 
+  public getPlayerPieceByName(name: string) {
+    return this._playerPieces?.find(p => p.name === name);
+  }
+
   private removePlayersMissionTeamPiece(playerPiece: PlayerPiece) {
     const missionTeamPiece = this.missionTeamPieces.find(p => p.playerPiece === playerPiece);
     if (missionTeamPiece) {
@@ -323,7 +335,31 @@ export class World {
     this.missionRoundsPieces = rounds;
   }
 
-  private getPlayerPieceByName(name: string) {
-    return this._playerPieces?.find(p => p.name === name);
+  getCameraStartingPosition(playerName: string): Position {
+    let position: Position = {x: 0, y: 0, z: 0};
+    const playerPiece = this.getPlayerPieceByName(playerName);
+    if (playerPiece) {
+      position.x = playerPiece.position.x;
+      position.z = playerPiece.position.z;
+
+      // bit of a hack
+      const positionOnBoard = this.getPositionOnBoard(playerPiece.position.x, playerPiece.position.z);
+      if (positionOnBoard === PositionOnBoard.Top) {
+        // top of board move z up
+        position.z -= 1.25;
+      } else if (positionOnBoard === PositionOnBoard.Right) {
+        // right of board move x right
+        position.x += 1.25;
+      } else if (positionOnBoard === PositionOnBoard.Bottom) {
+        //bottom of board move z down
+        position.z += 1.25;
+      } else {
+        // left of board move x left
+        position.x -= 1.25;
+      }
+    }
+    console.log(position);
+
+    return position;
   }
 }
