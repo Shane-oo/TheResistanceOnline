@@ -4,6 +4,7 @@ import {Subject} from "rxjs";
 import {Font, FontLoader} from "three/examples/jsm/loaders/FontLoader";
 import {Dispose} from "./dispose";
 import {EXRLoader} from "three/examples/jsm/loaders/EXRLoader";
+import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
 
 export enum ResourceType {
   CubeTexture,
@@ -61,12 +62,17 @@ export class Resources {
     this.toLoad = this.sources.length;
     this.loaded = 0;
 
+
     this.loaders = {
       GLTFLoader: new GLTFLoader(),
       textureLoader: new TextureLoader(),
       fontLoader: new FontLoader(),
       EXRLoader: new EXRLoader()
     };
+
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('/assets/loaders/draco/gltf/');
+    this.loaders.GLTFLoader.setDRACOLoader(dracoLoader);
 
     this.startLoading();
   }
